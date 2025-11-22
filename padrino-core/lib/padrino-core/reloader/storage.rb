@@ -13,8 +13,8 @@ module Padrino
 
       def remove(name)
         file = files[name] || return
-        file[:constants].each{ |constant| Reloader.remove_constant(constant) }
-        file[:features].each{ |feature| Reloader.remove_feature(feature) }
+        file[:constants].each { |constant| Reloader.remove_constant(constant) }
+        file[:features].each { |feature| Reloader.remove_feature(feature) }
         files.delete(name)
       end
 
@@ -26,7 +26,7 @@ module Padrino
           :features  => old_features = Set.new($LOADED_FEATURES.dup)
         }
         features = file && file[:features] || []
-        features.each{ |feature| Reloader.safe_load(feature, :force => true) }
+        features.each { |feature| Reloader.safe_load(feature, :force => true) }
         Reloader.remove_feature(name) if old_features.include?(name)
       end
 

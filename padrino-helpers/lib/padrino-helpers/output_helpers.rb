@@ -180,7 +180,7 @@ module Padrino
       def yield_content(key, *args)
         blocks = content_blocks[key.to_sym]
         return nil if blocks.empty?
-        blocks.inject(SafeBuffer.new){ |all,content| all << capture_html(*args, &content) }
+        blocks.inject(SafeBuffer.new) { |all,content| all << capture_html(*args, &content) }
       end
 
       protected
@@ -214,7 +214,7 @@ module Padrino
       # @return [SafeBuffer, Array<SafeBuffer>]
       def mark_safe(value)
         if value.respond_to? :map!
-          value.map!{|v| v&.html_safe }
+          value.map! {|v| v&.html_safe }
         else
           value&.html_safe
         end

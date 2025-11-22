@@ -99,7 +99,7 @@ describe 'FormHelpers' do
     end
 
     it 'should not include protect_from_csrf as an attribute of form element' do
-      actual_html = form_tag('/superadmindelete', :protect_from_csrf => true){ 'Demo' }
+      actual_html = form_tag('/superadmindelete', :protect_from_csrf => true) { 'Demo' }
       assert_html_has_no_tag(actual_html, :form, protect_from_csrf: 'true')
     end
 

@@ -96,7 +96,7 @@ module Padrino
           '/models/**/*.rb',
           '/lib.rb',
           '/lib/**/*.rb'
-        ].map{ |glob| File.join(settings.root, glob) }
+        ].map { |glob| File.join(settings.root, glob) }
       end
 
       # Overrides the default middleware for Sinatra based on Padrino conventions.

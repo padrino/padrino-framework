@@ -351,7 +351,7 @@ module Padrino
         end
         parts << template_path.chomp(File.extname(template_path)) + '.*'
         Dir.glob(File.join(parts)).inject([]) do |all,file|
-          next all if IGNORE_FILE_PATTERN.any?{ |pattern| file.to_s =~ pattern }
+          next all if IGNORE_FILE_PATTERN.any? { |pattern| file.to_s =~ pattern }
           all << path_and_engine(file, views_path)
         end
       end
@@ -361,11 +361,11 @@ module Padrino
         simple_content_type = [:html, :plain].include?(symbol)
         target_path, target_engine = path_and_engine(template_path)
 
-        templates.find{ |file,_| file.to_s == "#{target_path}.#{locale}.#{symbol}" } ||
-        templates.find{ |file,_| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
-        templates.find{ |file,engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
-        templates.find{ |file,_| file.to_s == "#{target_path}.#{symbol}" } ||
-        templates.find{ |file,_| file.to_s == target_path.to_s && simple_content_type }
+        templates.find { |file,_| file.to_s == "#{target_path}.#{locale}.#{symbol}" } ||
+        templates.find { |file,_| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
+        templates.find { |file,engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
+        templates.find { |file,_| file.to_s == "#{target_path}.#{symbol}" } ||
+        templates.find { |file,_| file.to_s == target_path.to_s && simple_content_type }
       end
 
       def path_and_engine(path, relative=nil)

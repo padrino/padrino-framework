@@ -102,7 +102,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     end
 
     def collection_names
-      @collection_names ||= get_mongoid_models.map{ |d| d.collection.name }.uniq
+      @collection_names ||= get_mongoid_models.map { |d| d.collection.name }.uniq
     end
 
     desc 'Convert string objectids in mongo database to ObjectID type'

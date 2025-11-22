@@ -11,7 +11,7 @@ end
 task :skeleton do
   PADRINO_ROOT ||= Rake.application.original_dir
   require 'padrino-core'
-  Padrino.send(:dependency_paths).reject!{ |path| path.include?('/models/') }
+  Padrino.send(:dependency_paths).reject! { |path| path.include?('/models/') }
   require File.expand_path('config/boot.rb', Rake.application.original_dir)
 end
 

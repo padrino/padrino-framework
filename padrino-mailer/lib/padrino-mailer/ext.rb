@@ -136,7 +136,7 @@ module Mail # @private
     # Sinatra almost compatibility.
     #
     def self.set(name, value)
-      self.class.instance_eval{ define_method(name) { value } unless method_defined?(:erb) }
+      self.class.instance_eval { define_method(name) { value } unless method_defined?(:erb) }
     end
 
     ##

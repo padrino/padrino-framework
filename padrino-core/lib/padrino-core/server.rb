@@ -95,14 +95,14 @@ module Padrino
     # Parses an array of server options.
     #
     def self.parse_server_options(options)
-      parsed_server_options = Array(options).flat_map{ |option| option.split('=', 2) }
+      parsed_server_options = Array(options).flat_map { |option| option.split('=', 2) }
       Utils.symbolize_keys(Hash[*parsed_server_options])
     end
 
     # Detects Host and Port for Rack server.
     #
     def self.detect_address(options)
-      address = DEFAULT_ADDRESS.merge(options.select{ |key| [:Host, :Port].include?(key) })
+      address = DEFAULT_ADDRESS.merge(options.select { |key| [:Host, :Port].include?(key) })
       address[:Host] = options[:host] if options[:host]
       address[:Port] = options[:port] if options[:port]
       address

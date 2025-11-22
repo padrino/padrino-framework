@@ -38,8 +38,8 @@ module Padrino
         #
         def error_messages_for(*objects)
           options = objects.last.is_a?(Hash) ? Utils.symbolize_keys(objects.pop) : {}
-          objects = objects.map{ |obj| resolve_object(obj) }.compact
-          count   = objects.inject(0){ |sum, object| sum + object.errors.count }
+          objects = objects.map { |obj| resolve_object(obj) }.compact
+          count   = objects.inject(0) { |sum, object| sum + object.errors.count }
           return SafeBuffer.new if count.zero?
 
           content_tag(:div, error_contents(objects, count, options), error_html_attributes(options))
@@ -97,7 +97,7 @@ module Padrino
         end
 
         def error_list_tag(objects, object_name)
-          errors = objects.inject({}){ |all,object| all.update(object.errors) }
+          errors = objects.inject({}) { |all,object| all.update(object.errors) }
           error_messages = errors.inject(SafeBuffer.new) do |all, (field, message)|
             field_name = I18n.t(field, :default => Inflections.humanize(field), :scope => [:models, object_name, :attributes])
             all << content_tag(:li, "#{field_name} #{message}")

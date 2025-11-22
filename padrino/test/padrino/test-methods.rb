@@ -47,7 +47,7 @@ module Padrino
       end
       tags = @dom.css(selector.to_s.gsub(/\[([^"']*?)=([^'"]*?)\]/, '[\1="\2"]'))
       if content_requirement
-        tags = tags.select{ |tag| (tag.get('content') || tag.text).index(content_requirement) }
+        tags = tags.select { |tag| (tag.get('content') || tag.text).index(content_requirement) }
       end
       tags.count
     end

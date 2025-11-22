@@ -138,7 +138,7 @@ module Padrino
         route_name = route.name.to_s
         route_name =
           if route.controller
-            route_name.split(' ', 2).map{|name| ":#{name}" }.join(', ')
+            route_name.split(' ', 2).map {|name| ":#{name}" }.join(', ')
           else
             ":#{route_name}"
           end

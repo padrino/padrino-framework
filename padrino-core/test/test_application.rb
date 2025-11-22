@@ -106,8 +106,8 @@ describe 'Application' do
       mock_app do
         provides :xml
 
-        get('/foo'){ "Foo in #{content_type.inspect}" }
-        get('/bar'){ "Foo in #{content_type.inspect}" }
+        get('/foo') { "Foo in #{content_type.inspect}" }
+        get('/bar') { "Foo in #{content_type.inspect}" }
       end
 
       get '/foo', {}, { 'HTTP_ACCEPT' => 'application/xml' }
@@ -126,13 +126,13 @@ describe 'Application' do
 
     describe 'errors' do
       it 'should have not mapped errors on development' do
-        mock_app { get('/'){ 'HI' } }
+        mock_app { get('/') { 'HI' } }
         get '/'
         assert_empty @app.errors
       end
 
       it 'should have mapped errors on production' do
-        mock_app { set :environment, :production; get('/'){ 'HI' } }
+        mock_app { set :environment, :production; get('/') { 'HI' } }
         get '/'
         assert_equal 1, @app.errors.size
       end
@@ -140,8 +140,8 @@ describe 'Application' do
       it 'should overide errors' do
         mock_app do
           set :environment, :production
-          get('/'){ raise }
-          error(::Exception){ 'custom error' }
+          get('/') { raise }
+          error(::Exception) { 'custom error' }
         end
         get '/'
         assert_equal 1, @app.errors.size
@@ -159,7 +159,7 @@ describe 'Application' do
           end
           assert_equal :dirty, ConstTest.parent
         ensure
-          Module.instance_eval{ undef :parent }
+          Module.instance_eval { undef :parent }
         
       end
     end

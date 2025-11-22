@@ -75,7 +75,7 @@ describe 'Core' do
     it 'should return a friendly 500' do
       mock_app do
         enable :show_exceptions
-        get(:index){ raise StandardError }
+        get(:index) { raise StandardError }
       end
 
       get '/'

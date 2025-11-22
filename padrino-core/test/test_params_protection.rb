@@ -54,7 +54,7 @@ describe 'Padrino::ParamsProtection' do
   it 'should be able to process the data' do
     result = nil
     mock_app do
-      post :basic, :params => [ :name, {:position => proc{ |v| 'anti-'+v }} ] do
+      post :basic, :params => [ :name, {:position => proc { |v| 'anti-'+v }} ] do
         result = params
         ''
       end

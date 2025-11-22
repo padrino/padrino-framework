@@ -156,17 +156,17 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       task :reset => ['ar:drop', 'ar:create', 'ar:migrate']
 
       desc "Runs the 'up' for a given MIGRATION_VERSION."
-      task(:up => :skeleton){ migrate_as(:up) }
+      task(:up => :skeleton) { migrate_as(:up) }
 
       desc "Runs the 'down' for a given MIGRATION_VERSION."
-      task(:down => :skeleton){ migrate_as(:down) }
+      task(:down => :skeleton) { migrate_as(:down) }
     end
 
     desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
-    task(:rollback => :skeleton){ move_as(:rollback) }
+    task(:rollback => :skeleton) { move_as(:rollback) }
 
     desc 'Pushes the schema to the next version. Specify the number of steps with STEP=n'
-    task(:forward => :skeleton){ move_as(:forward) }
+    task(:forward => :skeleton) { move_as(:forward) }
 
     desc 'Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.'
     task :reset => [ 'ar:drop', 'ar:setup' ]
@@ -265,7 +265,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             ENV['PGPASSWORD'] = config[:password].to_s if config[:password]
             search_path = config[:schema_search_path]
             if search_path
-              search_path = search_path.split(',').map{|search_path| "--schema=#{search_path.strip}" }.join(' ')
+              search_path = search_path.split(',').map {|search_path| "--schema=#{search_path.strip}" }.join(' ')
             end
             `pg_dump -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
             raise 'Error dumping database' if $CHILD_STATUS.exitstatus == 1
@@ -285,7 +285,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         end
 
         if !ActiveRecord::Base.connection.respond_to?(:supports_migrations?) || ActiveRecord::Base.connection.supports_migrations?
-          File.open(resolve_structure_sql, 'a'){|f| f << ActiveRecord::Base.connection.dump_schema_information }
+          File.open(resolve_structure_sql, 'a') {|f| f << ActiveRecord::Base.connection.dump_schema_information }
         end
       end
     end

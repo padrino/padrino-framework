@@ -68,7 +68,7 @@ module Padrino
           elsif data
             params.merge!(Hash[names.zip(data.captures)])
           end
-          params.merge!(others){ |_, old, new| old || new }
+          params.merge!(others) { |_, old, new| old || new }
         end
         params
       end
@@ -120,7 +120,7 @@ module Padrino
       # Creates a hash with indifferent access.
       #
       def indifferent_hash
-        Hash.new{ |hash, key| hash[key.to_s] if key.instance_of?(Symbol) }
+        Hash.new { |hash, key| hash[key.to_s] if key.instance_of?(Symbol) }
       end
     end
   end

@@ -259,7 +259,7 @@ module Padrino
       end
 
       def stylized_level(level)
-        style = "\e[%d;%dm" % ColoredLevels[level].map{|color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
+        style = "\e[%d;%dm" % ColoredLevels[level].map {|color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
         [style, super, "\e[0m"] * ''
       end
     end

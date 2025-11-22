@@ -17,7 +17,7 @@ describe 'Rendering' do
 
     it 'should get no layout' do
       mock_app do
-        get('/'){ 'no layout' }
+        get('/') { 'no layout' }
       end
 
       get '/'
@@ -30,7 +30,7 @@ describe 'Rendering' do
           'this is a <%= yield %>'
         end
 
-        get('/'){ render :erb, 'sinatra layout', :layout => true }
+        get('/') { render :erb, 'sinatra layout', :layout => true }
       end
 
       get '/'
@@ -40,7 +40,7 @@ describe 'Rendering' do
     it 'should use rails way layout' do
       with_layout :application, 'this is a <%= yield %>' do
         mock_app do
-          get('/'){ render :erb, 'rails way layout' }
+          get('/') { render :erb, 'rails way layout' }
         end
 
         get '/'
@@ -52,7 +52,7 @@ describe 'Rendering' do
       with_layout 'layouts/custom', 'this is a <%= yield %>' do
         mock_app do
           layout :custom
-          get('/'){ render :erb, 'rails way custom layout' }
+          get('/') { render :erb, 'rails way custom layout' }
         end
 
         get '/'
@@ -64,8 +64,8 @@ describe 'Rendering' do
       with_layout :application, 'this is an <%= yield %>' do
         with_view :index, 'index' do
           mock_app do
-            get('/with/layout'){ render :index }
-            get('/without/layout'){ render :index, :layout => false }
+            get('/with/layout') { render :index }
+            get('/without/layout') { render :index, :layout => false }
           end
           get '/with/layout'
           assert_equal 'this is an index', body
@@ -80,7 +80,7 @@ describe 'Rendering' do
       create_view :foo, 'erb file'
       create_view :foo, 'js file', :format => :js
       mock_app do
-        get('/layout_test', :provides => [:html, :js]){ render :foo }
+        get('/layout_test', :provides => [:html, :js]) { render :foo }
       end
       get '/layout_test'
       assert_equal 'this is an erb file', body
@@ -114,7 +114,7 @@ describe 'Rendering' do
       create_view :foo, 'erb file'
       create_view :foo, 'xml file', :format => :xml
       mock_app do
-        get('/layout_test', :provides => [:html, :xml]){ render :foo }
+        get('/layout_test', :provides => [:html, :xml]) { render :foo }
       end
       get '/layout_test'
       assert_equal 'this is an erb file', body
@@ -188,18 +188,18 @@ describe 'Rendering' do
       create_layout :baz, 'baz layout at <%= yield %>'
       create_layout :application, 'default layout at <%= yield %>'
       mock_app do
-        get('/'){ render :erb, 'application' }
+        get('/') { render :erb, 'application' }
         controller :foo do
           layout :foo
-          get('/'){ render :erb, 'foo' }
+          get('/') { render :erb, 'foo' }
         end
         controller :bar do
           layout :bar
-          get('/'){ render :erb, 'bar' }
+          get('/') { render :erb, 'bar' }
         end
         controller :baz do
           layout :baz
-          get('/'){ render :erb, 'baz', :layout => true }
+          get('/') { render :erb, 'baz', :layout => true }
         end
         controller :none do
           get('/') { render :erb, 'none' }
@@ -297,7 +297,7 @@ describe 'Rendering' do
     create_layout :application, 'erb template <%= yield %>', :format => :erb
     create_view 'foo', 'xml.instruct!', :format => :builder
     mock_app do
-      get('/layout_test.xml' ){ render :foo }
+      get('/layout_test.xml' ) { render :foo }
     end
     get '/layout_test.xml'
     refute_match(/erb template/, body)
@@ -329,7 +329,7 @@ describe 'Rendering' do
 
     it 'should be compatible with sinatra render' do
       mock_app do
-        get('/'){ render :erb, '<%= 1+2 %>' }
+        get('/') { render :erb, '<%= 1+2 %>' }
       end
       get '/'
       assert_equal '3', body
@@ -435,7 +435,7 @@ describe 'Rendering' do
       create_view :foo, 'Im Html'
       create_view :foo, 'xml.rss', :format => :rss
       mock_app do
-        get(:index, :map => '/', :provides => [:html, :rss]){ render 'foo' }
+        get(:index, :map => '/', :provides => [:html, :rss]) { render 'foo' }
       end
       get '/', {}, { 'HTTP_ACCEPT' => 'text/html;q=0.9' }
       assert_equal 'Im Html', body
@@ -697,10 +697,10 @@ describe 'Rendering' do
 
   describe 'standalone Sinatra usage of Rendering' do
     before do
-      Sinatra::Request.class_eval{ alias_method :monkey_controller, :controller; undef :controller }
+      Sinatra::Request.class_eval { alias_method :monkey_controller, :controller; undef :controller }
     end
     after do
-      Sinatra::Request.class_eval{ alias_method :controller, :monkey_controller; undef :monkey_controller }
+      Sinatra::Request.class_eval { alias_method :controller, :monkey_controller; undef :monkey_controller }
     end
     it 'should work with Sinatra::Base' do
       class Application < Sinatra::Base
@@ -761,7 +761,7 @@ describe 'Rendering' do
   describe 'sinatra template helpers' do
     it 'should respect default_content_type option defined by sinatra' do
       mock_app do
-        get(:index){ builder 'xml.foo' }
+        get(:index) { builder 'xml.foo' }
       end
       get '/'
       assert_equal 'application/xml;charset=utf-8', response['Content-Type']

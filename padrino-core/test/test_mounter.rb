@@ -165,7 +165,7 @@ describe 'Mounter' do
           delete(:destroy) { 'foo bar delete' }
         end
         controllers :test, :nested do
-          get(:test1){ 'test1' }
+          get(:test1) { 'test1' }
         end
       end
 
@@ -216,8 +216,8 @@ describe 'Mounter' do
 
     it 'should correctly instantiate a new padrino application' do
       mock_app do
-        get('/demo_1'){ 'Im Demo 1' }
-        get('/demo_2'){ 'Im Demo 2' }
+        get('/demo_1') { 'Im Demo 1' }
+        get('/demo_2') { 'Im Demo 2' }
       end
 
       get '/demo_1'

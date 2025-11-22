@@ -110,7 +110,7 @@ module Padrino
     def camelize(s)
       s = s.to_s
       return s.camelize if s.respond_to?(:camelize)
-      s.gsub(CAMELIZE_MODULE_REGEXP){|x| "::#{x[-1..-1].upcase unless x == SLASH}"}.gsub(CAMELIZE_CONVERT_REGEXP){|x| x[-1..-1].upcase}
+      s.gsub(CAMELIZE_MODULE_REGEXP) {|x| "::#{x[-1..-1].upcase unless x == SLASH}"}.gsub(CAMELIZE_CONVERT_REGEXP) {|x| x[-1..-1].upcase}
     end
 
     # Tries to find a declared constant with the name specified
@@ -135,7 +135,7 @@ module Padrino
       s = s.to_s
       return s.pluralize if s.respond_to?(:pluralize)
       result = s.dup
-      Inflections.plurals.each{|(rule, replacement)| break if result.gsub!(rule, replacement)} unless Inflections.uncountables.include?(s.downcase)
+      Inflections.plurals.each {|(rule, replacement)| break if result.gsub!(rule, replacement)} unless Inflections.uncountables.include?(s.downcase)
       result
     end
 
@@ -144,7 +144,7 @@ module Padrino
       s = s.to_s
       return s.singularize if s.respond_to?(:singularize)
       result = s.dup
-      Inflections.singulars.each{|(rule, replacement)| break if result.gsub!(rule, replacement)} unless Inflections.uncountables.include?(s.downcase)
+      Inflections.singulars.each {|(rule, replacement)| break if result.gsub!(rule, replacement)} unless Inflections.uncountables.include?(s.downcase)
       result
     end
 

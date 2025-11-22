@@ -242,7 +242,7 @@ module Padrino
         #
         def labeled_group(field, options={})
           options = { :id => field_id(field), :selected => field_value(field) }.update(options)
-          options.update(error_class(field)){ |_,*values| values.compact.join(' ') }
+          options.update(error_class(field)) { |_,*values| values.compact.join(' ') }
           selected_values = resolve_checked_values(field, options)
           variants_for_group(options).inject(SafeBuffer.new) do |html, (caption,value)|
             variant_id = "#{options[:id]}_#{value}"
@@ -260,9 +260,9 @@ module Padrino
 
         def variants_for_group(options)
           if variants = options[:options]
-            variants.map{ |caption, value| [caption.to_s, (value||caption).to_s] }
+            variants.map { |caption, value| [caption.to_s, (value||caption).to_s] }
           elsif collection = options[:collection]
-            collection.map{ |variant| field_values(variant, options) }
+            collection.map { |variant| field_values(variant, options) }
           else
             []
           end
@@ -285,7 +285,7 @@ module Padrino
         end
 
         def field_values(object, options)
-          field_methods(options).map{ |field| object.send(field).to_s }
+          field_methods(options).map { |field| object.send(field).to_s }
         end
 
         def field_name_fragment
@@ -316,7 +316,7 @@ module Padrino
         def default_options(field, options, defaults={})
           { :value => field_value(field),
             :id => field_id(field)
-          }.update(defaults).update(options).update(error_class(field)){ |_,*values| values.compact.join(' ') }
+          }.update(defaults).update(options).update(error_class(field)) { |_,*values| values.compact.join(' ') }
         end
       end
     end

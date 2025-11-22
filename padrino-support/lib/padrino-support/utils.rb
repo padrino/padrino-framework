@@ -38,7 +38,7 @@ module Padrino
     def deep_dup(object)
       case object
       when Array
-        object.map{ |value| deep_dup(value) }
+        object.map { |value| deep_dup(value) }
       when Hash
         object.each_with_object(object.dup.clear) do |(key, value), new_hash|
           new_hash[deep_dup(key)] = deep_dup(value)

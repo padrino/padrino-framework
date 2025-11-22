@@ -286,7 +286,7 @@ module Padrino
       end
 
       def deferred_routes
-        @deferred_routes ||= ROUTE_PRIORITY.map{[]}
+        @deferred_routes ||= ROUTE_PRIORITY.map {[]}
       end
 
       def reset_router!
@@ -405,7 +405,7 @@ module Padrino
       def with_new_options(*args)
         options = args.last.is_a?(Hash) ? args.pop : {}
 
-        CONTROLLER_OPTIONS.each{ |key| replace_instance_variable("@_#{key}", options.delete(key)) }
+        CONTROLLER_OPTIONS.each { |key| replace_instance_variable("@_#{key}", options.delete(key)) }
         replace_instance_variable(:@_controller, args)
         replace_instance_variable(:@_defaults, options)
         replace_instance_variable(:@filters, :before => @filters[:before].dup, :after => @filters[:after].dup)
@@ -427,7 +427,7 @@ module Padrino
 
       # Searches compiled router for a path responding to args and makes a path with params.
       def make_path_with_params(args, params)
-        names, params_array = args.partition{ |arg| arg.is_a?(Symbol) }
+        names, params_array = args.partition { |arg| arg.is_a?(Symbol) }
         name = names[0, 2].join(' ').to_sym
         compiled_router.path(name, *(params_array << params))
       rescue PathRouter::InvalidRouteException
@@ -516,9 +516,9 @@ module Padrino
 
         block_arity = block.arity
         block = if block_arity == 0
-                  proc{ |request, _| unbound_method.bind(request).call }
+                  proc { |request, _| unbound_method.bind(request).call }
                 else
-                  proc{ |request, block_params| unbound_method.bind(request).call(*block_params) }
+                  proc { |request, block_params| unbound_method.bind(request).call(*block_params) }
                 end
 
         invoke_hook(:route_added, verb, path, block)
@@ -715,7 +715,7 @@ module Padrino
       end
 
       def provides_format(*types)
-        mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
+        mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           return provides_format?(types, params[:format].to_sym) if params[:format]
 
@@ -750,7 +750,7 @@ module Padrino
       #   # => GET /a CONTENT_TYPE application/xml => 406
       #
       def accepts(*types)
-        mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
+        mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           halt 406 unless mime_types.include?(request.media_type)
           content_type(mime_symbol(request.media_type))
@@ -961,7 +961,7 @@ module Padrino
 
         unless routes.empty?
           verb = request.request_method
-          candidacies, allows = routes.partition{|route| route.verb == verb }
+          candidacies, allows = routes.partition {|route| route.verb == verb }
           if candidacies.empty?
             response['Allows'] = allows.map(&:verb).join(', ')
             halt 405
@@ -994,7 +994,7 @@ module Padrino
 
         catch(:pass) do
           
-              (route.before_filters - settings.filters[:before]).each{|block| instance_eval(&block) }
+              (route.before_filters - settings.filters[:before]).each {|block| instance_eval(&block) }
               @layout = route.use_layout if route.use_layout
               route.custom_conditions.each {|block| pass if block.bind(self).call == false }
               route_response = route.block[self, captured_params]

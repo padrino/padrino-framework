@@ -21,7 +21,7 @@ module MockBenchmark
   end
 
   def self.paths
-    @paths ||= (1..100).map{ rand(36**8).to_s(36) }
+    @paths ||= (1..100).map { rand(36**8).to_s(36) }
   end
 
   def self.included(base)
@@ -163,7 +163,7 @@ class Padrino::HugeRouterBenchmark < Minitest::Benchmark
     @pathss = {}
     @requests = {}
     self.class.bench_range.each do |n|
-      @pathss[n] = paths = (1..n/20).map{ rand(36**8).to_s(36) }
+      @pathss[n] = paths = (1..n/20).map { rand(36**8).to_s(36) }
       @apps[n] = Sinatra.new Padrino::Application do
         paths.each do |p|
           get("/#{p}") { p.to_s }
