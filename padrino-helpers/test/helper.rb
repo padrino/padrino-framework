@@ -24,7 +24,7 @@ class Minitest::Spec
   def stop_time_for_test
     time = Time.now
     Time.stubs(:now).returns(time)
-    return time
+    time
   end
 
   # mock_model("Business", :new_record? => true) => <Business>
