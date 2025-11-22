@@ -184,9 +184,9 @@ module Padrino
       def store_component_config(destination, opts = {})
         components = @_components || options
         create_file(destination, opts) do
-          self.class.component_types.inject({}) { |result, comp|
-            result[comp] = components[comp].to_s; result
-          }.to_yaml
+          self.class.component_types.each_with_object({}) do |comp, result|
+            result[comp] = components[comp].to_s
+          end.to_yaml
         end
       end
 
