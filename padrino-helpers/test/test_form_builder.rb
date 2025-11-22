@@ -548,7 +548,7 @@ describe "FormBuilder" do
     end
 
     it 'should display radio group html' do
-      radios = standard_builder.radio_button_group(:role, :options => %W[red yellow blue], :selected => 'yellow')
+      radios = standard_builder.radio_button_group(:role, :options => %w[red yellow blue], :selected => 'yellow')
       assert_html_has_tag(radios, 'input[type=radio]', :value => 'red')
       assert_html_has_no_tag(radios, 'input[type=radio][checked]', :value => 'red')
       assert_html_has_tag(radios, 'input[type=radio]', :checked => 'checked', :value => 'yellow')
