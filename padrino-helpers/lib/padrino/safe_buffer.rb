@@ -96,18 +96,18 @@ module Padrino
     end
 
     UNSAFE_STRING_METHODS.each do |unsafe_method|
-      if unsafe_method.respond_to?(unsafe_method)
-        class_eval <<-EOT, __FILE__, __LINE__ + 1
-          def #{unsafe_method}(*args, &block)       # def capitalize(*args, &block)
-            to_str.#{unsafe_method}(*args, &block)  #   to_str.capitalize(*args, &block)
-          end                                       # end
+      next unless unsafe_method.respond_to?(unsafe_method)
 
-          def #{unsafe_method}!(*args)              # def capitalize!(*args)
-            @html_safe = false                      #   @html_safe = false
-            super                                   #   super
-          end                                       # end
-        EOT
-      end
+      class_eval <<~EOT, __FILE__, __LINE__ + 1
+        def #{unsafe_method}(*args, &block)       # def capitalize(*args, &block)
+          to_str.#{unsafe_method}(*args, &block)  #   to_str.capitalize(*args, &block)
+        end                                       # end
+
+        def #{unsafe_method}!(*args)              # def capitalize!(*args)
+          @html_safe = false                      #   @html_safe = false
+          super                                   #   super
+        end                                       # end
+      EOT
     end
 
     private
