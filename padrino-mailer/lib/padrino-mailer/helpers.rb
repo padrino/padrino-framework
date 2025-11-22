@@ -152,7 +152,7 @@ module Padrino
               raise 'To use mailers on Windows you must set a :delivery_method, see http://padrinorb.com/guides/features/padrino-mailer/#configuration'
             end
 
-            return [:sendmail, { :location => `which sendmail`.chomp }] unless respond_to?(:delivery_method)
+            return [:sendmail, { location: `which sendmail`.chomp }] unless respond_to?(:delivery_method)
             return [delivery_method.keys[0], delivery_method.values[0]] if delivery_method.is_a?(Hash)
             return [delivery_method, {}] if delivery_method.is_a?(Symbol)
             [nil, {}]

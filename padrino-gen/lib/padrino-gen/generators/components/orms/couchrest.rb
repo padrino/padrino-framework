@@ -23,7 +23,7 @@ end
 COUCHREST
 
 def setup_orm
-  require_dependencies 'couchrest_model', :version => '~>1.1.0'
+  require_dependencies 'couchrest_model', version: '~>1.1.0'
   require_dependencies 'json_pure'
   create_file('config/database.rb', COUCHREST.gsub(/!NAME!/, @project_name.underscore))
 end

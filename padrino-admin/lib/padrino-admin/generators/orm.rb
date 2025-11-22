@@ -85,7 +85,7 @@ module Padrino
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
-            { :name => column.name, :field_type => field_type(column.type) }
+            { name: column.name, field_type: field_type(column.type) }
           end
         end
 

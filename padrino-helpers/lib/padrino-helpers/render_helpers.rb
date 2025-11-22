@@ -31,7 +31,7 @@ module Padrino
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
       def partial(template, options = {}, &block)
-        options = { :layout => false }.update(options)
+        options = { layout: false }.update(options)
         explicit_engine = options.delete(:engine)
 
         path, _, name = template.to_s.rpartition(File::SEPARATOR)

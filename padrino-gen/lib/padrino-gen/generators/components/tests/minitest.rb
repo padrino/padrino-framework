@@ -85,8 +85,8 @@ end
 TEST
 
 def setup_test
-  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
-  require_dependencies 'minitest', :require => 'minitest/autorun', :group => 'test'
+  require_dependencies 'rack-test', require: 'rack/test', group: 'test'
+  require_dependencies 'minitest', require: 'minitest/autorun', group: 'test'
   insert_test_suite_setup MINITEST_SETUP
   create_file destination_root('test/test.rake'), MINITEST_RAKE
 end
@@ -94,19 +94,19 @@ end
 def generate_controller_test(name, path)
   minitest_contents = MINITEST_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, '1'))
   controller_test_path = File.join('test', options[:app], 'controllers', "#{name.to_s.underscore}_controller_test.rb")
-  create_file destination_root(controller_test_path), minitest_contents, :skip => true
+  create_file destination_root(controller_test_path), minitest_contents, skip: true
 end
 
 def generate_model_test(name)
   minitest_contents = MINITEST_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
   minitest_contents.gsub!(/!PATH!/, recognize_path)
   model_test_path = File.join('test', options[:app], 'models', "#{name.to_s.underscore}_test.rb")
-  create_file destination_root(model_test_path), minitest_contents, :skip => true
+  create_file destination_root(model_test_path), minitest_contents, skip: true
 end
 
 def generate_helper_test(name, project_name, app_name)
   minitest_contents = MINITEST_HELPER_TEST.gsub(/!NAME!/, "#{project_name}::#{app_name}::#{name}")
   minitest_contents.gsub!(/!PATH!/, recognize_path)
   helper_spec_path = File.join('test', options[:app], 'helpers', "#{name.underscore}_test.rb")
-  create_file destination_root(helper_spec_path), minitest_contents, :skip => true
+  create_file destination_root(helper_spec_path), minitest_contents, skip: true
 end

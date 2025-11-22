@@ -31,7 +31,7 @@ end
 Tilt.prefer(Padrino::Rendering::ErubiTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
-  :bufval => 'SafeBuffer.new',
-  :bufvar => '@_out_buf',
-  :engine_class => Padrino::Rendering::SafeErubi
+  bufval: 'SafeBuffer.new',
+  bufvar: '@_out_buf',
+  engine_class: Padrino::Rendering::SafeErubi
 }

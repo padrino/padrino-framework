@@ -27,7 +27,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get('/foo', :cache => true) { called ? halt(500) : (called = 'test page') }
+      get('/foo', cache: true) { called ? halt(500) : (called = 'test page') }
     end
     get '/foo'
     assert_equal 200, status
@@ -43,7 +43,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get('/foo', :cache => true) { called_times += 1; called_times.to_s }
+      get('/foo', cache: true) { called_times += 1; called_times.to_s }
     end
     head '/foo'
     head '/foo'
@@ -55,7 +55,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      post('/foo', :cache => true) { called_times += 1; called_times.to_s }
+      post('/foo', cache: true) { called_times += 1; called_times.to_s }
     end
     post '/foo'
     assert_equal 1, called_times
@@ -68,7 +68,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      delete('/foo', :cache => true) { called_times += 1; called_times.to_s }
+      delete('/foo', cache: true) { called_times += 1; called_times.to_s }
     end
     delete '/foo'
     assert_equal 1, called_times
@@ -81,7 +81,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      put('/foo', :cache => true) { called_times += 1; called_times.to_s }
+      put('/foo', cache: true) { called_times += 1; called_times.to_s }
     end
     put '/foo'
     assert_equal 1, called_times
@@ -94,7 +94,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get('/foo', :cache => true) { called ? 'test page again' : (called = 'test page') }
+      get('/foo', cache: true) { called ? 'test page again' : (called = 'test page') }
       get('/delete_foo') { expire('/foo') }
     end
     get '/foo'
@@ -112,7 +112,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get '/foo', :cache => true do
+      get '/foo', cache: true do
         if called
           "you'll never see me"
         else
@@ -123,7 +123,7 @@ describe 'PadrinoCache' do
         end
       end
 
-      get '/bar', :cache => true do
+      get '/bar', cache: true do
         if called
           cache_key :bar
           called = 'bar'
@@ -154,8 +154,8 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get(:foo, :with => :id, :cache => true) { called ? 'test page again' : (called = 'test page') }
-      get(:delete_foo, :with => :id) { expire(:foo, params[:id]) }
+      get(:foo, with: :id, cache: true) { called ? 'test page again' : (called = 'test page') }
+      get(:delete_foo, with: :id) { expire(:foo, params[:id]) }
     end
     get '/foo/12'
     assert_equal 200, status
@@ -169,7 +169,7 @@ describe 'PadrinoCache' do
   it 'should allow controller-wide caching' do
     called = false
     mock_app do
-      controller :cache => true do
+      controller cache: true do
         register Padrino::Cache
         enable :caching
         get('/foo') { called ? halt(500) : (called = 'test') }
@@ -187,7 +187,7 @@ describe 'PadrinoCache' do
     called = false
     mock_app do
       register Padrino::Cache
-      controller :cache => true do
+      controller cache: true do
         enable :caching
         expires 1
         get('/foo') { called ? halt(500) : (called = 'test') }
@@ -208,8 +208,8 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      controller :cache => true do
-        get('/foo', :cache => false) { called ? 'test again' : (called = 'test') }
+      controller cache: true do
+        get('/foo', cache: false) { called ? 'test again' : (called = 'test') }
       end
     end
     get '/foo'
@@ -225,7 +225,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      controller :cache => true do
+      controller cache: true do
         get('/foo') {
           expires 1
           called ? 'test again' : (called = 'test')
@@ -251,7 +251,7 @@ describe 'PadrinoCache' do
       controller do
         get('/foo') {
           expires 1
-          cache(:test, :expires => 2) do
+          cache(:test, expires: 2) do
             called ? 'test again' : (called = 'test')
           end
         }
@@ -273,7 +273,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       disable :caching
-      controller :cache => true do
+      controller cache: true do
         get('/foo') { called ? halt(500) : (called = 'test') }
       end
     end
@@ -288,8 +288,8 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get( '/404', :cache => true ) { not_found }
-      get( '/503', :cache => true ) { error 503 }
+      get( '/404', cache: true ) { not_found }
+      get( '/503', cache: true ) { error 503 }
       not_found { 'fancy 404' }
       error( 503 ) { 'fancy 503' }
     end
@@ -318,7 +318,7 @@ describe 'PadrinoCache' do
         param = params[:test] || 'none'
         cache_key "foo?#{param}"
       end
-      get '/foo/:test', :cache => true do
+      get '/foo/:test', cache: true do
         param = params[:test] || 'none'
         call_count += 1
         "foo?#{param}"
@@ -342,7 +342,7 @@ describe 'PadrinoCache' do
       register Padrino::Cache
       enable :caching
 
-      get '/foo', :cache => true do
+      get '/foo', cache: true do
         cache_key { "key #{params[:id]}" }
         call_count += 1
         params[:id]
@@ -363,7 +363,7 @@ describe 'PadrinoCache' do
       register Padrino::Cache
       enable :caching
 
-      get '/foo', :cache => true do
+      get '/foo', cache: true do
         cache_key(:some_key) { "key #{params[:id]}" }
       end
     end
@@ -376,7 +376,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get '/foo', :cache => true do
+      get '/foo', cache: true do
         content_type :json
         if called
           "you'll never see me"
@@ -407,7 +407,7 @@ describe 'PadrinoCache' do
         2.times do
           result = cache_object 'object1' do
             counter += 1
-            { :foo => 'bar' }
+            { foo: 'bar' }
           end
         end
         result[:foo].to_s
@@ -425,7 +425,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      controller :cache => true do
+      controller cache: true do
         get('/foo') do
           expires 1
           called_times_a += 1
@@ -509,8 +509,8 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get '/foo', :cache => true do
-        content_type :json, :charset => 'utf-8'
+      get '/foo', cache: true do
+        content_type :json, charset: 'utf-8'
         '{}'
       end
     end

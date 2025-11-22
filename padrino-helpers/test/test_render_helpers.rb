@@ -9,86 +9,86 @@ describe 'RenderHelpers' do
   describe 'for #partial method and object' do
     before { get '/partial/object' }
     it 'should render partial html with object' do
-      assert_response_has_tag 'h1', :content => 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is John'
     end
     it 'should have no counter index for single item' do
-      assert_response_has_no_tag 'p', :content => 'My counter is 1', :count => 1
+      assert_response_has_no_tag 'p', content: 'My counter is 1', count: 1
     end
     it 'should include extra locals information' do
-      assert_response_has_tag 'p', :content => 'Extra is bar'
+      assert_response_has_tag 'p', content: 'Extra is bar'
     end
   end
 
   describe 'for #partial method and collection' do
     before { get '/partial/collection' }
     it 'should render partial html with collection' do
-      assert_response_has_tag 'h1', :content => 'User name is John'
-      assert_response_has_tag 'h1', :content => 'User name is Billy'
+      assert_response_has_tag 'h1', content: 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is Billy'
     end
     it 'should include counter which contains item index' do
-      assert_response_has_tag 'p', :content => 'My counter is 1'
-      assert_response_has_tag 'p', :content => 'My counter is 2'
+      assert_response_has_tag 'p', content: 'My counter is 1'
+      assert_response_has_tag 'p', content: 'My counter is 2'
     end
     it 'should include extra locals information' do
-      assert_response_has_tag 'p', :content => 'Extra is bar'
+      assert_response_has_tag 'p', content: 'Extra is bar'
     end
   end
 
   describe 'for #partial with ext and collection' do
     before { get '/partial/collection.ext' }
     it 'should not fail horribly with `invalid locals key` RuntimeError' do
-      assert_response_has_tag 'h1', :content => 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is John'
     end
   end
 
   describe 'for #partial method and locals' do
     before { get '/partial/locals' }
     it 'should render partial html with locals' do
-      assert_response_has_tag 'h1', :content => 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is John'
     end
     it 'should have no counter index for single item' do
-      assert_response_has_no_tag 'p', :content => 'My counter is 1', :count => 1
+      assert_response_has_no_tag 'p', content: 'My counter is 1', count: 1
     end
     it 'should include extra locals information' do
-      assert_response_has_tag 'p', :content => 'Extra is bar'
+      assert_response_has_tag 'p', content: 'Extra is bar'
     end
   end
 
   describe 'for #partial method taking a path starting with forward slash' do
     before { get '/partial/foward_slash' }
     it 'should render partial without throwing an error' do
-      assert_response_has_tag 'h1', :content => 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is John'
     end
   end
 
   describe 'for #partial method with unsafe engine' do
     it 'should render partial without escaping it' do
       get '/partial/unsafe'
-      assert_response_has_tag 'h1', :content => 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is John'
     end
     it 'should render partial object without escaping it' do
       get '/partial/unsafe_one'
-      assert_response_has_tag 'h1', :content => 'User name is Mary'
+      assert_response_has_tag 'h1', content: 'User name is Mary'
     end
     it 'should render partial collection without escaping it' do
       get '/partial/unsafe_many'
-      assert_response_has_tag 'h1', :content => 'User name is John'
-      assert_response_has_tag 'h1', :content => 'User name is Mary'
+      assert_response_has_tag 'h1', content: 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is Mary'
     end
     it 'should render unsafe partial without escaping it' do
       get '/partial/unsafe?block=%3Cevil%3E'
-      assert_response_has_tag 'h1', :content => 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is John'
       assert_response_has_tag 'evil'
     end
     it 'should render unsafe partial object without escaping it' do
       get '/partial/unsafe_one?block=%3Cevil%3E'
-      assert_response_has_tag 'h1', :content => 'User name is Mary'
+      assert_response_has_tag 'h1', content: 'User name is Mary'
       assert_response_has_tag 'evil'
     end
     it 'should render unsafe partial collection without escaping it' do
       get '/partial/unsafe_many?block=%3Cevil%3E'
-      assert_response_has_tag 'h1', :content => 'User name is John'
-      assert_response_has_tag 'h1', :content => 'User name is Mary'
+      assert_response_has_tag 'h1', content: 'User name is John'
+      assert_response_has_tag 'h1', content: 'User name is Mary'
       assert_response_has_tag 'evil'
     end
   end
@@ -96,71 +96,71 @@ describe 'RenderHelpers' do
   describe 'render with block' do
     it 'should render slim with block' do
       get '/render_block_slim'
-      assert_response_has_tag 'h1', :content => 'prefix'
-      assert_response_has_tag 'h3', :content => 'postfix'
+      assert_response_has_tag 'h1', content: 'prefix'
+      assert_response_has_tag 'h3', content: 'postfix'
       assert_response_has_tag '.slim-block'
-      assert_response_has_tag 'div', :content => 'go block!'
+      assert_response_has_tag 'div', content: 'go block!'
     end
     it 'should render erb with block' do
       get '/render_block_erb'
-      assert_response_has_tag 'h1', :content => 'prefix'
-      assert_response_has_tag 'h3', :content => 'postfix'
+      assert_response_has_tag 'h1', content: 'prefix'
+      assert_response_has_tag 'h3', content: 'postfix'
       assert_response_has_tag '.erb-block'
-      assert_response_has_tag 'div', :content => 'go block!'
+      assert_response_has_tag 'div', content: 'go block!'
     end
     it 'should render haml with block' do
       get '/render_block_haml'
-      assert_response_has_tag 'h1', :content => 'prefix'
-      assert_response_has_tag 'h3', :content => 'postfix'
+      assert_response_has_tag 'h1', content: 'prefix'
+      assert_response_has_tag 'h3', content: 'postfix'
       assert_response_has_tag '.haml-block'
-      assert_response_has_tag 'div', :content => 'go block!'
+      assert_response_has_tag 'div', content: 'go block!'
     end
   end
 
   describe 'partial with block' do
     it 'should show partial slim with block' do
       get '/partial_block_slim'
-      assert_response_has_tag 'h1', :content => 'prefix'
-      assert_response_has_tag 'h3', :content => 'postfix'
+      assert_response_has_tag 'h1', content: 'prefix'
+      assert_response_has_tag 'h3', content: 'postfix'
       assert_response_has_tag '.slim-block'
-      assert_response_has_tag 'div', :content => 'go block!'
-      assert_response_has_tag 'div.deep', :content => 'Done'
+      assert_response_has_tag 'div', content: 'go block!'
+      assert_response_has_tag 'div.deep', content: 'Done'
     end
     it 'should show partial erb with block' do
       get '/partial_block_erb'
-      assert_response_has_tag 'h1', :content => 'prefix'
-      assert_response_has_tag 'h3', :content => 'postfix'
+      assert_response_has_tag 'h1', content: 'prefix'
+      assert_response_has_tag 'h3', content: 'postfix'
       assert_response_has_tag '.erb-block'
-      assert_response_has_tag 'div', :content => 'go block!'
-      assert_response_has_tag 'div.deep', :content => 'Done'
+      assert_response_has_tag 'div', content: 'go block!'
+      assert_response_has_tag 'div.deep', content: 'Done'
     end
     it 'should show partial haml with block' do
       get '/partial_block_haml'
-      assert_response_has_tag 'h1', :content => 'prefix'
-      assert_response_has_tag 'h3', :content => 'postfix'
+      assert_response_has_tag 'h1', content: 'prefix'
+      assert_response_has_tag 'h3', content: 'postfix'
       assert_response_has_tag '.haml-block'
-      assert_response_has_tag 'div', :content => 'go block!'
-      assert_response_has_tag 'div.deep', :content => 'Done'
+      assert_response_has_tag 'div', content: 'go block!'
+      assert_response_has_tag 'div.deep', content: 'Done'
     end
   end
 
   describe 'for #current_engine method' do
     it 'should detect correctly current engine for a padrino application' do
       get '/current_engine'
-      assert_response_has_tag 'p.start', :content => 'haml'
-      assert_response_has_tag 'p.haml span',  :content => 'haml'
-      assert_response_has_tag 'p.erb span',   :content => 'erb'
-      assert_response_has_tag 'p.slim span',  :content => 'slim'
-      assert_response_has_tag 'p.end',   :content => 'haml'
+      assert_response_has_tag 'p.start', content: 'haml'
+      assert_response_has_tag 'p.haml span',  content: 'haml'
+      assert_response_has_tag 'p.erb span',   content: 'erb'
+      assert_response_has_tag 'p.slim span',  content: 'slim'
+      assert_response_has_tag 'p.end',   content: 'haml'
     end
 
     it 'should detect correctly current engine for explicit engine on partials' do
       get '/explicit_engine'
-      assert_response_has_tag 'p.start', :content => 'haml'
-      assert_response_has_tag 'p.haml span',  :content => 'haml'
-      assert_response_has_tag 'p.erb span',   :content => 'erb'
-      assert_response_has_tag 'p.slim span',  :content => 'slim'
-      assert_response_has_tag 'p.end',   :content => 'haml'
+      assert_response_has_tag 'p.start', content: 'haml'
+      assert_response_has_tag 'p.haml span',  content: 'haml'
+      assert_response_has_tag 'p.erb span',   content: 'erb'
+      assert_response_has_tag 'p.slim span',  content: 'slim'
+      assert_response_has_tag 'p.end',   content: 'haml'
     end
 
     it 'should capture slim template once and only once' do
@@ -189,27 +189,27 @@ describe 'RenderHelpers' do
 
     it 'should ignore wrong haml usage' do
       get '/wrong_capture_haml'
-      assert_response_has_no_tag 'p', :content => 'this is wrong'
+      assert_response_has_no_tag 'p', content: 'this is wrong'
     end
 
     it 'should ignore wrong slim usage' do
       get '/wrong_capture_slim'
-      assert_response_has_no_tag 'p', :content => 'this is wrong'
+      assert_response_has_no_tag 'p', content: 'this is wrong'
     end
 
     it 'should support weird ruby blocks in erb' do
       get '/ruby_block_capture_erb'
-      assert_response_has_tag 'b', :content => 'c'
+      assert_response_has_tag 'b', content: 'c'
     end
 
     it 'should support weird ruby blocks in haml' do
       get '/ruby_block_capture_haml'
-      assert_response_has_tag 'b', :content => 'c'
+      assert_response_has_tag 'b', content: 'c'
     end
     
     it 'should support weird ruby blocks in slim' do
       get '/ruby_block_capture_slim'
-      assert_response_has_tag 'b', :content => 'c'
+      assert_response_has_tag 'b', content: 'c'
     end
   end
 
@@ -218,8 +218,8 @@ describe 'RenderHelpers' do
       class Standalone
         include Padrino::Helpers::RenderHelpers
       end
-      locals = { :user => OpenStruct.new(:name => 'Joe') }
-      result = Standalone.new.partial(File.join(File.dirname(__FILE__), 'fixtures/render_app/views/template/user'), :engine => :haml, :locals => locals)
+      locals = { user: OpenStruct.new(name: 'Joe') }
+      result = Standalone.new.partial(File.join(File.dirname(__FILE__), 'fixtures/render_app/views/template/user'), engine: :haml, locals: locals)
       assert_equal '<h1>User name is Joe</h1>', result.chomp
     end
 
@@ -227,7 +227,7 @@ describe 'RenderHelpers' do
       class Standalone1
         include Padrino::Helpers::RenderHelpers
         def user
-          OpenStruct.new(:name => 'Jane')
+          OpenStruct.new(name: 'Jane')
         end
       end
 
@@ -268,7 +268,7 @@ describe 'RenderHelpers' do
   describe 'partial in an application with layout' do
     it 'should not render with default layout' do
       get '/'
-      assert_response_has_tag 'body', :count => 1
+      assert_response_has_tag 'body', count: 1
     end
   end
 end

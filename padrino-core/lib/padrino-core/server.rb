@@ -31,7 +31,7 @@ module Padrino
   # This module builds a Padrino server to run the project based on available handlers.
   #
   class Server < Rackup::Server
-    DEFAULT_ADDRESS = { :Host => '127.0.0.1', :Port => 3000 }
+    DEFAULT_ADDRESS = { Host: '127.0.0.1', Port: 3000 }
 
     # Server Handlers
     Handlers = [:thin, :puma, :'spider-gazelle', :mongrel, :trinidad, :webrick]

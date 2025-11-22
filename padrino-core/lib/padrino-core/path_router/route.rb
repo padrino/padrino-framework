@@ -75,7 +75,7 @@ module Padrino
       # Returns an instance of PathRouter::Matcher that is associated with the route.
       #
       def matcher
-        @matcher ||= Matcher.new(@path, :capture => @capture, :default_values => default_values)
+        @matcher ||= Matcher.new(@path, capture: @capture, default_values: default_values)
       end
 
       ##

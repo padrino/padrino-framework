@@ -91,7 +91,7 @@ def setup_orm
       fail ArgumentError
     end
   rescue ArgumentError
-    adapter = ask('Please, choose a proper adapter:', :limited_to => %w[mysql mysql2 postgres sqlite])
+    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 postgres sqlite])
     retry
   end
 
@@ -146,8 +146,8 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :column_format => proc { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
-       :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
+       column_format: proc { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
+       base: DM_MIGRATION, up: DM_MODEL_UP_MG, down: DM_MODEL_DOWN_MG)
 end
 
 DM_CHANGE_MG = <<-MIGRATION.gsub(/^/, '    ') unless defined?(DM_CHANGE_MG)
@@ -158,8 +158,8 @@ MIGRATION
 
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base => DM_MIGRATION, :change_format => DM_CHANGE_MG,
-    :add => proc { |field, kind| "add_column :#{field}, #{kind.classify}" },
-    :remove => proc { |field, _kind| "drop_column :#{field}" }
+    base: DM_MIGRATION, change_format: DM_CHANGE_MG,
+    add: proc { |field, kind| "add_column :#{field}, #{kind.classify}" },
+    remove: proc { |field, _kind| "drop_column :#{field}" }
   )
 end

@@ -55,7 +55,7 @@ end
 MONGO
 
 def setup_orm
-  require_dependencies 'mongoid', :version => '>= 3.0.0'
+  require_dependencies 'mongoid', version: '>= 3.0.0'
   create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @project_name.underscore))
 end
 

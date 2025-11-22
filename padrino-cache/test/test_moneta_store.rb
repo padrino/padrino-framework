@@ -35,12 +35,12 @@ describe 'Padrino::Cache - Moneta store' do
 
   it 'set a value that expires' do
     init_time = ( Time.now - 20 )
-    Time.stub(:now, init_time) { Padrino.cache.store(@test_key, 'test', :expires => 1) }
+    Time.stub(:now, init_time) { Padrino.cache.store(@test_key, 'test', expires: 1) }
     Time.stub(:now, init_time + 20) { assert_nil Padrino.cache[@test_key] }
   end
 
   it 'be able to cache forever' do
-    Padrino.cache.store('forever', 'cached', :expires => false)
+    Padrino.cache.store('forever', 'cached', expires: false)
     2.times { assert_equal 'cached', Padrino.cache['forever'] }
   end
 

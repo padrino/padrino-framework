@@ -23,7 +23,7 @@ OHM = <<-OHM unless defined?(OHM)
 OHM
 
 def setup_orm
-  require_dependencies 'ohm', :version => '~> 1.3.0'
+  require_dependencies 'ohm', version: '~> 1.3.0'
   create_file('config/database.rb', OHM)
 end
 

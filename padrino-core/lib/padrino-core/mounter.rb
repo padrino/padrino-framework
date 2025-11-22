@@ -113,7 +113,7 @@ module Padrino
         app_obj.public_folder = Padrino.root('public', uri_root) unless public_folder_exists
       end
       app_obj.setup_application! # Initializes the app here with above settings.
-      router.map(:to => app_obj, :path => uri_root, :host => app_data.app_host)
+      router.map(to: app_obj, path: uri_root, host: app_data.app_host)
     end
 
     ###
@@ -145,7 +145,7 @@ module Padrino
         name_array = "(#{route_name})"
         original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
         full_path = File.join(uri_root, original_path)
-        OpenStruct.new(:verb => request_method, :identifier => route.name, :name => name_array, :path => full_path)
+        OpenStruct.new(verb: request_method, identifier: route.name, name: name_array, path: full_path)
       }.compact
     end
 

@@ -64,12 +64,12 @@ module Padrino
     # :devel:: Development-related information that is unnecessary in debug mode
     #
     Levels = {
-      :fatal =>  4,
-      :error =>  3,
-      :warn  =>  2,
-      :info  =>  1,
-      :debug =>  0,
-      :devel => -1,
+      fatal: 4,
+      error: 3,
+      warn: 2,
+      info: 1,
+      debug: 0,
+      devel: -1,
     } unless defined?(Levels)
 
     module Extensions
@@ -239,12 +239,12 @@ module Padrino
     module Colorize
       # Colors for levels
       ColoredLevels = {
-        :fatal => [:bold, :red],
-        :error => [:default, :red],
-        :warn  => [:default, :yellow],
-        :info  => [:default, :green],
-        :debug => [:default, :cyan],
-        :devel => [:default, :magenta]
+        fatal: [:bold, :red],
+        error: [:default, :red],
+        warn: [:default, :yellow],
+        info: [:default, :green],
+        debug: [:default, :cyan],
+        devel: [:default, :magenta]
       } unless defined?(ColoredLevels)
 
       ##
@@ -255,7 +255,7 @@ module Padrino
       # @see Padrino::Logging::ColorizedLogger::ColoredLevels
       #
       def colorize(string, *colors)
-        string.colorize(:color => colors[0], :mode => colors[1])
+        string.colorize(color: colors[0], mode: colors[1])
       end
 
       def stylized_level(level)
@@ -311,9 +311,9 @@ module Padrino
     #   PADRINO_LOGGER = { :staging => { :log_level => :debug, :stream => :to_file }}
     #
     Config = {
-      :production  => { :log_level => :warn,  :stream => :to_file },
-      :development => { :log_level => :debug, :stream => :stdout, :format_datetime => '' },
-      :test        => { :log_level => :debug, :stream => :null }
+      production: { log_level: :warn,  stream: :to_file },
+      development: { log_level: :debug, stream: :stdout, format_datetime: '' },
+      test: { log_level: :debug, stream: :null }
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
@@ -368,7 +368,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
         else config[:stream] # return itself, probabilly is a custom stream.
       end
 
-      new_logger = Padrino::Logger.new(config.merge(:stream => stream))
+      new_logger = Padrino::Logger.new(config.merge(stream: stream))
       new_logger.extend(Padrino::Logger::Extensions)
       self.logger = new_logger
     end
@@ -433,7 +433,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
       return unless @buffer.size > 0
       @@mutex.synchronize do
         @buffer.each do |line|
-          line.encode!(@sanitize_encoding, :invalid => :replace, :undef => :replace) if @sanitize_encoding
+          line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace) if @sanitize_encoding
           @log.write(line)
         end
         @buffer.clear

@@ -10,8 +10,8 @@ MONGO
 
 def setup_orm
   require_dependencies 'mongo_mapper'
-  require_dependencies 'bson_ext', :require => 'mongo'
-  require_dependencies 'activemodel', :version => '< 5'
+  require_dependencies 'bson_ext', require: 'mongo'
+  require_dependencies 'activemodel', version: '< 5'
   create_file('config/database.rb', MONGO.gsub(/!NAME!/, @project_name.underscore))
 end
 

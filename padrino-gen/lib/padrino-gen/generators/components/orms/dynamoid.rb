@@ -35,7 +35,7 @@ DYNAMOID
 
 def setup_orm
   require_dependencies 'aws-sdk'
-  require_dependencies 'dynamoid', :version => '~>0.7.1'
+  require_dependencies 'dynamoid', version: '~>0.7.1'
   create_file('config/database.rb', DYNAMOID.gsub(/!NAME!/, @project_name.underscore))
 end
 

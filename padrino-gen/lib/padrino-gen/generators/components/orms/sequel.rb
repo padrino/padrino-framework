@@ -18,7 +18,7 @@ def setup_orm
       sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")
       sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{db}_production\"")
       sequel.gsub!(/!DB_TEST!/, "\"mysql://localhost/#{db}_test\"")
-      require_dependencies 'mysql', :version => '~> 2.8.1'
+      require_dependencies 'mysql', version: '~> 2.8.1'
     when 'mysql', 'mysql2'
       sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql2://localhost/#{db}_development\"")
       sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql2://localhost/#{db}_production\"")
@@ -39,7 +39,7 @@ def setup_orm
       fail ArgumentError
     end
   rescue ArgumentError
-    adapter = ask('Please, choose a proper adapter:', :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 mysql-gem postgres sqlite])
     retry
   end
 
@@ -85,8 +85,8 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-         :column_format => proc { |field, kind| "#{kind.underscore.camelize} :#{field}" },
-         :base => SQ_MIGRATION, :up => SQ_MODEL_UP_MG, :down => SQ_MODEL_DOWN_MG)
+         column_format: proc { |field, kind| "#{kind.underscore.camelize} :#{field}" },
+         base: SQ_MIGRATION, up: SQ_MODEL_UP_MG, down: SQ_MODEL_DOWN_MG)
 end
 
 SQ_CHANGE_MG = <<-MIGRATION.gsub(/^/, '    ') unless defined?(SQ_CHANGE_MG)
@@ -97,8 +97,8 @@ MIGRATION
 
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base => SQ_MIGRATION, :change_format => SQ_CHANGE_MG,
-    :add => proc { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
-    :remove => proc { |field, _kind| "drop_column :#{field}" }
+    base: SQ_MIGRATION, change_format: SQ_CHANGE_MG,
+    add: proc { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
+    remove: proc { |field, _kind| "drop_column :#{field}" }
   )
 end

@@ -4,10 +4,10 @@ describe Padrino::Flash do
   describe 'storage' do
     before do
       @storage = Padrino::Flash::Storage.new(
-        :success => 'Success msg',
-        :error   => 'Error msg',
-        :notice  => 'Notice msg',
-        :custom  => 'Custom msg'
+        success: 'Success msg',
+        error: 'Error msg',
+        notice: 'Notice msg',
+        custom: 'Custom msg'
       )
       @storage[:one] = 'One msg'
       @storage[:two] = 'Two msg'
@@ -81,7 +81,7 @@ describe Padrino::Flash do
     end
 
     get :redirect do
-      redirect url(:index, :key => :foo), 301, :foo => 'redirected!'
+      redirect url(:index, key: :foo), 301, foo: 'redirected!'
     end
 
     get :success do
@@ -106,7 +106,7 @@ describe Padrino::Flash do
     end
 
     it 'should set a flash' do
-      post '/', :foo => :bar
+      post '/', foo: :bar
       assert_equal '{"foo":"bar"}', body
     end
   end
@@ -128,13 +128,13 @@ describe Padrino::Flash do
     end
 
     it 'should set a flash' do
-      post '/', :foo => :bar
+      post '/', foo: :bar
       assert_equal '{"foo":"bar"}', body
     end
 
     it 'should get a flash' do
-      post '/', :foo => :bar
-      get  '/', :key => :foo
+      post '/', foo: :bar
+      get  '/', key: :foo
       assert_equal 'bar', body
       post '/'
       assert_equal '{}', body
@@ -149,19 +149,19 @@ describe Padrino::Flash do
 
     it 'should set success' do
       get '/success'
-      get '/', :key => :success
+      get '/', key: :success
       assert_equal 'Yup', body
     end
 
     it 'should set error' do
       get '/error'
-      get '/', :key => :error
+      get '/', key: :error
       assert_equal 'Arg', body
     end
 
     it 'should set notice' do
       get '/notice'
-      get '/', :key => :notice
+      get '/', key: :notice
       assert_equal 'Mmm', body
     end
   end

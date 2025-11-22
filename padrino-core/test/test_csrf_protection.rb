@@ -24,22 +24,22 @@ describe 'Application' do
       end
 
       it 'should allow requests with correct tokens' do
-        post '/', {'authenticity_token' => @token}, 'rack.session' => {:csrf => @token}
+        post '/', {'authenticity_token' => @token}, 'rack.session' => {csrf: @token}
         assert_equal 200, status
       end
 
       it 'should not allow requests with incorrect tokens' do
-        post '/', {'authenticity_token' => 'b'}, 'rack.session' => {:csrf => @token}
+        post '/', {'authenticity_token' => 'b'}, 'rack.session' => {csrf: @token}
         assert_equal 403, status
       end
 
       it 'should allow requests with correct X-CSRF-TOKEN' do
-        post '/', {}, 'rack.session' => {:csrf => @token}, 'HTTP_X_CSRF_TOKEN' => @token
+        post '/', {}, 'rack.session' => {csrf: @token}, 'HTTP_X_CSRF_TOKEN' => @token
         assert_equal 200, status
       end
 
       it 'should not allow requests with incorrect X-CSRF-TOKEN' do
-        post '/', {}, 'rack.session' => {:csrf => @token}, 'HTTP_X_CSRF_TOKEN' => 'b'
+        post '/', {}, 'rack.session' => {csrf: @token}, 'HTTP_X_CSRF_TOKEN' => 'b'
         assert_equal 403, status
       end
     end
@@ -59,22 +59,22 @@ describe 'Application' do
       end
 
       it 'should allow requests with correct tokens' do
-        post '/', {'authenticity_token' => 'a'}, 'rack.session' => {:csrf => 'a'}
+        post '/', {'authenticity_token' => 'a'}, 'rack.session' => {csrf: 'a'}
         assert_equal 200, status
       end
 
       it 'should allow requests with incorrect tokens' do
-        post '/', {'authenticity_token' => 'a'}, 'rack.session' => {:csrf => 'b'}
+        post '/', {'authenticity_token' => 'a'}, 'rack.session' => {csrf: 'b'}
         assert_equal 200, status
       end
 
       it 'should allow requests with correct X-CSRF-TOKEN' do
-        post '/', {}, 'rack.session' => {:csrf => 'a'}, 'HTTP_X_CSRF_TOKEN' => 'a'
+        post '/', {}, 'rack.session' => {csrf: 'a'}, 'HTTP_X_CSRF_TOKEN' => 'a'
         assert_equal 200, status
       end
 
       it 'should allow requests with incorrect X-CSRF-TOKEN' do
-        post '/', {}, 'rack.session' => {:csrf => 'a'}, 'HTTP_X_CSRF_TOKEN' => 'b'
+        post '/', {}, 'rack.session' => {csrf: 'a'}, 'HTTP_X_CSRF_TOKEN' => 'b'
         assert_equal 200, status
       end
     end
@@ -86,7 +86,7 @@ describe 'Application' do
           enable :protect_from_csrf
           enable :allow_disabled_csrf
           post('/on') { 'HI' }
-          post('/off', :csrf_protection => false) { 'HI' }
+          post('/off', csrf_protection: false) { 'HI' }
         end
       end
 
@@ -106,7 +106,7 @@ describe 'Application' do
       before do
         mock_app do
           enable :sessions
-          set :protect_from_csrf, :except => proc {|env| ['/', '/foo'].any? {|path| path == env['PATH_INFO'] }}
+          set :protect_from_csrf, except: proc {|env| ['/', '/foo'].any? {|path| path == env['PATH_INFO'] }}
           post('/') { 'Hello' }
           post('/foo') { 'Hello, foo' }
           post('/bar') { 'Hello, bar' }
@@ -127,7 +127,7 @@ describe 'Application' do
       before do
         mock_app do
           enable :sessions
-          set :protect_from_csrf, :except => ['/a', %r{^/a.c$}]
+          set :protect_from_csrf, except: ['/a', %r{^/a.c$}]
           post('/a') { 'a' }
           post('/abc') { 'abc' }
           post('/foo') { 'foo' }
@@ -153,13 +153,13 @@ describe 'Application' do
                  end
         mock_app do
           enable :sessions
-          set :protect_from_csrf, :authenticity_param => 'foobar', :message => 'sucker!'
+          set :protect_from_csrf, authenticity_param: 'foobar', message: 'sucker!'
           post('/a') { 'a' }
         end
       end
 
       it 'should allow configuring protection options' do
-        post '/a', {'foobar' => @token}, 'rack.session' => {:csrf => @token}
+        post '/a', {'foobar' => @token}, 'rack.session' => {csrf: @token}
         assert_equal 200, status
       end
 
@@ -178,7 +178,7 @@ describe 'Application' do
         end
         mock_app do
           enable :sessions
-          set :protect_from_csrf, :except => proc {|env| ['/', '/middleware'].any? {|path| path == env['PATH_INFO'] }}
+          set :protect_from_csrf, except: proc {|env| ['/', '/middleware'].any? {|path| path == env['PATH_INFO'] }}
           use Middleware
           post('/') { 'Hello' }
         end
@@ -198,7 +198,7 @@ describe 'Application' do
       before do
         mock_app do
           enable :sessions
-          set :protect_from_csrf, :message => 'sucker!'
+          set :protect_from_csrf, message: 'sucker!'
           enable :report_csrf_failure
           post('/a') { 'a' }
           error 403 do

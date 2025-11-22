@@ -14,7 +14,7 @@ describe 'Mounter' do
 
   describe 'for mounter functionality' do
     it 'should check methods' do
-      mounter = Padrino::Mounter.new('test_app', :app_file => '/path/to/test.rb')
+      mounter = Padrino::Mounter.new('test_app', app_file: '/path/to/test.rb')
       mounter.to('/test_app')
       assert_kind_of Padrino::Mounter, mounter
       assert_respond_to Padrino::Mounter, :new
@@ -29,13 +29,13 @@ describe 'Mounter' do
 
     it 'should use app.root if available' do
       require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/kiq')
-      mounter = Padrino::Mounter.new('kiq', :app_class => 'Kiq')
+      mounter = Padrino::Mounter.new('kiq', app_class: 'Kiq')
       mounter.to('/test_app')
       assert_equal '/weird', mounter.app_root
     end
 
     it 'should check locate_app_file with __FILE__' do
-      mounter = Padrino::Mounter.new('test_app', :app_file => __FILE__)
+      mounter = Padrino::Mounter.new('test_app', app_file: __FILE__)
       mounter.to('/test_app')
       assert_equal 'test_app', mounter.name
       assert_equal 'TestApp', mounter.app_class
@@ -72,7 +72,7 @@ describe 'Mounter' do
     end
 
     it 'should mount a primary app to root uri' do
-      mounter = Padrino.mount('test_app', :app_file => __FILE__).to('/')
+      mounter = Padrino.mount('test_app', app_file: __FILE__).to('/')
       assert_equal 'test_app', mounter.name
       assert_equal 'TestApp', mounter.app_class
       assert_equal TestApp, mounter.app_obj
@@ -82,7 +82,7 @@ describe 'Mounter' do
     end
 
     it 'should mount a primary app to sub_uri' do
-      mounter = Padrino.mount('test_app', :app_file => __FILE__).to('/me')
+      mounter = Padrino.mount('test_app', app_file: __FILE__).to('/me')
       assert_equal 'test_app', mounter.name
       assert_equal 'TestApp', mounter.app_class
       assert_equal TestApp, mounter.app_obj
@@ -98,7 +98,7 @@ describe 'Mounter' do
     end
 
     it 'should raise error when app has no located object' do
-      assert_raises(Padrino::Mounter::MounterException) { Padrino.mount('tester_app', :app_file => '/path/to/file.rb').to('/test') }
+      assert_raises(Padrino::Mounter::MounterException) { Padrino.mount('tester_app', app_file: '/path/to/file.rb').to('/test') }
       assert_equal 0, Padrino.mounted_apps.size
     end
 
@@ -119,8 +119,8 @@ describe 'Mounter' do
     end
 
     it 'should mount app with the same name as the module' do
-      Padrino.mount('Demo::App',  :app_file => File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_app.rb')).to('/app')
-      Padrino.mount('Demo::Demo', :app_file => File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_demo.rb')).to('/')
+      Padrino.mount('Demo::App',  app_file: File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_app.rb')).to('/app')
+      Padrino.mount('Demo::Demo', app_file: File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_demo.rb')).to('/')
 
       Padrino.mounted_apps.each do |app|
         assert_equal app.app_obj.setup_application!, true
@@ -139,14 +139,14 @@ describe 'Mounter' do
     it 'should be able to access routes data for mounted apps' do
       class ::OneApp < Padrino::Application
         get('/test') { 'test' }
-        get(:index, :provides => [:js, :json]) { 'index' }
+        get(:index, provides: [:js, :json]) { 'index' }
         get(%r{/foo|/baz}) { 'regexp' }
         controllers :posts do
           get(:index) { 'index' }
-          get(:new, :provides => :js) { 'new' }
-          get(:show, :provides => [:js, :html], :with => :id) { 'show' }
-          post(:create, :provides => :js, :with => :id) { 'create' }
-          get(:regexp, :map => %r{/foo|/baz}) { 'regexp' }
+          get(:new, provides: :js) { 'new' }
+          get(:show, provides: [:js, :html], with: :id) { 'show' }
+          post(:create, provides: :js, with: :id) { 'create' }
+          get(:regexp, map: %r{/foo|/baz}) { 'regexp' }
         end
       end
       class ::TwoApp < Padrino::Application
@@ -207,7 +207,7 @@ describe 'Mounter' do
       class ::App3 < Padrino::Application
         get(:index) { halt 404, 'index3' }
       end
-      Padrino.mount('app1', :cascade => true).to('/foo')
+      Padrino.mount('app1', cascade: true).to('/foo')
       Padrino.mount('app2').to('/foo')
       Padrino.mount('app3').to('/foo')
       res = Rack::MockRequest.new(Padrino.application).get('/foo')
@@ -257,9 +257,9 @@ describe 'Mounter' do
     it 'should support the Rack Application' do
       path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/mountable_apps/rack_apps')
       require path
-      Padrino.mount('rack_app', :app_class => 'RackApp', :app_file => path).to('/rack_app')
-      Padrino.mount('rack_app2', :app_class => 'RackApp2', :app_file => path).to('/rack_app2')
-      Padrino.mount('sinatra_app', :app_class => 'SinatraApp', :app_file => path).to('/sinatra_app')
+      Padrino.mount('rack_app', app_class: 'RackApp', app_file: path).to('/rack_app')
+      Padrino.mount('rack_app2', app_class: 'RackApp2', app_file: path).to('/rack_app2')
+      Padrino.mount('sinatra_app', app_class: 'SinatraApp', app_file: path).to('/sinatra_app')
       app = Padrino.application
       res = Rack::MockRequest.new(app).get('/rack_app')
       assert_equal 'hello rack app', res.body
@@ -275,8 +275,8 @@ describe 'Mounter' do
     it 'should support the Rack Application with cascading style' do
       path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/mountable_apps/rack_apps')
       require path
-      Padrino.mount('rack_app', :app_class => 'RackApp', :app_file => path, cascade: false).to('/rack_app')
-      Padrino.mount('sinatra_app', :app_class => 'SinatraApp', :app_file => path).to('/')
+      Padrino.mount('rack_app', app_class: 'RackApp', app_file: path, cascade: false).to('/rack_app')
+      Padrino.mount('sinatra_app', app_class: 'SinatraApp', app_file: path).to('/')
       app = Padrino.application
       res = Rack::MockRequest.new(app).get('/rack_app/404')
       assert_equal 'not found ;(', res.body
@@ -287,8 +287,8 @@ describe 'Mounter' do
       api_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/api/app')
       require path
       require api_path
-      Padrino.mount('api_app', :app_class => 'DemoProject::API', :app_file => api_path).to('/api')
-      Padrino.mount('main_app', :app_class => 'DemoProject::App').to('/')
+      Padrino.mount('api_app', app_class: 'DemoProject::API', app_file: api_path).to('/api')
+      Padrino.mount('main_app', app_class: 'DemoProject::App').to('/')
       app = Padrino.application
       res = Rack::MockRequest.new(app).get('/')
       assert_equal 'padrino app', res.body
@@ -302,8 +302,8 @@ describe 'Mounter' do
       fake_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/external_apps/fake_root')
       require path
       require fake_path
-      Padrino.mount('fake_root', :app_class => 'FakeRoot').to('/fake_root')
-      Padrino.mount('main_app', :app_class => 'DemoProject::App').to('/')
+      Padrino.mount('fake_root', app_class: 'FakeRoot').to('/fake_root')
+      Padrino.mount('main_app', app_class: 'DemoProject::App').to('/')
       Padrino.stub(:root, File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project')) do
         Padrino.application
       end

@@ -113,7 +113,7 @@ module Padrino
         path        = destination_root('.components')
         config      = retrieve_component_config(path)
         config[key] = value
-        create_file(path, :force => true) { config.to_yaml }
+        create_file(path, force: true) { config.to_yaml }
         value
       end
 
@@ -149,7 +149,7 @@ module Padrino
         choice = options[component]
         until valid_choice?(component, choice)
           say("Option for --#{component} '#{choice}' is not available.", :red)
-          choice = ask("Please enter a valid option for #{component}:", :limited_to => choices)
+          choice = ask("Please enter a valid option for #{component}:", limited_to: choices)
         end
         choice
       end
@@ -332,7 +332,7 @@ WARNING
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"
         write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
-        inject_into_file('Gemfile', include_text, :after => after_pattern)
+        inject_into_file('Gemfile', include_text, after: after_pattern)
       end
 
       ##
@@ -347,7 +347,7 @@ WARNING
       #   insert_hook("DataMapper.finalize", :after_load)
       #
       def insert_hook(include_text, where)
-        inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
+        inject_into_file('config/boot.rb', "  #{include_text}\n", after: "Padrino.#{where} do\n")
       end
 
       ##
@@ -361,7 +361,7 @@ WARNING
       #
       def insert_middleware(include_text, app = nil)
         name = app || (options[:name] ? @app_name.downcase : 'app')
-        inject_into_file("#{name}/app.rb", "    use #{include_text}\n", :after => "Padrino::Application\n")
+        inject_into_file("#{name}/app.rb", "    use #{include_text}\n", after: "Padrino::Application\n")
       end
 
       ##
@@ -379,7 +379,7 @@ WARNING
       def initializer(name, data = nil)
         @_init_name, @_init_data = name, data
         register = data ? "    register #{name.to_s.underscore.camelize}Initializer\n" : "    register #{name}\n"
-        inject_into_file destination_root('/app/app.rb'), register, :after => "Padrino::Application\n"
+        inject_into_file destination_root('/app/app.rb'), register, after: "Padrino::Application\n"
         template 'templates/initializer.rb.tt', destination_root("/config/initializers/#{name}.rb") if data
       end
 
@@ -411,7 +411,7 @@ WARNING
       def require_contrib(contrib)
         insert_into_gemfile 'padrino-contrib'
         contrib = "require '" + File.join('padrino-contrib', contrib) + "'\n"
-        inject_into_file destination_root('/config/boot.rb'), contrib, :before => "\nPadrino.load!"
+        inject_into_file destination_root('/config/boot.rb'), contrib, before: "\nPadrino.load!"
       end
 
       ##
@@ -561,7 +561,7 @@ WARNING
           (@component_types   ||= []) << name # TODO: use ordered hash and combine with choices below
           (@available_choices ||= {})[name] = options[:choices]
           description = "The #{caption} component (#{options[:choices].join(', ')}, none)"
-          class_option name, :default => options[:default] || options[:choices].first, :aliases => options[:aliases], :desc => description
+          class_option name, default: options[:default] || options[:choices].first, aliases: options[:aliases], desc: description
         end
 
         ##
@@ -569,15 +569,15 @@ WARNING
         #
         def defines_component_options(options = {})
           [
-            [ :orm,        'database engine',    { :aliases => '-d', :default => :none }],
-            [ :test,       'testing framework',  { :aliases => '-t', :default => :none }],
-            [ :mock,       'mocking library',    { :aliases => '-m', :default => :none }],
-            [ :script,     'javascript library', { :aliases => '-s', :default => :none }],
-            [ :renderer,   'template engine',    { :aliases => '-e', :default => :none }],
-            [ :stylesheet, 'stylesheet engine',  { :aliases => '-c', :default => :none }]
+            [ :orm,        'database engine',    { aliases: '-d', default: :none }],
+            [ :test,       'testing framework',  { aliases: '-t', default: :none }],
+            [ :mock,       'mocking library',    { aliases: '-m', default: :none }],
+            [ :script,     'javascript library', { aliases: '-s', default: :none }],
+            [ :renderer,   'template engine',    { aliases: '-e', default: :none }],
+            [ :stylesheet, 'stylesheet engine',  { aliases: '-c', default: :none }]
           ].each do |name, caption, opts|
             opts[:default] = '' if options[:default] == false
-            component_option name, caption, opts.merge(:choices => Dir["#{File.dirname(__FILE__)}/components/#{name.to_s.pluralize}/*.rb"].map {|lib| File.basename(lib, '.rb').to_sym})
+            component_option name, caption, opts.merge(choices: Dir["#{File.dirname(__FILE__)}/components/#{name.to_s.pluralize}/*.rb"].map {|lib| File.basename(lib, '.rb').to_sym})
           end
         end
 

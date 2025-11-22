@@ -29,13 +29,13 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
-      class_option :skip_migration, :aliases => '-s', :default => false, :type => :boolean
+      class_option :skip_migration, aliases: '-s', default: false, type: :boolean
       # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
-      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.', :type => :string
-      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
-      class_option :renderer, :aliases => '-e', :desc => 'Rendering engine (erb, haml, slim)', :type => :string
-      class_option :admin_model, :aliases => '-m', :desc => 'The name of model for access controlling', :default => 'Account', :type => :string
-      class_option :admin_name,  :aliases => '-a', :desc => 'The admin application name and path', :default => 'admin', :type => :string
+      class_option :root, desc: 'The root destination', aliases: '-r', default: '.', type: :string
+      class_option :destroy, aliases: '-d', default: false, type: :boolean
+      class_option :renderer, aliases: '-e', desc: 'Rendering engine (erb, haml, slim)', type: :string
+      class_option :admin_model, aliases: '-m', desc: 'The name of model for access controlling', default: 'Account', type: :string
+      class_option :admin_name,  aliases: '-a', desc: 'The admin application name and path', default: 'admin', type: :string
 
       # Copies over the Padrino base admin application.
       def create_admin
@@ -73,7 +73,7 @@ module Padrino
           directory 'templates/app',       destination_root(@admin_path)
           directory 'templates/assets',    destination_root('public', @admin_path)
           template  'templates/app.rb.tt', destination_root(@admin_path + '/app.rb')
-          inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount(\"#{@app_name}::#{@admin_name}\", :app_file => Padrino.root('#{@admin_path}/app.rb')).to(\"/#{@admin_path}\")\n", :before => /^Padrino.mount.*\.to\('\/'\)$/
+          inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount(\"#{@app_name}::#{@admin_name}\", :app_file => Padrino.root('#{@admin_path}/app.rb')).to(\"/#{@admin_path}\")\n", before: /^Padrino.mount.*\.to\('\/'\)$/
           unless options[:destroy]
             insert_middleware 'ConnectionPoolManagement', @admin_path if [:minirecord, :activerecord].include?(orm)
             insert_middleware 'IdentityMap', @admin_path if orm == :datamapper
@@ -91,22 +91,22 @@ module Padrino
           column = Struct.new(:name, :type)
           columns = [:id, :name, :surname, :email].map { |col| column.new(col) }
           column_fields = [
-            { :name => :name,                  :field_type => :text_field },
-            { :name => :surname,               :field_type => :text_field },
-            { :name => :email,                 :field_type => :text_field },
-            { :name => :password,              :field_type => :password_field },
-            { :name => :password_confirmation, :field_type => :password_field },
-            { :name => :role,                  :field_type => :text_field }
+            { name: :name,                  field_type: :text_field },
+            { name: :surname,               field_type: :text_field },
+            { name: :email,                 field_type: :text_field },
+            { name: :password,              field_type: :password_field },
+            { name: :password_confirmation, field_type: :password_field },
+            { name: :role,                  field_type: :text_field }
           ]
 
           unless options[:destroy]
-            admin_app = Padrino::Generators::AdminPage.new([@model_singular], :root => options[:root], :destroy => options[:destroy], :admin_model => @model_singular, :admin_name => @admin_name)
+            admin_app = Padrino::Generators::AdminPage.new([@model_singular], root: options[:root], destroy: options[:destroy], admin_model: @model_singular, admin_name: @admin_name)
             admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
             admin_app.invoke_all
           end
 
           # TODO: See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
-          template "templates/account/#{orm}.rb.tt", destination_root('models', "#{@model_singular}.rb"), :force => true
+          template "templates/account/#{orm}.rb.tt", destination_root('models', "#{@model_singular}.rb"), force: true
 
           if File.exist?(destination_root('db/seeds.rb'))
             run "mv #{destination_root('db/seeds.rb')} #{destination_root('db/seeds.old')}"
@@ -134,7 +134,7 @@ module Padrino
             require_dependencies('bcrypt')
           end
 
-          require_dependencies 'activesupport', :version => '>= 3.1'
+          require_dependencies 'activesupport', version: '>= 3.1'
 
           # A nicer select box.
           # TODO FIXME This doesn't make much sense in here. Review.

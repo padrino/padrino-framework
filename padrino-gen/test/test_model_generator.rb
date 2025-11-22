@@ -100,7 +100,7 @@ describe 'ModelGenerator' do
     it 'should abort if model name already exists in root' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:app, 'user', "--root=#{@apptmp}/sample_project") }
-      out, = capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", :apps => 'user') }
+      out, = capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", apps: 'user') }
       assert_file_exists("#{@apptmp}/sample_project/user/app.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
       assert_match(/User already exists/, out)
@@ -109,7 +109,7 @@ describe 'ModelGenerator' do
     it 'should generate model files if :force option is specified' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:app, 'user', "--root=#{@apptmp}/sample_project") }
-      capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", '--force', :apps => 'user') }
+      capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", '--force', apps: 'user') }
       assert_file_exists("#{@apptmp}/sample_project/user/app.rb")
       assert_file_exists("#{@apptmp}/sample_project/models/user.rb")
     end
@@ -520,7 +520,7 @@ describe 'ModelGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'User', '-a=/subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate_with_parts(:model, 'User', '-a=/subby', "-r=#{@apptmp}/sample_project", '-d', :apps => 'subby') }
+      capture_io { generate_with_parts(:model, 'User', '-a=/subby', "-r=#{@apptmp}/sample_project", '-d', apps: 'subby') }
       assert_no_file_exists("#{@apptmp}/sample_project/subby/models/user.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/test/subby/models/user_test.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")

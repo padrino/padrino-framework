@@ -200,7 +200,7 @@ module Padrino
       #   # => <input type="number" name="credit_card" autocomplete="off" />  
       #
       def input_tag(type, options = {})
-        tag(:input, { :type => type }.update(options))
+        tag(:input, { type: type }.update(options))
       end
 
       ##

@@ -7,8 +7,8 @@ module Padrino
       APPEND_ASSET_EXTENSIONS = ['js', 'css']
       ABSOLUTE_URL_PATTERN = %r{^(https?://)}
       ASSET_FOLDERS = {
-        :js => 'javascripts',
-        :css => 'stylesheets',
+        js: 'javascripts',
+        css: 'stylesheets',
       }
 
       ##
@@ -35,8 +35,8 @@ module Padrino
         args.inject(SafeBuffer.new) do |html, kind|
           next html unless flash[kind]
           flash_text = SafeBuffer.new << flash[kind]
-          flash_text << content_tag(:button, '&times;'.html_safe, {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
-          html << content_tag(:div, flash_text, { :class => kind }.update(options))
+          flash_text << content_tag(:button, '&times;'.html_safe, {type: :button, class: :close, 'data-dismiss': :alert}) if bootstrap
+          html << content_tag(:div, flash_text, { class: kind }.update(options))
         end
       end
 
@@ -85,7 +85,7 @@ module Padrino
         options = args.last.is_a?(Hash) ? args.pop : {}
         name = block_given? ? '' : args.shift
         href = args.first
-        options = { :href => href ? escape_link(href) : '#' }.update(options)
+        options = { href: href ? escape_link(href) : '#' }.update(options)
         return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end
@@ -116,7 +116,7 @@ module Padrino
       #
       def feed_tag(mime, url, options = {})
         full_mime = mime == :atom ? 'application/atom+xml' : 'application/rss+xml'
-        tag(:link, { :rel => 'alternate', :type => full_mime, :title => mime, :href => url }.update(options))
+        tag(:link, { rel: 'alternate', type: full_mime, title: mime, href: url }.update(options))
       end
 
       ##
@@ -190,7 +190,7 @@ module Padrino
       #
       def favicon_tag(source, options = {})
         type = File.extname(source).sub('.', '')
-        options = { :href => image_path(source), :rel => 'icon', :type => "image/#{type}" }.update(options)
+        options = { href: image_path(source), rel: 'icon', type: "image/#{type}" }.update(options)
         tag(:link, options)
       end
 
@@ -208,7 +208,7 @@ module Padrino
       #   image_tag('icons/avatar.png')
       #
       def image_tag(url, options = {})
-        options = { :src => image_path(url) }.update(options)
+        options = { src: image_path(url) }.update(options)
         options[:alt] ||= image_alt(url) unless url.to_s =~ /\A(?:cid|data):|\A\Z/
         tag(:img, options)
       end
@@ -241,11 +241,11 @@ module Padrino
       # @api public.
       def stylesheet_link_tag(*sources)
         options = {
-          :rel => 'stylesheet',
-          :type => 'text/css'
+          rel: 'stylesheet',
+          type: 'text/css'
         }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
         sources.flatten.inject(SafeBuffer.new) do |all, source|
-          all << tag(:link, { :href => asset_path(:css, source) }.update(options))
+          all << tag(:link, { href: asset_path(:css, source) }.update(options))
         end
       end
 
@@ -265,10 +265,10 @@ module Padrino
       #
       def javascript_include_tag(*sources)
         options = {
-          :type => 'text/javascript'
+          type: 'text/javascript'
         }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
         sources.flatten.inject(SafeBuffer.new) do |all, source|
-          all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
+          all << content_tag(:script, nil, { src: asset_path(:js, source) }.update(options))
         end
       end
 

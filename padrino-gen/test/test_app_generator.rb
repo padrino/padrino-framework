@@ -89,7 +89,7 @@ describe 'AppGenerator' do
     it 'should destroys itself' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
-      out, = capture_io { generate_with_parts(:app, 'demo', "--root=#{@apptmp}/sample_project", '-d', :apps => 'demo') }
+      out, = capture_io { generate_with_parts(:app, 'demo', "--root=#{@apptmp}/sample_project", '-d', apps: 'demo') }
       refute_match(/has been mounted/, out)
       assert_no_dir_exists("#{@apptmp}/sample_project/public/demo")
       assert_no_file_exists("#{@apptmp}/sample_project/demo/app.rb")
@@ -112,7 +112,7 @@ describe 'AppGenerator' do
     it 'should abort if app name already exists in root' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'subapp', "--root=#{@apptmp}/sample_project") }
-      out, = capture_io { generate_with_parts(:app, 'subapp', "--root=#{@apptmp}/sample_project", :apps => 'subapp') }
+      out, = capture_io { generate_with_parts(:app, 'subapp', "--root=#{@apptmp}/sample_project", apps: 'subapp') }
       assert_dir_exists("#{@apptmp}/sample_project/public/subapp")
       assert_dir_exists("#{@apptmp}/sample_project/subapp/controllers")
       assert_dir_exists("#{@apptmp}/sample_project/subapp/helpers")

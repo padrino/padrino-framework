@@ -36,7 +36,7 @@ module Padrino
             migration_number = current_migration_number
             contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, migration_number)
             migration_filename = "#{format("%03d", migration_number)}_#{filename.underscore}.rb"
-            create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
+            create_file(destination_root('db/migrate/', migration_filename), contents, skip: true)
           end
         end
 
@@ -81,7 +81,7 @@ module Padrino
             migration_number = current_migration_number
             contents.gsub!(/!VERSION!/, migration_number)
             migration_filename = "#{format("%03d", migration_number)}_#{filename.underscore}.rb"
-            create_file(destination_root('db/migrate/', migration_filename), contents, :skip => true)
+            create_file(destination_root('db/migrate/', migration_filename), contents, skip: true)
           end
         end
 
@@ -144,7 +144,7 @@ module Padrino
         #   => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @app_name), :after => "set :environment, :test")
         #
         def insert_test_suite_setup(suite_text, options = {})
-          options = { :path => 'test/test_config.rb' }.update(options)
+          options = { path: 'test/test_config.rb' }.update(options)
           create_file(options[:path], suite_text.gsub(/CLASS_NAME/, "#{@project_name}::#{@app_name}"))
         end
 
@@ -161,10 +161,10 @@ module Padrino
         #   => inject_into_file("test/test_config.rb", "  include Mocha::API\n", :after => /class.*?\n/)
         #
         def insert_mocking_include(library_name, options = {})
-          options = { :indent => 2, :after => /class.*?\n/, :path => 'test/test_config.rb' }.update(options)
+          options = { indent: 2, after: /class.*?\n/, path: 'test/test_config.rb' }.update(options)
           return unless File.exist?(destination_root(options[:path]))
           include_text = indent_spaces(2) + "include #{library_name}\n"
-          inject_into_file(options[:path], include_text, :after => options[:after])
+          inject_into_file(options[:path], include_text, after: options[:after])
         end
 
         ##

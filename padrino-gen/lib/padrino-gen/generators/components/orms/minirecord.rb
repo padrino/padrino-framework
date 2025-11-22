@@ -118,7 +118,7 @@ def setup_orm
       ar.gsub!(/!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/, "'#{db}_development'"))
       ar.gsub!(/!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/, "'#{db}_production'"))
       ar.gsub!(/!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/, "'#{db}_test'"))
-      require_dependencies 'mysql', :version => '~> 2.8.1'
+      require_dependencies 'mysql', version: '~> 2.8.1'
     when 'mysql', 'mysql2'
       ar.gsub!(/!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/, "'#{db}_development'"))
       ar.gsub!(/!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/, "'#{db}_production'"))
@@ -139,7 +139,7 @@ def setup_orm
       fail ArgumentError
     end
   rescue ArgumentError
-    adapter = ask('Please, choose a proper adapter:', :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 mysql-gem postgres sqlite])
     retry
   end
 

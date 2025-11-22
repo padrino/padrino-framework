@@ -89,9 +89,9 @@ end
 TEST
 
 def setup_test
-  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
-  require_dependencies 'shoulda', :group => 'test'
-  require_dependencies 'test-unit', :group => 'test'
+  require_dependencies 'rack-test', require: 'rack/test', group: 'test'
+  require_dependencies 'shoulda', group: 'test'
+  require_dependencies 'test-unit', group: 'test'
   insert_test_suite_setup SHOULDA_SETUP
   create_file destination_root('test/test.rake'), SHOULDA_RAKE
 end
@@ -99,19 +99,19 @@ end
 def generate_controller_test(name, path = nil)
   shoulda_contents = SHOULDA_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
   controller_test_path = File.join('test', options[:app], 'controllers', "#{name.to_s.underscore}_controller_test.rb")
-  create_file destination_root(controller_test_path), shoulda_contents, :skip => true
+  create_file destination_root(controller_test_path), shoulda_contents, skip: true
 end
 
 def generate_model_test(name)
   shoulda_contents = SHOULDA_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
   shoulda_contents.gsub!(/!PATH!/, recognize_path)
   model_test_path = File.join('test', options[:app], 'models', "#{name.to_s.underscore}_test.rb")
-  create_file destination_root(model_test_path), shoulda_contents, :skip => true
+  create_file destination_root(model_test_path), shoulda_contents, skip: true
 end
 
 def generate_helper_test(name, project_name, app_name)
   shoulda_contents = SHOULDA_HELPER_TEST.gsub(/!NAME!/, "#{project_name}::#{app_name}::#{name}")
   shoulda_contents.gsub!(/!PATH!/, recognize_path)
   helper_spec_path = File.join('test', options[:app], 'helpers', "#{name.underscore}_test.rb")
-  create_file destination_root(helper_spec_path), shoulda_contents, :skip => true
+  create_file destination_root(helper_spec_path), shoulda_contents, skip: true
 end

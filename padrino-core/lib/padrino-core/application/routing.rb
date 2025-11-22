@@ -14,9 +14,9 @@ module Padrino
   #
   module Routing
     # Defines common content-type alias mappings.
-    CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
+    CONTENT_TYPE_ALIASES = { htm: :html } unless defined?(CONTENT_TYPE_ALIASES)
     # Defines the available route priorities supporting route deferrals.
-    ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
+    ROUTE_PRIORITY = {high: 0, normal: 1, low: 2} unless defined?(ROUTE_PRIORITY)
 
     # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
@@ -252,7 +252,7 @@ module Padrino
       #
       def parent(name = nil, options = {})
         return super() unless name
-        defaults = { :optional => false, :map => name.to_s }
+        defaults = { optional: false, map: name.to_s }
         options = defaults.merge(options)
         @_parent = Array(@_parent) unless @_parent.is_a?(Array)
         @_parent << Parent.new(name, options)
@@ -408,7 +408,7 @@ module Padrino
         CONTROLLER_OPTIONS.each { |key| replace_instance_variable("@_#{key}", options.delete(key)) }
         replace_instance_variable(:@_controller, args)
         replace_instance_variable(:@_defaults, options)
-        replace_instance_variable(:@filters, :before => @filters[:before].dup, :after => @filters[:after].dup)
+        replace_instance_variable(:@filters, before: @filters[:before].dup, after: @filters[:after].dup)
         replace_instance_variable(:@layout, @layout)
 
         yield
@@ -481,13 +481,13 @@ module Padrino
       def route(verb, path, *args, &block)
         options = case args.size
           when 2
-            args.last.merge(:map => args.first)
+            args.last.merge(map: args.first)
           when 1
             map = args.shift if args.first.is_a?(String)
             if args.first.is_a?(Hash)
-              map ? args.first.merge(:map => map) : args.first
+              map ? args.first.merge(map: map) : args.first
             else
-              {:map => map || args.first}
+              {map: map || args.first}
             end
           when 0
             {}

@@ -2,9 +2,9 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
   namespace :sq do
     namespace :migrate do
       desc 'Perform automigration (reset your db data)'
-      task :auto => :skeleton do
+      task auto: :skeleton do
         ::Sequel.extension :migration
-        ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate', :target => 0
+        ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate', target: 0
         ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate'
         puts '<= sq:migrate:auto executed'
       end
@@ -19,25 +19,25 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       end
 
       desc 'Perform migration up to latest migration available'
-      task :up => :skeleton do
+      task up: :skeleton do
         ::Sequel.extension :migration
         ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate'
         puts '<= sq:migrate:up executed'
       end
 
       desc 'Perform migration down (erase all data)'
-      task :down => :skeleton do
+      task down: :skeleton do
         ::Sequel.extension :migration
-        ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate', :target => 0
+        ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate', target: 0
         puts '<= sq:migrate:down executed'
       end
     end
 
     desc 'Perform migration up to latest migration available'
-    task :migrate => 'sq:migrate:up'
+    task migrate: 'sq:migrate:up'
 
     desc 'Create the database'
-    task :create => :skeleton do
+    task create: :skeleton do
       config = Sequel::Model.db.opts
       user, password, host = config[:user], config[:password], config[:host]
       database = config[:database]
@@ -55,7 +55,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
     end
 
     desc 'Drop the database (postgres and mysql only)'
-    task :drop => :skeleton do
+    task drop: :skeleton do
       config = ::Sequel::Model.db.opts
       user, password, host, database = config[:user], config[:password], config[:host], config[:database]
 
@@ -71,9 +71,9 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
     end
 
     desc 'Drop the database, migrate from scratch and initialize with the seed data'
-    task :reset => ['drop', 'create', 'migrate', 'seed']
+    task reset: ['drop', 'create', 'migrate', 'seed']
 
-    task :seed => :environment do
+    task seed: :environment do
       missing_model_features = Padrino.send(:default_dependency_paths) - Padrino.send(:dependency_paths)
       Padrino.require_dependencies(missing_model_features)
       Rake::Task['db:seed'].invoke

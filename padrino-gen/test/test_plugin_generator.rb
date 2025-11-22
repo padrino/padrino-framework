@@ -33,7 +33,7 @@ describe 'PluginGenerator' do
 
   describe 'the project generator with template' do
     it 'should invoke Padrino.bin_gen' do
-      expects_generated_project :name => 'sample_project', :test => :shoulda, :orm => :activerecord, :dev => true, :template => 'mongochist', :root => @apptmp
+      expects_generated_project name: 'sample_project', test: :shoulda, orm: :activerecord, dev: true, template: 'mongochist', root: @apptmp
       expects_generated :model, "post title:string body:text -r=#{@apptmp}/sample_project"
       expects_generated :controller, "posts get:index get:new post:new -r=#{@apptmp}/sample_project"
       expects_generated :migration, "AddEmailToUser email:string -r=#{@apptmp}/sample_project"
@@ -41,7 +41,7 @@ describe 'PluginGenerator' do
       expects_generated :plugin, "carrierwave -r=#{@apptmp}/sample_project"
       File.stubs(:exist?).returns(true)
       expects_dependencies 'nokogiri'
-      expects_initializer :test, '# Example', :root => "#{@apptmp}/sample_project"
+      expects_initializer :test, '# Example', root: "#{@apptmp}/sample_project"
       expects_generated :app, "testapp -r=#{@apptmp}/sample_project"
       expects_generated :controller, "users get:index -r=#{@apptmp}/sample_project --app=testapp"
       example_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'example_template.rb')
@@ -124,10 +124,10 @@ describe 'PluginGenerator' do
   describe 'with git commands' do
     it 'should generate a repository correctly' do
       skip 'Change stubs here'
-      expects_generated_project :test => :rspec, :orm => :activerecord, :name => 'sample_git', :root => @apptmp.to_s
-      expects_git :init, :root => "#{@apptmp}/sample_git"
-      expects_git :add, :arguments => '.', :root => "#{@apptmp}/sample_git"
-      expects_git :commit, :arguments => 'hello', :root => "#{@apptmp}/sample_git"
+      expects_generated_project test: :rspec, orm: :activerecord, name: 'sample_git', root: @apptmp.to_s
+      expects_git :init, root: "#{@apptmp}/sample_git"
+      expects_git :add, arguments: '.', root: "#{@apptmp}/sample_git"
+      expects_git :commit, arguments: 'hello', root: "#{@apptmp}/sample_git"
       git_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'git_template.rb')
       capture_io { generate(:project, 'sample_git', "-p=#{git_template_path}", "-r=#{@apptmp}", '2>&1 /dev/null') }
     end
@@ -135,8 +135,8 @@ describe 'PluginGenerator' do
 
   describe 'with rake invocations' do
     it 'should Run rake task and list tasks' do
-      expects_generated_project :test => :shoulda, :orm => :activerecord, :name => 'sample_rake', :root => @apptmp.to_s
-      expects_rake 'custom', :root => "#{@apptmp}/sample_rake"
+      expects_generated_project test: :shoulda, orm: :activerecord, name: 'sample_rake', root: @apptmp.to_s
+      expects_rake 'custom', root: "#{@apptmp}/sample_rake"
       rake_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'rake_template.rb')
       capture_io { generate(:project, 'sample_rake', "-p=#{rake_template_path}", "-r=#{@apptmp}", '> /dev/null') }
     end
@@ -144,11 +144,11 @@ describe 'PluginGenerator' do
 
   describe 'with admin commands' do
     it 'should generate correctly an admin' do
-      expects_generated_project :test => :shoulda, :orm => :activerecord, :name => 'sample_admin', :root => @apptmp.to_s
+      expects_generated_project test: :shoulda, orm: :activerecord, name: 'sample_admin', root: @apptmp.to_s
       expects_generated :model, "post title:string body:text -r=#{@apptmp}/sample_admin"
-      expects_rake 'ar:create', :root => "#{@apptmp}/sample_admin"
+      expects_rake 'ar:create', root: "#{@apptmp}/sample_admin"
       expects_generated :admin, "-r=#{@apptmp}/sample_admin"
-      expects_rake 'ar:migrate', :root => "#{@apptmp}/sample_admin"
+      expects_rake 'ar:migrate', root: "#{@apptmp}/sample_admin"
       expects_generated :admin_page, "post -r=#{@apptmp}/sample_admin"
       admin_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'admin_template.rb')
       capture_io { generate(:project, 'sample_admin', "-p=#{admin_template_path}", "-r=#{@apptmp}", '> /dev/null') }

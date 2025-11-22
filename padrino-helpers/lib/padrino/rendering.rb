@@ -38,12 +38,12 @@ module Padrino
     ##
     # Defines common content-type alias mappings.
     #
-    CONTENT_TYPE_ALIASES = { :htm => :html }
+    CONTENT_TYPE_ALIASES = { htm: :html }
 
     ##
     # Default options used in the resolve_template-method.
     #
-    DEFAULT_RENDERING_OPTIONS = { :strict_format => false, :raise_exceptions => true } unless defined?(DEFAULT_RENDERING_OPTIONS)
+    DEFAULT_RENDERING_OPTIONS = { strict_format: false, raise_exceptions: true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
     class << self
       ##
@@ -215,7 +215,7 @@ module Padrino
         # render layout
         if layout
           layout_engine_options = settings.respond_to?(layout_engine) ? settings.send(layout_engine).dup : {}
-          options = layout_engine_options.update(:views => views, :layout => false, :eat_errors => eat_errors, :scope => scope).update(layout_options)
+          options = layout_engine_options.update(views: views, layout: false, eat_errors: eat_errors, scope: scope).update(layout_options)
           catch(:layout_missing) { return render_like_sinatra(layout_engine, layout, options, locals) { output } }
         end
 
@@ -340,7 +340,7 @@ module Padrino
           options[:layout_options][:views] ||= layout_path
         end
         layout, layout_engine = resolve_layout(layout, options)
-        options.update(:layout => layout, :layout_engine => layout_engine)
+        options.update(layout: layout, layout_engine: layout_engine)
       end
 
       def glob_templates(views_path, template_path)

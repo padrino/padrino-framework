@@ -20,11 +20,11 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen plugin sets up a plugin within a Padrino application"
 
-      argument :plugin_file, :desc => 'The name or path to the Padrino plugin', :optional => true
+      argument :plugin_file, desc: 'The name or path to the Padrino plugin', optional: true
 
-      class_option :root, :desc => 'The root destination', :aliases => '-r', :default => '.',   :type => :string
-      class_option :list, :desc => 'list available plugins', :aliases => '-l', :default => false, :type => :boolean
-      class_option :destroy, :aliases => '-d', :default => false, :type => :boolean
+      class_option :root, desc: 'The root destination', aliases: '-r', default: '.',   type: :string
+      class_option :list, desc: 'list available plugins', aliases: '-l', default: false, type: :boolean
+      class_option :destroy, aliases: '-d', default: false, type: :boolean
 
       # Show help if no ARGV given.
       require_arguments!

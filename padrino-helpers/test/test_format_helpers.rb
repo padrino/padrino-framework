@@ -25,7 +25,7 @@ describe 'FormatHelpers' do
     end
 
     it 'should support defining a class for the paragraphs' do
-      actual_text = simple_format('Look me! A class!', :class => 'description')
+      actual_text = simple_format('Look me! A class!', class: 'description')
       assert_equal '<p class="description">Look me! A class!</p>', actual_text
     end
 
@@ -41,17 +41,17 @@ describe 'FormatHelpers' do
 
     describe 'wrapped in a custom tag' do
       it 'should format simple text into html format' do
-        actual_text = simple_format("Here is some basic text...\n...with a line break.", :tag => :div)
+        actual_text = simple_format("Here is some basic text...\n...with a line break.", tag: :div)
         assert_equal "<div>Here is some basic text...\n<br />...with a line break.</div>", actual_text
       end
 
       it 'should format more text into html format' do
-        actual_text = simple_format("We want to put a paragraph...\n\n...right there.", :tag => :div)
+        actual_text = simple_format("We want to put a paragraph...\n\n...right there.", tag: :div)
         assert_equal "<div>We want to put a paragraph...</div>\n\n<div>...right there.</div>", actual_text
       end
 
       it 'should support defining a class for the paragraphs' do
-        actual_text = simple_format('Look me! A class!', :class => 'description', :tag => :div)
+        actual_text = simple_format('Look me! A class!', class: 'description', tag: :div)
         assert_equal '<div class="description">Look me! A class!</div>', actual_text
       end
     end
@@ -59,11 +59,11 @@ describe 'FormatHelpers' do
 
   describe 'for #word_wrap method' do
     it 'should return proper formatting for 8 max width' do
-      actual_text = word_wrap('Once upon a time', :line_width => 8)
+      actual_text = word_wrap('Once upon a time', line_width: 8)
       assert_equal "Once\nupon a\ntime", actual_text
     end
     it 'should return proper formatting for 1 max width' do
-      actual_text = word_wrap('Once upon a time', :line_width => 1)
+      actual_text = word_wrap('Once upon a time', line_width: 1)
       assert_equal "Once\nupon\na\ntime", actual_text
     end
     it 'should return proper formatting for default width' do
@@ -81,7 +81,7 @@ describe 'FormatHelpers' do
     end
 
     it 'should highlight with highlighter' do
-      actual_text = highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
+      actual_text = highlight('Lorem ipsum dolor sit amet', 'dolor', highlighter: '<span class="custom">\1</span>')
       assert_equal 'Lorem ipsum <span class="custom">dolor</span> sit amet', actual_text
     end
   end
@@ -92,11 +92,11 @@ describe 'FormatHelpers' do
       assert_equal 'Once upon a time in a world...', actual_text
     end
     it 'should support specifying length' do
-      actual_text = truncate('Once upon a time in a world far far away', :length => 14)
+      actual_text = truncate('Once upon a time in a world far far away', length: 14)
       assert_equal 'Once upon a...', actual_text
     end
     it 'should support specifying omission text' do
-      actual_text = truncate('And they found that many people were sleeping better.', :length => 25, :omission => '(clipped)')
+      actual_text = truncate('And they found that many people were sleeping better.', length: 25, omission: '(clipped)')
       assert_equal 'And they found t(clipped)', actual_text
     end
   end
@@ -107,11 +107,11 @@ describe 'FormatHelpers' do
       assert_equal 'Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about...', actual_text
     end
     it 'should support specifying length' do
-      actual_text = truncate_words('Once upon a time in a world far far away', :length => 8)
+      actual_text = truncate_words('Once upon a time in a world far far away', length: 8)
       assert_equal 'Once upon a time in a world far...', actual_text
     end
     it 'should support specifying omission text' do
-      actual_text = truncate_words('And they found that many people were sleeping better.', :length => 4, :omission => '(clipped)')
+      actual_text = truncate_words('And they found that many people were sleeping better.', length: 4, omission: '(clipped)')
       assert_equal 'And they found that(clipped)', actual_text
     end
   end

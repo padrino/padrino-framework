@@ -121,7 +121,7 @@ def setup_orm
       ar.sub!(/!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_development'"))
       ar.sub!(/!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_production'"))
       ar.sub!(/!DB_TEST!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_test'"))
-      require_dependencies 'mysql', :version => '~> 2.8.1'
+      require_dependencies 'mysql', version: '~> 2.8.1'
     when 'mysql', 'mysql2'
       ar.sub!(/!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_development'"))
       ar.sub!(/!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_production'"))
@@ -142,11 +142,11 @@ def setup_orm
       fail ArgumentError
     end
   rescue ArgumentError
-    adapter = ask('Please, choose a proper adapter:', :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 mysql-gem postgres sqlite])
     retry
   end
 
-  require_dependencies 'activerecord', :require => 'active_record', :version => '>= 3.1'
+  require_dependencies 'activerecord', require: 'active_record', version: '>= 3.1'
   create_file('config/database.rb', ar)
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
@@ -161,7 +161,7 @@ MODEL
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = AR_MODEL.sub(/!NAME!/, name.to_s.underscore.camelize)
-  create_file(model_path, model_contents, :skip => true)
+  create_file(model_path, model_contents, skip: true)
 end
 
 if defined?(ActiveRecord::Migration) && ActiveRecord::Migration.respond_to?(:[])
@@ -203,10 +203,10 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-    :base          => AR_MIGRATION,
-    :column_format => proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :up            => AR_MODEL_UP_MG,
-    :down          => AR_MODEL_DOWN_MG
+    base: AR_MIGRATION,
+    column_format: proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    up: AR_MODEL_UP_MG,
+    down: AR_MODEL_DOWN_MG
   )
 end
 
@@ -218,9 +218,9 @@ MIGRATION
 
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
-    :base          => AR_MIGRATION,
-    :change_format => AR_CHANGE_MG,
-    :add           => proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :remove        => proc { |field, _kind| "t.remove :#{field}" }
+    base: AR_MIGRATION,
+    change_format: AR_CHANGE_MG,
+    add: proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    remove: proc { |field, _kind| "t.remove :#{field}" }
   )
 end

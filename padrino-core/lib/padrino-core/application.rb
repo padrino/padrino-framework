@@ -54,7 +54,7 @@ module Padrino
         logger.devel "Reloading application #{settings}"
         reset!
         reset_router!
-        Padrino.require_dependencies(settings.app_file, :force => true)
+        Padrino.require_dependencies(settings.app_file, force: true)
         require_dependencies
         default_routes
         default_errors
@@ -171,7 +171,7 @@ module Padrino
       # Requires all files within the application load paths.
       #
       def require_dependencies
-        Padrino.require_dependencies(dependencies, :force => true)
+        Padrino.require_dependencies(dependencies, force: true)
       end
     end
   end
