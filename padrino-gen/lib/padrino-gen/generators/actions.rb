@@ -76,7 +76,7 @@ module Padrino
       #   include_component_module_for(:mock, 'rr')
       #
       def include_component_module_for(component, choice=nil)
-        choice = fetch_component_choice(component) unless choice
+        choice ||= fetch_component_choice(component)
         return false if choice.to_s == 'none'
         apply_component_for(choice, component)
       end
