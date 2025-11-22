@@ -16,6 +16,7 @@ module Padrino
         #   @handler.engine_matches?(block) => true
         #
         def engine_matches?(block)
+          false
         end
 
         ##
