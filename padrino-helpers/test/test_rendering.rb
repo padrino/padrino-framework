@@ -769,7 +769,7 @@ describe "Rendering" do
   end
 
   describe 'rendering with helpers that use render' do
-    %W{erb haml slim}.each do |engine|
+    %W[erb haml slim].each do |engine|
       it "should work with #{engine}" do
         @app = RenderDemo
         get "/double_dive_#{engine}"

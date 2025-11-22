@@ -7,7 +7,7 @@ describe "AccountModelGenerator" do
   end
 
   after do
-    %[rm -rf #{@apptmp}]
+    %(rm -rf #{@apptmp})
   end
 
   describe 'activerecord' do

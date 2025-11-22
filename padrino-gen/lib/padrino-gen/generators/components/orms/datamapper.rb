@@ -59,7 +59,7 @@ MIDDLEWARE
 def setup_orm
   dm = DM
   db = @project_name.underscore
-  %w(
+  %w[
     dm-core
     dm-types
     dm-aggregates
@@ -67,7 +67,7 @@ def setup_orm
     dm-migrations
     dm-timestamps
     dm-validations
-  ).each { |dep| require_dependencies dep }
+  ].each { |dep| require_dependencies dep }
 
   begin
     case adapter ||= options[:adapter]

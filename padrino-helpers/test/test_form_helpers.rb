@@ -60,7 +60,7 @@ describe "FormHelpers" do
     end
 
     it 'should have an authenticity_token for method :post, :put or :delete' do
-      %w(post put delete).each do |method|
+      %w[post put delete].each do |method|
         actual_html = form_tag('/modify', :method => method) { "Demo" }
         assert_html_has_tag(actual_html, :input, :name => 'authenticity_token')
       end

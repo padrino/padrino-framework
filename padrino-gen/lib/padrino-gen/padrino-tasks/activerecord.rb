@@ -117,7 +117,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     def local_database?(config, &block)
-      if %w( 127.0.0.1 localhost ).include?(config[:host]) || !config[:host]
+      if %w[ 127.0.0.1 localhost ].include?(config[:host]) || !config[:host]
         yield
       else
         puts "This task only modifies local databases. #{config[:database]} is on a remote host."
@@ -225,7 +225,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           pending_migrations.each do |pending_migration|
             puts '  %4d %s' % [pending_migration.version, pending_migration.name]
           end
-          abort %{Run "rake ar:migrate" to update your database then try again.}
+          abort %(Run "rake ar:migrate" to update your database then try again.)
         end
       end
     end
@@ -249,7 +249,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         if File.exist?(file)
           load(file)
         else
-          raise %{#{file} doesn't exist yet. Run "rake ar:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Padrino.root}/config/boot.rb to limit the frameworks that will be loaded}
+          raise %(#{file} doesn't exist yet. Run "rake ar:migrate" to create it then try again. If you do not intend to use a database, you should instead alter #{Padrino.root}/config/boot.rb to limit the frameworks that will be loaded)
         end
       end
     end

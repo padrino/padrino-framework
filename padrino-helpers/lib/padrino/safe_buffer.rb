@@ -3,10 +3,10 @@ module Padrino
   # Padrino::SafeBuffer is based on ActiveSupport::SafeBuffer
   #
   class SafeBuffer < String
-    UNSAFE_STRING_METHODS = %w(
+    UNSAFE_STRING_METHODS = %w[
       capitalize chomp chop delete downcase gsub lstrip next reverse rstrip
       slice squeeze strip sub succ swapcase tr tr_s upcase
-    )
+    ]
 
     alias_method :original_concat, :concat
     private :original_concat

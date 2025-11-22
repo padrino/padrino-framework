@@ -43,7 +43,7 @@ module Padrino
       @dom ||= Oga.parse_html(html)
       content_requirement = attributes.delete(:content)
       attributes.each do |name, value|
-        selector += %{[#{name}="#{value}"]}
+        selector += %([#{name}="#{value}"])
       end
       tags = @dom.css(selector.to_s.gsub(/\[([^"']*?)=([^'"]*?)\]/, '[\1="\2"]'))
       if content_requirement
