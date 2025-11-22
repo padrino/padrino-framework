@@ -28,14 +28,14 @@ class Minitest::Spec
   end
 
   # mock_model("Business", :new_record? => true) => <Business>
-  def mock_model(klazz, options={})
+  def mock_model(klazz, options = {})
     options = { :class => klazz, :new_record? => false, :id => 20, :errors => {}}.update(options)
     record = stub(options)
     record.stubs(:to_ary => [record])
     record
   end
 
-  def create_template(name, content, options={})
+  def create_template(name, content, options = {})
     FileUtils.mkdir_p(File.dirname(__FILE__) + '/views')
     FileUtils.mkdir_p(File.dirname(__FILE__) + '/views/layouts')
     path  = "/views/#{name}"
@@ -54,7 +54,7 @@ class Minitest::Spec
     FileUtils.rm_rf(File.dirname(__FILE__) + '/views')
   end
 
-  def with_template(name, content, options={})
+  def with_template(name, content, options = {})
     template = create_template(name, content, options)
     yield
   ensure
@@ -64,7 +64,7 @@ class Minitest::Spec
   alias :with_view   :with_template
   alias :with_layout :with_template
 
-  def mock_app(base=Padrino::Application, &block)
+  def mock_app(base = Padrino::Application, &block)
     @app = Sinatra.new(base) do
       register Padrino::Helpers
       instance_eval(&block)

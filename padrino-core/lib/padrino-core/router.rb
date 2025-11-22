@@ -49,7 +49,7 @@ module Padrino
     #
     # @return [Array] The sorted route mappings.
     # @api semipublic
-    def map(options={})
+    def map(options = {})
       path = options[:path] || '/'
       host = options[:host]
       app  = options[:to]

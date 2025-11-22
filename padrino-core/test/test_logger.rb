@@ -15,7 +15,7 @@ describe 'PadrinoLogger' do
     Padrino::Logger.setup!
   end
 
-  def setup_logger(options={})
+  def setup_logger(options = {})
     @log    = StringIO.new
     @logger = Padrino::Logger.new(options.merge(:stream => @log))
   end

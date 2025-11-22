@@ -94,7 +94,7 @@ module Padrino
       #
       # @yield []
       #
-      def layout(name=:layout, &block)
+      def layout(name = :layout, &block)
         return super(name, &block) if block_given?
         @layout = name
       end
@@ -107,7 +107,7 @@ module Padrino
       # @param [String, nil] layouts_path
       #   The directory where the layouts are located. Defaults to #views.
       #
-      def fetch_layout_path(given_layout, layouts_path=views)
+      def fetch_layout_path(given_layout, layouts_path = views)
         layout_name = (given_layout || @layout || :application).to_s
         cache_layout_path(layout_name) do
           if Pathname.new(layout_name).absolute? && Dir["#{layout_name}.*"].any? || Dir["#{layouts_path}/#{layout_name}.*"].any?
@@ -169,7 +169,7 @@ module Padrino
       #
       #   # => set directly the Content-Type to 'text/html'
       #
-      def content_type(type=nil, params={})
+      def content_type(type = nil, params = {})
         if type
           super(type, params)
           @_content_type = type
@@ -179,7 +179,7 @@ module Padrino
 
       private
 
-      def render_like_sinatra(engine, data, options={}, locals={}, &block)
+      def render_like_sinatra(engine, data, options = {}, locals = {}, &block)
         # merge app-level options
         engine_options = settings.respond_to?(engine) ? settings.send(engine) : {}
         options = engine_options.merge(options)
@@ -233,7 +233,7 @@ module Padrino
       # * Use render 'path/to/template', :layout => false
       # * Use render 'path/to/template', :layout => false, :engine => 'haml'
       #
-      def render(engine, data=nil, options={}, locals={}, &block)
+      def render(engine, data = nil, options = {}, locals = {}, &block)
         # If engine is nil, ignore engine parameter and shift up all arguments
         # render nil, "index", { :layout => true }, { :localvar => "foo" }
         engine, data, options = data, options, locals if engine.nil? && data
@@ -287,7 +287,7 @@ module Padrino
       #   # If you request "/foo.js" with I18n.locale == :ru => [:"/path/to/foo.ru.js", :erb]
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #
-      def resolve_template(template_path, options={})
+      def resolve_template(template_path, options = {})
         template_path = template_path.to_s
         controller_key = respond_to?(:request) && request.respond_to?(:controller) && request.controller
         rendering_options = [template_path, content_type || :html, locale]
@@ -312,7 +312,7 @@ module Padrino
         I18n.locale if defined?(I18n)
       end
 
-      def resolve_layout(layout, options={})
+      def resolve_layout(layout, options = {})
         layouts_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || './views'
         template_path = settings.fetch_layout_path(layout, layouts_path)
         rendering_options = [template_path, content_type || :html, locale]
@@ -368,7 +368,7 @@ module Padrino
         templates.find { |file,_| file.to_s == target_path.to_s && simple_content_type }
       end
 
-      def path_and_engine(path, relative=nil)
+      def path_and_engine(path, relative = nil)
         extname = File.extname(path)
         engine = (extname[1..-1]||'none').to_sym
         path = path.chomp(extname)

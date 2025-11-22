@@ -30,7 +30,7 @@ module Padrino
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
-      def partial(template, options={}, &block)
+      def partial(template, options = {}, &block)
         options = { :layout => false }.update(options)
         explicit_engine = options.delete(:engine)
 
@@ -64,7 +64,7 @@ module Padrino
           base.class_eval do
             fail "gem 'tilt' is required" unless defined?(::Tilt)
 
-            def render(engine, file=nil, options={}, locals=nil, &block)
+            def render(engine, file = nil, options = {}, locals = nil, &block)
               options.delete(:layout)
               engine, file = file, engine if file.nil?
               template_engine = engine ? ::Tilt[engine] : ::Tilt.default_mapping[file]

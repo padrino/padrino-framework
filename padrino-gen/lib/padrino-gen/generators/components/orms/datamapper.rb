@@ -111,7 +111,7 @@ end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
-def create_model_file(name, options={})
+def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = DM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   field_tuples = options[:fields].map { |value| value.split(':') }

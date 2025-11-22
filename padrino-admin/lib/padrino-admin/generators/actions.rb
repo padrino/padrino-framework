@@ -68,7 +68,7 @@ module Padrino
         #   fetch_app_name('subapp')
         #
         # @api public
-        def fetch_app_name(app='app')
+        def fetch_app_name(app = 'app')
           app_path = destination_root(app, 'app.rb')
           @app_name ||= File.read(app_path).scan(/module\s(.*?)\n/).flatten[0]
         end

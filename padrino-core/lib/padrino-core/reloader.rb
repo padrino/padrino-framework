@@ -84,7 +84,7 @@ module Padrino
     ##
     # A safe Kernel::require which issues the necessary hooks depending on results
     #
-    def safe_load(file, options={})
+    def safe_load(file, options = {})
       began_at = Time.now
       file     = figure_path(file)
       return unless options[:force] || file_changed?(file)

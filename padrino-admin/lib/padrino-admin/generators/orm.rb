@@ -12,7 +12,7 @@ module Padrino
       class Orm
         attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm, :name_param
 
-        def initialize(name, orm, columns=nil, column_fields=nil)
+        def initialize(name, orm, columns = nil, column_fields = nil)
           name            = name.to_s
           @klass_name     = name.underscore.camelize
           @klass          = @klass_name.constantize rescue nil
@@ -93,7 +93,7 @@ module Padrino
           "#{klass_name}.all"
         end
 
-        def find(params=nil)
+        def find(params = nil)
           case orm
             when :activerecord, :minirecord, :mongomapper, :mongoid, :dynamoid then "#{klass_name}.find(#{params})"
             when :datamapper, :couchrest then "#{klass_name}.get(#{params})"
@@ -102,7 +102,7 @@ module Padrino
           end
         end
 
-        def build(params=nil)
+        def build(params = nil)
           if params
             "#{klass_name}.new(#{params})"
           else
@@ -117,7 +117,7 @@ module Padrino
           end
         end
 
-        def update_attributes(params=nil)
+        def update_attributes(params = nil)
           case orm
             when :mongomapper, :mongoid, :couchrest, :dynamoid then "@#{name_singular}.update_attributes(#{params})"
             when :activerecord, :minirecord, :datamapper, :ohm then "@#{name_singular}.update(#{params})"
@@ -133,7 +133,7 @@ module Padrino
           end
         end
 
-        def find_by_ids(params=nil)
+        def find_by_ids(params = nil)
           case orm
             when :ohm then "#{klass_name}.fetch(#{params})"
             when :datamapper then "#{klass_name}.all(:id => #{params})"
@@ -145,7 +145,7 @@ module Padrino
           end
         end
 
-        def multiple_destroy(params=nil)
+        def multiple_destroy(params = nil)
           case orm
             when :ohm then "#{params}.each(&:delete)"
             when :sequel then  "#{params}.destroy"

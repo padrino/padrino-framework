@@ -75,7 +75,7 @@ module Padrino
       #   include_component_module_for(:mock)
       #   include_component_module_for(:mock, 'rr')
       #
-      def include_component_module_for(component, choice=nil)
+      def include_component_module_for(component, choice = nil)
         choice ||= fetch_component_choice(component)
         return false if choice.to_s == 'none'
         apply_component_for(choice, component)
@@ -258,7 +258,7 @@ module Padrino
       # @example
       #   fetch_project_name
       #
-      def fetch_project_name(app='app')
+      def fetch_project_name(app = 'app')
         _app_path = destination_root(app, 'app.rb')
         @project_name = fetch_component_choice(:namespace) if @project_name.empty?
         @project_name ||= begin
@@ -289,7 +289,7 @@ WARNING
       # @example
       #   fetch_app_name('subapp')
       #
-      def fetch_app_name(app='app')
+      def fetch_app_name(app = 'app')
         app_path = destination_root(app, 'app.rb')
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
@@ -325,7 +325,7 @@ WARNING
       #   insert_into_gemfile(name, :group => 'test', :require => 'foo')
       #   insert_into_gemfile(name, :group => 'test', :version => ">1.2.3")
       #
-      def insert_into_gemfile(name, options={})
+      def insert_into_gemfile(name, options = {})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
         gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(', ')
@@ -359,7 +359,7 @@ WARNING
       # @example
       #   insert_middleware(ActiveRecord::ConnectionAdapters::ConnectionManagement)
       #
-      def insert_middleware(include_text, app=nil)
+      def insert_middleware(include_text, app = nil)
         name = app || (options[:name] ? @app_name.downcase : 'app')
         inject_into_file("#{name}/app.rb", "    use #{include_text}\n", :after => "Padrino::Application\n")
       end
@@ -376,7 +376,7 @@ WARNING
       #   initializer(:test, "some stuff here")
       #   #=> generates 'lib/test_init.rb'
       #
-      def initializer(name, data=nil)
+      def initializer(name, data = nil)
         @_init_name, @_init_data = name, data
         register = data ? "    register #{name.to_s.underscore.camelize}Initializer\n" : "    register #{name}\n"
         inject_into_file destination_root('/app/app.rb'), register, :after => "Padrino::Application\n"
@@ -468,7 +468,7 @@ WARNING
       #   app_skeleton 'some_app'
       #   app_skeleton 'sub_app', true
       #
-      def app_skeleton(app, tiny=false)
+      def app_skeleton(app, tiny = false)
         directory('app/', destination_root(app))
         if tiny
           template 'templates/controller.rb.tt', destination_root(app, 'controllers.rb')

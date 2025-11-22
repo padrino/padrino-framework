@@ -18,7 +18,7 @@ class Minitest::Spec
   # Sets up a Sinatra::Base subclass defined with the block
   # given. Used in setup or individual spec methods to establish
   # the application.
-  def mock_app(base=Padrino::Application, &block)
+  def mock_app(base = Padrino::Application, &block)
     @app = Sinatra.new(base, &block)
   end
 
@@ -31,7 +31,7 @@ class Minitest::Spec
   end
 
   # Asserts that the specified email object was delivered
-  def assert_email_sent(mail_attributes, options={})
+  def assert_email_sent(mail_attributes, options = {})
     mail_message = Mail::TestMailer.deliveries.last
     raise 'No mail message has been sent!' unless mail_message
     delivery_attributes = mail_attributes

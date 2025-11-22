@@ -24,7 +24,7 @@ describe 'FormBuilder' do
     @user_none = mock_model('User')
   end
 
-  def standard_builder(object=@user)
+  def standard_builder(object = @user)
     Padrino::Helpers::FormBuilder::StandardFormBuilder.new(self, object)
   end
 

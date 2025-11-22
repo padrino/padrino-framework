@@ -114,7 +114,7 @@ module Padrino
       #   feed_tag :rss, url(:blog, :posts, :format => :rss)
       #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
       #
-      def feed_tag(mime, url, options={})
+      def feed_tag(mime, url, options = {})
         full_mime = mime == :atom ? 'application/atom+xml' : 'application/rss+xml'
         tag(:link, { :rel => 'alternate', :type => full_mime, :title => mime, :href => url }.update(options))
       end
@@ -142,7 +142,7 @@ module Padrino
       #   mail_to "me@demo.com", "My Email"
       #   # Generates: <a href="mailto:me@demo.com">My Email</a>
       #
-      def mail_to(email, caption=nil, mail_options={})
+      def mail_to(email, caption = nil, mail_options = {})
         mail_options, html_options = mail_options.partition { |key,_| [:cc, :bcc, :subject, :body].include?(key) }
         mail_query = Rack::Utils.build_query(Hash[mail_options]).gsub(/\+/, '%20').gsub('%40', '@')
         mail_href = "mailto:#{email}"
@@ -167,7 +167,7 @@ module Padrino
       #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #
-      def meta_tag(content, options={})
+      def meta_tag(content, options = {})
         options = { 'content' => content }.update(options)
         tag(:meta, options)
       end
@@ -188,7 +188,7 @@ module Padrino
       #   # or override some options
       #   favicon_tag 'favicon.png', :type => 'image/ico'
       #
-      def favicon_tag(source, options={})
+      def favicon_tag(source, options = {})
         type = File.extname(source).sub('.','')
         options = { :href => image_path(source), :rel => 'icon', :type => "image/#{type}" }.update(options)
         tag(:link, options)
@@ -207,7 +207,7 @@ module Padrino
       # @example
       #   image_tag('icons/avatar.png')
       #
-      def image_tag(url, options={})
+      def image_tag(url, options = {})
         options = { :src => image_path(url) }.update(options)
         options[:alt] ||= image_alt(url) unless url.to_s =~ /\A(?:cid|data):|\A\Z/
         tag(:img, options)

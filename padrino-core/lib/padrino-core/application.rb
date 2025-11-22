@@ -112,7 +112,7 @@ module Padrino
       #
       # @see Padrino::Server#start
       #
-      def run!(options={})
+      def run!(options = {})
         return unless Padrino.load!
         Padrino.mount(settings.to_s).to('/')
         Padrino.run!(options)

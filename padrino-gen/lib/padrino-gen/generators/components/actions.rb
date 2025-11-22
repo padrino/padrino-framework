@@ -21,7 +21,7 @@ module Padrino
         #     :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
         #     :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
         #
-        def output_model_migration(filename, name, columns, options={})
+        def output_model_migration(filename, name, columns, options = {})
           if behavior == :revoke
             remove_migration(filename)
           else
@@ -61,7 +61,7 @@ module Padrino
         #     :remove => Proc.new { |field, kind| "t.remove :#{field}" }
         #   )
         #
-        def output_migration_file(filename, name, columns, options={})
+        def output_migration_file(filename, name, columns, options = {})
           if behavior == :revoke
             remove_migration(name)
           else
@@ -143,7 +143,7 @@ module Padrino
         #   insert_test_suite_setup('...CLASS_NAME...')
         #   => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @app_name), :after => "set :environment, :test")
         #
-        def insert_test_suite_setup(suite_text, options={})
+        def insert_test_suite_setup(suite_text, options = {})
           options = { :path => 'test/test_config.rb' }.update(options)
           create_file(options[:path], suite_text.gsub(/CLASS_NAME/, "#{@project_name}::#{@app_name}"))
         end
@@ -160,7 +160,7 @@ module Padrino
         #   insert_mocking_include('Mocha::API'):
         #   => inject_into_file("test/test_config.rb", "  include Mocha::API\n", :after => /class.*?\n/)
         #
-        def insert_mocking_include(library_name, options={})
+        def insert_mocking_include(library_name, options = {})
           options = { :indent => 2, :after => /class.*?\n/, :path => 'test/test_config.rb' }.update(options)
           return unless File.exist?(destination_root(options[:path]))
           include_text = indent_spaces(2) + "include #{library_name}\n"

@@ -74,7 +74,7 @@ module Padrino
       #   simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
       #   simple_format("hello\nworld", :tag => :div, :class => :foo) # => "<div class="foo">hello<br/>world</div>"
       #
-      def simple_format(text, options={})
+      def simple_format(text, options = {})
         t = options.delete(:tag) || :p
         start_tag = tag(t, options, true)
         text = escape_html(text.to_s.dup) unless text.html_safe?
@@ -124,7 +124,7 @@ module Padrino
       # @example
       #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
       #
-      def truncate(text, options={})
+      def truncate(text, options = {})
         options = { :length => 30, :omission => '...' }.update(options)
         if text
           len = options[:length] - options[:omission].length
@@ -151,7 +151,7 @@ module Padrino
       # @example
       #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
       #
-      def truncate_words(text, options={})
+      def truncate_words(text, options = {})
         options = { :length => 30, :omission => '...' }.update(options)
         if text
           words = text.split

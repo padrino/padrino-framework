@@ -63,7 +63,7 @@ end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
-def create_model_file(name, options={})
+def create_model_file(name, options = {})
     model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
     field_tuples = options[:fields].map { |value| value.split(':') }
     column_declarations = field_tuples.map { |field, _kind| "be_present self['#{field}'], '#{field} cannot be blank'" }.join("\n      ")

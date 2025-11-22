@@ -101,7 +101,7 @@ module Padrino
         #    # Admins see the "Profile" link, but Workers do not
         #    = link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
         #
-        def allowed?(account=nil, path=nil)
+        def allowed?(account = nil, path = nil)
           path = '/' if path.nil? || path.empty?
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
@@ -154,7 +154,7 @@ module Padrino
         ##
         # Create a project module.
         #
-        def project_module(name, path, options={})
+        def project_module(name, path, options = {})
           allow(path)
           @project_modules << ProjectModule.new(name, path, options)
         end
@@ -166,7 +166,7 @@ module Padrino
       class ProjectModule
         attr_reader :name, :options
 
-        def initialize(name, path, options={})
+        def initialize(name, path, options = {})
           @name, @path, @options = name, path, options
         end
 
@@ -186,7 +186,7 @@ module Padrino
         #   # => /admin/accounts
         #   project_module.path("/admin")
         #
-        def path(prefix=nil)
+        def path(prefix = nil)
           path = prefix ? File.join(prefix, @path) : @path
           path = File.join(ENV['RACK_BASE_URI'].to_s, path) if ENV['RACK_BASE_URI']
           path

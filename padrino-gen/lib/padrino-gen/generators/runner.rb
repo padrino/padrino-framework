@@ -17,7 +17,7 @@ module Padrino
       # @example
       #   project :test => :shoulda, :orm => :activerecord, :renderer => "haml"
       #
-      def project(options={})
+      def project(options = {})
         components = options.sort_by { |k, _v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
         params = [name, *components].push("-r=#{destination_root("../")}")
         say "=> Executing: padrino-gen project #{params.join(" ")}", :magenta
@@ -37,7 +37,7 @@ module Padrino
       #   generate :controller, "posts get:index get:new post:new"
       #   generate :migration, "AddEmailToUser email:string"
       #
-      def generate(type, arguments='')
+      def generate(type, arguments = '')
         params = arguments.split(' ').push("-r=#{destination_root}")
         params.push("--app=#{@_app_name}") if @_app_name
         say "=> Executing: padrino-gen #{type} #{params.join(" ")}", :magenta

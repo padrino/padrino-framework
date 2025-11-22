@@ -12,7 +12,7 @@ def sh_rake(command)
   sh "#{Gem.ruby} -S rake #{command}", :verbose => true
 end
 
-def say(text, color=:magenta)
+def say(text, color = :magenta)
   n = { :bold => 1, :red => 31, :green => 32, :yellow => 33, :blue => 34, :magenta => 35 }.fetch(color, 0)
   puts "\e[%dm%s\e[0m" % [n, text]
 end

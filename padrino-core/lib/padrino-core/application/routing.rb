@@ -36,7 +36,7 @@ module Padrino
 
       alias_method :optional?, :optional
 
-      def initialize(value, options={})
+      def initialize(value, options = {})
         super(value.to_s)
         @map      = options.delete(:map)
         @optional = options.delete(:optional)
@@ -250,7 +250,7 @@ module Padrino
       #     end
       #   end
       #
-      def parent(name = nil, options={})
+      def parent(name = nil, options = {})
         return super() unless name
         defaults = { :optional => false, :map => name.to_s }
         options = defaults.merge(options)
@@ -894,7 +894,7 @@ module Padrino
       #     end
       #   end
       #
-      def content_type(type=nil, params={})
+      def content_type(type = nil, params = {})
         return @_content_type unless type
         super(type, params)
         @_content_type = type
@@ -923,7 +923,7 @@ module Padrino
         ::Rack::Mime::MIME_TYPES.key(media_type).sub(/\./,'').to_sym
       end
 
-      def filter!(type, base=settings)
+      def filter!(type, base = settings)
         filter! type, base.superclass if base.superclass.respond_to?(:filters)
         base.filters[type].each { |block| instance_eval(&block) }
       end

@@ -78,7 +78,7 @@ module Padrino
       # @example
       #   concat_content("This will be output to the template buffer")
       #
-      def concat_content(text='')
+      def concat_content(text = '')
         if handler = find_proper_handler
           handler.concat_to_template(text, binding)
         else
@@ -97,7 +97,7 @@ module Padrino
       # @example
       #   concat_safe_content("This will be output to the template buffer")
       #
-      def concat_safe_content(text='')
+      def concat_safe_content(text = '')
         concat_content text.html_safe
       end
 

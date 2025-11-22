@@ -68,12 +68,12 @@ class Minitest::Spec
   end
 
   # expects_generated :model, "post title:string body:text"
-  def expects_generated(generator, params='')
+  def expects_generated(generator, params = '')
     Padrino.expects(:bin_gen).with(generator, *params.split(' ')).returns(true)
   end
 
   # expects_generated_project :test => :shoulda, :orm => :activerecord, :dev => true
-  def expects_generated_project(options={})
+  def expects_generated_project(options = {})
     options = options.dup
     project_root = options.delete(:root)
     project_name = options.delete(:name)
@@ -91,7 +91,7 @@ class Minitest::Spec
   end
 
   # expects_initializer :test, "# Example"
-  def expects_initializer(name, body,options={})
+  def expects_initializer(name, body,options = {})
     #options.reverse_merge!(:root => "/tmp/sample_project")
     path = File.join(options[:root],'config/initializers',"#{name}.rb")
     instance = mock
@@ -102,7 +102,7 @@ class Minitest::Spec
   end
 
   # expects_rake "custom"
-  def expects_rake(command,options={})
+  def expects_rake(command,options = {})
     #options.reverse_merge!(:root => '/tmp')
     Padrino.expects(:bin).with('rake', command, "-c=#{options[:root]}").returns(true)
   end

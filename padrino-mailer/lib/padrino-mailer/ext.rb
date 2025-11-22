@@ -241,7 +241,7 @@ module Mail # @private
     #
     # See Padrino::Mailer::Mime for more usage informations.
     #
-    def content_type_with_symbol(value=nil)
+    def content_type_with_symbol(value = nil)
       value = Padrino::Mailer::Mime::MIME_TYPES.find { |_k,v| v == value }[0] rescue value if value.is_a?(Symbol)
       mime = content_type_without_symbol(value)
       Padrino::Mailer::Mime.mime_type(mime)
@@ -254,7 +254,7 @@ module Mail # @private
     ##
     # Defines the render for the mailer utilizing the padrino 'rendering' module
     #
-    def render(engine=nil, data=nil, options={}, locals={}, &block)
+    def render(engine = nil, data = nil, options = {}, locals = {}, &block)
       locals = @_locals || {} if !options[:locals] && locals.empty?
       @template_cache.clear if settings.reload_templates?
 
@@ -277,7 +277,7 @@ module Mail # @private
     end
 
     alias_method :original_partial, :partial if instance_methods.include?(:partial)
-    def partial(template, options={}, &block)
+    def partial(template, options = {}, &block)
       raise "gem 'padrino-helpers' is required to render partials" unless respond_to?(:original_partial)
       self.body = original_partial(template, options, &block)
     end

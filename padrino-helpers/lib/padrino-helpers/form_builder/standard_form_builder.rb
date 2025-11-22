@@ -28,12 +28,12 @@ module Padrino
           EOF
         end
 
-        def submit_block(caption, options={})
+        def submit_block(caption, options = {})
           submit_html = self.submit(caption, options)
           @template.content_tag(:p, submit_html)
         end
 
-        def image_submit_block(source, options={})
+        def image_submit_block(source, options = {})
           submit_html = self.image_submit(source, options)
           @template.content_tag(:p, submit_html)
         end

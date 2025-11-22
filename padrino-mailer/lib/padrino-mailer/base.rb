@@ -106,7 +106,7 @@ module Padrino
       #     email(:foo) do; end
       #   end
       #
-      def defaults(attributes=nil)
+      def defaults(attributes = nil)
         if attributes.nil? # Retrieve the default values
           @app.respond_to?(:mailer_defaults) ? @app.mailer_defaults.merge(@defaults) : @defaults
         else # updates the default values

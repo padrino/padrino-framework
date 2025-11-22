@@ -26,7 +26,7 @@ module Padrino
       #   end
       #
       # @see ClassMethods#email
-      def email(mail_attributes={}, &block)
+      def email(mail_attributes = {}, &block)
         settings.email(mail_attributes, &block)
       end
 
@@ -133,7 +133,7 @@ module Padrino
         #     body 'path/to/my/template', :locals => { :a => a, :b => b }
         #   end
         #
-        def email(mail_attributes={}, &block)
+        def email(mail_attributes = {}, &block)
           message = _padrino_mailer::Message.new(self)
           message.delivery_method(*delivery_settings)
           message.instance_eval(&block) if block_given?

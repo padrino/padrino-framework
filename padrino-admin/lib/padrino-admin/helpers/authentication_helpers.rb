@@ -25,7 +25,7 @@ module Padrino
         # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
-        def set_current_account(account=nil)
+        def set_current_account(account = nil)
           session[settings.session_id] = account ? account.id : nil
           @current_account = account
         end

@@ -27,7 +27,7 @@ module Padrino
     # @option options [Symbol] :app_root (Directory of :app_file)
     # @option options [Symbol] :gem The gem to load the app from (Detected from name)
     #
-    def initialize(name, options={})
+    def initialize(name, options = {})
       @name      = name.to_s
       @app_class = options[:app_class] || Inflections.camelize(@name)
       @gem       = options[:gem]       || Inflections.underscore(@app_class.split('::').first)
@@ -263,7 +263,7 @@ module Padrino
     # @example
     #   Padrino.mount("blog_app").to("/blog")
     #
-    def mount(name, options={})
+    def mount(name, options = {})
       Mounter.new(name, options)
     end
   end

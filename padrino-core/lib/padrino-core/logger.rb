@@ -132,7 +132,7 @@ module Padrino
       #   logger.bench 'GET', started_at, '/blog/categories'
       #   # => DEBUG - GET (0.0056s) - /blog/categories
       #
-      def bench(action, began_at, message, level=:debug, color=:yellow)
+      def bench(action, began_at, message, level = :debug, color = :yellow)
         @_pad  ||= 8
         @_pad    = action.to_s.size if action.to_s.size > @_pad
         duration = Time.now - began_at
@@ -406,7 +406,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     #   Can be an encoding, false or true.
     #   If it's true, logger sanitizes to Encoding.default_external.
     #
-    def initialize(options={})
+    def initialize(options = {})
       @buffer           = []
       @auto_flush       = options.has_key?(:auto_flush) ? options[:auto_flush] : true
       @level            = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
