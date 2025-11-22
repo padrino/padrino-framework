@@ -143,7 +143,7 @@ module Padrino
       def content_for(key, content = nil, options = {}, &block)
         options = content if content.is_a?(Hash)
         content_blocks[key.to_sym].clear if options[:flush]
-        content_blocks[key.to_sym] << (block_given? ? block : Proc.new { content })
+        content_blocks[key.to_sym] << (block_given? ? block : proc { content })
       end
 
       ##

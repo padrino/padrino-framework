@@ -146,7 +146,7 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-       :column_format => Proc.new { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
+       :column_format => proc { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
        :base => DM_MIGRATION, :up => DM_MODEL_UP_MG, :down => DM_MODEL_DOWN_MG)
 end
 
@@ -159,7 +159,7 @@ MIGRATION
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => DM_MIGRATION, :change_format => DM_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.classify}" },
-    :remove => Proc.new { |field, _kind| "drop_column :#{field}" }
+    :add => proc { |field, kind| "add_column :#{field}, #{kind.classify}" },
+    :remove => proc { |field, _kind| "drop_column :#{field}" }
   )
 end

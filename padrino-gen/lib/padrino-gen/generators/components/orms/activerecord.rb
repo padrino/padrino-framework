@@ -204,7 +204,7 @@ MIGRATION
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
     :base          => AR_MIGRATION,
-    :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    :column_format => proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
     :up            => AR_MODEL_UP_MG,
     :down          => AR_MODEL_DOWN_MG
   )
@@ -220,7 +220,7 @@ def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base          => AR_MIGRATION,
     :change_format => AR_CHANGE_MG,
-    :add           => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    :remove        => Proc.new { |field, _kind| "t.remove :#{field}" }
+    :add           => proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    :remove        => proc { |field, _kind| "t.remove :#{field}" }
   )
 end

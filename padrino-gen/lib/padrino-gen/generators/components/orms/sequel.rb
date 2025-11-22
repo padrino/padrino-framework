@@ -85,7 +85,7 @@ MIGRATION
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(migration_name, name, columns,
-         :column_format => Proc.new { |field, kind| "#{kind.underscore.camelize} :#{field}" },
+         :column_format => proc { |field, kind| "#{kind.underscore.camelize} :#{field}" },
          :base => SQ_MIGRATION, :up => SQ_MODEL_UP_MG, :down => SQ_MODEL_DOWN_MG)
 end
 
@@ -98,7 +98,7 @@ MIGRATION
 def create_migration_file(migration_name, name, columns)
   output_migration_file(migration_name, name, columns,
     :base => SQ_MIGRATION, :change_format => SQ_CHANGE_MG,
-    :add => Proc.new { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
-    :remove => Proc.new { |field, _kind| "drop_column :#{field}" }
+    :add => proc { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}"  },
+    :remove => proc { |field, _kind| "drop_column :#{field}" }
   )
 end
