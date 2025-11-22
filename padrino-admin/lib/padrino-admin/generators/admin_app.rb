@@ -106,7 +106,7 @@ module Padrino
             admin_app.invoke_all
           end
 
-          # TODO See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
+          # TODO: See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
           template "templates/account/#{orm}.rb.tt", destination_root("models", "#{@model_singular}.rb"), :force => true
 
           if File.exist?(destination_root("db/seeds.rb"))

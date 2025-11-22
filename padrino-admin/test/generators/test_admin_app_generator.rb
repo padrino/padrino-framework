@@ -75,7 +75,7 @@ describe "AdminAppGenerator" do
     end
 
     it "should generate the admin app under a different folder" do
-      # TODO FIXME Implement option --admin_root or something. See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
+      # TODO: FIXME Implement option --admin_root or something. See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
       skip
     end
 
@@ -147,7 +147,7 @@ describe "AdminAppGenerator" do
     end
 
     it 'should correctly generate a new padrino admin application with model in non-default application path' do
-      # TODO FIXME What's the use case here? Clarify.
+      # TODO: FIXME What's the use case here? Clarify.
       # Remember that --root/-r in the admin_app generator refers to the project's location, not the admin's location
       # inside it. See https://github.com/padrino/padrino-framework/issues/854#issuecomment-14749356
       skip
