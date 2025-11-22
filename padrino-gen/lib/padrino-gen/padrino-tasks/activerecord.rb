@@ -446,14 +446,12 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
   end
 
-  def with_all_databases
+  def with_all_databases(&block)
     if less_than_active_record_6_0?
-      ActiveRecord::Base.configurations.each_value do |config|
-        yield config
-      end
+      ActiveRecord::Base.configurations.each_value(&block)
     else
       ActiveRecord::Base.configurations.configs_for.each do |db_config|
-        yield configuration_hash(db_config)
+        block.call(configuration_hash(db_config))
       end
     end
   end
