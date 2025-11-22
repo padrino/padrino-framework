@@ -26,7 +26,7 @@ describe 'PluginGenerator' do
       capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/lib/hoptoad_initializer.rb")
-      assert_no_match_in_file(/enable :raise_errors/,"#{@apptmp}/sample_project/app/app.rb")
+      assert_no_match_in_file(/enable :raise_errors/, "#{@apptmp}/sample_project/app/app.rb")
       assert_no_match_in_file(/rack_hoptoad/, "#{@apptmp}/sample_project/Gemfile")
     end
   end
@@ -89,7 +89,7 @@ describe 'PluginGenerator' do
       template_file = 'hoptoad'
       resolved_path = 'https://raw.github.com/padrino/padrino-recipes/master/plugins/hoptoad_plugin.rb'
       stub_request(:get, resolved_path).to_return(body: template_file)
-      plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
+      plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"], {})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:apply).with(resolved_path).returns(true).once
       capture_io { plugin_gen.invoke_all }
@@ -99,7 +99,7 @@ describe 'PluginGenerator' do
       template_file  = 'hwat'
       resolved_path = 'https://raw.github.com/padrino/padrino-recipes/master/plugins/hwat_plugin.rb'
       stub_request(:get, resolved_path).to_return(status: 404)
-      plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"],{})
+      plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"], {})
       plugin_gen.expects(:in_app_root?).returns(true).once
       # Use regex to ignore trailing whitespace in message
       plugin_gen.expects(:say).with { |message, color| (message =~ /The template at #{resolved_path} could not be loaded:.*404.*/) && (color == :red) }.returns(true).once
@@ -109,13 +109,13 @@ describe 'PluginGenerator' do
 
   describe 'with list option' do
     it 'should return a list of available plugins with no parameter' do
-      plugin_gen = Padrino::Generators::Plugin.new([], [],{})
+      plugin_gen = Padrino::Generators::Plugin.new([], [], {})
       plugin_gen.expects(:list_plugins).returns(true).once
       capture_io { plugin_gen.invoke_all }
     end
 
     it 'should return a list of available plugins with list option' do
-      plugin_gen = Padrino::Generators::Plugin.new(['some_plugin'], ['-l', "-r=#{@apptmp}/sample_project"],{})
+      plugin_gen = Padrino::Generators::Plugin.new(['some_plugin'], ['-l', "-r=#{@apptmp}/sample_project"], {})
       plugin_gen.expects(:list_plugins).returns(true).once
       capture_io { plugin_gen.invoke_all }
     end

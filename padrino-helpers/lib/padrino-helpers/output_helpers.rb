@@ -180,7 +180,7 @@ module Padrino
       def yield_content(key, *args)
         blocks = content_blocks[key.to_sym]
         return nil if blocks.empty?
-        blocks.inject(SafeBuffer.new) { |all,content| all << capture_html(*args, &content) }
+        blocks.inject(SafeBuffer.new) { |all, content| all << capture_html(*args, &content) }
       end
 
       protected
@@ -191,7 +191,7 @@ module Padrino
       #   content_blocks[:name] => ['...', '...']
       #
       def content_blocks
-        @content_blocks ||= Hash.new { |h,k| h[k] = [] }
+        @content_blocks ||= Hash.new { |h, k| h[k] = [] }
       end
 
       ##

@@ -97,7 +97,7 @@ module Padrino
         end
 
         def error_list_tag(objects, object_name)
-          errors = objects.inject({}) { |all,object| all.update(object.errors) }
+          errors = objects.inject({}) { |all, object| all.update(object.errors) }
           error_messages = errors.inject(SafeBuffer.new) do |all, (field, message)|
             field_name = I18n.t(field, :default => Inflections.humanize(field), :scope => [:models, object_name, :attributes])
             all << content_tag(:li, "#{field_name} #{message}")
@@ -119,7 +119,7 @@ module Padrino
         end
 
         def error_html_attributes(options)
-          [:id, :class, :style].each_with_object({}) do |key,all|
+          [:id, :class, :style].each_with_object({}) do |key, all|
             if options.include?(key)
               value = options[key]
               all[key] = value if value

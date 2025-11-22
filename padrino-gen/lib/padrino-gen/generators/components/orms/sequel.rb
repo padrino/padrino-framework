@@ -17,20 +17,20 @@ def setup_orm
     when 'mysql-gem'
       sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")
       sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{db}_production\"")
-      sequel.gsub!(/!DB_TEST!/,"\"mysql://localhost/#{db}_test\"")
+      sequel.gsub!(/!DB_TEST!/, "\"mysql://localhost/#{db}_test\"")
       require_dependencies 'mysql', :version => '~> 2.8.1'
     when 'mysql', 'mysql2'
       sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql2://localhost/#{db}_development\"")
       sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql2://localhost/#{db}_production\"")
-      sequel.gsub!(/!DB_TEST!/,"\"mysql2://localhost/#{db}_test\"")
+      sequel.gsub!(/!DB_TEST!/, "\"mysql2://localhost/#{db}_test\"")
       require_dependencies 'mysql2'
     when 'postgres'
       sequel.gsub!(/!DB_DEVELOPMENT!/, "\"postgres://localhost/#{db}_development\"")
       sequel.gsub!(/!DB_PRODUCTION!/, "\"postgres://localhost/#{db}_production\"")
-      sequel.gsub!(/!DB_TEST!/,"\"postgres://localhost/#{db}_test\"")
+      sequel.gsub!(/!DB_TEST!/, "\"postgres://localhost/#{db}_test\"")
       require_dependencies 'pg'
     when 'sqlite'
-      sequel.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite://db/#{db}_development.db\"")
+      sequel.gsub!(/!DB_DEVELOPMENT!/, "\"sqlite://db/#{db}_development.db\"")
       sequel.gsub!(/!DB_PRODUCTION!/, "\"sqlite://db/#{db}_production.db\"")
       sequel.gsub!(/!DB_TEST!/,       "\"sqlite://db/#{db}_test.db\"")
       require_dependencies 'sqlite3'

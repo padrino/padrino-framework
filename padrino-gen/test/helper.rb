@@ -87,22 +87,22 @@ class Minitest::Spec
     instance = mock
     instance.expects(:invoke!).once
     include_text = "gem '#{name}'\n"
-    Thor::Actions::InjectIntoFile.expects(:new).with(anything,'Gemfile', include_text, anything).returns(instance)
+    Thor::Actions::InjectIntoFile.expects(:new).with(anything, 'Gemfile', include_text, anything).returns(instance)
   end
 
   # expects_initializer :test, "# Example"
-  def expects_initializer(name, body,options = {})
+  def expects_initializer(name, body, options = {})
     #options.reverse_merge!(:root => "/tmp/sample_project")
-    path = File.join(options[:root],'config/initializers',"#{name}.rb")
+    path = File.join(options[:root], 'config/initializers', "#{name}.rb")
     instance = mock
     instance.expects(:invoke!).at_least_once
     include_text = "    register #{name.to_s.camelize}Initializer\n"
-    Thor::Actions::InjectIntoFile.expects(:new).with(anything,anything, include_text, anything).returns(instance)
+    Thor::Actions::InjectIntoFile.expects(:new).with(anything, anything, include_text, anything).returns(instance)
     Thor::Actions::CreateFile.expects(:new).with(anything, path, kind_of(Proc), anything).returns(instance)
   end
 
   # expects_rake "custom"
-  def expects_rake(command,options = {})
+  def expects_rake(command, options = {})
     #options.reverse_merge!(:root => '/tmp')
     Padrino.expects(:bin).with('rake', command, "-c=#{options[:root]}").returns(true)
   end

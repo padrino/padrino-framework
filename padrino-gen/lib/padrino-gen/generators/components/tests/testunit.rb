@@ -93,14 +93,14 @@ end
 
 def generate_controller_test(name, path)
   test_unit_contents = TESTUNIT_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
-  controller_test_path = File.join('test',options[:app],'controllers',"#{name.to_s.underscore}_controller_test.rb")
+  controller_test_path = File.join('test', options[:app], 'controllers', "#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), test_unit_contents, :skip => true
 end
 
 def generate_model_test(name)
   test_unit_contents = TESTUNIT_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
   test_unit_contents.gsub!(/!PATH!/, recognize_path)
-  model_test_path = File.join('test',options[:app],'models',"#{name.to_s.underscore}_test.rb")
+  model_test_path = File.join('test', options[:app], 'models', "#{name.to_s.underscore}_test.rb")
   create_file destination_root(model_test_path), test_unit_contents, :skip => true
 end
 

@@ -25,7 +25,7 @@ describe 'ModelGenerator' do
 
     it 'should fail if field name is not acceptable' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
-      out, = capture_io { generate(:model, 'DemoItem', 're@l$ly:string','display-name:string', 'age&year:datetime', 'email_two:string', "-r=#{@apptmp}/sample_project") }
+      out, = capture_io { generate(:model, 'DemoItem', 're@l$ly:string', 'display-name:string', 'age&year:datetime', 'email_two:string', "-r=#{@apptmp}/sample_project") }
       assert_match(/Invalid field name:/, out)
       assert_match(/display-name:string/, out)
       assert_match(/age&year:datetime/, out)
@@ -54,7 +54,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/class Post\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/subby/models/post.rb")
       assert_match_in_file(/property :body, String/m, "#{@apptmp}/sample_project/subby/models/post.rb")
       assert_match_in_file(/migration 1, :create_posts do/m, "#{@apptmp}/sample_project/db/migrate/001_create_posts.rb")
-      assert_match_in_file(/DataMapper.finalize/m,"#{@apptmp}/sample_project/config/boot.rb")
+      assert_match_in_file(/DataMapper.finalize/m, "#{@apptmp}/sample_project/config/boot.rb")
     end
 
     it 'should generate migration file versions properly' do
@@ -519,8 +519,8 @@ describe 'ModelGenerator' do
     it 'should destroy the model test file in a sub app' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'User', '-a=/subby',"-r=#{@apptmp}/sample_project") }
-      capture_io { generate_with_parts(:model, 'User', '-a=/subby',"-r=#{@apptmp}/sample_project", '-d', :apps => 'subby') }
+      capture_io { generate(:model, 'User', '-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate_with_parts(:model, 'User', '-a=/subby', "-r=#{@apptmp}/sample_project", '-d', :apps => 'subby') }
       assert_no_file_exists("#{@apptmp}/sample_project/subby/models/user.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/test/subby/models/user_test.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")

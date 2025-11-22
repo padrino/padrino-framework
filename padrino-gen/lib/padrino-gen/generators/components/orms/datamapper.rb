@@ -72,19 +72,19 @@ def setup_orm
   begin
     case adapter ||= options[:adapter]
     when 'mysql', 'mysql2'
-      dm.gsub!(/!DB_DEVELOPMENT!/,"\"mysql://root@localhost/#{db}_development\"")
-      dm.gsub!(/!DB_PRODUCTION!/,"\"mysql://root@localhost/#{db}_production\"")
-      dm.gsub!(/!DB_TEST!/,"\"mysql://root@localhost/#{db}_test\"")
+      dm.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://root@localhost/#{db}_development\"")
+      dm.gsub!(/!DB_PRODUCTION!/, "\"mysql://root@localhost/#{db}_production\"")
+      dm.gsub!(/!DB_TEST!/, "\"mysql://root@localhost/#{db}_test\"")
       require_dependencies 'dm-mysql-adapter'
     when 'postgres'
-      dm.gsub!(/!DB_DEVELOPMENT!/,"\"postgres://root@localhost/#{db}_development\"")
-      dm.gsub!(/!DB_PRODUCTION!/,"\"postgres://root@localhost/#{db}_production\"")
-      dm.gsub!(/!DB_TEST!/,"\"postgres://root@localhost/#{db}_test\"")
+      dm.gsub!(/!DB_DEVELOPMENT!/, "\"postgres://root@localhost/#{db}_development\"")
+      dm.gsub!(/!DB_PRODUCTION!/, "\"postgres://root@localhost/#{db}_production\"")
+      dm.gsub!(/!DB_TEST!/, "\"postgres://root@localhost/#{db}_test\"")
       require_dependencies 'dm-postgres-adapter'
     when 'sqlite'
-      dm.gsub!(/!DB_DEVELOPMENT!/,"\"sqlite3://\" + Padrino.root('db', \"#{db}_development.db\")")
-      dm.gsub!(/!DB_PRODUCTION!/,"\"sqlite3://\" + Padrino.root('db', \"#{db}_production.db\")")
-      dm.gsub!(/!DB_TEST!/,"\"sqlite3://\" + Padrino.root('db', \"#{db}_test.db\")")
+      dm.gsub!(/!DB_DEVELOPMENT!/, "\"sqlite3://\" + Padrino.root('db', \"#{db}_development.db\")")
+      dm.gsub!(/!DB_PRODUCTION!/, "\"sqlite3://\" + Padrino.root('db', \"#{db}_production.db\")")
+      dm.gsub!(/!DB_TEST!/, "\"sqlite3://\" + Padrino.root('db', \"#{db}_test.db\")")
       require_dependencies 'dm-sqlite-adapter'
     else
       say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red

@@ -20,7 +20,7 @@ describe 'FormBuilder' do
       mock_model('Role', :name => 'Moderate', :id => 2),  mock_model('Role', :name => 'Limited', :id => 3)]
     @user = mock_model('User', :first_name => 'Joe', :email => '', :session_id => 54)
     @user.stubs(:errors => {:a => 'must be present', :b => 'must be valid', :email => 'Must be valid', :first_name => []})
-    @user.stubs(:role_types => role_types, :role => '1', :roles => [1,3])
+    @user.stubs(:role_types => role_types, :role => '1', :roles => [1, 3])
     @user_none = mock_model('User')
   end
 
@@ -533,7 +533,7 @@ describe 'FormBuilder' do
 
   describe 'for #check_box_group and #radio_button_group methods' do
     it 'should display checkbox group html' do
-      checkboxes = standard_builder.check_box_group(:role, :collection => @user.role_types, :fields => [:name, :id], :selected => [2,3])
+      checkboxes = standard_builder.check_box_group(:role, :collection => @user.role_types, :fields => [:name, :id], :selected => [2, 3])
       assert_html_has_tag(checkboxes, 'input[type=checkbox]', :value => '1')
       assert_html_has_no_tag(checkboxes, 'input[type=checkbox][checked]', :value => '1')
       assert_html_has_tag(checkboxes, 'input[type=checkbox]', :checked => 'checked', :value => '2')

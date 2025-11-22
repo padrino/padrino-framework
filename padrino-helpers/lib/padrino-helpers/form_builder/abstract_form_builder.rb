@@ -157,7 +157,7 @@ module Padrino
           include_index = default_collection.respond_to?(:each)
 
           nested_options = { :parent => self, :association => child_association }
-          Array(collection).each_with_index.inject(SafeBuffer.new) do |all,(child_instance,index)|
+          Array(collection).each_with_index.inject(SafeBuffer.new) do |all, (child_instance, index)|
             nested_options[:index] = options[:index] || (include_index ? index : nil)
             all << @template.fields_for(child_instance,  { :nested => nested_options, :builder => self.class }, &block) << "\n"
           end
@@ -242,9 +242,9 @@ module Padrino
         #
         def labeled_group(field, options = {})
           options = { :id => field_id(field), :selected => field_value(field) }.update(options)
-          options.update(error_class(field)) { |_,*values| values.compact.join(' ') }
+          options.update(error_class(field)) { |_, *values| values.compact.join(' ') }
           selected_values = resolve_checked_values(field, options)
-          variants_for_group(options).inject(SafeBuffer.new) do |html, (caption,value)|
+          variants_for_group(options).inject(SafeBuffer.new) do |html, (caption, value)|
             variant_id = "#{options[:id]}_#{value}"
             attributes = { :value => value, :id => variant_id, :checked => selected_values.include?(value) }
             caption = yield(attributes) << ' ' << caption
@@ -316,7 +316,7 @@ module Padrino
         def default_options(field, options, defaults = {})
           { :value => field_value(field),
             :id => field_id(field)
-          }.update(defaults).update(options).update(error_class(field)) { |_,*values| values.compact.join(' ') }
+          }.update(defaults).update(options).update(error_class(field)) { |_, *values| values.compact.join(' ') }
         end
       end
     end

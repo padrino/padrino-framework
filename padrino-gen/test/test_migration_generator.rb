@@ -214,7 +214,7 @@ describe 'MigrationGenerator' do
 
     it 'should destroy the migration files' do
       capture_io { generate(:migration, *@migration_params) }
-      capture_io { generate(:migration, 'RemoveEmailFromUsers', "-r=#{@apptmp}/sample_project",'-d') }
+      capture_io { generate(:migration, 'RemoveEmailFromUsers', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_remove_email_from_users.rb")
     end
 
@@ -222,7 +222,7 @@ describe 'MigrationGenerator' do
       migration_param2 = ['AddEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       capture_io { generate(:migration, *migration_param2) }
       capture_io { generate(:migration, *@migration_params) }
-      capture_io { generate(:migration, 'RemoveEmailFromUsers', "-r=#{@apptmp}/sample_project",'-d') }
+      capture_io { generate(:migration, 'RemoveEmailFromUsers', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/002_remove_email_from_users.rb")
     end
   end

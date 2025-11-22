@@ -66,7 +66,7 @@ describe 'MailerGenerator' do
     it 'should destroy mailer file' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project",'-d') }
+      capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_dir_exists("#{@apptmp}/sample_project/app/views/demo")
       assert_no_file_exists("#{@apptmp}/sample_project/app/mailers/demo.rb")
     end

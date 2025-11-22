@@ -328,7 +328,7 @@ WARNING
       def insert_into_gemfile(name, options = {})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
-        gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(', ')
+        gem_options   = options.map { |k, v| k.to_s == 'require' && [true, false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(', ')
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"
         write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"

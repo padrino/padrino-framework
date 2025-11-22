@@ -122,7 +122,7 @@ module Padrino
     #
     def add_middleware(router)
       builder = Rack::Builder.new
-      middleware.each { |mw,args,block| builder.use(mw, *args, &block) }
+      middleware.each { |mw, args, block| builder.use(mw, *args, &block) }
       builder.run(router)
       builder.to_app
     end

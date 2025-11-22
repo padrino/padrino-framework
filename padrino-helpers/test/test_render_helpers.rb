@@ -166,19 +166,19 @@ describe 'RenderHelpers' do
     it 'should capture slim template once and only once' do
       $number_of_captures = 0
       get '/double_capture_slim'
-      assert_equal 1,$number_of_captures
+      assert_equal 1, $number_of_captures
     end
 
     it 'should capture haml template once and only once' do
       $number_of_captures = 0
       get '/double_capture_haml'
-      assert_equal 1,$number_of_captures
+      assert_equal 1, $number_of_captures
     end
 
     it 'should capture erb template once and only once' do
       $number_of_captures = 0
       get '/double_capture_erb'
-      assert_equal 1,$number_of_captures
+      assert_equal 1, $number_of_captures
     end
 
     it 'should fail on wrong erb usage' do

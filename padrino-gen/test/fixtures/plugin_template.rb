@@ -9,5 +9,5 @@ HOPTOAD = <<-HOPTOAD
     end
 HOPTOAD
 require_dependencies 'rack_hoptoad', :require => 'rack/hoptoad'
-initializer :hoptoad,HOPTOAD
-inject_into_file destination_root('/app/app.rb'),"    enable :raise_errors\n", :after => "configure do\n"
+initializer :hoptoad, HOPTOAD
+inject_into_file destination_root('/app/app.rb'), "    enable :raise_errors\n", :after => "configure do\n"

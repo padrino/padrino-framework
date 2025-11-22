@@ -27,7 +27,7 @@ module Padrino
       class_option :layout,     :desc => 'The layout for the controller',          :aliases => '-l', :default => '',     :type => :string
       class_option :parent,     :desc => 'The parent of the controller',           :aliases => '-p', :default => '',     :type => :string
       class_option :provides,   :desc => 'The formats provided by the controller', :aliases => '-f', :default => '',     :type => :string
-      class_option :'no-helper',:desc => 'Not generate helper',                                      :default => false,  :type => :boolean
+      class_option :'no-helper', :desc => 'Not generate helper',                                      :default => false,  :type => :boolean
 
       # Show help if no ARGV given
       require_arguments!

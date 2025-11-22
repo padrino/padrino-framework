@@ -644,7 +644,7 @@ module Padrino
           # Small reformats
           path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
           path.gsub!(%r{//$}, '/')                     # Remove index path
-          path[0,0] = '/' if path !~ %r{^\(?/}         # Paths must start with a /
+          path[0, 0] = '/' if path !~ %r{^\(?/}         # Paths must start with a /
           path.sub!(%r{/(\))?$}, '\\1') if path != '/' # Remove latest trailing delimiter
           path.gsub!(/\/(\(\.|$)/, '\\1')              # Remove trailing slashes
           path.squeeze!('/')
@@ -726,7 +726,7 @@ module Padrino
 
           return provides_any?(accepts) if types.include?(:any)
 
-          accepts = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
+          accepts = accepts.empty? ? mime_types.slice(0, 1) : (accepts & mime_types)
 
           type = accepts.first && mime_symbol(accepts.first)
           type ||= catch_all && types.first
@@ -920,7 +920,7 @@ module Padrino
       end
 
       def mime_symbol(media_type)
-        ::Rack::Mime::MIME_TYPES.key(media_type).sub(/\./,'').to_sym
+        ::Rack::Mime::MIME_TYPES.key(media_type).sub(/\./, '').to_sym
       end
 
       def filter!(type, base = settings)

@@ -72,7 +72,7 @@ describe Padrino::Flash do
     end
 
     post :index do
-      params.each { |k,v| flash[k.to_sym] = v.to_s }
+      params.each { |k, v| flash[k.to_sym] = v.to_s }
       flash.next.to_json
     end
 

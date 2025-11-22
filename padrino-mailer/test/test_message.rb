@@ -154,7 +154,7 @@ describe 'Message' do
     end
 
     it 'should render partials' do
-      objects = [1,2,'<evil>','<good>'.html_safe]
+      objects = [1, 2, '<evil>', '<good>'.html_safe]
       message = Mail::Message.new do
         from    'padrino@me.com'
         to      'padrino@you.com'

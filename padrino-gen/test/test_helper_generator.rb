@@ -44,7 +44,7 @@ describe 'HelperGenerator' do
     it 'should generate helper in specified app' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:helper, 'DemoItems', '-a=/subby', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/helpers DemoItemsHelper/m, "#{@apptmp}/sample_project/subby/helpers/demo_items_helper.rb")
     end
 
@@ -58,37 +58,37 @@ describe 'HelperGenerator' do
     it 'should generate helper test for bacon' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app','subby'))
+      capture_io { generate(:helper, 'DemoItems', '-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app', 'subby'))
     end
 
     it 'should generate helper test for minitest' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app','subby'))
+      capture_io { generate(:helper, 'DemoItems', '-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app', 'subby'))
     end
 
     it 'should generate helper test for rspec' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:helper, 'DemoItems', '-a=/subby', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/describe "SampleProject::Subby::DemoItemsHelper" do/m, "#{@apptmp}/sample_project/spec/subby/helpers/demo_items_helper_spec.rb")
     end
 
     it 'should generate helper test for shoulda' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/context "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app','subby'))
-      assert_file_exists(@helper_test_path.gsub('app','subby'))
+      capture_io { generate(:helper, 'DemoItems', '-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/context "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app', 'subby'))
+      assert_file_exists(@helper_test_path.gsub('app', 'subby'))
       assert_file_exists("#{@apptmp}/sample_project/test/subby/helpers/demo_items_helper_test.rb")
     end
 
     it 'should generate helper test for testunit' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=testunit', '--script=none') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:helper, 'DemoItems', '-a=/subby', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class DemoItemsHelperTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/subby/helpers/demo_items_helper_test.rb")
       assert_match_in_file(/@helpers\.extend SampleProject::Subby::DemoItemsHelper/m, "#{@apptmp}/sample_project/test/subby/helpers/demo_items_helper_test.rb")
     end
@@ -104,8 +104,8 @@ describe 'HelperGenerator' do
   describe 'the helper destroy option' do
     it 'should destroy helper files' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
-      capture_io { generate(:helper, 'demo_items',"-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'demo_items',"-r=#{@apptmp}/sample_project",'-d') }
+      capture_io { generate(:helper, 'demo_items', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:helper, 'demo_items', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists(@helper_path)
       assert_no_file_exists(@helper_test_path)
       assert_no_file_exists("#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
@@ -113,8 +113,8 @@ describe 'HelperGenerator' do
 
     it 'should destroy helper files with rspec' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec') }
-      capture_io { generate(:helper, 'demo_items',"-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'demo_items',"-r=#{@apptmp}/sample_project",'-d') }
+      capture_io { generate(:helper, 'demo_items', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:helper, 'demo_items', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists(@helper_path)
       assert_no_file_exists("#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/spec/app/helpers/demo_items_helper_spec.rb")
@@ -123,8 +123,8 @@ describe 'HelperGenerator' do
     it 'should destroy helper files in sub apps' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'demo_items','-a=/subby',"-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:helper, 'demo_items','-a=/subby',"-r=#{@apptmp}/sample_project",'-d') }
+      capture_io { generate(:helper, 'demo_items', '-a=/subby', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:helper, 'demo_items', '-a=/subby', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/app/helpers/demo_items_helper.rb")
     end
   end
