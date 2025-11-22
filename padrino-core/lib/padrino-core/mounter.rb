@@ -164,7 +164,7 @@ module Padrino
     #
     def app_constant
       klass = Object
-      for piece in app_class.split("::")
+      app_class.split("::").each do |piece|
         piece = piece.to_sym
         if klass.const_defined?(piece, false)
           klass = klass.const_get(piece)
