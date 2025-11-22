@@ -294,7 +294,7 @@ module Padrino
             fragment << "][#{nested_index}" if nested_index
             fragment << "]"
           else
-            "#{model_name}"
+            model_name.to_s.dup
           end
         end
 
@@ -304,7 +304,7 @@ module Padrino
             fragment << "_#{nested_index}" if nested_index
             fragment
           else
-            "#{model_name}"
+            model_name.to_s.dup
           end
         end
 

@@ -1791,7 +1791,7 @@ describe "Routing" do
   it 'should allow controller level mapping' do
     mock_app do
       controller :map => "controller-:id" do
-        get(:url3) { "#{params[:id]}" }
+        get(:url3) { params[:id].to_s }
         get(:url4, :map => 'test-:id2') { "#{params[:id]}, #{params[:id2]}" }
       end
     end
@@ -1810,7 +1810,7 @@ describe "Routing" do
   it 'should replace name of named controller with mapping path' do
     mock_app do
       controller :ugly, :map => "/pretty/:id" do
-        get(:url3) { "#{params[:id]}" }
+        get(:url3) { params[:id].to_s }
         get(:url4, :map => 'test-:id2') { "#{params[:id]}, #{params[:id2]}" }
       end
       controller :voldemort, :map => "" do

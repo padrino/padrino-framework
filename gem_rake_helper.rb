@@ -6,7 +6,7 @@ require 'yard'
 # Skip the releasing tag
 class Bundler::GemHelper
   def version_tag
-    "#{version}"
+    version.to_s
   end
 end
 

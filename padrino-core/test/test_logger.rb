@@ -229,9 +229,7 @@ describe "binary logger" do
     @save_logger = Padrino.logger
     @log = StringIO.new
     new_logger = Logger.new(@log)
-    new_logger.formatter = proc do |_, _, _, message|
-      "#{message.size}"
-    end
+    new_logger.formatter = proc { |_, _, _, message| message.size.to_s }
     capture_io { Padrino.logger = new_logger }
   end
 

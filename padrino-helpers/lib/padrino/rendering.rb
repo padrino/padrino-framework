@@ -365,7 +365,7 @@ module Padrino
         templates.find{ |file,_| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
         templates.find{ |file,engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
         templates.find{ |file,_| file.to_s == "#{target_path}.#{symbol}" } ||
-        templates.find{ |file,_| file.to_s == "#{target_path}" && simple_content_type }
+        templates.find{ |file,_| file.to_s == target_path.to_s && simple_content_type }
       end
 
       def path_and_engine(path, relative=nil)
