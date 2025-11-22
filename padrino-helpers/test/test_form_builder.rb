@@ -50,7 +50,7 @@ describe "FormBuilder" do
 
     it 'should display form specifying default builder setting' do
       self.expects(:settings).returns(stub(:default_builder => 'FakeFormBuilder', :protect_from_csrf => false)).at_least_once
-      actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post') { |f| f.foo_field }
+      actual_html = form_for(@user, '/register', :id => 'register', :"accept-charset" => "UTF-8", :method => 'post', &:foo_field)
       assert_html_has_tag(actual_html, 'form', :"accept-charset" => "UTF-8", :action => '/register', :method => 'post')
       assert_html_has_tag(actual_html, 'span', :content => "bar")
     end
