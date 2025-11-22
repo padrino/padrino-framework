@@ -39,54 +39,52 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     def create_database(config)
-      begin
-        if config[:adapter] =~ /sqlite/
-          if File.exist?(config[:database])
-            $stderr.puts "#{config[:database]} already exists."
-          else
-            begin
-              # Create the SQLite database
-              FileUtils.mkdir_p File.dirname(config[:database]) unless File.exist?(File.dirname(config[:database]))
-              ActiveRecord::Base.establish_connection(config)
-              ActiveRecord::Base.connection
-            rescue StandardError => e
-              catch_error(:create, e, config)
-            end
-          end
-          return # Skip the else clause of begin/rescue
+      if config[:adapter] =~ /sqlite/
+        if File.exist?(config[:database])
+          $stderr.puts "#{config[:database]} already exists."
         else
-          ActiveRecord::Base.establish_connection(config)
-          ActiveRecord::Base.connection
-        end
-      rescue
-        case config[:adapter]
-        when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
-          @charset   = ENV['CHARSET']   || 'utf8'
-          @collation = ENV['COLLATION'] || 'utf8_unicode_ci'
-          creation_options = {:charset => (config[:charset] || @charset), :collation => (config[:collation] || @collation)}
           begin
-            ActiveRecord::Base.establish_connection(config.merge(:database => nil))
-            ActiveRecord::Base.connection.create_database(config[:database], creation_options)
+            # Create the SQLite database
+            FileUtils.mkdir_p File.dirname(config[:database]) unless File.exist?(File.dirname(config[:database]))
             ActiveRecord::Base.establish_connection(config)
-          rescue StandardError => e
-            $stderr.puts(*e.backtrace)
-            $stderr.puts e.inspect
-            $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
-            $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
-          end
-        when 'postgresql'
-          @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
-          begin
-            ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', :schema_search_path => 'public'))
-            ActiveRecord::Base.connection.create_database(config[:database], config.merge(:encoding => @encoding))
-            ActiveRecord::Base.establish_connection(config)
+            ActiveRecord::Base.connection
           rescue StandardError => e
             catch_error(:create, e, config)
           end
         end
+        return # Skip the else clause of begin/rescue
       else
-        $stderr.puts "#{config[:database]} already exists"
+        ActiveRecord::Base.establish_connection(config)
+        ActiveRecord::Base.connection
       end
+    rescue
+      case config[:adapter]
+      when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
+        @charset   = ENV['CHARSET']   || 'utf8'
+        @collation = ENV['COLLATION'] || 'utf8_unicode_ci'
+        creation_options = {:charset => (config[:charset] || @charset), :collation => (config[:collation] || @collation)}
+        begin
+          ActiveRecord::Base.establish_connection(config.merge(:database => nil))
+          ActiveRecord::Base.connection.create_database(config[:database], creation_options)
+          ActiveRecord::Base.establish_connection(config)
+        rescue StandardError => e
+          $stderr.puts(*e.backtrace)
+          $stderr.puts e.inspect
+          $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
+          $stderr.puts "(if you set the charset manually, make sure you have a matching collation)" if config[:charset]
+        end
+      when 'postgresql'
+        @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
+        begin
+          ActiveRecord::Base.establish_connection(config.merge(:database => 'postgres', :schema_search_path => 'public'))
+          ActiveRecord::Base.connection.create_database(config[:database], config.merge(:encoding => @encoding))
+          ActiveRecord::Base.establish_connection(config)
+        rescue StandardError => e
+          catch_error(:create, e, config)
+        end
+      end
+    else
+      $stderr.puts "#{config[:database]} already exists"
     end
 
     namespace :drop do
@@ -108,11 +106,9 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     desc "Drops the database for the current Padrino.env"
     task :drop => :skeleton do
       with_database(Padrino.env || :development) do |config|
-        begin
-          drop_database(config)
-        rescue StandardError => e
-          catch_error(:drop, e, config)
-        end
+        drop_database(config)
+      rescue StandardError => e
+        catch_error(:drop, e, config)
       end
     end
 
