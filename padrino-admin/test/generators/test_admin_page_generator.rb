@@ -13,7 +13,7 @@ describe "AdminPageGenerator" do
 
   describe 'the admin page generator' do
     it 'should fail outside app root' do
-      out, _ = capture_io { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
+      out, = capture_io { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/admin")
     end

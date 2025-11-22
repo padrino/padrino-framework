@@ -12,7 +12,7 @@ describe "MailerGenerator" do
 
   describe 'the mailer generator' do
     it 'should fail outside app root' do
-      out, _ = capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}") }
+      out, = capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)
       assert_no_file_exists('/tmp/app/mailers/demo_mailer.rb')
     end

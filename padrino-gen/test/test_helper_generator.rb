@@ -14,7 +14,7 @@ describe "HelperGenerator" do
 
   describe 'the helper generator' do
     it 'should fail outside app root' do
-      out, _ = capture_io { generate(:helper, 'demo', "-r=#{@apptmp}") }
+      out, = capture_io { generate(:helper, 'demo', "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/app/helpers/demo_helper.rb")
     end

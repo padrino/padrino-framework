@@ -12,7 +12,7 @@ describe "MigrationGenerator" do
 
   describe 'the migration generator' do
     it 'should fail outside app root' do
-      out, _ = capture_io { generate(:migration, 'add_email_to_users', '-r=/tmp') }
+      out, = capture_io { generate(:migration, 'add_email_to_users', '-r=/tmp') }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/db/migrate")
     end

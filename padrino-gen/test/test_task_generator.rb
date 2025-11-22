@@ -12,7 +12,7 @@ describe "TaskGenerator" do
 
   describe 'the task generator' do
     it 'should fail outside app root' do
-      out, _ = capture_io { generate(:task, 'foo', "-r=#{@apptmp}") }
+      out, = capture_io { generate(:task, 'foo', "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)
       assert_no_file_exists('/tmp/tasks/foo.rake')
     end

@@ -18,7 +18,7 @@ describe "AdminAppGenerator" do
     end
 
     it 'should fail outside app root' do
-      out, _ = capture_io { generate(:admin_app, "-r=#{@apptmp}") }
+      out, = capture_io { generate(:admin_app, "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/admin")
     end
@@ -222,7 +222,7 @@ describe "AdminAppGenerator" do
         seeds_rb.puts "# Old Seeds Content"
       end
 
-      out, _ = capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      out, = capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       refute_match(/Overwrite\s.*?\/db\/seeds.rb/, out)
 
       assert_file_exists "#{@apptmp}/sample_project/db/seeds.old"

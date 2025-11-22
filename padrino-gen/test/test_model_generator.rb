@@ -12,7 +12,7 @@ describe "ModelGenerator" do
 
   describe 'the model generator' do
     it 'should fail outside app root' do
-      out, _ = capture_io { generate(:model, 'user', "-r=#{@apptmp}") }
+      out, = capture_io { generate(:model, 'user', "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)
       assert_no_file_exists('/tmp/models/user.rb')
     end
@@ -25,7 +25,7 @@ describe "ModelGenerator" do
 
     it 'should fail if field name is not acceptable' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
-      out, _ = capture_io { generate(:model, 'DemoItem', "re@l$ly:string","display-name:string", "age&year:datetime", "email_two:string", "-r=#{@apptmp}/sample_project") }
+      out, = capture_io { generate(:model, 'DemoItem', "re@l$ly:string","display-name:string", "age&year:datetime", "email_two:string", "-r=#{@apptmp}/sample_project") }
       assert_match(/Invalid field name:/, out)
       assert_match(/display-name:string/, out)
       assert_match(/age&year:datetime/, out)
@@ -91,7 +91,7 @@ describe "ModelGenerator" do
 
     it 'should abort if model name already exists' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord") }
-      out, _ = capture_io { generate(:model, 'kernel', "--root=#{@apptmp}/sample_project") }
+      out, = capture_io { generate(:model, 'kernel', "--root=#{@apptmp}/sample_project") }
       assert_match(/Kernel already exists/, out)
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_kernel.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/models/kernel.rb")
@@ -100,7 +100,7 @@ describe "ModelGenerator" do
     it 'should abort if model name already exists in root' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord") }
       capture_io { generate(:app, 'user', "--root=#{@apptmp}/sample_project") }
-      out, _ = capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", :apps => "user") }
+      out, = capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", :apps => "user") }
       assert_file_exists("#{@apptmp}/sample_project/user/app.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
       assert_match(/User already exists/, out)
@@ -109,7 +109,7 @@ describe "ModelGenerator" do
     it 'should generate model files if :force option is specified' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-d=activerecord") }
       capture_io { generate(:app, 'user', "--root=#{@apptmp}/sample_project") }
-      _, _ = capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", "--force", :apps => "user") }
+      capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", "--force", :apps => "user") }
       assert_file_exists("#{@apptmp}/sample_project/user/app.rb")
       assert_file_exists("#{@apptmp}/sample_project/models/user.rb")
     end
