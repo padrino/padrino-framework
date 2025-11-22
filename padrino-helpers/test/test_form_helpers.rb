@@ -782,7 +782,7 @@ describe "FormHelpers" do
     end
 
     it 'should display selected options falling back to checking content' do
-      options = [['one', nil, :value => nil], ['two', nil, :value => nil], ['three', 'three']]
+      options = [['one', nil, {:value => nil}], ['two', nil, {:value => nil}], ['three', 'three']]
       actual_html = select_tag(:number, :options => options, :selected => 'one')
       assert_html_has_tag(actual_html, 'select option', :selected => 'selected', :count => 1)
       assert_html_has_tag(actual_html, 'select option', :content => 'one', :selected => 'selected')
