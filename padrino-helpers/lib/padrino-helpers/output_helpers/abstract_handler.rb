@@ -29,11 +29,12 @@ module Padrino
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          self.output_buffer, _buf_was = SafeBuffer.new, self.output_buffer
+          self.output_buffer, buf_was = SafeBuffer.new, self.output_buffer
           raw = yield(*args)
           captured = template.instance_variable_get(:@_out_buf)
-          self.output_buffer = _buf_was
           engine_matches?(block) && !captured.empty? ? captured : raw.to_s
+        ensure
+          self.output_buffer = buf_was
         end
 
         ##
