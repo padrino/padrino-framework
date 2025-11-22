@@ -5,5 +5,5 @@ PADRINO_SUBGEMS ||= Hash[padrino_gemspec.dependencies.map{ |gem| [gem.name, gem.
 
 PADRINO_GEMS ||= PADRINO_SUBGEMS.merge(
   'padrino' => padrino_gemspec.version.to_s,
-  'padrino-performance' => performance_gemspec.version.to_s,
+  'padrino-performance' => performance_gemspec.version.to_s
 )
