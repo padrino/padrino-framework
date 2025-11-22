@@ -319,7 +319,6 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             columns.each do |c|
               locale += "\n        #{c}: #{klass.human_attribute_name(c)}" unless locale.include?("#{c}:")
             end
-            print "Lang #{lang.to_s.upcase} already exist ... "; $stdout.flush
           else
             locale     = "#{lang}:" + "\n" +
                          "  models:" + "\n" +
@@ -327,8 +326,9 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
                          "      name: #{klass.model_name.human}" + "\n" +
                          "      attributes:" + "\n" +
                          columns.map { |c| "        #{c}: #{klass.human_attribute_name(c)}" }.join("\n")
-            print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
           end
+
+          $stdout.flush
           File.open(filename, "w") { |f| f.puts locale }
         end
         puts

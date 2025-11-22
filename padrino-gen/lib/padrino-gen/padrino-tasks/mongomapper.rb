@@ -34,7 +34,6 @@ if defined?(MongoMapper)
             columns.each do |c|
               locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
             end
-            print "Lang #{lang.to_s.upcase} already exist ... "; $stdout.flush
           else
             locale     = "#{lang}:" + "\n" +
                          "  models:" + "\n" +
@@ -42,8 +41,9 @@ if defined?(MongoMapper)
                          "      name: #{klass.human_name}" + "\n" +
                          "      attributes:" + "\n" +
                          columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
-            print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
           end
+
+          $stdout.flush
           File.open(filename, "w") { |f| f.puts locale }
         end
         puts
