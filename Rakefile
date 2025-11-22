@@ -47,7 +47,7 @@ desc "Bumps the version number based on given version"
 task :bump, [:version] do |_t, args|
   raise "Please specify version=x.x.x !" unless args.version
   version_path = File.dirname(__FILE__) + '/padrino-core/lib/padrino-core/version.rb'
-  version_text = File.read(version_path).sub(/VERSION = '[a-z0-9\.]+'/, "VERSION = '#{args.version}'")
+  version_text = File.read(version_path).sub(/VERSION = '[a-z0-9.]+'/, "VERSION = '#{args.version}'")
   say "Updating Padrino to version #{args.version}"
   File.open(version_path, 'w') { |f| f.write version_text }
   sh 'git commit -am "Bumped version to %s"' % args.version

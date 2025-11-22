@@ -141,9 +141,9 @@ describe "AssetTagHelpers" do
     it 'should display link element for mail to with caption and mail options' do
       actual_html = mail_to('test@demo.com', "My Email", :subject => 'demo test', :class => 'demo', :cc => 'foo@test.com')
       assert_html_has_tag(actual_html, :a, :class => 'demo')
-      assert_match %r{mailto\:test\@demo.com\?}, actual_html
-      assert_match %r{cc=foo\@test\.com}, actual_html
-      assert_match %r{subject\=demo\%20test}, actual_html
+      assert_match %r{mailto:test@demo.com\?}, actual_html
+      assert_match %r{cc=foo@test\.com}, actual_html
+      assert_match %r{subject=demo%20test}, actual_html
     end
 
     it 'should escape & with encoded string and &amp; in HTML' do

@@ -641,7 +641,7 @@ describe "ProjectGenerator" do
     it 'should properly generate for compass' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml','--script=none','--stylesheet=compass') }
       assert_match_in_file(/gem 'compass-blueprint'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/Compass.configure_sass_plugin\!/, "#{@apptmp}/sample_project/config/initializers/compass.rb")
+      assert_match_in_file(/Compass.configure_sass_plugin!/, "#{@apptmp}/sample_project/config/initializers/compass.rb")
       assert_match_in_file(/module CompassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/compass.rb")
       assert_match_in_file(/register CompassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
 
