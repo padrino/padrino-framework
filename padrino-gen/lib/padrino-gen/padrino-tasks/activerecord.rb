@@ -126,18 +126,13 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       ActiveRecord::Migration.verbose = ENV['VERBOSE'] ? ENV['VERBOSE'] == 'true' : true
 
       if less_than_active_record_5_2?
-        ActiveRecord::Migrator.migrate('db/migrate/', env_migration_version)
-      elsif less_than_active_record_6_0?
-        ActiveRecord::MigrationContext.new('db/migrate/').migrate(env_migration_version)
+        ActiveRecord::Migrator.migrate("db/migrate/", env_migration_version)
       else
-        ActiveRecord::MigrationContext.new('db/migrate/', ActiveRecord::SchemaMigration).migrate(env_migration_version)
+        migration_context.migrate(env_migration_version)
       end
 
-      if less_than_active_record_7_0?
-        Rake::Task['ar:schema:dump'].invoke if ActiveRecord::Base.schema_format == :ruby
-      else
-        Rake::Task['ar:schema:dump'].invoke if ActiveRecord.schema_format == :ruby
-      end
+      format_source = ActiveRecord.respond_to?(:schema_format) ? ActiveRecord : ActiveRecord::Base
+      Rake::Task["ar:schema:dump"].invoke if format_source.schema_format == :ruby
     end
 
     namespace :migrate do
@@ -211,10 +206,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         pending_migrations =
           if less_than_active_record_5_2?
             ActiveRecord::Migrator.open(ActiveRecord::Migrator.migrations_paths).pending_migrations
-          elsif less_than_active_record_6_0?
-            ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).open.pending_migrations
           else
-            ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration).open.pending_migrations
+            migration_context.open.pending_migrations
           end
 
         if pending_migrations.any?
@@ -381,11 +374,9 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     fail 'MIGRATION_VERSION is required' unless version
 
     if less_than_active_record_5_2?
-      ActiveRecord::Migrator.run(type, 'db/migrate/', version)
-    elsif less_than_active_record_6_0?
-      ActiveRecord::MigrationContext.new('db/migrate/').run(type, version)
+      ActiveRecord::Migrator.run(type, "db/migrate/", version)
     else
-      ActiveRecord::MigrationContext.new('db/migrate/', ActiveRecord::SchemaMigration).run(type, version)
+      migration_context.run(type, version)
     end
 
     dump_schema
@@ -396,10 +387,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     if less_than_active_record_5_2?
       ActiveRecord::Migrator.send(type, 'db/migrate/', step)
-    elsif less_than_active_record_6_0?
-      ActiveRecord::MigrationContext.new('db/migrate/').send(type, step)
     else
-      ActiveRecord::MigrationContext.new('db/migrate/', ActiveRecord::SchemaMigration).send(type, step)
+      migration_context.send(type, step)
     end
 
     dump_schema
@@ -425,8 +414,14 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     ActiveRecord.version < Gem::Version.create('6.1.0')
   end
 
-  def less_than_active_record_7_0?
-    ActiveRecord.version < Gem::Version.create('7.0.0')
+  def migration_context
+    if less_than_active_record_6_0?
+      ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths)
+    else
+      connection = ActiveRecord::Base.connection
+      connection = connection.pool unless connection.respond_to?(:migration_context)
+      connection.migration_context
+    end
   end
 
   def with_database(env_name)
