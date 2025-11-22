@@ -190,8 +190,8 @@ module Padrino
         layout          = options[:layout]
         layout          = false if layout.nil? && options.include?(:layout)
         eat_errors      = layout.nil?
-        layout          = engine_options[:layout] if layout.nil? or (layout == true && engine_options[:layout] != false)
-        layout          = @default_layout         if layout.nil? or layout == true
+        layout          = engine_options[:layout] if layout.nil? || (layout == true && engine_options[:layout] != false)
+        layout          = @default_layout         if layout.nil? || (layout == true)
         layout_options  = options.delete(:layout_options) || {}
         content_type    = options.delete(:default_content_type)
         content_type    = options.delete(:content_type)   || content_type
