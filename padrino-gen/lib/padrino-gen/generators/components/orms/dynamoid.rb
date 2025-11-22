@@ -1,4 +1,4 @@
-DYNAMOID = (<<-DYNAMOID) unless defined?(DYNAMOID)
+DYNAMOID = <<-DYNAMOID unless defined?(DYNAMOID)
 
 AWS.config({
   :access_key_id => ENV['AWS_ACCESS_KEY'],
@@ -39,7 +39,7 @@ def setup_orm
   create_file("config/database.rb", DYNAMOID.gsub(/!NAME!/, @project_name.underscore))
 end
 
-DYNAMOID_MODEL = (<<-MODEL) unless defined?(DYNAMOID_MODEL)
+DYNAMOID_MODEL = <<-MODEL unless defined?(DYNAMOID_MODEL)
 class !NAME!
   include Dynamoid::Document
 

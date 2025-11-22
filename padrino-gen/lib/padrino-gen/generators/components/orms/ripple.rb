@@ -1,4 +1,4 @@
-RIPPLE_DB = (<<-RIAK) unless defined?(RIPPLE_DB)
+RIPPLE_DB = <<-RIAK unless defined?(RIPPLE_DB)
 development:
   http_port: 8098
   pb_port: 8087
@@ -23,7 +23,7 @@ production:
   pb_port: 8087
   host: localhost
 RIAK
-RIPPLE_CFG = (<<RIAK) unless defined?(RIPPLE_CFG)
+RIPPLE_CFG = <<RIAK unless defined?(RIPPLE_CFG)
 # encoding: utf-8
 
 require 'ripple'
@@ -39,7 +39,7 @@ def setup_orm
   create_file("config/database.rb", RIPPLE_CFG)
 end
 
-RIPPLE_MODEL = (<<-MODEL) unless defined?(RIPPLE_MODEL)
+RIPPLE_MODEL = <<-MODEL unless defined?(RIPPLE_MODEL)
 # encoding: utf-8
 
 class !NAME!

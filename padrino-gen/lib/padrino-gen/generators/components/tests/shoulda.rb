@@ -1,4 +1,4 @@
-SHOULDA_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
+SHOULDA_SETUP = <<-TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
@@ -24,7 +24,7 @@ class Test::Unit::TestCase
 end
 TEST
 
-SHOULDA_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_CONTROLLER_TEST)
+SHOULDA_CONTROLLER_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_CONTROLLER_TEST)
 require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 class !NAME!ControllerTest < Test::Unit::TestCase
@@ -40,7 +40,7 @@ class !NAME!ControllerTest < Test::Unit::TestCase
 end
 TEST
 
-SHOULDA_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE)
+SHOULDA_RAKE = <<-TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE)
 require 'rake/testtask'
 
 test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
@@ -58,7 +58,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 task :default => :test
 TEST
 
-SHOULDA_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)
+SHOULDA_MODEL_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)
 require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 class !NAME!Test < Test::Unit::TestCase
@@ -71,7 +71,7 @@ class !NAME!Test < Test::Unit::TestCase
 end
 TEST
 
-SHOULDA_HELPER_TEST = (<<-TEST) unless defined?(SHOULDA_HELPER_TEST)
+SHOULDA_HELPER_TEST = <<-TEST unless defined?(SHOULDA_HELPER_TEST)
 require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 class !NAME!Test < Test::Unit::TestCase

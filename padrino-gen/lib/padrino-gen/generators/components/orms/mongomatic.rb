@@ -1,4 +1,4 @@
-MONGOMATIC = (<<-MONGO) unless defined?(MONGOMATIC)
+MONGOMATIC = <<-MONGO unless defined?(MONGOMATIC)
 
 case Padrino.env
   when :development then Mongomatic.db = Mongo::Connection.new.db("!NAME!_development")
@@ -14,7 +14,7 @@ def setup_orm
   create_file("config/database.rb", MONGOMATIC.gsub(/!NAME!/, @project_name.underscore))
 end
 
-MONGOMATIC_MODEL = (<<-MODEL) unless defined?(MONGOMATIC_MODEL)
+MONGOMATIC_MODEL = <<-MODEL unless defined?(MONGOMATIC_MODEL)
 class !NAME! < Mongomatic::Base
   include Mongomatic::Expectations::Helper
 

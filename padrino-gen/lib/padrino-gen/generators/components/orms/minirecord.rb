@@ -1,4 +1,4 @@
-MR = (<<-MR) unless defined?(MR)
+MR = <<-MR unless defined?(MR)
 ##
 # You can use other adapters like:
 #
@@ -58,7 +58,7 @@ ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrin
 ActiveRecord::Base.default_timezone = :utc
 MR
 
-MYSQL = (<<-MYSQL) unless defined?(MYSQL)
+MYSQL = <<-MYSQL unless defined?(MYSQL)
   :adapter   => 'mysql',
   :encoding  => 'utf8',
   :reconnect => true,
@@ -70,7 +70,7 @@ MYSQL = (<<-MYSQL) unless defined?(MYSQL)
   :socket    => '/tmp/mysql.sock'
 MYSQL
 
-MYSQL2 = (<<-MYSQL2) unless defined?(MYSQL2)
+MYSQL2 = <<-MYSQL2 unless defined?(MYSQL2)
   :adapter   => 'mysql2',
   :encoding  => 'utf8',
   :reconnect => true,
@@ -82,7 +82,7 @@ MYSQL2 = (<<-MYSQL2) unless defined?(MYSQL2)
   :socket    => '/tmp/mysql.sock'
 MYSQL2
 
-POSTGRES = (<<-POSTGRES) unless defined?(POSTGRES)
+POSTGRES = <<-POSTGRES unless defined?(POSTGRES)
   :adapter   => 'postgresql',
   :database  => !DB_NAME!,
   :username  => 'root',
@@ -91,7 +91,7 @@ POSTGRES = (<<-POSTGRES) unless defined?(POSTGRES)
   :port      => 5432
 POSTGRES
 
-SQLITE = (<<-SQLITE) unless defined?(SQLITE)
+SQLITE = <<-SQLITE unless defined?(SQLITE)
   :adapter => 'sqlite3',
   :database => !DB_NAME!
 SQLITE
@@ -149,7 +149,7 @@ def setup_orm
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
 
-MR_MODEL = (<<-MODEL) unless defined?(MR_MODEL)
+MR_MODEL = <<-MODEL unless defined?(MR_MODEL)
 class !NAME! < ActiveRecord::Base
   # Fields
   !FIELDS!

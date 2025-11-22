@@ -1,4 +1,4 @@
-MINITEST_SETUP = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
+MINITEST_SETUP = <<-TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
@@ -22,7 +22,7 @@ class Minitest::Spec
 end
 TEST
 
-MINITEST_RAKE = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_RAKE)
+MINITEST_RAKE = <<-TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_RAKE)
 require 'rake/testtask'
 
 test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
@@ -40,7 +40,7 @@ task 'test' => test_tasks.map { |f| "test:\#{f}" }
 task :default => :test
 TEST
 
-MINITEST_CONTROLLER_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_CONTROLLER_TEST)
+MINITEST_CONTROLLER_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_CONTROLLER_TEST)
 require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
 describe "!PATH!" do
@@ -54,7 +54,7 @@ describe "!PATH!" do
 end
 TEST
 
-MINITEST_MODEL_TEST = (<<-TEST).gsub(/^ {10}/, '') unless defined?(MINITEST_MODEL_TEST)
+MINITEST_MODEL_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_MODEL_TEST)
 require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 describe "!NAME! Model" do
@@ -65,7 +65,7 @@ describe "!NAME! Model" do
 end
 TEST
 
-MINITEST_HELPER_TEST = (<<-TEST) unless defined?(MINITEST_HELPER_TEST)
+MINITEST_HELPER_TEST = <<-TEST unless defined?(MINITEST_HELPER_TEST)
 require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
 describe "!NAME!" do

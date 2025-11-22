@@ -1,4 +1,4 @@
-RSPEC_SETUP = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_SETUP)
+RSPEC_SETUP = <<-TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
@@ -22,7 +22,7 @@ def app(app = nil, &blk)
 end
 TEST
 
-RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_CONTROLLER_TEST)
+RSPEC_CONTROLLER_TEST = <<-TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_CONTROLLER_TEST)
 require 'spec_helper'
 
 RSpec.describe "!PATH!" do
@@ -38,7 +38,7 @@ RSpec.describe "!PATH!" do
 end
 TEST
 
-RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
+RSPEC_RAKE = <<-TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
 begin
   require 'rspec/core/rake_task'
 
@@ -65,7 +65,7 @@ end
 task :default => :spec
 TEST
 
-RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
+RSPEC_MODEL_TEST = <<-TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
 require 'spec_helper'
 
 RSpec.describe !NAME! do
@@ -73,7 +73,7 @@ RSpec.describe !NAME! do
 end
 TEST
 
-RSPEC_HELPER_TEST = (<<-TEST) unless defined?(RSPEC_HELPER_TEST)
+RSPEC_HELPER_TEST = <<-TEST unless defined?(RSPEC_HELPER_TEST)
 require 'spec_helper'
 
 RSpec.describe "!NAME!" do

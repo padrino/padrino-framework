@@ -62,7 +62,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
         @charset   = ENV['CHARSET']   || 'utf8'
         @collation = ENV['COLLATION'] || 'utf8_unicode_ci'
-        creation_options = {:charset => (config[:charset] || @charset), :collation => (config[:collation] || @collation)}
+        creation_options = {:charset => config[:charset] || @charset, :collation => config[:collation] || @collation}
         begin
           ActiveRecord::Base.establish_connection(config.merge(:database => nil))
           ActiveRecord::Base.connection.create_database(config[:database], creation_options)

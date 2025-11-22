@@ -138,8 +138,8 @@ module Padrino
 
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
 
-        delimiter ||= (options[:delimiter] || defaults[:delimiter])
-        separator ||= (options[:separator] || defaults[:separator])
+        delimiter ||= options[:delimiter] || defaults[:delimiter]
+        separator ||= options[:separator] || defaults[:separator]
 
         begin
           parts = number.to_s.split('.')
@@ -184,9 +184,9 @@ module Padrino
                                                                         :raise => true) rescue {}
         defaults           = defaults.merge(precision_defaults)
 
-        precision ||= (options[:precision] || defaults[:precision])
-        separator ||= (options[:separator] || defaults[:separator])
-        delimiter ||= (options[:delimiter] || defaults[:delimiter])
+        precision ||= options[:precision] || defaults[:precision]
+        separator ||= options[:separator] || defaults[:separator]
+        delimiter ||= options[:delimiter] || defaults[:delimiter]
 
         begin
           rounded_number = (Float(number) * (10 ** precision)).round.to_f / 10 ** precision
@@ -243,9 +243,9 @@ module Padrino
         human    = I18n.translate(:'number.human.format', :locale => options[:locale], :raise => true) rescue {}
         defaults = defaults.merge(human)
 
-        precision ||= (options[:precision] || defaults[:precision])
-        separator ||= (options[:separator] || defaults[:separator])
-        delimiter ||= (options[:delimiter] || defaults[:delimiter])
+        precision ||= options[:precision] || defaults[:precision]
+        separator ||= options[:separator] || defaults[:separator]
+        delimiter ||= options[:delimiter] || defaults[:delimiter]
 
         storage_units_format = I18n.translate(:'number.human.storage_units.format', :locale => options[:locale], :raise => true)
 

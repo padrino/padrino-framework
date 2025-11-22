@@ -78,7 +78,7 @@ describe "NumberHelpers" do
       assert_equal "111.23",     number_with_precision(111.2346, :precision => 2)
       assert_equal "111.00",     number_with_precision(111, :precision => 2)
       assert_equal "111.235",    number_with_precision("111.2346")
-      assert_equal "3268",       number_with_precision((32.6751 * 100.00), :precision => 0)
+      assert_equal "3268",       number_with_precision(32.6751 * 100.00, :precision => 0)
       assert_equal "112",        number_with_precision(111.60, :precision => 0)
       assert_equal "1234567892", number_with_precision(1_234_567_891.60, :precision => 0)
 

@@ -1,4 +1,4 @@
-AR = (<<-AR) unless defined?(AR)
+AR = <<-AR unless defined?(AR)
 ##
 # You can use other adapters like:
 #
@@ -61,7 +61,7 @@ else
 end
 AR
 
-MYSQL = (<<-MYSQL) unless defined?(MYSQL)
+MYSQL = <<-MYSQL unless defined?(MYSQL)
     :adapter   => 'mysql',
     :encoding  => 'utf8',
     :reconnect => true,
@@ -73,7 +73,7 @@ MYSQL = (<<-MYSQL) unless defined?(MYSQL)
     :socket    => '/tmp/mysql.sock'
 MYSQL
 
-MYSQL2 = (<<-MYSQL2) unless defined?(MYSQL2)
+MYSQL2 = <<-MYSQL2 unless defined?(MYSQL2)
     :adapter   => 'mysql2',
     :encoding  => 'utf8',
     :reconnect => true,
@@ -85,7 +85,7 @@ MYSQL2 = (<<-MYSQL2) unless defined?(MYSQL2)
     :socket    => '/tmp/mysql.sock'
 MYSQL2
 
-POSTGRES = (<<-POSTGRES) unless defined?(POSTGRES)
+POSTGRES = <<-POSTGRES unless defined?(POSTGRES)
     :adapter   => 'postgresql',
     :database  => !DB_NAME!,
     :username  => 'root',
@@ -94,7 +94,7 @@ POSTGRES = (<<-POSTGRES) unless defined?(POSTGRES)
     :port      => 5432
 POSTGRES
 
-SQLITE = (<<-SQLITE) unless defined?(SQLITE)
+SQLITE = <<-SQLITE unless defined?(SQLITE)
     :adapter => 'sqlite3',
     :database => !DB_NAME!
 SQLITE
@@ -151,7 +151,7 @@ def setup_orm
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
 
-AR_MODEL = (<<-MODEL) unless defined?(AR_MODEL)
+AR_MODEL = <<-MODEL unless defined?(AR_MODEL)
 class !NAME! < ActiveRecord::Base
 
 end
@@ -165,7 +165,7 @@ def create_model_file(name, options={})
 end
 
 if defined?(ActiveRecord::Migration) && ActiveRecord::Migration.respond_to?(:[])
-AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
+AR_MIGRATION = <<-MIGRATION unless defined?(AR_MIGRATION)
 class !FILECLASS! < ActiveRecord::Migration[#{ActiveRecord::Migration.current_version}]
   def self.up
     !UP!
@@ -177,7 +177,7 @@ class !FILECLASS! < ActiveRecord::Migration[#{ActiveRecord::Migration.current_ve
 end
 MIGRATION
 else
-AR_MIGRATION = (<<-MIGRATION) unless defined?(AR_MIGRATION)
+AR_MIGRATION = <<-MIGRATION unless defined?(AR_MIGRATION)
 class !FILECLASS! < ActiveRecord::Migration
   def self.up
     !UP!
@@ -190,14 +190,14 @@ end
 MIGRATION
 end
 
-AR_MODEL_UP_MG = (<<-MIGRATION).gsub(/^/,'    ') unless defined?(AR_MODEL_UP_MG)
+AR_MODEL_UP_MG = <<-MIGRATION.gsub(/^/,'    ') unless defined?(AR_MODEL_UP_MG)
 create_table :!TABLE! do |t|
   !FIELDS!
   t.timestamps null: false
 end
 MIGRATION
 
-AR_MODEL_DOWN_MG = (<<-MIGRATION) unless defined?(AR_MODEL_DOWN_MG)
+AR_MODEL_DOWN_MG = <<-MIGRATION unless defined?(AR_MODEL_DOWN_MG)
 drop_table :!TABLE!
 MIGRATION
 
@@ -210,7 +210,7 @@ def create_model_migration(migration_name, name, columns)
   )
 end
 
-AR_CHANGE_MG = (<<-MIGRATION).gsub(/^/, '    ') unless defined?(AR_CHANGE_MG)
+AR_CHANGE_MG = <<-MIGRATION.gsub(/^/, '    ') unless defined?(AR_CHANGE_MG)
 change_table :!TABLE! do |t|
   !COLUMNS!
 end

@@ -180,7 +180,7 @@ module Padrino
 
       # warn if the protect_from_csrf is active but sessions are not
       def check_csrf_protection_dependency
-        if (protect_from_csrf? && !sessions?) && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
+        if protect_from_csrf? && !sessions? && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
           warn(<<-ERROR)
   `protect_from_csrf` is activated, but `sessions` seem to be off. To enable csrf
   protection, use:

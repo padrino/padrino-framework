@@ -1,4 +1,4 @@
-OHM = (<<-OHM) unless defined?(OHM)
+OHM = <<-OHM unless defined?(OHM)
 # Ohm does not have the concept of namespaces.
 # This means that you will not be able to have
 # a distinct test, development, or production database.
@@ -27,7 +27,7 @@ def setup_orm
   create_file("config/database.rb", OHM)
 end
 
-OHM_MODEL = (<<-MODEL) unless defined?(OHM_MODEL)
+OHM_MODEL = <<-MODEL unless defined?(OHM_MODEL)
 class !NAME! < Ohm::Model
   # Examples:
   # attribute :name

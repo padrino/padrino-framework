@@ -147,7 +147,7 @@ module Padrino
         mail_query = Rack::Utils.build_query(Hash[mail_options]).gsub(/\+/, '%20').gsub('%40', '@')
         mail_href = "mailto:#{email}"
         mail_href << "?#{mail_query}" unless mail_query.empty?
-        link_to((caption || email), mail_href, Hash[html_options])
+        link_to(caption || email, mail_href, Hash[html_options])
       end
 
       ##

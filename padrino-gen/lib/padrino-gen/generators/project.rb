@@ -45,7 +45,7 @@ module Padrino
       #
       def setup_project
         valid_constant? name
-        app = (options[:app] || "App")
+        app = options[:app] || "App"
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
 
