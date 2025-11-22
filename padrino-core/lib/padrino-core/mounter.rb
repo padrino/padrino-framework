@@ -40,7 +40,7 @@ module Padrino
       end
       @app_root  = options[:app_root]  || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
       @uri_root  = "/"
-      @cascade   = options[:cascade] ? true == options[:cascade] ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
+      @cascade   = options[:cascade] ? options[:cascade] == true ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
       Padrino::Reloader.exclude_constants << @app_class
     end
 
