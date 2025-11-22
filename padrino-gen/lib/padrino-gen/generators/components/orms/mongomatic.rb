@@ -8,7 +8,7 @@ end
 MONGO
 
 def setup_orm
-  mongomatic = MONGOMATIC
+  _mongomatic = MONGOMATIC
   require_dependencies 'mongomatic'
   require_dependencies 'bson_ext', :require => 'mongo'
   create_file("config/database.rb", MONGOMATIC.gsub(/!NAME!/, @project_name.underscore))

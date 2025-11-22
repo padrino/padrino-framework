@@ -29,7 +29,6 @@ module Padrino
         validate_namespace name
         self.destination_root = options[:root]
         if in_app_root?
-          app        = options[:app]
           @task_name = name.to_s.underscore
           @namespace = options[:namespace].underscore if options[:namespace]
           @desc      = options[:description]

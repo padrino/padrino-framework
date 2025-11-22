@@ -259,13 +259,14 @@ module Padrino
       #   fetch_project_name
       #
       def fetch_project_name(app='app')
-        app_path = destination_root(app, 'app.rb')
+        _app_path = destination_root(app, 'app.rb')
         @project_name = fetch_component_choice(:namespace) if @project_name.empty?
         @project_name ||= begin
+          detected_namespace = File.basename(destination_root('.')).gsub(/\W/, '_').camelize
+
           say "Autodetecting project namespace using folder name.", :red
           say ""
-          detected_namespace = File.basename(destination_root('.')).gsub(/\W/, '_').camelize
-          say(<<-WARNING, :red)
+          say <<-WARNING, :red
 From v0.11.0 on, applications should have a `namespace` setting
 in their .components file. Please include a line like the following
 in your .components file:

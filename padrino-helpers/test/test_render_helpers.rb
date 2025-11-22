@@ -240,7 +240,7 @@ describe "RenderHelpers" do
         include Padrino::Helpers::RenderHelpers
       end
       assert_raises RuntimeError do
-        result = Standalone2.new.partial('none')
+        Standalone2.new.partial('none')
       end
     end
 

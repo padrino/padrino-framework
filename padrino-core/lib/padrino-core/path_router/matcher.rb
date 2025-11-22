@@ -108,7 +108,7 @@ module Padrino
       #
       def capture_length
         if mustermann?
-          handler.named_captures.inject(0) { |count, (_, capture)| count += capture.length }
+          handler.named_captures.inject(0) { |count, (_, capture)| count + capture.length }
         else
           handler.inspect.scan(GROUP_REGEXP).length
         end

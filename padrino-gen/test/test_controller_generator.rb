@@ -17,7 +17,7 @@ describe "ControllerGenerator" do
 
   describe 'the controller generator' do
     it 'should fail outside app root' do
-      out, err = capture_io { generate(:controller, 'demo', "-r=#{@apptmp}") }
+      out, _ = capture_io { generate(:controller, 'demo', "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/app/controllers/demo.rb")
     end

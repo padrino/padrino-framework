@@ -14,7 +14,7 @@ describe "Cli" do
   describe 'the cli' do
 
     it 'should fail without arguments' do
-      out, err = capture_io { generate(:cli) }
+      out, _ = capture_io { generate(:cli) }
       assert_match(/Please specify generator to use/, out)
     end
 

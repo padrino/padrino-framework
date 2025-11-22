@@ -14,7 +14,7 @@ describe "HelperGenerator" do
 
   describe 'the helper generator' do
     it 'should fail outside app root' do
-      out, err = capture_io { generate(:helper, 'demo', "-r=#{@apptmp}") }
+      out, _ = capture_io { generate(:helper, 'demo', "-r=#{@apptmp}") }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/app/helpers/demo_helper.rb")
     end
@@ -80,7 +80,6 @@ describe "HelperGenerator" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:helper, 'DemoItems','-a=/subby', "-r=#{@apptmp}/sample_project") }
-      expected_pattern = /class DemoItemsHelperTest < Test::Unit::TestCase/m
       assert_match_in_file(/context "SampleProject::Subby::DemoItemsHelper" do/m, @helper_test_path.gsub('app','subby'))
       assert_file_exists(@helper_test_path.gsub('app','subby'))
       assert_file_exists("#{@apptmp}/sample_project/test/subby/helpers/demo_items_helper_test.rb")

@@ -236,7 +236,7 @@ describe "Routing" do
   end
 
   it 'should match user agents' do
-    app = mock_app do
+    mock_app do
       get("/main", :agent => /IE/){ "hello IE" }
       get("/main"){ "hello" }
     end
@@ -247,7 +247,7 @@ describe "Routing" do
   end
 
   it 'should use regex for parts of a route' do
-    app = mock_app do
+    mock_app do
       get("/main/:id", :id => /\d+/){ "hello #{params[:id]}" }
     end
     get "/main/123"
@@ -1003,7 +1003,7 @@ describe "Routing" do
   end
 
   it 'should match params and format' do
-    app = mock_app do
+    mock_app do
       get '/:id', :provides => [:json, :html] do |id, _|
         id
       end
@@ -2343,7 +2343,7 @@ describe "Routing" do
   end
 
   it "should be able to use params after sending request" do
-    last_app = mock_app do
+    mock_app do
       get("/foo/:id"){ params.inspect }
     end
     get "/foo/123"

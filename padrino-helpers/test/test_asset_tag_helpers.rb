@@ -259,7 +259,7 @@ describe "AssetTagHelpers" do
     end
 
     it 'should display stylesheet link item with absolute path' do
-      time = stop_time_for_test
+      stop_time_for_test
       expected_options = { :rel => "stylesheet", :type => "text/css" }
       actual_html = stylesheet_link_tag('/css/style')
       assert_html_has_tag(actual_html, 'link', expected_options.merge(:href => "/css/style.css"))

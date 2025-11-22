@@ -75,7 +75,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
           if klass.ancestors.include?(Mongoid::Document) && !klass.embedded
             documents << klass
           end
-        rescue => e
+        rescue
           # Just for non-mongoid objects that don't have the embedded
           # attribute at the class level.
         end
