@@ -22,18 +22,18 @@ module Padrino
   # pluralization and singularization rules that is runs. This guarantees that your rules run before any of the rules that may
   # already have been loaded.
   module Inflections
-    CAMELIZE_CONVERT_REGEXP = /(^|_)(.)/.freeze
-    CAMELIZE_MODULE_REGEXP = /\/(.?)/.freeze
+    CAMELIZE_CONVERT_REGEXP = /(^|_)(.)/
+    CAMELIZE_MODULE_REGEXP = /\/(.?)/
     DASH = '-'.freeze
-    DEMODULIZE_CONVERT_REGEXP = /^.*::/.freeze
+    DEMODULIZE_CONVERT_REGEXP = /^.*::/
     EMPTY_STRING= ''.freeze
     SLASH = '/'.freeze
-    VALID_CONSTANT_NAME_REGEXP = /\A(?:::)?([A-Z]\w*(?:::[A-Z]\w*)*)\z/.freeze
+    VALID_CONSTANT_NAME_REGEXP = /\A(?:::)?([A-Z]\w*(?:::[A-Z]\w*)*)\z/
     UNDERSCORE = '_'.freeze
-    UNDERSCORE_CONVERT_REGEXP1 = /([A-Z]+)([A-Z][a-z])/.freeze
-    UNDERSCORE_CONVERT_REGEXP2 = /([a-z\d])([A-Z])/.freeze
+    UNDERSCORE_CONVERT_REGEXP1 = /([A-Z]+)([A-Z][a-z])/
+    UNDERSCORE_CONVERT_REGEXP2 = /([a-z\d])([A-Z])/
     UNDERSCORE_CONVERT_REPLACE = '\1_\2'.freeze
-    UNDERSCORE_MODULE_REGEXP = /::/.freeze
+    UNDERSCORE_MODULE_REGEXP = /::/
 
     @plurals, @singulars, @uncountables = [], [], []
 

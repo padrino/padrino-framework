@@ -94,7 +94,7 @@ module Padrino
         end
       end
 
-      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in `.+?')?$/.freeze
+      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in `.+?')?$/
 
       ##
       # Returns true if :source_location is set to true.

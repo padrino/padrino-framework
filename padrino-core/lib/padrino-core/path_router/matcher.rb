@@ -4,7 +4,7 @@ module Padrino
   module PathRouter
     class Matcher
       # To count group of regexp
-      GROUP_REGEXP = %r{\((?!\?:|\?!|\?<=|\?<!|\?=).+?\)}.freeze
+      GROUP_REGEXP = %r{\((?!\?:|\?!|\?<=|\?<!|\?=).+?\)}
 
       ##
       # Constructs an instance of PathRouter::Matcher.

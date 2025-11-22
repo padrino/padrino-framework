@@ -55,7 +55,7 @@ module Padrino
         @path
       end
   
-      SIGNIFICANT_VARIABLES_REGEX = /(^|[^\\])[:*]([a-zA-Z0-9_]+)/.freeze
+      SIGNIFICANT_VARIABLES_REGEX = /(^|[^\\])[:*]([a-zA-Z0-9_]+)/
 
       ##
       # Returns signficant variable names.
