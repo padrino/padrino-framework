@@ -110,8 +110,7 @@ module Padrino
     def camelize(s)
       s = s.to_s
       return s.camelize if s.respond_to?(:camelize)
-      s = s.gsub(CAMELIZE_MODULE_REGEXP){|x| "::#{x[-1..-1].upcase unless x == SLASH}"}.gsub(CAMELIZE_CONVERT_REGEXP){|x| x[-1..-1].upcase}
-      s
+      s.gsub(CAMELIZE_MODULE_REGEXP){|x| "::#{x[-1..-1].upcase unless x == SLASH}"}.gsub(CAMELIZE_CONVERT_REGEXP){|x| x[-1..-1].upcase}
     end
 
     # Tries to find a declared constant with the name specified
