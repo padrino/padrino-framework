@@ -3,7 +3,7 @@ require File.expand_path('../helper', __FILE__)
 describe "PadrinoCache" do
   after do
     tmp = File.expand_path("../tmp", __FILE__)
-    %x[rm -rf #{tmp}]
+    `rm -rf #{tmp}`
   end
 
   it 'should cache a fragment' do
