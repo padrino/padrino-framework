@@ -26,11 +26,11 @@ describe "NumberHelpers" do
 
   describe 'for number helpers functionality' do
     it 'should display number_to_currency' do
-      assert_equal "$1,234,567,890.50",        number_to_currency(1234567890.50)
-      assert_equal "$1,234,567,890.51",        number_to_currency(1234567890.506)
-      assert_equal "$1,234,567,892",           number_to_currency(1234567891.60, {:precision => 0})
-      assert_equal "$1,234,567,890.5",         number_to_currency(1234567890.50, {:precision => 1})
-      assert_equal "&pound;1234567890,50",     number_to_currency(1234567890.50, {:unit => "&pound;", :separator => ",", :delimiter => ""})
+      assert_equal "$1,234,567,890.50",        number_to_currency(1_234_567_890.50)
+      assert_equal "$1,234,567,890.51",        number_to_currency(1_234_567_890.506)
+      assert_equal "$1,234,567,892",           number_to_currency(1_234_567_891.60, {:precision => 0})
+      assert_equal "$1,234,567,890.5",         number_to_currency(1_234_567_890.50, {:precision => 1})
+      assert_equal "&pound;1234567890,50",     number_to_currency(1_234_567_890.50, {:unit => "&pound;", :separator => ",", :delimiter => ""})
       assert_equal "$1,234,567,890.50",        number_to_currency("1234567890.50")
       assert_equal "1,234,567,890.50 K&#269;", number_to_currency("1234567890.50", {:unit => "K&#269;", :format => "%n %u"})
       assert_equal "$x",                       number_to_currency("x")
@@ -51,14 +51,14 @@ describe "NumberHelpers" do
     end
 
     it 'should display  number_with_delimiter' do
-      assert_equal "12,345,678",        number_with_delimiter(12345678)
+      assert_equal "12,345,678",        number_with_delimiter(12_345_678)
       assert_equal "0",                 number_with_delimiter(0)
       assert_equal "123",               number_with_delimiter(123)
-      assert_equal "123,456",           number_with_delimiter(123456)
-      assert_equal "123,456.78",        number_with_delimiter(123456.78)
-      assert_equal "123,456.789",       number_with_delimiter(123456.789)
-      assert_equal "123,456.78901",     number_with_delimiter(123456.78901)
-      assert_equal "123,456,789.78901", number_with_delimiter(123456789.78901)
+      assert_equal "123,456",           number_with_delimiter(123_456)
+      assert_equal "123,456.78",        number_with_delimiter(123_456.78)
+      assert_equal "123,456.789",       number_with_delimiter(123_456.789)
+      assert_equal "123,456.78901",     number_with_delimiter(123_456.78901)
+      assert_equal "123,456,789.78901", number_with_delimiter(123_456_789.78901)
       assert_equal "0.78901",           number_with_delimiter(0.78901)
       assert_equal "123,456.78",        number_with_delimiter("123456.78")
       assert_equal "x",                 number_with_delimiter("x")
@@ -67,10 +67,10 @@ describe "NumberHelpers" do
     end
 
     it 'should display number_with_delimiter with options' do
-      assert_equal '12 345 678',    number_with_delimiter(12345678, :delimiter => ' ')
-      assert_equal '12,345,678-05', number_with_delimiter(12345678.05, :separator => '-')
-      assert_equal '12.345.678,05', number_with_delimiter(12345678.05, :separator => ',', :delimiter => '.')
-      assert_equal '12.345.678,05', number_with_delimiter(12345678.05, :delimiter => '.', :separator => ',')
+      assert_equal '12 345 678',    number_with_delimiter(12_345_678, :delimiter => ' ')
+      assert_equal '12,345,678-05', number_with_delimiter(12_345_678.05, :separator => '-')
+      assert_equal '12.345.678,05', number_with_delimiter(12_345_678.05, :separator => ',', :delimiter => '.')
+      assert_equal '12.345.678,05', number_with_delimiter(12_345_678.05, :delimiter => '.', :separator => ',')
     end
 
     it 'should display number_with_precision' do
@@ -80,7 +80,7 @@ describe "NumberHelpers" do
       assert_equal "111.235",    number_with_precision("111.2346")
       assert_equal "3268",       number_with_precision((32.6751 * 100.00), :precision => 0)
       assert_equal "112",        number_with_precision(111.60, :precision => 0)
-      assert_equal "1234567892", number_with_precision(1234567891.60, :precision => 0)
+      assert_equal "1234567892", number_with_precision(1_234_567_891.60, :precision => 0)
 
       # Return non-numeric params unchanged.
       assert_equal "x", number_with_precision("x")
@@ -99,15 +99,15 @@ describe "NumberHelpers" do
       assert_equal '123 Bytes', number_to_human_size(123.0)
       assert_equal '123 Bytes', number_to_human_size(123)
       assert_equal '1.2 KB',    number_to_human_size(1234)
-      assert_equal '12.1 KB',   number_to_human_size(12345)
-      assert_equal '1.2 MB',    number_to_human_size(1234567)
-      assert_equal '1.1 GB',    number_to_human_size(1234567890)
-      assert_equal '1.1 TB',    number_to_human_size(1234567890123)
+      assert_equal '12.1 KB',   number_to_human_size(12_345)
+      assert_equal '1.2 MB',    number_to_human_size(1_234_567)
+      assert_equal '1.1 GB',    number_to_human_size(1_234_567_890)
+      assert_equal '1.1 TB',    number_to_human_size(1_234_567_890_123)
       assert_equal '1025 TB',   number_to_human_size(terabytes(1025))
       assert_equal '444 KB',    number_to_human_size(kilobytes(444))
       assert_equal '1023 MB',   number_to_human_size(megabytes(1023))
       assert_equal '3 TB',      number_to_human_size(terabytes(3))
-      assert_equal '1.18 MB',   number_to_human_size(1234567, :precision => 2)
+      assert_equal '1.18 MB',   number_to_human_size(1_234_567, :precision => 2)
       assert_equal '3 Bytes',   number_to_human_size(3.14159265, :precision => 4)
       assert_equal '123 Bytes', number_to_human_size("123")
       assert_equal '1.01 KB',   number_to_human_size(kilobytes(1.0123), :precision => 2)
@@ -120,15 +120,15 @@ describe "NumberHelpers" do
     end
 
     it 'should display number_to_human_size with options' do
-      assert_equal '1.18 MB', number_to_human_size(1234567, :precision => 2)
+      assert_equal '1.18 MB', number_to_human_size(1_234_567, :precision => 2)
       assert_equal '3 Bytes', number_to_human_size(3.14159265, :precision => 4)
       assert_equal '1.01 KB', number_to_human_size(kilobytes(1.0123), :precision => 2)
       assert_equal '1.01 KB', number_to_human_size(kilobytes(1.0100), :precision => 4)
       assert_equal '10 KB',   number_to_human_size(kilobytes(10.000), :precision => 4)
-      assert_equal '1 TB',    number_to_human_size(1234567890123, :precision => 0)
-      assert_equal '500 MB',  number_to_human_size(524288000, :precision => 0)
-      assert_equal '40 KB',   number_to_human_size(41010, :precision => 0)
-      assert_equal '40 KB',   number_to_human_size(41100, :precision => 0)
+      assert_equal '1 TB',    number_to_human_size(1_234_567_890_123, :precision => 0)
+      assert_equal '500 MB',  number_to_human_size(524_288_000, :precision => 0)
+      assert_equal '40 KB',   number_to_human_size(41_010, :precision => 0)
+      assert_equal '40 KB',   number_to_human_size(41_100, :precision => 0)
     end
 
     it 'should display number_to_human_size with custom delimiter and separator' do
