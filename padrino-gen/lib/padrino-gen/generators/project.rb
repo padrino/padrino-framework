@@ -9,7 +9,7 @@ module Padrino
     class Project < Thor::Group
       Padrino::Generators.add_generator(:project, self)
 
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.source_root; __dir__; end
       def self.banner; "padrino-gen project [name] [options]"; end
 
       include Thor::Actions

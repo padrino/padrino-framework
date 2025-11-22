@@ -6,7 +6,7 @@ module Padrino
     class Migration < Thor::Group
       Padrino::Generators.add_generator(:migration, self)
 
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.source_root; __dir__; end
       def self.banner; "padrino-gen migration [name] [fields]"; end
 
       include Thor::Actions

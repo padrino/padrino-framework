@@ -11,7 +11,7 @@ module Padrino
       Padrino::Generators.add_generator(:task, self)
 
       class << self
-        def source_root; File.expand_path(File.dirname(__FILE__)); end
+        def source_root; __dir__; end
         def banner; "padrino-gen task [name]"; end
       end
 

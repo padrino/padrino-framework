@@ -10,7 +10,7 @@ module Padrino
       Padrino::Generators.add_generator(:admin, self)
 
       # Define the source template root
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.source_root; __dir__; end
       # Defines the "banner" text for the CLI.
       def self.banner; "padrino-gen admin"; end
 
@@ -22,9 +22,9 @@ module Padrino
       # Look for custom template files in a generators folder under the project root.
       def source_paths
         if File.exist? destination_root('generators', 'templates')
-          ["#{destination_root('generators')}", File.expand_path(File.dirname(__FILE__))]
+          ["#{destination_root('generators')}", __dir__]
         else
-          [File.expand_path(File.dirname(__FILE__))]
+          [__dir__]
         end
       end
 

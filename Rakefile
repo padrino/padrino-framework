@@ -6,7 +6,7 @@ require File.expand_path("../padrino-core/lib/padrino-core/version.rb", __FILE__
 
 load File.expand_path('../padrino/subgems.rb', __FILE__)
 GEM_PATHS = PADRINO_GEMS.keys
-ROOT = File.expand_path(File.dirname(__FILE__))
+ROOT = __dir__
 
 def sh_rake(command)
   sh "#{Gem.ruby} -S rake #{command}", :verbose => true

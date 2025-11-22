@@ -8,7 +8,7 @@ module Padrino
 
       Padrino::Generators.add_generator(:component, self)
 
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.source_root; __dir__; end
       def self.banner; "padrino-gen component [options]"; end
 
       include Thor::Actions

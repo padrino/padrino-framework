@@ -11,7 +11,7 @@ module Padrino
       PLUGIN_URL = 'https://github.com/padrino/padrino-recipes/tree/master/plugins'
       Padrino::Generators.add_generator(:plugin, self)
 
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
+      def self.source_root; __dir__; end
       def self.banner; "padrino-gen plugin [plugin_identifier] [options]"; end
 
       include Thor::Actions
