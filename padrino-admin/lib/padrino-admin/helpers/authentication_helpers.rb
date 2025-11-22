@@ -94,7 +94,7 @@ module Padrino
         end
 
         def login_from_session
-          admin_model_obj.find_by_id(session[settings.session_id]) if admin_model_obj
+          admin_model_obj&.find_by_id(session[settings.session_id])
         end
 
         def admin_model_obj

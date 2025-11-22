@@ -23,11 +23,7 @@ module Padrino
       else
         if html_safe?
           new_safe_buffer = super
-
-          if new_safe_buffer
-            new_safe_buffer.instance_variable_set :@html_safe, true
-          end
-
+          new_safe_buffer&.instance_variable_set :@html_safe, true
           new_safe_buffer
         else
           to_str[*args]

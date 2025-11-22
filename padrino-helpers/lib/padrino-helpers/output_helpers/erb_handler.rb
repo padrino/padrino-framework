@@ -9,7 +9,7 @@ module Padrino
         # Outputs the given text to the templates buffer directly.
         #
         def concat_to_template(text="", context=nil)
-          return text if context && context.eval("@__in_ruby_literal")
+          return text if context&.eval("@__in_ruby_literal")
           output_buffer << text
           nil
         end

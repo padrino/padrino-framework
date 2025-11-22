@@ -53,7 +53,7 @@ module Padrino
       #   strip_tags("<b>Hey</b>") => "Hey"
       #
       def strip_tags(html)
-        html.gsub(/<\/?[^>]*>/, "") if html
+        html&.gsub(/<\/?[^>]*>/, "")
       end
 
       ##

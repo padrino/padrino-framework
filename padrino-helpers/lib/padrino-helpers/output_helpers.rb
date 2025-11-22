@@ -114,8 +114,7 @@ module Padrino
       # @return [Boolean] True if the block is a template; false otherwise.
       #
       def block_is_template?(block)
-        handler = find_proper_handler
-        block && handler && handler.engine_matches?(block)
+        block && find_proper_handler&.engine_matches?(block)
       end
 
       ##
@@ -203,8 +202,7 @@ module Padrino
       #   find_proper_handler => <OutputHelpers::HamlHandler>
       #
       def find_proper_handler
-        handler_class = OutputHelpers.handlers[current_engine]
-        handler_class && handler_class.new(self)
+        OutputHelpers.handlers[current_engine]&.new(self)
       end
 
       ##
@@ -216,9 +214,9 @@ module Padrino
       # @return [SafeBuffer, Array<SafeBuffer>]
       def mark_safe(value)
         if value.respond_to? :map!
-          value.map!{|v| v.html_safe if v }
+          value.map!{|v| v&.html_safe }
         else
-          value.html_safe if value
+          value&.html_safe
         end
       end
     end
