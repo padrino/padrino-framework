@@ -77,7 +77,6 @@ describe 'Dependencies' do
       assert_equal 'hello', M.hello
     end
 
-
     describe 'change log level for :devel' do
       before do
         @log_level_devel = Padrino::Logger::Config[:test]

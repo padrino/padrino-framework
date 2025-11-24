@@ -12,7 +12,6 @@ module Padrino
     Server.start(*detect_application(options))
   end
 
-
   #
   #
   def self.detect_application(options)
@@ -68,7 +67,6 @@ module Padrino
     alias :wrapped_app :app
 
     attr_reader :options
-
 
     # Detects the supported handler to use.
     #

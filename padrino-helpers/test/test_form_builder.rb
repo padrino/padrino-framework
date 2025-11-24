@@ -786,7 +786,6 @@ describe 'FormBuilder' do
       assert_html_has_tag(actual_html, 'input[type=submit]', value: 'Submit')
     end
 
-
     it 'should display correct submit button html with no caption' do
       actual_html = standard_builder.submit(class: 'btn')
       assert_html_has_tag(actual_html, 'input.btn[type=submit]', value: 'Submit')

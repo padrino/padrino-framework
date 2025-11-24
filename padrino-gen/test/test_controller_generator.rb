@@ -185,7 +185,6 @@ describe 'ControllerGenerator' do
       assert_match_in_file(/class DemoItemsControllerTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/subby/controllers/demo_items_controller_test.rb")
     end
 
-
     it 'should correctly generate file names' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }

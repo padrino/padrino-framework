@@ -1015,7 +1015,6 @@ describe 'Routing' do
     assert_equal 'html', body
   end
 
-
   it 'should respect priorities' do
     route_order = []
     mock_app do
