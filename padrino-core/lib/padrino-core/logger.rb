@@ -317,7 +317,10 @@ module Padrino
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
-    @@mutex = Mutex.new
+    def self.mutex
+      @_mutex ||= Mutex.new
+    end
+
     def self.logger
       (@_logger ||= nil) || setup!
     end
@@ -431,7 +434,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     #
     def flush
       return unless @buffer.size > 0
-      @@mutex.synchronize do
+      self.class.mutex.synchronize do
         @buffer.each do |line|
           line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace) if @sanitize_encoding
           @log.write(line)
@@ -466,9 +469,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     #
     def <<(message = nil)
       message << "\n" unless message[-1] == "\n"
-      @@mutex.synchronize do
-        @buffer << message
-      end
+      self.class.mutex.synchronize { @buffer << message }
       flush if @auto_flush
       message
     end
