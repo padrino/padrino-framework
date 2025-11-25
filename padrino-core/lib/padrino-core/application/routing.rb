@@ -30,9 +30,7 @@ module Padrino
     end
 
     class Parent < String
-      attr_reader :map
-      attr_reader :optional
-      attr_reader :options
+      attr_reader :map, :optional, :options
 
       alias_method :optional?, :optional
 
