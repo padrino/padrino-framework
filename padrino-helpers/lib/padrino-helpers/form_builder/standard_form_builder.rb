@@ -14,7 +14,7 @@ module Padrino
         #   check_box_block(:remember_me, { :class => 'long' }, { :class => 'wide-label' })
         #   select_block(:color, :options => ['green', 'black'])
         #
-        (self.field_types - [ :hidden_field, :radio_button ]).each do |field_type|
+        (self.field_types - %i[hidden_field radio_button]).each do |field_type|
           class_eval <<~RUBY, __FILE__, __LINE__ + 1
             def #{field_type}_block(field, options={}, label_options={})
               if options[:caption]

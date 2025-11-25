@@ -80,7 +80,7 @@ describe 'Rendering' do
       create_view :foo, 'erb file'
       create_view :foo, 'js file', format: :js
       mock_app do
-        get('/layout_test', provides: [:html, :js]) { render :foo }
+        get('/layout_test', provides: %i[html js]) { render :foo }
       end
       get '/layout_test'
       assert_equal 'this is an erb file', body
@@ -114,7 +114,7 @@ describe 'Rendering' do
       create_view :foo, 'erb file'
       create_view :foo, 'xml file', format: :xml
       mock_app do
-        get('/layout_test', provides: [:html, :xml]) { render :foo }
+        get('/layout_test', provides: %i[html xml]) { render :foo }
       end
       get '/layout_test'
       assert_equal 'this is an erb file', body
@@ -126,7 +126,7 @@ describe 'Rendering' do
       create_layout :baz, 'html file', format: :html
 
       mock_app do
-        get('/content_type_test', provides: [:html, :xml]) { render :baz }
+        get('/content_type_test', provides: %i[html xml]) { render :baz }
       end
 
       get '/content_type_test'
@@ -167,7 +167,7 @@ describe 'Rendering' do
       create_layout :foo, 'html file', format: :html
 
       mock_app do
-        get('/default_rendering_test', provides: [:html, :xml]) { render :foo }
+        get('/default_rendering_test', provides: %i[html xml]) { render :foo }
       end
 
       @save = Padrino::Rendering::DEFAULT_RENDERING_OPTIONS
@@ -435,7 +435,7 @@ describe 'Rendering' do
       create_view :foo, 'Im Html'
       create_view :foo, 'xml.rss', format: :rss
       mock_app do
-        get(:index, map: '/', provides: [:html, :rss]) { render 'foo' }
+        get(:index, map: '/', provides: %i[html rss]) { render 'foo' }
       end
       get '/', {}, { 'HTTP_ACCEPT' => 'text/html;q=0.9' }
       assert_equal 'Im Html', body
@@ -478,7 +478,7 @@ describe 'Rendering' do
       create_view :foo, 'Im English Js',  format: :js, locale: :en
       create_view :foo, 'Im Italian Js',  format: :js, locale: :it
       mock_app do
-        get('/foo', provides: [:html, :js]) { render :foo }
+        get('/foo', provides: %i[html js]) { render :foo }
       end
 
       I18n.enforce_available_locales = false
@@ -537,7 +537,7 @@ describe 'Rendering' do
       create_view   :bar, 'Im a json',      format: :json
       mock_app do
         layout :foo
-        get('/bar', provides: [:html, :js, :json]) { render :bar }
+        get('/bar', provides: %i[html js json]) { render :bar }
       end
 
       I18n.enforce_available_locales = false

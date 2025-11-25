@@ -139,12 +139,12 @@ describe 'Mounter' do
     it 'should be able to access routes data for mounted apps' do
       class ::OneApp < Padrino::Application
         get('/test') { 'test' }
-        get(:index, provides: [:js, :json]) { 'index' }
+        get(:index, provides: %i[js json]) { 'index' }
         get(%r{/foo|/baz}) { 'regexp' }
         controllers :posts do
           get(:index) { 'index' }
           get(:new, provides: :js) { 'new' }
-          get(:show, provides: [:js, :html], with: :id) { 'show' }
+          get(:show, provides: %i[js html], with: :id) { 'show' }
           post(:create, provides: :js, with: :id) { 'create' }
           get(:regexp, map: %r{/foo|/baz}) { 'regexp' }
         end

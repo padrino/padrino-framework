@@ -397,7 +397,7 @@ module Padrino
       private
 
       # temporary variables named @_parent, @_provides, @_use_format, @_cache, @_expires, @_map, @_conditions, @_accepts, @_params
-      CONTROLLER_OPTIONS = [ :parent, :provides, :use_format, :cache, :expires, :map, :conditions, :accepts, :params ].freeze
+      CONTROLLER_OPTIONS = %i[parent provides use_format cache expires map conditions accepts params].freeze
 
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)

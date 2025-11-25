@@ -54,7 +54,7 @@ task :bump, [:version] do |_t, args|
 end
 
 desc 'Executes a fresh install removing all padrino version and then reinstall all gems'
-task fresh: [:uninstall, :install, :clean]
+task fresh: %i[uninstall install clean]
 
 desc 'Pulls latest commits and updates submodules'
 task :pull do

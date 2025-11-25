@@ -258,7 +258,7 @@ describe 'Routing' do
 
   it 'should parse params when use regex for parts of a route' do
     mock_app do
-      post :index, with: [:foo, :bar], bar: /.+/ do
+      post :index, with: %i[foo bar], bar: /.+/ do
         "show #{params[:foo]}"
       end
 
@@ -285,19 +285,19 @@ describe 'Routing' do
     mock_app do
       get(:foo) { '/foo' }
       get(:foo, with: :id) { |id| "/foo/#{id}" }
-      get([:foo, :id]) { |id| "/foo/#{id}" }
+      get(%i[foo id]) { |id| "/foo/#{id}" }
       get(:hash, with: :id) { url(:hash, id: 1) }
       get(:anchor) { url(:anchor, anchor: 'comments') }
       get(:fragment) { url(:anchor, fragment: 'comments') }
       get(:fragment2) { url(:anchor, fragment: :comments) }
       get(:gangsta) { url(:gangsta, foo: { bar: :baz }, hoge: :fuga) }
-      get([:hash, :id]) { url(:hash, id: 1) }
+      get(%i[hash id]) { url(:hash, id: 1) }
       get(:array, with: :id) { url(:array, 23) }
-      get([:array, :id]) { url(:array, 23) }
+      get(%i[array id]) { url(:array, 23) }
       get(:hash_with_extra, with: :id) { url(:hash_with_extra, id: 1, query: 'string') }
-      get([:hash_with_extra, :id]) { url(:hash_with_extra, id: 1, query: 'string') }
+      get(%i[hash_with_extra id]) { url(:hash_with_extra, id: 1, query: 'string') }
       get(:array_with_extra, with: :id) { url(:array_with_extra, 23, query: 'string') }
-      get([:array_with_extra, :id]) { url(:array_with_extra, 23, query: 'string') }
+      get(%i[array_with_extra id]) { url(:array_with_extra, 23, query: 'string') }
       get('/old-bar/:id') { params[:id] }
       post(:mix, map: '/mix-bar/:id') { params[:id] }
       get(:mix, map: '/mix-bar/:id') { params[:id] }
@@ -349,8 +349,8 @@ describe 'Routing' do
     mock_app do
       get(:a, provides: :any) { url(:a, format: :json) }
       get(:b, provides: :js) { url(:b, format: :js) }
-      get(:c, provides: [:js, :json]) { url(:c, format: :json) }
-      get(:d, provides: [:html, :js]) { url(:d, format: :js, foo: :bar) }
+      get(:c, provides: %i[js json]) { url(:c, format: :json) }
+      get(:d, provides: %i[html js]) { url(:d, format: :js, foo: :bar) }
     end
     get '/a.js'
     assert_equal '/a.json', body
@@ -453,7 +453,7 @@ describe 'Routing' do
 
   it 'should return 406 on Accept-Headers it does not provide' do
     mock_app do
-      get(:a, provides: [:html, :js]) { content_type }
+      get(:a, provides: %i[html js]) { content_type }
     end
 
     get '/a', {}, {'HTTP_ACCEPT' => 'application/yaml'}
@@ -463,7 +463,7 @@ describe 'Routing' do
   it 'should return 406 on file extensions it does not provide and flag is set' do
     mock_app do
       enable :treat_format_as_accept
-      get(:a, provides: [:html, :js]) { content_type }
+      get(:a, provides: %i[html js]) { content_type }
     end
 
     get '/a.xml', {}, {}
@@ -482,7 +482,7 @@ describe 'Routing' do
 
   it 'should return 404 on file extensions it does not provide and flag is not set' do
     mock_app do
-      get(:a, provides: [:html, :js]) { content_type }
+      get(:a, provides: %i[html js]) { content_type }
     end
 
     get '/a.xml', {}, {}
@@ -491,7 +491,7 @@ describe 'Routing' do
 
   it 'should not set content_type to :html if Accept */* and html not in provides' do
     mock_app do
-      get('/foo', provides: [:json, :xml]) { content_type.to_s }
+      get('/foo', provides: %i[json xml]) { content_type.to_s }
     end
 
     get '/foo', {}, { 'HTTP_ACCEPT' => '*/*;q=0.5' }
@@ -534,7 +534,7 @@ describe 'Routing' do
 
   it 'should set correct content_type for Accept not equal to */* even if */* also provided' do
     mock_app do
-      get('/foo', provides: [:html, :js, :xml]) { content_type.to_s }
+      get('/foo', provides: %i[html js xml]) { content_type.to_s }
     end
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
@@ -561,7 +561,7 @@ describe 'Routing' do
 
   it 'should not match routes if url_format and http_accept is provided but not included' do
     mock_app do
-      get(:a, provides: [:js, :html]) { content_type }
+      get(:a, provides: %i[js html]) { content_type }
     end
 
     get '/a.xml', {}, {'HTTP_ACCEPT' => 'text/html'}
@@ -570,7 +570,7 @@ describe 'Routing' do
 
   it 'should generate routes for format simple' do
     mock_app do
-      get(:foo, provides: [:html, :rss]) { "Test\n" }
+      get(:foo, provides: %i[html rss]) { "Test\n" }
     end
     get '/foo'
     assert_equal "Test\n", body
@@ -598,7 +598,7 @@ describe 'Routing' do
       controller :posts do
         get('/omnomnom(/:id)?') { request.action.inspect }
         controller :mini do
-          get([:a, :b, :c]) { request.action.inspect }
+          get(%i[a b c]) { request.action.inspect }
         end
       end
     end
@@ -640,7 +640,7 @@ describe 'Routing' do
         params[:format] = 'json'
       end
 
-      get 'test', provides: [:html, :json] do
+      get 'test', provides: %i[html json] do
         content_type.inspect
       end
     end
@@ -654,7 +654,7 @@ describe 'Routing' do
 
   it 'should correctly accept "." in the route' do
     mock_app do
-      get 'test.php', provides: [:html, :json] do
+      get 'test.php', provides: %i[html json] do
         content_type.inspect
       end
     end
@@ -666,7 +666,7 @@ describe 'Routing' do
 
   it 'should correctly accept priority of format' do
     mock_app do
-      get 'test.php', provides: [:html, :json, :xml] do
+      get 'test.php', provides: %i[html json xml] do
         content_type.inspect
       end
     end
@@ -684,8 +684,8 @@ describe 'Routing' do
   it 'should generate routes for format with controller' do
     mock_app do
       controller :posts do
-        get(:index, provides: [:html, :rss, :atom, :js]) { "Index.#{content_type}\n" }
-        get(:show,  with: :id, provides: [:html, :rss, :atom]) { "Show.#{content_type}\n" }
+        get(:index, provides: %i[html rss atom js]) { "Index.#{content_type}\n" }
+        get(:show,  with: :id, provides: %i[html rss atom]) { "Show.#{content_type}\n" }
       end
     end
     get '/posts'
@@ -755,8 +755,8 @@ describe 'Routing' do
     mock_app do
       get(:a, provides: :js) { 'js' }
       get(:b, provides: :any) { 'any' }
-      get(:c, provides: [:js, :json]) { 'js,json' }
-      get(:d, provides: [:html, :js]) { 'html,js'}
+      get(:c, provides: %i[js json]) { 'js,json' }
+      get(:d, provides: %i[html js]) { 'html,js'}
     end
     get '/a'
     assert_equal 200, status
@@ -863,7 +863,7 @@ describe 'Routing' do
   it 'should ignore trailing delimiters within a named controller' do
     mock_app do
       controller :posts do
-        get(:index, provides: [:html, :js]) { 'index' }
+        get(:index, provides: %i[html js]) { 'index' }
         get(:new)  { 'new' }
         get(:show, with: :id) { "show #{params[:id]}" }
       end
@@ -999,11 +999,11 @@ describe 'Routing' do
 
   it 'should match params and format' do
     mock_app do
-      get '/:id', provides: [:json, :html] do |id, _|
+      get '/:id', provides: %i[json html] do |id, _|
         id
       end
 
-      get 'format/:id', provides: [:json, :html] do |_id, format|
+      get 'format/:id', provides: %i[json html] do |_id, format|
         format
       end
     end
@@ -1023,7 +1023,7 @@ describe 'Routing' do
       get(:index, priority: :high)  { route_order << :high; pass }
     end
     get '/'
-    assert_equal [:high, :normal, :low], route_order
+    assert_equal %i[high normal low], route_order
     assert_equal 'hello', body
   end
 
@@ -1098,9 +1098,9 @@ describe 'Routing' do
     mock_app do
       controllers :project do
         get(:index, parent: :user) { "index #{params[:user_id]}" }
-        get(:index, parent: [:user, :section]) { "index #{params[:user_id]} #{params[:section_id]}" }
+        get(:index, parent: %i[user section]) { "index #{params[:user_id]} #{params[:section_id]}" }
         get(:edit, with: :id, parent: :user) { "edit #{params[:id]} #{params[:user_id]}"}
-        get(:show, with: :id, parent: [:user, :product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
+        get(:show, with: :id, parent: %i[user product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
       end
     end
     get '/user/1/project'
@@ -1137,9 +1137,9 @@ describe 'Routing' do
     mock_app do
       controllers :project do
         get(:index, parent: :user) { "index #{params[:user_id]}" }
-        get(:index, parent: [:user, :section]) { "index #{params[:user_id]} #{params[:section_id]}" }
+        get(:index, parent: %i[user section]) { "index #{params[:user_id]} #{params[:section_id]}" }
         get(:edit, with: :id, parent: :user) { "edit #{params[:id]} #{params[:user_id]}"}
-        get(:show, with: :id, parent: [:user, :product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
+        get(:show, with: :id, parent: %i[user product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
       end
 
       controllers :bar, parent: :foo do
@@ -1151,15 +1151,15 @@ describe 'Routing' do
     # get "/user/1/project"
     assert_equal :user, @app.routes[0].parent
     # get "/user/1/section/3/project"
-    assert_equal [:user, :section], @app.routes[2].parent
+    assert_equal %i[user section], @app.routes[2].parent
     # get "/user/1/project/edit/2"
     assert_equal :user, @app.routes[4].parent
     # get "/user/1/product/2/project/show/3"
-    assert_equal [:user, :product], @app.routes[6].parent
+    assert_equal %i[user product], @app.routes[6].parent
     # get "/foo/1/bar"
     assert_equal :foo, @app.routes[8].parent
     # get "/foo/1/baz/2/bar"
-    assert_equal [:foo, :baz], @app.routes[10].parent
+    assert_equal %i[foo baz], @app.routes[10].parent
   end
 
   it 'should apply parent to controller' do
@@ -1289,7 +1289,7 @@ describe 'Routing' do
 
   it 'should filters by media type' do
     mock_app do
-      get '/foo', accepts: [:xml, :json] do
+      get '/foo', accepts: %i[xml json] do
         request.env['CONTENT_TYPE']
       end
     end
@@ -1311,7 +1311,7 @@ describe 'Routing' do
 
   it 'should filters by media type when using :accepts as controller option' do
     mock_app do
-      controller accepts: [:xml, :js] do
+      controller accepts: %i[xml js] do
         get '/foo' do
           request.env['CONTENT_TYPE']
         end
@@ -1325,7 +1325,7 @@ describe 'Routing' do
 
   it 'should filters by accept header' do
     mock_app do
-      get '/foo', provides: [:xml, :js] do
+      get '/foo', provides: %i[xml js] do
         request.env['HTTP_ACCEPT']
       end
     end
@@ -1418,7 +1418,7 @@ describe 'Routing' do
 
   it 'should set content_type to :html if Accept */*' do
     mock_app do
-      get('/foo', provides: [:html, :js]) { content_type.to_s }
+      get('/foo', provides: %i[html js]) { content_type.to_s }
     end
     get '/foo', {}, {}
     assert_equal 'html', body
@@ -1429,7 +1429,7 @@ describe 'Routing' do
 
   it 'should set content_type to :js if Accept includes both text/javascript and */*;q=0.5' do
     mock_app do
-      get('/foo', provides: [:html, :js]) { content_type.to_s }
+      get('/foo', provides: %i[html js]) { content_type.to_s }
     end
     get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
     assert_equal 'js', body
@@ -1645,7 +1645,7 @@ describe 'Routing' do
 
   it 'should ignore nil params' do
     mock_app do
-      get(:testing, provides: [:html, :json]) do
+      get(:testing, provides: %i[html json]) do
       end
     end
     assert_equal '/testing.html', @app.url(:testing, format: :html)
@@ -1728,7 +1728,7 @@ describe 'Routing' do
       get(:testing) { params[:foo] }
       controller :test1 do
         get(:url1) { params[:foo] }
-        get(:url2, provides: [:html, :json]) { params[:foo] }
+        get(:url2, provides: %i[html json]) { params[:foo] }
       end
     end
 
@@ -1766,8 +1766,8 @@ describe 'Routing' do
 
   it 'should parse two routes with the same path but different http verbs and provides' do
     mock_app do
-      get(:index, provides: [:html, :json]) { "This is the get index.#{content_type}" }
-      post(:index, provides: [:html, :json]) { "This is the post index.#{content_type}" }
+      get(:index, provides: %i[html json]) { "This is the get index.#{content_type}" }
+      post(:index, provides: %i[html json]) { "This is the post index.#{content_type}" }
     end
     get '/'
     assert_equal 'This is the get index.html', body
@@ -1877,7 +1877,7 @@ describe 'Routing' do
   it 'should parse params without explicit provides for every matching route' do
     mock_app do
       get(:index, map: '/foos/:bar') { "get bar = #{params[:bar]}" }
-      post :create, map: '/foos/:bar', provides: [:html, :js] do
+      post :create, map: '/foos/:bar', provides: %i[html js] do
         "post bar = #{params[:bar]}"
       end
     end
@@ -1985,12 +1985,12 @@ describe 'Routing' do
 
   it 'should parse params with class level provides' do
     mock_app do
-      controllers :posts, provides: [:html, :js] do
+      controllers :posts, provides: %i[html js] do
         post(:create, map: '/foo/:bar/:baz/:id') do
           "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}"
         end
       end
-      controllers :topics, provides: [:js, :html] do
+      controllers :topics, provides: %i[js html] do
         get(:show, map: '/foo/:bar/:baz/:id') { render 'topics/show' }
         post(:create, map: '/foo/:bar/:baz') { "TOPICS CREATE #{params[:bar]} - #{params[:baz]}" }
       end
@@ -2008,13 +2008,13 @@ describe 'Routing' do
   it 'should parse params properly with inline provides' do
     mock_app do
       controllers :posts do
-        post(:create, map: '/foo/:bar/:baz/:id', provides: [:html, :js]) do
+        post(:create, map: '/foo/:bar/:baz/:id', provides: %i[html js]) do
           "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}"
         end
       end
       controllers :topics do
-        get(:show, map: '/foo/:bar/:baz/:id', provides: [:html, :js]) { render 'topics/show' }
-        post(:create, map: '/foo/:bar/:baz', provides: [:html, :js]) { "TOPICS CREATE #{params[:bar]} - #{params[:baz]}" }
+        get(:show, map: '/foo/:bar/:baz/:id', provides: %i[html js]) { render 'topics/show' }
+        post(:create, map: '/foo/:bar/:baz', provides: %i[html js]) { "TOPICS CREATE #{params[:bar]} - #{params[:baz]}" }
       end
     end
     post @app.url(:topics, :create, format: :js, bar: 'bar', baz: 'baz')
@@ -2029,7 +2029,7 @@ describe 'Routing' do
       before do
         params[:format] ||= :other
       end
-      get('/format_test', provides: [:html, :other]) { content_type.to_s }
+      get('/format_test', provides: %i[html other]) { content_type.to_s }
     end
     get '/format_test'
     assert_equal 'other', body

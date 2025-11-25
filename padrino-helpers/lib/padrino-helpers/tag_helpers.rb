@@ -20,25 +20,25 @@ module Padrino
       #
       ESCAPE_REGEXP = Regexp.union(*ESCAPE_VALUES.keys).freeze
 
-      BOOLEAN_ATTRIBUTES = [
-        :autoplay,
-        :autofocus,
-        :formnovalidate,
-        :checked,
-        :disabled,
-        :hidden,
-        :loop,
-        :multiple,
-        :muted,
-        :readonly,
-        :required,
-        :selected,
-        :declare,
-        :defer,
-        :ismap,
-        :itemscope,
-        :noresize,
-        :novalidate
+      BOOLEAN_ATTRIBUTES = %i[
+        autoplay
+        autofocus
+        formnovalidate
+        checked
+        disabled
+        hidden
+        loop
+        multiple
+        muted
+        readonly
+        required
+        selected
+        declare
+        defer
+        ismap
+        itemscope
+        noresize
+        novalidate
       ].freeze
 
       ##
@@ -49,11 +49,7 @@ module Padrino
       #   text_field :foo, :dialog => true
       #   # Generates: <input type="text" data-dialog="true" name="foo" />
       #
-      DATA_ATTRIBUTES = [
-        :method,
-        :remote,
-        :confirm
-      ]
+      DATA_ATTRIBUTES = %i[method remote confirm]
 
       ##
       # A html_safe newline string to avoid allocating a new on each

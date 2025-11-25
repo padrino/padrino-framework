@@ -66,7 +66,7 @@ describe 'Padrino::ParamsProtection' do
   it 'should pass :with parameters' do
     result = nil
     mock_app do
-      post :basic, with: [:id, :tag], params: [ :name ] do
+      post :basic, with: %i[id tag], params: [ :name ] do
         result = params
         ''
       end
@@ -109,7 +109,7 @@ describe 'Padrino::ParamsProtection' do
     result = nil
     mock_app do
       controller :persons, params: [ :name ] do
-        post :create, params: [ :name, :position ] do
+        post :create, params: %i[name position] do
           result = params
           ''
         end

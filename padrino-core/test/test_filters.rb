@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/helper')
 describe 'Filters' do
   it 'should filters by accept header' do
     mock_app do
-      get '/foo', provides: [:xml, :js] do
+      get '/foo', provides: %i[xml js] do
         request.env['HTTP_ACCEPT']
       end
     end
@@ -223,7 +223,7 @@ describe 'Filters' do
   it 'should be able to filter excluding based on a symbol when specify the multiple routes and use nested controller' do
     mock_app do
       controller :test, :nested do
-        before(except: [:test1, :test2]) { @long = 'long'}
+        before(except: %i[test1 test2]) { @long = 'long'}
         before(except: [:test1]) { @short = 'short'}
         get :test1 do
           "#{@long} #{@short} normal"

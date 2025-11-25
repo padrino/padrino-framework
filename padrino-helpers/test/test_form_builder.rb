@@ -533,7 +533,7 @@ describe 'FormBuilder' do
 
   describe 'for #check_box_group and #radio_button_group methods' do
     it 'should display checkbox group html' do
-      checkboxes = standard_builder.check_box_group(:role, collection: @user.role_types, fields: [:name, :id], selected: [2, 3])
+      checkboxes = standard_builder.check_box_group(:role, collection: @user.role_types, fields: %i[name id], selected: [2, 3])
       assert_html_has_tag(checkboxes, 'input[type=checkbox]', value: '1')
       assert_html_has_no_tag(checkboxes, 'input[type=checkbox][checked]', value: '1')
       assert_html_has_tag(checkboxes, 'input[type=checkbox]', checked: 'checked', value: '2')
@@ -541,7 +541,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display checkbox group html and extract selected values from the object' do
-      checkboxes = standard_builder.check_box_group(:roles, collection: @user.role_types, fields: [:name, :id])
+      checkboxes = standard_builder.check_box_group(:roles, collection: @user.role_types, fields: %i[name id])
       assert_html_has_tag(checkboxes, 'input[type=checkbox][name="user[roles][]"][value="1"][checked]')
       assert_html_has_tag(checkboxes, 'input[type=checkbox][name="user[roles][]"][value="3"][checked]')
       assert_html_has_no_tag(checkboxes, 'input[type=checkbox][name="user[roles][]"][value="2"][checked]')
@@ -753,7 +753,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct select html with collection passed in' do
-      actual_html = standard_builder.select(:role, collection: @user.role_types, fields: [:name, :id])
+      actual_html = standard_builder.select(:role, collection: @user.role_types, fields: %i[name id])
       assert_html_has_tag(actual_html, 'select', id: 'user_role', name: 'user[role]')
       assert_html_has_tag(actual_html, 'select option', count: 3)
       assert_html_has_tag(actual_html, 'select option', value: '1', content: 'Admin', selected: 'selected')

@@ -360,7 +360,7 @@ module Padrino
 
       def select_template(templates, template_path, content_type, _locale)
         symbol = content_type_symbol(content_type)
-        simple_content_type = [:html, :plain].include?(symbol)
+        simple_content_type = %i[html plain].include?(symbol)
         target_path, target_engine = path_and_engine(template_path)
 
         templates.find { |file, _| file.to_s == "#{target_path}.#{locale}.#{symbol}" } ||

@@ -108,18 +108,18 @@ module Padrino
         def error_header_tag(options, object_name, count)
           header_message = options[:header_message] || begin
             model_name = I18n.t(:name, default: Inflections.humanize(object_name), scope: [:models, object_name], count: 1)
-            I18n.t :header, count: count, model: model_name, locale: options[:locale], scope: [:models, :errors, :template]
+            I18n.t :header, count: count, model: model_name, locale: options[:locale], scope: %i[models errors template]
           end
           content_tag(options[:header_tag] || :h2, header_message) unless header_message.empty?
         end
 
         def error_body_tag(options)
-          body_message = options[:message] || I18n.t(:body, locale: options[:locale], scope: [:models, :errors, :template])
+          body_message = options[:message] || I18n.t(:body, locale: options[:locale], scope: %i[models errors template])
           content_tag(:p, body_message) unless body_message.empty?
         end
 
         def error_html_attributes(options)
-          [:id, :class, :style].each_with_object({}) do |key, all|
+          %i[id class style].each_with_object({}) do |key, all|
             if options.include?(key)
               value = options[key]
               all[key] = value if value

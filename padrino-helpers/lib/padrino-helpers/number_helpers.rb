@@ -201,7 +201,7 @@ module Padrino
       end
 
       # The units available for storage formatting.
-      STORAGE_UNITS = [:byte, :kb, :mb, :gb, :tb].freeze
+      STORAGE_UNITS = %i[byte kb mb gb tb].freeze
 
       ##
       # Formats the bytes in +size+ into a more understandable representation

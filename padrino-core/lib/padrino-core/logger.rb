@@ -244,12 +244,12 @@ module Padrino
       # Colors for levels
       unless defined?(ColoredLevels)
         ColoredLevels = {
-          fatal: [:bold, :red],
-          error: [:default, :red],
-          warn: [:default, :yellow],
-          info: [:default, :green],
-          debug: [:default, :cyan],
-          devel: [:default, :magenta]
+          fatal: %i[bold red],
+          error: %i[default red],
+          warn: %i[default yellow],
+          info: %i[default green],
+          debug: %i[default cyan],
+          devel: %i[default magenta]
         }
       end
 

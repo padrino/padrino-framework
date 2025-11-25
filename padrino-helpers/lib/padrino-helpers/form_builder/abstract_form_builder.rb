@@ -171,9 +171,10 @@ module Padrino
 
         # Returns the known field types for a Formbuilder.
         def self.field_types
-          [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select,
-            :number_field, :telephone_field, :email_field, :search_field, :url_field,
-            :datetime_field, :datetime_local_field, :date_field, :month_field, :week_field, :time_field, :color_field
+          %i[
+            hidden_field text_field text_area password_field file_field radio_button check_box select
+            number_field telephone_field email_field search_field url_field
+            datetime_field datetime_local_field date_field month_field week_field time_field color_field
           ]
         end
 
@@ -281,7 +282,7 @@ module Padrino
         end
 
         def field_methods(options)
-          options[:fields] || [:name, :id]
+          options[:fields] || %i[name id]
         end
 
         def field_values(object, options)

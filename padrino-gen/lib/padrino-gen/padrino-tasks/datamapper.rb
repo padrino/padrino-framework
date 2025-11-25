@@ -80,10 +80,10 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     end
 
     desc 'Drop the database, migrate from scratch and initialize with the seed data'
-    task reset: [:drop, :setup]
+    task reset: %i[drop setup]
 
     desc 'Create the database migrate and initialize with the seed data'
-    task setup: [:create, :migrate, :seed]
+    task setup: %i[create migrate seed]
   end
 
   task 'db:migrate:down' => 'dm:migrate:down'

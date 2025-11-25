@@ -33,7 +33,7 @@ module Padrino
     DEFAULT_ADDRESS = { Host: '127.0.0.1', Port: 3000 }
 
     # Server Handlers
-    Handlers = [:thin, :puma, :'spider-gazelle', :mongrel, :trinidad, :webrick]
+    Handlers = %i[thin puma spider-gazelle mongrel trinidad webrick]
 
     # Starts the application on the available server with specified options.
     def self.start(app, options = {})
@@ -54,7 +54,7 @@ module Padrino
     # Starts the application on the available server with specified options.
     def start
       puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} at http://#{options[:Host]}:#{options[:Port]}"
-      [:INT, :TERM].each { |sig| trap(sig) { exit } }
+      %i[INT TERM].each { |sig| trap(sig) { exit } }
       super do |server|
         server.threaded = true if server.respond_to?(:threaded=)
       end
@@ -100,7 +100,7 @@ module Padrino
     # Detects Host and Port for Rack server.
     #
     def self.detect_address(options)
-      address = DEFAULT_ADDRESS.merge(options.select { |key| [:Host, :Port].include?(key) })
+      address = DEFAULT_ADDRESS.merge(options.select { |key| %i[Host Port].include?(key) })
       address[:Host] = options[:host] if options[:host]
       address[:Port] = options[:port] if options[:port]
       address
