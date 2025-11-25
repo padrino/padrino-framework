@@ -57,11 +57,13 @@ class Minitest::Spec
       options, model_path = {}, File.expand_path(File.join(root, '/models/**/*.rb'))
       options = params.pop if params.last.is_a?(Hash)
       Dir[model_path].sort.each { |path| require path }
+
       Array(options[:apps]).each do |app_name|
         path = File.expand_path(File.join(root, "/#{app_name}/app.rb"))
         require path if File.exist?(path)
-      end if options[:apps]
+      end
     end
+
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
     ($LOADED_FEATURES - features).each {|x| $LOADED_FEATURES.delete(x) }
     (Object.constants - constants).each {|constant| Object.instance_eval { remove_const(constant) }}

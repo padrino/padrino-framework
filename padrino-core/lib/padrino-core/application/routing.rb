@@ -979,9 +979,11 @@ module Padrino
         captured_params = captures_from_params(params)
 
         # Should not overwrite params by given query
-        @params.merge!(params) do |key, original, newval|
-          @route.significant_variable_names.include?(key) ? newval : original
-        end unless params.empty?
+        unless params.empty?
+          @params.merge!(params) do |key, original, newval|
+            @route.significant_variable_names.include?(key) ? newval : original
+          end
+        end
 
         @params[:format] = params[:format] if params[:format]
         @params[:captures] = captured_params if !captured_params.empty? && route.path.is_a?(Regexp)

@@ -63,14 +63,16 @@ module Padrino
     # :debug:: low-level information for developers
     # :devel:: Development-related information that is unnecessary in debug mode
     #
-    Levels = {
-      fatal: 4,
-      error: 3,
-      warn: 2,
-      info: 1,
-      debug: 0,
-      devel: -1,
-    } unless defined?(Levels)
+    unless defined?(Levels)
+      Levels = {
+        fatal: 4,
+        error: 3,
+        warn: 2,
+        info: 1,
+        debug: 0,
+        devel: -1,
+      }
+    end
 
     module Extensions
       ##
@@ -223,28 +225,33 @@ module Padrino
       #   Padrino.logger.exception(e, :short)
       def exception(boom, verbosity = :long, level = :error)
         return unless Levels.has_key?(level)
+
         text = ["#{boom.class} - #{boom.message}:"]
         trace = boom.backtrace
-        case verbosity
-        when :long
-          text += trace
-        when :short
-          text << trace.first
-        end if trace.is_a?(Array)
+
+        if trace.is_a?(Array)
+          case verbosity
+          when :long then text += trace
+          when :short then text << trace.first
+          end
+        end
+
         send level, text.join("\n ")
       end
     end
 
     module Colorize
       # Colors for levels
-      ColoredLevels = {
-        fatal: [:bold, :red],
-        error: [:default, :red],
-        warn: [:default, :yellow],
-        info: [:default, :green],
-        debug: [:default, :cyan],
-        devel: [:default, :magenta]
-      } unless defined?(ColoredLevels)
+      unless defined?(ColoredLevels)
+        ColoredLevels = {
+          fatal: [:bold, :red],
+          error: [:default, :red],
+          warn: [:default, :yellow],
+          info: [:default, :green],
+          debug: [:default, :cyan],
+          devel: [:default, :magenta]
+        }
+      end
 
       ##
       # Colorize our level.

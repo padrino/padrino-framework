@@ -132,15 +132,18 @@ module Padrino
       #
       def default_errors
         configure :production do
+          return if errors.has_key?(::Exception)
+
           error ::Exception do
             logger.exception env['sinatra.error']
             halt(500, { 'content-type' => 'text/html' }, ['<h1>Internal Server Error</h1>'])
-          end unless errors.has_key?(::Exception)
+          end
         end
       end
 
       def setup_locale
         return unless defined? I18n
+
         Reloader.special_files += locale_path
         I18n.load_path << locale_path
         I18n.reload!

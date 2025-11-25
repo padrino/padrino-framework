@@ -31,9 +31,11 @@ module Padrino
     # @example
     #   Padrino::Rendering::IGNORE_FILE_PATTERN << /~$/
     #
-    IGNORE_FILE_PATTERN = [
-      /~$/ # This is for Gedit
-    ] unless defined?(IGNORE_FILE_PATTERN)
+    unless defined?(IGNORE_FILE_PATTERN)
+      IGNORE_FILE_PATTERN = [
+        /~$/ # This is for Gedit
+      ]
+    end
 
     ##
     # Defines common content-type alias mappings.
