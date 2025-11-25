@@ -126,13 +126,13 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       ActiveRecord::Migration.verbose = ENV['VERBOSE'] ? ENV['VERBOSE'] == 'true' : true
 
       if less_than_active_record_5_2?
-        ActiveRecord::Migrator.migrate("db/migrate/", env_migration_version)
+        ActiveRecord::Migrator.migrate('db/migrate/', env_migration_version)
       else
         migration_context.migrate(env_migration_version)
       end
 
       format_source = ActiveRecord.respond_to?(:schema_format) ? ActiveRecord : ActiveRecord::Base
-      Rake::Task["ar:schema:dump"].invoke if format_source.schema_format == :ruby
+      Rake::Task['ar:schema:dump'].invoke if format_source.schema_format == :ruby
     end
 
     namespace :migrate do
@@ -371,7 +371,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     raise 'MIGRATION_VERSION is required' unless version
 
     if less_than_active_record_5_2?
-      ActiveRecord::Migrator.run(type, "db/migrate/", version)
+      ActiveRecord::Migrator.run(type, 'db/migrate/', version)
     else
       migration_context.run(type, version)
     end
