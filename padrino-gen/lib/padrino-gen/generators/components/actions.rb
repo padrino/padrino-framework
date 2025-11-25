@@ -126,9 +126,9 @@ module Padrino
             File.basename(f) =~ /#{name.to_s.underscore}/
           end
           return unless migration_path
-          if behavior == :revoke
-            create_file migration_path # we use create to reverse the operation of a revoke
-          end
+
+          # we use create to reverse the operation of a revoke
+          create_file(migration_path) if behavior == :revoke
         end
 
         ##
@@ -197,10 +197,10 @@ module Padrino
         def create_helper_files(app, name)
           @helper_name  = "#{name.to_s.underscore.camelize}Helper"
           template 'templates/helper.rb.tt', destination_root(app, 'helpers', "#{name.to_s.underscore}_helper.rb")
-          if test?
-            include_component_module_for(:test)
-            generate_helper_test(@helper_name, @project_name, @app_name)
-          end
+          return unless test?
+
+          include_component_module_for(:test)
+          generate_helper_test(@helper_name, @project_name, @app_name)
         end
       end
     end

@@ -70,16 +70,18 @@ module Padrino
           help(task.to_s)
           exit
         end
+
         if options.environment
           ENV['RACK_ENV'] = options.environment.to_s
         else
           ENV['RACK_ENV'] ||= 'development'
         end
+
         chdir(options.chdir)
-        unless File.exist?('config/boot.rb')
-          puts "=> Could not find boot file in: #{options.chdir}/config/boot.rb !!!"
-          abort
-        end
+        return if File.exist?('config/boot.rb')
+
+        puts "=> Could not find boot file in: #{options.chdir}/config/boot.rb !!!"
+        abort
       end
 
       def chdir(dir)

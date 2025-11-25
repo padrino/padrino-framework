@@ -109,11 +109,12 @@ module Padrino
       def resolve_source_location(message)
         path, line = *message.scan(SOURCE_LOCATION_REGEXP).first
         return unless path && line
+
         root = Padrino.root
         path = File.realpath(path) if Pathname.new(path).relative?
-        if path.start_with?(root) && !path.start_with?(Padrino.root('vendor'))
-          "[#{path.gsub("#{root}/", "")}:#{line}] "
-        end
+        return unless path.start_with?(root) && !path.start_with?(Padrino.root('vendor'))
+
+        "[#{path.gsub("#{root}/", "")}:#{line}] "
       end
 
       ##

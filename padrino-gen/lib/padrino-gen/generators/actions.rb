@@ -446,14 +446,14 @@ WARNING
       #   check_app_existence 'app'
       #
       def check_app_existence(app)
-        unless File.exist?(destination_root(app))
-          say
-          say '================================================================='
-          say "Unable to locate '#{app.underscore.camelize}' application        "
-          say '================================================================='
-          say
-          raise SystemExit
-        end
+        return if File.exist?(destination_root(app))
+
+        say
+        say '================================================================='
+        say "Unable to locate '#{app.underscore.camelize}' application        "
+        say '================================================================='
+        say
+        raise SystemExit
       end
 
       ##

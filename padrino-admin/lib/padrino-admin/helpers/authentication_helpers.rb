@@ -53,10 +53,10 @@ module Padrino
         # By default this method is used in Admin Apps.
         #
         def login_required
-          unless allowed?
-            store_location! if store_location
-            access_denied
-          end
+          return if allowed?
+
+          store_location! if store_location
+          access_denied
         end
 
         ##

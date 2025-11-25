@@ -74,11 +74,12 @@ module Padrino
       def app(name)
         say "=> Executing: padrino-gen app #{name} -r=#{destination_root}", :magenta
         Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}")
-        if block_given?
-          @_app_name = name
-          yield
-          @_app_name = nil
-        end
+        return unless block_given?
+
+        @_app_name = name
+        yield
+      ensure
+        @_app_name = nil
       end
 
       ##

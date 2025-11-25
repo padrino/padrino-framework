@@ -126,11 +126,11 @@ module Padrino
       #
       def truncate(text, options = {})
         options = { length: 30, omission: '...' }.update(options)
-        if text
-          len = options[:length] - options[:omission].length
-          chars = text
-          (chars.length > options[:length] ? chars[0...len] + options[:omission] : text).to_s
-        end
+        return unless text
+
+        len = options[:length] - options[:omission].length
+        chars = text
+        (chars.length > options[:length] ? chars[0...len] + options[:omission] : text).to_s
       end
 
       ##
@@ -153,10 +153,10 @@ module Padrino
       #
       def truncate_words(text, options = {})
         options = { length: 30, omission: '...' }.update(options)
-        if text
-          words = text.split
-          words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
-        end
+        return unless text
+
+        words = text.split
+        words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
       end
 
       ##

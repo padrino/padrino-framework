@@ -158,12 +158,11 @@ module Padrino
       # sets up csrf protection for the app
       def setup_csrf_protection(builder)
         check_csrf_protection_dependency
+        return unless protect_from_csrf?
 
-        if protect_from_csrf?
-          options = options_for_csrf_protection_setup
-          options.merge!(protect_from_csrf) if protect_from_csrf.is_a?(Hash)
-          builder.use(options[:except] ? Padrino::AuthenticityToken : Rack::Protection::AuthenticityToken, options)
-        end
+        options = options_for_csrf_protection_setup
+        options.merge!(protect_from_csrf) if protect_from_csrf.is_a?(Hash)
+        builder.use(options[:except] ? Padrino::AuthenticityToken : Rack::Protection::AuthenticityToken, options)
       end
 
       # returns the options used in the builder for csrf protection setup
@@ -180,23 +179,23 @@ module Padrino
 
       # warn if the protect_from_csrf is active but sessions are not
       def check_csrf_protection_dependency
-        if protect_from_csrf? && !sessions? && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
-          warn(<<-ERROR)
-  `protect_from_csrf` is activated, but `sessions` seem to be off. To enable csrf
-  protection, use:
+        return unless protect_from_csrf? && !sessions? && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
 
-      enable :sessions
+        warn(<<~ERROR)
+          `protect_from_csrf` is activated, but `sessions` seem to be off. To enable csrf
+          protection, use:
 
-  or deactivate protect_from_csrf:
+              enable :sessions
 
-      disable :protect_from_csrf
+          or deactivate protect_from_csrf:
 
-  If you use a different session store, ignore this warning using:
+              disable :protect_from_csrf
 
-      # in boot.rb:
-      Padrino::IGNORE_CSRF_SETUP_WARNING = true
-          ERROR
-        end
+          If you use a different session store, ignore this warning using:
+
+              # in boot.rb:
+              Padrino::IGNORE_CSRF_SETUP_WARNING = true
+        ERROR
       end
     end
   end

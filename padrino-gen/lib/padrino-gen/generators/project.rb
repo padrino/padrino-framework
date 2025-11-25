@@ -101,35 +101,33 @@ module Padrino
       # Generates test files for tiny app skeleton.
       #
       def setup_test_files
-        if options[:tiny] && @_components[:test] != :none
-          test_component = @_components[:test]
-          test_component = 'rspec' if test_component == 'cucumber'
-          uppercase_test_component = test_component.upcase
-          controller_template_name = "#{uppercase_test_component}_CONTROLLER_TEST"
-          helper_template_name     = "#{uppercase_test_component}_HELPER_TEST"
-          return unless defined?(controller_template_name)
+        return unless options[:tiny] && @_components[:test] != :none
 
-          controller_content = instance_eval(controller_template_name).gsub(/!PATH!/, 'Controller').gsub(/!NAME!/, '').gsub(/!EXPANDED_PATH!/, '/')
-          helper_content     = instance_eval(helper_template_name).gsub(/!NAME!/, "#{@project_name}::#{@app_name}::#{DEFAULT_HELPER_NAME}")
+        test_component = @_components[:test]
+        test_component = 'rspec' if test_component == 'cucumber'
+        uppercase_test_component = test_component.upcase
+        controller_template_name = "#{uppercase_test_component}_CONTROLLER_TEST"
+        helper_template_name     = "#{uppercase_test_component}_HELPER_TEST"
+        return unless defined?(controller_template_name)
 
-          proc {|*args| args.map {|str| str.gsub!(/!PATH!/, recognize_path)} }.call(controller_content, helper_content)
+        controller_content = instance_eval(controller_template_name).gsub(/!PATH!/, 'Controller').gsub(/!NAME!/, '').gsub(/!EXPANDED_PATH!/, '/')
+        helper_content     = instance_eval(helper_template_name).gsub(/!NAME!/, "#{@project_name}::#{@app_name}::#{DEFAULT_HELPER_NAME}")
 
-          directory_name = [:rspec].include?(test_component.to_sym) ? 'spec' : 'test'
-          base_path      = File.join(directory_name, 'app')
-          create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, skip: true
-          create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     skip: true
-          helper_path = destination_root(File.join(directory_name, "#{directory_name == "spec" ? "spec_helper" : "test_config"}.rb"))
-          gsub_file helper_path, %r{helpers/\*\*/\*\.rb}, 'helpers.rb'
-        end
+        proc {|*args| args.map {|str| str.gsub!(/!PATH!/, recognize_path)} }.call(controller_content, helper_content)
+
+        directory_name = [:rspec].include?(test_component.to_sym) ? 'spec' : 'test'
+        base_path      = File.join(directory_name, 'app')
+        create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, skip: true
+        create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     skip: true
+        helper_path = destination_root(File.join(directory_name, "#{directory_name == "spec" ? "spec_helper" : "test_config"}.rb"))
+        gsub_file helper_path, %r{helpers/\*\*/\*\.rb}, 'helpers.rb'
       end
 
       ##
       # Bundle all required components using bundler and Gemfile.
       #
       def bundle_dependencies
-        if options[:bundle]
-          run_bundler
-        end
+        run_bundler if options[:bundle]
       end
 
       ##
