@@ -8,9 +8,9 @@ module Padrino
 
         def initialize(template, object, options = {})
           @template = template
-          fail 'FormBuilder template must be initialized' unless template
+          raise 'FormBuilder template must be initialized' unless template
           @object = object.is_a?(Symbol) ? build_object(object) : object
-          fail "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
+          raise "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
           @options = options
           @namespace = options[:namespace]
           @model_name = options[:as] || Inflections.underscore(@object.class).tr('/', '_')

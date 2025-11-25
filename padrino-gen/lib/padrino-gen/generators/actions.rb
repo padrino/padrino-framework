@@ -498,9 +498,9 @@ WARNING
       #
       def valid_constant?(name)
         if name =~ /^\d/
-          fail ::NameError, "Constant name #{name} cannot start with numbers"
+          raise ::NameError, "Constant name #{name} cannot start with numbers"
         elsif name =~ /^\W/
-          fail ::NameError, "Constant name #{name} cannot start with non-word character"
+          raise ::NameError, "Constant name #{name} cannot start with non-word character"
         end
       end
 
@@ -516,7 +516,7 @@ WARNING
       #
       def validate_namespace(name)
         valid_constant? name
-        name.match(/^[[:alnum:]_]+$/) || fail(::NameError, "Namespace '#{name}' must consist only of alphanumeric characters or '_'")
+        name.match(/^[[:alnum:]_]+$/) || raise(::NameError, "Namespace '#{name}' must consist only of alphanumeric characters or '_'")
       end
 
       ##

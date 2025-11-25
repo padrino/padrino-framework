@@ -88,7 +88,7 @@ def setup_orm
       require_dependencies 'dm-sqlite-adapter'
     else
       say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
-      fail ArgumentError
+      raise ArgumentError
     end
   rescue ArgumentError
     adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 postgres sqlite])

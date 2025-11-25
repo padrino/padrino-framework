@@ -22,12 +22,12 @@ module Padrino
           build_uri_query(value, namespace ? "#{namespace}[#{key}]" : key)
         end.compact.join('&')
       when Array
-        fail ArgumentError, 'namespace is missing' unless namespace
+        raise ArgumentError, 'namespace is missing' unless namespace
         (object.empty? ? [''] : object).map do |value|
           build_uri_query(value, "#{namespace}[]")
         end.join('&')
       else
-        fail ArgumentError, 'namespace is missing' unless namespace
+        raise ArgumentError, 'namespace is missing' unless namespace
         "#{CGI.escape(namespace.to_s)}=#{CGI.escape(object.to_s)}"
       end
     end

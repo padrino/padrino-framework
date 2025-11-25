@@ -18,7 +18,7 @@ module Padrino
     default_config_file = 'config.ru'
     if (config_file = options.delete(:config)) || File.file?(default_config_file)
       config_file ||= default_config_file
-      fail "Rack config file `#{config_file}` must have `.ru` extension" unless config_file =~ /\.ru$/
+      raise "Rack config file `#{config_file}` must have `.ru` extension" unless config_file =~ /\.ru$/
       rack_app, rack_options = Rack::Builder.parse_file(config_file)
       [rack_app, (rack_options || {}).merge(options)]
     else
@@ -79,7 +79,7 @@ module Padrino
       rescue LoadError, NameError
         # Ignored
       end
-      fail "Server handler (#{Handlers.join(', ')}) not found."
+      raise "Server handler (#{Handlers.join(', ')}) not found."
     end
 
     # Prepares a directory for pid file.

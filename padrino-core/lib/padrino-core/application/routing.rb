@@ -217,7 +217,7 @@ module Padrino
       def construct_filter(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
         if (except = options.delete(:except))
-          fail 'You cannot use :except with other options specified' unless args.empty? && options.empty?
+          raise 'You cannot use :except with other options specified' unless args.empty? && options.empty?
           except = Array(except)
           options = except.last.is_a?(Hash) ? except.pop : {}
         end
@@ -554,7 +554,7 @@ module Padrino
 
         block_parameter_length = route.block_parameter_length
         if block_arity.positive? && block_parameter_length != block_arity
-          fail BlockArityError.new(route.path, block_arity, block_parameter_length)
+          raise BlockArityError.new(route.path, block_arity, block_parameter_length)
         end
 
         # Add Application defaults.

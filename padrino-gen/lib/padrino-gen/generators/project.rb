@@ -49,7 +49,7 @@ module Padrino
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
 
-        fail "Constant `#{@project_name}` already exists. Please, use another name" if already_exists?(@project_name)
+        raise "Constant `#{@project_name}` already exists. Please, use another name" if already_exists?(@project_name)
 
         @app_name = app.gsub(/\W/, '_').camelize
         self.destination_root = File.join(options[:root], name)

@@ -57,7 +57,7 @@ module Padrino
       def path(name, *args)
         params = args.last.is_a?(Hash) ? args.pop : {}
         candidates = @routes.select { |route| route.name == name }
-        fail InvalidRouteException if candidates.empty?
+        raise InvalidRouteException if candidates.empty?
         i = 0
         route = candidates.sort_by! do |candidate|
           # Tries to find the route that matches more, but with fewer names, in stable order

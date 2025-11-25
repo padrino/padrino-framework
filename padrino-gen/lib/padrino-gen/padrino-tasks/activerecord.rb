@@ -368,7 +368,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
   def migrate_as(type)
     version = env_migration_version
-    fail 'MIGRATION_VERSION is required' unless version
+    raise 'MIGRATION_VERSION is required' unless version
 
     if less_than_active_record_5_2?
       ActiveRecord::Migrator.run(type, "db/migrate/", version)

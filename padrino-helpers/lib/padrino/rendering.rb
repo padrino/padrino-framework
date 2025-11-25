@@ -60,7 +60,7 @@ module Padrino
       def registered(app)
         if defined?(Padrino::Application) && app == Padrino::Application
           # this fail can be removed later when jRuby is not bugged and MRI19 is dropped
-          fail 'Please, do not use `register` on Padrino::Application object, use `.dup` or subclassing'
+          raise 'Please, do not use `register` on Padrino::Application object, use `.dup` or subclassing'
         end
         included(app)
         engine_configurations.each do |engine, configs|
@@ -302,7 +302,7 @@ module Padrino
           selected_template = select_template(template_candidates, *rendering_options)
           selected_template ||= template_candidates.first unless options[:strict_format]
 
-          fail TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'"  if !selected_template && options[:raise_exceptions]
+          raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'"  if !selected_template && options[:raise_exceptions]
           selected_template
         end
       end
@@ -323,7 +323,7 @@ module Padrino
           template_candidates = glob_templates(layouts_path, template_path)
           selected_template = select_template(template_candidates, *rendering_options)
 
-          fail TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout
+          raise TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout
           selected_template
         end
       end

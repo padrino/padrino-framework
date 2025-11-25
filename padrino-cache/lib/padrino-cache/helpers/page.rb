@@ -88,7 +88,7 @@ module Padrino
         #   end
         #
         def cache_key(name = nil, &block)
-          fail 'Can not provide both cache_key and a block' if name && block
+          raise 'Can not provide both cache_key and a block' if name && block
           @route.cache_key = name || block
         end
 

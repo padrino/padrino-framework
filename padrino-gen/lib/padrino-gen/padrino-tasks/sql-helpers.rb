@@ -29,7 +29,7 @@ module Padrino
 
             Process.wait Process.spawn(environment, 'mysql', *arguments)
           when 'sqlite', 'sqlite3'
-            fail "Database #{database} already exists" if File.file?(database)
+            raise "Database #{database} already exists" if File.file?(database)
             FileUtils.mkdir_p(File.dirname(database))
             File.open(database, 'a') {}
           else

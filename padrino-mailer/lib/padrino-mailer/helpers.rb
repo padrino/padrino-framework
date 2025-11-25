@@ -106,8 +106,8 @@ module Padrino
         #   deliver(:example, :message, "John")
         #
         def deliver(mailer_name, message_name, *attributes)
-          mailer = registered_mailers[mailer_name] or fail "mailer '#{mailer_name}' is not registered"
-          message = mailer.messages[message_name] or fail "mailer '#{mailer_name}' has no message '#{message_name}'"
+          mailer = registered_mailers[mailer_name] or raise "mailer '#{mailer_name}' is not registered"
+          message = mailer.messages[message_name] or raise "mailer '#{mailer_name}' has no message '#{message_name}'"
           message = message.call(*attributes)
           message.delivery_method(*delivery_settings)
           message.deliver
