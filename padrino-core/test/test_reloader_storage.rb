@@ -15,15 +15,12 @@ describe 'Padrino::Reloader::Storage' do
     it 'should be able to process a the class name given a block' do
       klasses = Padrino::Reloader::Storage.send(:object_classes) do |klass|
         next unless klass.respond_to?(:name) # fix JRuby < 1.7.22
-        if klass.name =~ /^Padrino::/
-          klass
-        end
+
+        klass if klass.name =~ /^Padrino::/
       end
 
       assert_equal (klasses.size > 1), true
-      klasses.each do |klass|
-        assert_match(/^Padrino::/, klass.to_s)
-      end
+      klasses.each { |klass| assert_match(/^Padrino::/, klass.to_s) }
     end
   end
 

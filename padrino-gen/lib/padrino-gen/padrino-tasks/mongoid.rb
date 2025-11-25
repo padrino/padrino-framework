@@ -68,9 +68,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
 
         begin
           klass = model_path.map(&:classify).join('::').constantize
-          if klass.ancestors.include?(Mongoid::Document) && !klass.embedded
-            documents << klass
-          end
+          documents << klass if klass.ancestors.include?(Mongoid::Document) && !klass.embedded
         rescue StandardError
           # Just for non-mongoid objects that don't have the embedded
           # attribute at the class level.

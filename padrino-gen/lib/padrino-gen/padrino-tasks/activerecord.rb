@@ -253,10 +253,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             ENV['PGHOST']     = config[:host] if config[:host]
             ENV['PGPORT']     = config[:port].to_s if config[:port]
             ENV['PGPASSWORD'] = config[:password].to_s if config[:password]
+
             search_path = config[:schema_search_path]
-            if search_path
-              search_path = search_path.split(',').map {|search_path| "--schema=#{search_path.strip}" }.join(' ')
-            end
+            search_path = search_path.split(',').map { |path| "--schema=#{path.strip}" }.join(' ') if search_path
+
             `pg_dump -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
             raise 'Error dumping database' if $CHILD_STATUS.exitstatus == 1
           when 'sqlite', 'sqlite3'
@@ -275,7 +275,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         end
 
         if !ActiveRecord::Base.connection.respond_to?(:supports_migrations?) || ActiveRecord::Base.connection.supports_migrations?
-          File.open(resolve_structure_sql, 'a') {|f| f << ActiveRecord::Base.connection.dump_schema_information }
+          File.open(resolve_structure_sql, 'a') { |f| f << ActiveRecord::Base.connection.dump_schema_information }
         end
       end
     end

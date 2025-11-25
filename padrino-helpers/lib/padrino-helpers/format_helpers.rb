@@ -178,9 +178,7 @@ module Padrino
       #
       def word_wrap(text, *args)
         options = args.last.is_a?(Hash) ? args.pop : {}
-        unless args.empty?
-          options[:line_width] = args[0] || 80
-        end
+        options[:line_width] = args[0] || 80 unless args.empty?
         options = { line_width: 80 }.update(options)
 
         text.split("\n").map do |line|

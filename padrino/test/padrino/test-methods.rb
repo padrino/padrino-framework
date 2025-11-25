@@ -42,13 +42,10 @@ module Padrino
     def html_matched_tags(html, selector, attributes)
       @dom ||= Oga.parse_html(html)
       content_requirement = attributes.delete(:content)
-      attributes.each do |name, value|
-        selector += %([#{name}="#{value}"])
-      end
+
+      attributes.each { |name, value| selector += %([#{name}="#{value}"]) }
       tags = @dom.css(selector.to_s.gsub(/\[([^"']*?)=([^'"]*?)\]/, '[\1="\2"]'))
-      if content_requirement
-        tags = tags.select { |tag| (tag.get('content') || tag.text).index(content_requirement) }
-      end
+      tags = tags.select { |tag| (tag.get('content') || tag.text).index(content_requirement) } if content_requirement
       tags.count
     end
   end

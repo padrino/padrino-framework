@@ -193,13 +193,11 @@ module Padrino
       candidates << app_const.app_file if app_const.respond_to?(:app_file)
       candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
       candidates << Padrino.mounted_root(name.downcase, 'app.rb')
+
       simple_name = name.split('::').last.downcase
       mod_name = name.split('::')[0..-2].join('::')
-      Padrino.modules.each do |mod|
-        if mod.name == mod_name
-          candidates << mod.root(simple_name, 'app.rb')
-        end
-      end
+
+      Padrino.modules.each { |mod| candidates << mod.root(simple_name, 'app.rb') if mod.name == mod_name }
       candidates << Padrino.root('app', 'app.rb')
       candidates.find { |candidate| File.exist?(candidate) }
     end

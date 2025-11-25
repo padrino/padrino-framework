@@ -1456,11 +1456,7 @@ describe 'Routing' do
   it 'should allows custom route-conditions to be set via route options and halt' do
     protector = Module.new do
       def protect(*args)
-        condition do
-          unless authorize(params['user'], params['password'])
-            halt 403, 'go away'
-          end
-        end
+        condition { halt(403, 'go away') unless authorize(params['user'], params['password']) }
       end
     end
 

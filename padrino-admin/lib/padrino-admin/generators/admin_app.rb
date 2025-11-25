@@ -108,10 +108,9 @@ module Padrino
           # TODO: See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
           template "templates/account/#{orm}.rb.tt", destination_root('models', "#{@model_singular}.rb"), force: true
 
-          if File.exist?(destination_root('db/seeds.rb'))
-            run "mv #{destination_root('db/seeds.rb')} #{destination_root('db/seeds.old')}"
-          end
-          template 'templates/account/seeds.rb.tt', destination_root('db/seeds.rb')
+          seed_destination = destination_root('db', 'seeds.rb')
+          run "mv #{seed_destination} #{destination_root('db/seeds.old')}" if File.exist?(seed_destination)
+          template 'templates/account/seeds.rb.tt', seed_destination
 
           empty_directory destination_root(@admin_path+'/controllers')
           empty_directory destination_root(@admin_path+'/views')
