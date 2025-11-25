@@ -44,25 +44,23 @@ module Padrino
 
       # https://github.com/rack/rack/blob/master/lib/rack/server.rb\#L100
       def server_options(options)
-        
-          info = []
-          server = Rack::Handler.get(options[:server]) || Rack::Handler.default(options)
-          if server&.respond_to?(:valid_options)
-            info << ''
-            info << "Server-specific options for #{server.name}:"
+        info = []
+        server = Rack::Handler.get(options[:server]) || Rack::Handler.default(options)
+        if server.respond_to?(:valid_options)
+          info << ''
+          info << "Server-specific options for #{server.name}:"
 
-            has_options = false
-            server.valid_options.each do |name, description|
-              next if name.to_s.match(/^(Host|Port)[^a-zA-Z]/) # ignore handler's host and port options, we do our own.
-              info << '  -O %-21s %s' % [name, description]
-              has_options = true
-            end
-            return '' unless has_options
+          has_options = false
+          server.valid_options.each do |name, description|
+            next if name.to_s.match(/^(Host|Port)[^a-zA-Z]/) # ignore handler's host and port options, we do our own.
+            info << '  -O %-21s %s' % [name, description]
+            has_options = true
           end
-          info.join("\n")
-        rescue NameError
-          "Warning: Could not find handler specified (#{options[:server] || 'default'}) to determine handler-specific options"
-        
+          return '' unless has_options
+        end
+        info.join("\n")
+      rescue NameError
+        "Warning: Could not find handler specified (#{options[:server] || 'default'}) to determine handler-specific options"
       end
 
       protected
