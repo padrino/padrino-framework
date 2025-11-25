@@ -42,7 +42,7 @@ module Padrino
           parts[handler.names.include?(key.to_s) ? 0 : 1][key] = val
         end
         expanded_path = handler.expand(:append, params)
-        expanded_path += ?? + Padrino::Utils.build_uri_query(query) unless query.empty?
+        expanded_path += '?' + Padrino::Utils.build_uri_query(query) unless query.empty?
         expanded_path
       end
 

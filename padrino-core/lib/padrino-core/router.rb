@@ -54,7 +54,7 @@ module Padrino
       host = options[:host]
       app  = options[:to]
 
-      raise ArgumentError, 'paths need to start with /' if path[0] != ?/
+      raise ArgumentError, 'paths need to start with /' if path[0] != '/'
       raise ArgumentError, 'app is required' if app.nil?
 
       path  = path.chomp('/')
@@ -75,7 +75,7 @@ module Padrino
       @mapping.each do |host, path, match, app|
         next unless host.nil? || http_host =~ host
         next unless path_info =~ match && (rest = ::Regexp.last_match(1))
-        next unless rest.empty? || rest[0] == ?/
+        next unless rest.empty? || rest[0] == '/'
 
         rest = '/' if rest.empty?
 

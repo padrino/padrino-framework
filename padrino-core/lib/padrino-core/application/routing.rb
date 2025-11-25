@@ -619,7 +619,7 @@ module Padrino
             # options[:add_match_with][:format] = /[^\.]+/
           end
 
-          absolute_map = map && map[0] == ?/
+          absolute_map = map && map[0] == '/'
 
           unless controller.empty?
             # Now we need to add our controller path only if not mapped directly
