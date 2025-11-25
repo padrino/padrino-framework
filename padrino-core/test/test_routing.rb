@@ -526,7 +526,7 @@ describe 'Routing' do
 
   it 'should allow "." in param values' do
     mock_app do
-      get('/id/:email', provides: [:json]) { |email, format| [email, format] * '/' }
+      get('/id/:email', provides: [:json]) { |email, format| [email, format].join('/') }
     end
     get '/id/foo@bar.com.json'
     assert_equal 'foo@bar.com/json', body

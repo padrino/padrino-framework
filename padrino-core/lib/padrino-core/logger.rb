@@ -260,7 +260,7 @@ module Padrino
 
       def stylized_level(level)
         style = "\e[%d;%dm" % ColoredLevels[level].map {|color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
-        [style, super, "\e[0m"] * ''
+        [style, super, "\e[0m"].join
       end
     end
 
@@ -512,7 +512,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
             logger.colorize(status.to_s[0..3], :default, :bold),
             ' ',
             code_to_name(status)
-          ] * '',
+          ].join,
           :debug,
           :magenta
         )
