@@ -163,16 +163,12 @@ module Padrino
     #  the class object for the app if defined, nil otherwise.
     #
     def app_constant
-      klass = Object
-      app_class.split('::').each do |piece|
+      app_class.split('::').inject(Object) do |klass, piece|
         piece = piece.to_sym
-        if klass.const_defined?(piece, false)
-          klass = klass.const_get(piece)
-        else
-          return
-        end
+        break unless klass.const_defined?(piece, false)
+
+        klass.const_get(piece)
       end
-      klass
     end
 
     protected
