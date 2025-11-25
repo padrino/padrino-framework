@@ -63,13 +63,13 @@ module Padrino
       dup.concat(other)
     end
 
-    def %(args)
+    def %(other)
       escaped_args =
-        case args
+        case other
         when Hash
-          args.transform_values { |arg| html_escape_interpolated_argument(arg) }
+          other.transform_values { |arg| html_escape_interpolated_argument(arg) }
         else
-          Array(args).map { |arg| html_escape_interpolated_argument(arg) }
+          Array(other).map { |arg| html_escape_interpolated_argument(arg) }
         end
 
       self.class.new(super(escaped_args))
