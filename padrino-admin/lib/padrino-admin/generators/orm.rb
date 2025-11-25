@@ -61,22 +61,22 @@ module Padrino
           end
         end
 
-        def dm_column(p)
-          case p
+        def dm_column(property)
+          case property
           when DataMapper::Property::Text
-            Column.new(p.name, :text)
+            Column.new(property.name, :text)
           when DataMapper::Property::Boolean
-            Column.new(p.name, :boolean)
+            Column.new(property.name, :boolean)
           when DataMapper::Property::Integer
-            Column.new(p.name, :integer)
+            Column.new(property.name, :integer)
           when DataMapper::Property::Decimal
-            Column.new(p.name, :decimal)
+            Column.new(property.name, :decimal)
           when DataMapper::Property::Float
-            Column.new(p.name, :float)
+            Column.new(property.name, :float)
           when DataMapper::Property::String
-            Column.new(p.name, :string)
-          else #if all fails, lets assume its stringish
-            Column.new(p.name, :string)
+            Column.new(property.name, :string)
+          else # if all fails, lets assume its string-ish
+            Column.new(property.name, :string)
           end
         end
 

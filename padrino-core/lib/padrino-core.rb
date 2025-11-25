@@ -160,8 +160,8 @@ module Padrino
     # @yield []
     #   The given block will be passed to the initialized middleware.
     #
-    def use(mw, *args, &block)
-      middleware << [mw, args, block]
+    def use(middleware_class, *args, &block)
+      middleware << [middleware_class, args, block]
     end
 
     ##
