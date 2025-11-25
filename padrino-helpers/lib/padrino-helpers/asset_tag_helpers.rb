@@ -393,7 +393,7 @@ module Padrino
       #   parse_conditions("/some/url", :if => false) => true
       #
       def parse_conditions(url, options)
-        if options.has_key?(:if)
+        if options.key?(:if)
           condition = options.delete(:if)
           condition == :current ? url == request.path_info : condition
         elsif (condition = options.delete(:unless))

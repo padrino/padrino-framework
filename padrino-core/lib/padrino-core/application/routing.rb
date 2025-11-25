@@ -499,7 +499,7 @@ module Padrino
 
         # Add Sinatra condition to check rack-protection failure.
         if respond_to?(:protect_from_csrf) && protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
-          route_options[:csrf_protection] = true unless route_options.has_key?(:csrf_protection)
+          route_options[:csrf_protection] = true unless route_options.key?(:csrf_protection)
         end
 
         path, *route_options[:with] = path if path.is_a?(Array)
@@ -655,7 +655,7 @@ module Padrino
           name = "#{controller_name} #{name}".to_sym unless controller_name.empty?
         end
 
-        options[:default_values] = @_defaults unless options.has_key?(:default_values)
+        options[:default_values] = @_defaults unless options.key?(:default_values)
 
         [path, name, parent_params, options, route_options]
       end

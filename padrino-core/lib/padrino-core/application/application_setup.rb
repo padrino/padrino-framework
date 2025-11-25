@@ -132,7 +132,7 @@ module Padrino
       #
       def default_errors
         configure :production do
-          return if errors.has_key?(::Exception)
+          return if errors.key?(::Exception)
 
           error ::Exception do
             logger.exception env['sinatra.error']

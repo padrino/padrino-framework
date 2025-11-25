@@ -255,7 +255,7 @@ module Padrino
         private
 
         def is_checked?(field, options)
-          !options.has_key?(:checked) && [options[:value].to_s, 'true'].include?(field_value(field).to_s)
+          !options.key?(:checked) && [options[:value].to_s, 'true'].include?(field_value(field).to_s)
         end
 
         def variants_for_group(options)

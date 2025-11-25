@@ -224,7 +224,7 @@ module Padrino
       #   Padrino.logger.exception e
       #   Padrino.logger.exception(e, :short)
       def exception(boom, verbosity = :long, level = :error)
-        return unless Levels.has_key?(level)
+        return unless Levels.key?(level)
 
         text = ["#{boom.class} - #{boom.message}:"]
         trace = boom.backtrace
@@ -417,14 +417,14 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     #
     def initialize(options = {})
       @buffer           = []
-      @auto_flush       = options.has_key?(:auto_flush) ? options[:auto_flush] : true
+      @auto_flush       = options.key?(:auto_flush) ? options[:auto_flush] : true
       @level            = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
       @log              = options[:stream]  || $stdout
       @log.sync         = true
       @format_datetime  = options[:format_datetime] || '%d/%b/%Y %H:%M:%S'
       @format_message   = options[:format_message]  || '%s - %s %s'
-      @log_static       = options.has_key?(:log_static) ? options[:log_static] : false
-      @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
+      @log_static       = options.key?(:log_static) ? options[:log_static] : false
+      @colorize_logging = options.key?(:colorize_logging) ? options[:colorize_logging] : true
       @source_location  = options[:source_location]
       @sanitize_encoding = options[:sanitize_encoding] || false
       @sanitize_encoding = Encoding.default_external if @sanitize_encoding == true

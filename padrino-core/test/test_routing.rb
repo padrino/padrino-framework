@@ -39,7 +39,7 @@ describe 'Routing' do
       set :public_folder, File.dirname(__FILE__)
     end
     get "/#{File.basename(__FILE__)}"
-    assert headers.has_key?('Cache-Control')
+    assert headers.key?('Cache-Control')
     assert_equal headers['Cache-Control'], 'public'
   end # static simple
 
@@ -49,7 +49,7 @@ describe 'Routing' do
       set :public_folder, File.dirname(__FILE__)
     end
     get "/#{File.basename(__FILE__)}"
-    assert headers.has_key?('Cache-Control')
+    assert headers.key?('Cache-Control')
     assert_equal headers['Cache-Control'], 'public, must-revalidate, max-age=300'
   end # static max_age
 
