@@ -34,19 +34,20 @@ module Padrino
         underscore_name = name.gsub(/\W/, '_')
         @app_folder = underscore_name.underscore
         @app_name   = underscore_name.camelize
+
         if in_app_root?
           @project_name = options[:namespace].underscore.camelize
           @project_name = fetch_project_name(@app_folder) if @project_name.empty?
 
-          if options[:destroy]
-            self.behavior = :revoke
-          else
-            unless options[:force]
+          if already_exists?(@app_name, @project_name)
+            if options[:destroy]
+              self.behavior = :revoke
+            elsif !options[:force]
               say "#{@app_name} already exists."
               say 'Please, change the name.'
               return
             end
-          end if already_exists?(@app_name, @project_name)
+          end
 
           lowercase_app_folder = @app_folder.downcase
           app_skeleton(lowercase_app_folder, options[:tiny])
@@ -60,6 +61,7 @@ module Padrino
           end
 
           return if self.behavior == :revoke
+
           say
           say '=' * 65, :green
           say "Your #{@app_name} application has been installed."

@@ -51,16 +51,15 @@ module Padrino
         return false unless correct_path?
 
         check_app_existence(app)
-
-        if options[:destroy]
-          self.behavior = :revoke
-        else
-          unless options[:force]
+        if model_name_already_exists?
+          if options[:destroy]
+            self.behavior = :revoke
+          elsif !options[:force]
             say "#{@camel_name} already exists."
             say 'Please, change the name.'
             return false
           end
-        end if model_name_already_exists?
+        end
 
         return false if has_invalid_fields?
 

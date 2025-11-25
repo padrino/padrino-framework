@@ -79,19 +79,17 @@ module Padrino
       Padrino::Logger::Levels.each_pair do |name, number|
         define_method(name) do |*args|
           return if number < level
+
           if args.size > 1
             bench(args[0], args[1], args[2], name)
           else
-            if (location = resolve_source_location(caller(1).shift))
-              args.unshift(location)
-            end if enable_source_location?
+            location = resolve_source_location(caller(1).shift)
+            args.unshift(location) if location && enable_source_location?
             push(args * '', name)
           end
         end
 
-        define_method(:"#{name}?") do
-          number >= level
-        end
+        define_method(:"#{name}?") { number >= level }
       end
 
       SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in `.+?')?$/
