@@ -20,14 +20,12 @@ module Padrino
     def [](*args)
       if args.size < 2
         super
+      elsif html_safe?
+        new_safe_buffer = super
+        new_safe_buffer&.instance_variable_set :@html_safe, true
+        new_safe_buffer
       else
-        if html_safe?
-          new_safe_buffer = super
-          new_safe_buffer&.instance_variable_set :@html_safe, true
-          new_safe_buffer
-        else
-          to_str[*args]
-        end
+        to_str[*args]
       end
     end
 

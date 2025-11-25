@@ -142,8 +142,8 @@ module Padrino
       def controller(*args, &block)
         if block_given?
           with_new_options(*args) { instance_eval(&block) }
-        else
-          include(*args) if extensions.any?
+        elsif extensions.any?
+          include(*args)
         end
       end
       alias controllers controller
