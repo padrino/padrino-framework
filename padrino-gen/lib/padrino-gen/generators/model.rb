@@ -104,7 +104,7 @@ module Padrino
       def has_invalid_fields?
         if (invalids = invalid_fields(fields))
           say 'Invalid field name:', :red
-          say " #{invalids.join(", ")}"
+          say " #{invalids.join(', ')}"
         end
       end
     end

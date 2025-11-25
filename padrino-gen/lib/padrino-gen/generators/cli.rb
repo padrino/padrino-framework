@@ -47,7 +47,7 @@ module Padrino
           args = ARGV.empty? && generator_class.require_arguments? ? ['-h'] : ARGV
           generator_class.start(args)
         else
-          puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(", ")})"
+          puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(', ')})"
         end
       end
     end

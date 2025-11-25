@@ -119,7 +119,7 @@ module Padrino
         base_path      = File.join(directory_name, 'app')
         create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, skip: true
         create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     skip: true
-        helper_path = destination_root(File.join(directory_name, "#{directory_name == "spec" ? "spec_helper" : "test_config"}.rb"))
+        helper_path = destination_root(File.join(directory_name, "#{directory_name == 'spec' ? 'spec_helper' : 'test_config'}.rb"))
         gsub_file helper_path, %r{helpers/\*\*/\*\.rb}, 'helpers.rb'
       end
 

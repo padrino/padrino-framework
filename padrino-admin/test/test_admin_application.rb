@@ -110,7 +110,7 @@ describe 'AdminApplication' do
       # Prepare a basic page
       get '/login(/:role)?' do
         set_current_account(Account.send(params[:role])) if params[:role]
-        "logged as #{params[:role] || "any"}"
+        "logged as #{params[:role] || 'any'}"
       end
 
       get '/any'      do; 'any';      end
@@ -248,7 +248,7 @@ describe 'AdminApplication' do
       end
 
       get '/modules-prefixed' do
-        project_modules.map { |pm| "#{pm.name} => #{pm.path("/admin")}" }.join(', ')
+        project_modules.map { |pm| "#{pm.name} => #{pm.path('/admin')}" }.join(', ')
       end
     end
 

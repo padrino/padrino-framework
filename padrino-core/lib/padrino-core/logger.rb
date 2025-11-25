@@ -114,7 +114,7 @@ module Padrino
         path = File.realpath(path) if Pathname.new(path).relative?
         return unless path.start_with?(root) && !path.start_with?(Padrino.root('vendor'))
 
-        "[#{path.gsub("#{root}/", "")}:#{line}] "
+        "[#{path.gsub("#{root}/", '')}:#{line}] "
       end
 
       ##

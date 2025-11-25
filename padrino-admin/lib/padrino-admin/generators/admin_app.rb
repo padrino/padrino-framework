@@ -42,7 +42,7 @@ module Padrino
         self.destination_root = options[:root]
         if in_app_root?
           unless supported_orm.include?(orm)
-            say "<= At the moment, Padrino only supports #{supported_orm.join(" or ")}. Sorry!", :yellow
+            say "<= At the moment, Padrino only supports #{supported_orm.join(' or ')}. Sorry!", :yellow
             raise SystemExit
           end
 

@@ -35,7 +35,7 @@ module Padrino
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
             migration_number = current_migration_number
             contents = contents.gsub(/!FIELDS!/, column_declarations).gsub(/!VERSION!/, migration_number)
-            migration_filename = "#{format("%03d", migration_number)}_#{filename.underscore}.rb"
+            migration_filename = "#{format('%03d', migration_number)}_#{filename.underscore}.rb"
             create_file(destination_root('db/migrate/', migration_filename), contents, skip: true)
           end
         end
@@ -80,7 +80,7 @@ module Padrino
             contents = contents.gsub(/!FILENAME!/, filename.underscore).gsub(/!FILECLASS!/, filename.underscore.camelize)
             migration_number = current_migration_number
             contents.gsub!(/!VERSION!/, migration_number)
-            migration_filename = "#{format("%03d", migration_number)}_#{filename.underscore}.rb"
+            migration_filename = "#{format('%03d', migration_number)}_#{filename.underscore}.rb"
             create_file(destination_root('db/migrate/', migration_filename), contents, skip: true)
           end
         end

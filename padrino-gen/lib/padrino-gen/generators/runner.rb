@@ -19,8 +19,8 @@ module Padrino
       #
       def project(options = {})
         components = options.sort_by { |k, _v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
-        params = [name, *components].push("-r=#{destination_root("../")}")
-        say "=> Executing: padrino-gen project #{params.join(" ")}", :magenta
+        params = [name, *components].push("-r=#{destination_root('../')}")
+        say "=> Executing: padrino-gen project #{params.join(' ')}", :magenta
         Padrino.bin_gen(*params.unshift('project'))
       end
 
@@ -40,7 +40,7 @@ module Padrino
       def generate(type, arguments = '')
         params = arguments.split(' ').push("-r=#{destination_root}")
         params.push("--app=#{@_app_name}") if @_app_name
-        say "=> Executing: padrino-gen #{type} #{params.join(" ")}", :magenta
+        say "=> Executing: padrino-gen #{type} #{params.join(' ')}", :magenta
         Padrino.bin_gen(*params.unshift(type))
       end
 

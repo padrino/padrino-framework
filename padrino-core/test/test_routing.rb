@@ -2069,8 +2069,8 @@ describe 'Routing' do
 
   it 'should return params as a HashWithIndifferentAccess object via GET' do
     mock_app do
-      get('/foo/:bar') { "#{params["bar"]} #{params[:bar]}" }
-      get(:foo, map: '/prefix/:var') { "#{params["var"]} #{params[:var]}" }
+      get('/foo/:bar') { "#{params['bar']} #{params[:bar]}" }
+      get(:foo, map: '/prefix/:var') { "#{params['var']} #{params[:var]}" }
     end
 
     get('/foo/some_text')
@@ -2083,7 +2083,7 @@ describe 'Routing' do
   it 'should return params as a HashWithIndifferentAccess object via POST' do
     mock_app do
       post('/user') do
-        "#{params["user"]["full_name"]} #{params[:user][:full_name]}"
+        "#{params['user']['full_name']} #{params[:user][:full_name]}"
       end
     end
 
@@ -2368,7 +2368,7 @@ describe 'Routing' do
 
   it 'should be able to use splat and named captues' do
     mock_app do
-      get('/:a/:b/*/*/*') { |a, b, *splats| "#{a}, #{b}, (#{splats * ","})" }
+      get('/:a/:b/*/*/*') { |a, b, *splats| "#{a}, #{b}, (#{splats * ','})" }
     end
     get '/123/456/a/b/c'
     assert_equal '123, 456, (a,b,c)', body
