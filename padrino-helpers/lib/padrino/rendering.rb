@@ -120,7 +120,7 @@ module Padrino
 
       def cache_layout_path(name)
         @_cached_layout ||= {}
-        if !reload_templates? && path = @_cached_layout[name]
+        if !reload_templates? && (path = @_cached_layout[name])
           path
         else
           @_cached_layout[name] = yield(name)
@@ -131,7 +131,7 @@ module Padrino
         began_at = Time.now
         @_cached_templates ||= {}
         logging = defined?(settings) && settings.logging? && defined?(logger)
-        if !reload_templates? && path = @_cached_templates[options]
+        if !reload_templates? && (path = @_cached_templates[options])
           logger.debug :cached, began_at, path[0] if logging
         else
           path = @_cached_templates[options] = yield(name)

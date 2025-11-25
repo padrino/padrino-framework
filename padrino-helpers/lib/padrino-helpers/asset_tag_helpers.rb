@@ -396,7 +396,7 @@ module Padrino
         if options.has_key?(:if)
           condition = options.delete(:if)
           condition == :current ? url == request.path_info : condition
-        elsif condition = options.delete(:unless)
+        elsif (condition = options.delete(:unless))
           condition == :current ? url != request.path_info : !condition
         else
           true

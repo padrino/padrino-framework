@@ -59,7 +59,7 @@ module Padrino
       #   # => "<foo>"
       #
       def capture_html(*args, &block)
-        if handler = find_proper_handler
+        if (handler = find_proper_handler)
           handler.capture_from_template(*args, &block)
         else
           yield(*args)
@@ -79,7 +79,7 @@ module Padrino
       #   concat_content("This will be output to the template buffer")
       #
       def concat_content(text = '')
-        if handler = find_proper_handler
+        if (handler = find_proper_handler)
           handler.concat_to_template(text, binding)
         else
           text

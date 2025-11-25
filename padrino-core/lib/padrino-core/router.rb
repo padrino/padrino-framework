@@ -74,7 +74,7 @@ module Padrino
 
       @mapping.each do |host, path, match, app|
         next unless host.nil? || http_host =~ host
-        next unless path_info =~ match && rest = ::Regexp.last_match(1)
+        next unless path_info =~ match && (rest = ::Regexp.last_match(1))
         next unless rest.empty? || rest[0] == ?/
 
         rest = '/' if rest.empty?

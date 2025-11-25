@@ -218,7 +218,7 @@ module Padrino
       #
       def construct_filter(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
-        if except = options.delete(:except)
+        if (except = options.delete(:except))
           fail 'You cannot use :except with other options specified' unless args.empty? && options.empty?
           except = Array(except)
           options = except.last.is_a?(Hash) ? except.pop : {}
@@ -606,7 +606,7 @@ module Padrino
         case path
         when String # path i.e "/index" or "/show"
           # Now we need to parse our 'with' params
-          if with_params = options.delete(:with)
+          if (with_params = options.delete(:with))
             path = process_path_for_with_params(path, with_params)
           end
 
@@ -858,7 +858,7 @@ module Padrino
       # serving files from the public directory.
       #
       def static_file?(path_info)
-        return unless public_dir = settings.public_folder
+        return unless (public_dir = settings.public_folder)
         public_dir = File.expand_path(public_dir)
         path = File.expand_path(public_dir + unescape(path_info))
         return unless path.start_with?(public_dir)
@@ -870,7 +870,7 @@ module Padrino
       # Method for deliver static files.
       #
       def static!(options = {})
-        if path = static_file?(request.path_info)
+        if (path = static_file?(request.path_info))
           env['sinatra.static_file'] = path
           cache_control(*settings.static_cache_control) if settings.static_cache_control?
           send_file(path, options)

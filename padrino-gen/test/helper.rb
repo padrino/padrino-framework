@@ -52,7 +52,7 @@ class Minitest::Spec
   def generate_with_parts(name, *params)
     features, constants = [$LOADED_FEATURES, Object.constants].map {|x| Marshal.load(Marshal.dump(x)) }
 
-    if root = params.find {|x| x.index(/-r=|--root=/) }
+    if (root = params.find {|x| x.index(/-r=|--root=/) })
       root = root.split(/=/)[1]
       options, model_path = {}, File.expand_path(File.join(root, '/models/**/*.rb'))
       options = params.pop if params.last.is_a?(Hash)

@@ -19,7 +19,7 @@ module Padrino
       # Matches a pattern with the route matcher.
       #
       def match(pattern)
-        if match_data = handler.match(pattern)
+        if (match_data = handler.match(pattern))
           match_data
         elsif pattern != '/' && pattern.end_with?('/')
           handler.match(pattern[0..-2])

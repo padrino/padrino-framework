@@ -82,7 +82,7 @@ module Padrino
           if args.size > 1
             bench(args[0], args[1], args[2], name)
           else
-            if location = resolve_source_location(caller(1).shift)
+            if (location = resolve_source_location(caller(1).shift))
               args.unshift(location)
             end if enable_source_location?
             push(args * '', name)
@@ -350,7 +350,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
 
       stream = case config[:stream]
         when :to_file
-          if filename = config[:log_path]
+          if (filename = config[:log_path])
             filename = Padrino.root(filename) unless Pathname.new(filename).absolute?
             if File.directory?(filename)
               filename = File.join(filename, "#{Padrino.env}.log")

@@ -99,7 +99,7 @@ module Padrino
 
           route.before_filters do
             next unless settings.caching?
-            if cached_response = load_cached_response
+            if (cached_response = load_cached_response)
               content_type cached_response[:content_type]
               halt 200, cached_response[:body]
             end

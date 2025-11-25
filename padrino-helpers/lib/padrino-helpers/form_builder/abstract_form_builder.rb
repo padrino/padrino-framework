@@ -15,7 +15,7 @@ module Padrino
           @namespace = options[:namespace]
           @model_name = options[:as] || Inflections.underscore(@object.class).tr('/', '_')
           nested = options[:nested]
-          if @is_nested = nested && (nested_parent = nested[:parent]) && nested_parent.respond_to?(:object)
+          if (@is_nested = nested && (nested_parent = nested[:parent]) && nested_parent.respond_to?(:object))
             @parent_form = nested_parent
             @nested_index = nested[:index]
             @attributes_name = "#{nested[:association]}_attributes"
@@ -259,9 +259,9 @@ module Padrino
         end
 
         def variants_for_group(options)
-          if variants = options[:options]
+          if (variants = options[:options])
             variants.map { |caption, value| [caption.to_s, (value||caption).to_s] }
-          elsif collection = options[:collection]
+          elsif (collection = options[:collection])
             collection.map { |variant| field_values(variant, options) }
           else
             []

@@ -48,7 +48,7 @@ module Padrino
       def call_by_request(request)
         rotation do |offset|
           pattern  = decode_pattern(request.path_info)
-          if route = match?(offset, pattern)
+          if (route = match?(offset, pattern))
             params = route.params_for(pattern, request.params)
             yield(route, params) if route.verb == request.request_method
             route
@@ -81,7 +81,7 @@ module Padrino
       def rotation(offset = 0)
         compile! unless compiled?
         loop.with_object([]) do |_, candidacies|
-          return candidacies unless route = yield(offset)
+          return candidacies unless (route = yield(offset))
           candidacies << route
           offset = route.index.next
         end

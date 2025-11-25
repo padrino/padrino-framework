@@ -119,7 +119,7 @@ module Padrino
     def constantize(s)
       s = s.to_s
       return s.constantize if s.respond_to?(:constantize)
-      raise(NameError, "#{s.inspect} is not a valid constant name!") unless m = VALID_CONSTANT_NAME_REGEXP.match(s)
+      raise(NameError, "#{s.inspect} is not a valid constant name!") unless (m = VALID_CONSTANT_NAME_REGEXP.match(s))
       Object.module_eval("::#{m[1]}", __FILE__, __LINE__)
     end
 

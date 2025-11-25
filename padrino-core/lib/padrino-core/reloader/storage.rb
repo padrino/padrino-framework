@@ -64,7 +64,7 @@ module Padrino
 
         ObjectSpace.each_object(::Class).each do |klass|
           if block_given?
-            if filtered_class = yield(klass)
+            if (filtered_class = yield(klass))
               klasses << filtered_class
             end
           else

@@ -612,7 +612,7 @@ module Padrino
       #
       def range_field_tag(name, options = {})
         options = { name: name }.update(options)
-        if range = options.delete(:range)
+        if (range = options.delete(:range))
           options[:min], options[:max] = range.minmax
         end
         input_tag(:range, options)
