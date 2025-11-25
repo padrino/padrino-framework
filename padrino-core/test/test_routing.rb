@@ -2065,7 +2065,7 @@ describe 'Routing' do
 
   it 'should return value from params' do
     mock_app do
-      get('/foo/:bar') { raise "'bar' should be a string" unless params[:bar].kind_of? String}
+      get('/foo/:bar') { raise "'bar' should be a string" unless params[:bar].is_a? String}
     end
     get '/foo/50'
     assert ok?

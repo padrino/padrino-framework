@@ -9,7 +9,7 @@ describe 'Padrino::Reloader::Storage' do
 
     it 'should return a Set object' do
       snapshot = Padrino::Reloader::Storage.send(:object_classes)
-      assert_equal snapshot.kind_of?(Set), true
+      assert_equal snapshot.is_a?(Set), true
     end
 
     it 'should be able to process a the class name given a block' do
@@ -46,7 +46,7 @@ describe 'Padrino::Reloader::Storage' do
 
     it 'should return a Set object' do
       new_classes = Padrino::Reloader::Storage.send(:new_classes, @snapshot)
-      assert_equal new_classes.kind_of?(Set), true
+      assert_equal new_classes.is_a?(Set), true
     end
   end
 end

@@ -70,9 +70,9 @@ module Padrino
         def grouped_options_for_select(collection, state = {})
           collection.map do |item|
             caption = item.shift
-            attributes = item.last.kind_of?(Hash) ? item.pop : {}
+            attributes = item.last.is_a?(Hash) ? item.pop : {}
             value = item.flatten(1)
-            attributes = value.pop if value.last.kind_of?(Hash)
+            attributes = value.pop if value.last.is_a?(Hash)
             html_attributes = { label: caption }.merge(attributes||{})
             content_tag(:optgroup, options_for_select(value, state), html_attributes)
           end

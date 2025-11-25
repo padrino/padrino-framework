@@ -231,7 +231,7 @@ module Padrino
           text += trace
         when :short
           text << trace.first
-        end if trace.kind_of?(Array)
+        end if trace.is_a?(Array)
         send level, text.join("\n ")
       end
     end

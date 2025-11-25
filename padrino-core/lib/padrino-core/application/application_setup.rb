@@ -148,7 +148,7 @@ module Padrino
 
       # allow custome session management
       def setup_sessions(builder)
-        if sessions.kind_of?(Hash) && sessions[:use]
+        if sessions.is_a?(Hash) && sessions[:use]
           builder.use sessions[:use], sessions[:config] || {}
         else
           super
@@ -161,7 +161,7 @@ module Padrino
 
         if protect_from_csrf?
           options = options_for_csrf_protection_setup
-          options.merge!(protect_from_csrf) if protect_from_csrf.kind_of?(Hash)
+          options.merge!(protect_from_csrf) if protect_from_csrf.is_a?(Hash)
           builder.use(options[:except] ? Padrino::AuthenticityToken : Rack::Protection::AuthenticityToken, options)
         end
       end

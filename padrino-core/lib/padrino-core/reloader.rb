@@ -268,14 +268,14 @@ module Padrino
     def object_sources(target)
       sources = Set.new
       target.methods.each do |method_name|
-        next unless method_name.kind_of?(Symbol)
+        next unless method_name.is_a?(Symbol)
         method_object = target.method(method_name)
         if method_object.owner == target.singleton_class
           sources << method_object.source_location.first
         end
       end
       target.instance_methods.each do |method_name|
-        next unless method_name.kind_of?(Symbol)
+        next unless method_name.is_a?(Symbol)
         method_object = target.instance_method(method_name)
         if method_object.owner == target
           sources << method_object.source_location.first

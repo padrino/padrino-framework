@@ -43,7 +43,7 @@ module Padrino
         # We map project modules for a given role or roles.
         #
         def roles_for(*roles, &block)
-          raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
+          raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.is_a?(Symbol) } || roles.empty?
           raise Padrino::Admin::AccessControlError, "You can't merge :any with other roles" if roles.size > 1 && roles.any? { |r| r == :any }
 
           @roles += roles

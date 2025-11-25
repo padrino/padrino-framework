@@ -579,7 +579,7 @@ module Padrino
       # controllers, parents, 'with' parameters, and other options.
       #
       def parse_route(path, options, verb)
-        path = path.dup if path.kind_of?(String)
+        path = path.dup if path.is_a?(String)
         route_options = {}
 
         if options[:params] == true
@@ -593,7 +593,7 @@ module Padrino
         map = options.delete(:map)
 
         # path i.e :index or :show
-        if path.kind_of?(Symbol)
+        if path.is_a?(Symbol)
           name = path
           path = map ? map.dup : (path == :index ? '/' : path.to_s)
         end
@@ -668,7 +668,7 @@ module Padrino
       #
       def process_path_for_with_params(path, with_params)
         File.join(path, Array(with_params).map do |step|
-          step.kind_of?(String) ? step : step.inspect
+          step.is_a?(String) ? step : step.inspect
         end.join('/'))
       end
 
@@ -766,7 +766,7 @@ module Padrino
         return unless enabled
         condition do
           if request.env['protection.csrf.failed']
-            message = settings.protect_from_csrf.kind_of?(Hash) && settings.protect_from_csrf[:message] || 'Forbidden'
+            message = settings.protect_from_csrf.is_a?(Hash) && settings.protect_from_csrf[:message] || 'Forbidden'
             halt(403, message)
           end
         end
@@ -934,7 +934,7 @@ module Padrino
           route!
         end
       rescue ::Exception => e
-        filter! :before if e.kind_of? ::Sinatra::NotFound
+        filter! :before if e.is_a? ::Sinatra::NotFound
         invoke { @boom_handled = handle_exception!(e) }
       ensure
         @boom_handled or begin

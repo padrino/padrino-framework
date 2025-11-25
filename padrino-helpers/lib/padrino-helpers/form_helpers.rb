@@ -819,7 +819,7 @@ module Padrino
       #   datetime_value('1993-02-24T12:30:45') #=> #<DateTime: 1993-02-24T12:30:45+00:00>
       #
       def datetime_value(value)
-        if value.kind_of?(String)
+        if value.is_a?(String)
           DateTime.parse(value) rescue nil
         else
           value

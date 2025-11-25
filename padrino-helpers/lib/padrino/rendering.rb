@@ -334,7 +334,7 @@ module Padrino
         layout = @layout if !layout || layout == true
         return options if settings.templates.has_key?(:layout) && !layout
 
-        if layout.kind_of?(String) && Pathname.new(layout).absolute?
+        if layout.is_a?(String) && Pathname.new(layout).absolute?
           layout_path, _, layout = layout.rpartition('/')
           options[:layout_options] ||= {}
           options[:layout_options][:views] ||= layout_path
@@ -389,7 +389,7 @@ module Padrino
       end
 
       def content_type_symbol(type)
-        if defined?(::Rack::Mime::MIME_TYPES) && type.kind_of?(String) &&
+        if defined?(::Rack::Mime::MIME_TYPES) && type.is_a?(String) &&
            ::Rack::Mime::MIME_TYPES.key(type)
           type = ::Rack::Mime::MIME_TYPES.key(type).sub(/\./, '').to_sym
         end

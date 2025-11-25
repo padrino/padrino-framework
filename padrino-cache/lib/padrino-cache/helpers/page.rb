@@ -123,7 +123,7 @@ module Padrino
         end
 
         def save_cached_response(cache_expires)
-          return unless @_response_buffer.kind_of?(String)
+          return unless @_response_buffer.is_a?(String)
 
           began_at = Time.now
           route_cache_key = resolve_cache_key || env['PATH_INFO']
