@@ -52,7 +52,7 @@ module Padrino
           path = destination_root(@admin_path+'/app.rb')
           say_status :replace, @admin_path+'/app.rb', :red
           content = File.binread(path)
-          content.gsub!(/^\s+role\.project_module :#{controller}, '\/#{controller}'\n/, '')
+          content.gsub!(%r{^\s+role\.project_module :#{controller}, '/#{controller}'\n}, '')
           File.open(path, 'wb') { |f| f.write content }
         end
 

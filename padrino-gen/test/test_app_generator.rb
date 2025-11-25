@@ -96,7 +96,7 @@ describe 'AppGenerator' do
       assert_no_dir_exists("#{@apptmp}/sample_project/demo/controllers")
       assert_no_dir_exists("#{@apptmp}/sample_project/demo/helpers")
       assert_no_dir_exists("#{@apptmp}/sample_project/demo/views")
-      assert_no_match_in_file(/Padrino\.mount\("Demo"\).to\("\/demo"\)/, "#{@apptmp}/sample_project/config/apps.rb")
+      assert_no_match_in_file(%r{Padrino\.mount\("Demo"\).to\("/demo"\)}, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     it 'should abort if app name already exists' do

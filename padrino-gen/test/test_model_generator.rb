@@ -422,7 +422,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
       assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
       assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/'(\/\.\.){1}\/test/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      assert_match_in_file(%r{'(/\.\.){1}/test}m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
     end
 
     it 'should generate test file for bacon in specified app' do
@@ -432,7 +432,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
       assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
       assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(%r{'(/\.\.){2}/test}m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
     # MINITEST
@@ -480,7 +480,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(/'(\/\.\.){1}\/test/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
+      assert_match_in_file(%r{'(/\.\.){1}/test}m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
     end
 
     it 'should generate test file for shoulda in specified app' do
@@ -491,7 +491,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
       assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
       assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
-      assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
+      assert_match_in_file(%r{'(/\.\.){2}/test}m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
     end
   end
 

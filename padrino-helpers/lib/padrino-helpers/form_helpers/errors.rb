@@ -88,7 +88,7 @@ module Padrino
         private
 
         def error_contents(objects, count, options)
-          object_name = options[:object_name] || Inflections.underscore(objects.first.class).gsub(/\//, ' ')
+          object_name = options[:object_name] || Inflections.underscore(objects.first.class).gsub('/', ' ')
 
           contents = SafeBuffer.new
           contents << error_header_tag(options, object_name, count)

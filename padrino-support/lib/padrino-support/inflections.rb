@@ -23,7 +23,7 @@ module Padrino
   # already have been loaded.
   module Inflections
     CAMELIZE_CONVERT_REGEXP = /(^|_)(.)/
-    CAMELIZE_MODULE_REGEXP = /\/(.?)/
+    CAMELIZE_MODULE_REGEXP = %r{/(.?)}
     DASH = '-'.freeze
     DEMODULIZE_CONVERT_REGEXP = /^.*::/
     EMPTY_STRING= ''.freeze

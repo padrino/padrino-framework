@@ -451,7 +451,7 @@ module Padrino
 
       # Add prefix slash if its not present and remove trailing slashes.
       def conform_uri(uri_string)
-        uri_string.gsub(/^(?!\/)(.*)/, '/\1').gsub(/\/+$/, '')
+        uri_string.gsub(%r{^(?!/)(.*)}, '/\1').gsub(%r{/+$}, '')
       end
 
       ##
@@ -638,11 +638,11 @@ module Padrino
           path = "#{@_map}/#{path}".squeeze('/') unless absolute_map || !@_map
 
           # Small reformats
-          path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
-          path.gsub!(%r{//$}, '/')                     # Remove index path
+          path.gsub!(%r{/\?$}, '(/)')                   # Remove index path
+          path.gsub!(%r{//$}, '/')                      # Remove index path
           path[0, 0] = '/' if path !~ %r{^\(?/}         # Paths must start with a /
-          path.sub!(%r{/(\))?$}, '\\1') if path != '/' # Remove latest trailing delimiter
-          path.gsub!(/\/(\(\.|$)/, '\\1')              # Remove trailing slashes
+          path.sub!(%r{/(\))?$}, '\\1') if path != '/'  # Remove latest trailing delimiter
+          path.gsub!(%r{/(\(\.|$)}, '\\1')              # Remove trailing slashes
           path.squeeze!('/')
         when Regexp
           route_options[:path_for_generation] = options.delete(:generate_with) if options.key?(:generate_with)

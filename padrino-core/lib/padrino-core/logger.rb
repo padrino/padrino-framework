@@ -493,7 +493,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     class Rack
       def initialize(app, uri_root)
         @app = app
-        @uri_root = uri_root.sub(/\/$/, '')
+        @uri_root = uri_root.chomp('/')
       end
 
       def call(env)

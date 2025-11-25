@@ -55,7 +55,7 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
       user, password, host = config[:user], config[:password], config[:host]
 
       database       = config[:database]  || config[:path]
-      database.sub!(/^\//, '') unless adapter.start_with?('sqlite')
+      database.sub!(%r{^/}, '') unless adapter.start_with?('sqlite')
 
       charset        = config[:charset]   || ENV['CHARSET']   || 'utf8'
       collation      = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
@@ -72,7 +72,7 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
       user, password, host = config[:user], config[:password], config[:host]
 
       database       = config[:database] || config[:path]
-      database.sub!(/^\//, '') unless adapter.start_with?('sqlite')
+      database.sub!(%r{^/}, '') unless adapter.start_with?('sqlite')
 
       puts "=> Dropping database '#{database}'"
       Padrino::Generators::SqlHelpers.drop_db(adapter, user, password, host, database)

@@ -54,8 +54,8 @@ module Padrino
           empty_directory destination_root("public/#{lowercase_app_folder}")
 
           mount_command = "\nPadrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('#{lowercase_app_folder}/app.rb')).to('/#{lowercase_app_folder}')\n"
-          if File.read(destination_root('config/apps.rb')).match(/^Padrino.mount.*\.to\('\/'\)$/)
-            inject_into_file destination_root('config/apps.rb'), mount_command, before: /^Padrino.mount.*\.to\('\/'\)$/
+          if File.read(destination_root('config/apps.rb')).match(%r{^Padrino.mount.*\.to\('/'\)$})
+            inject_into_file destination_root('config/apps.rb'), mount_command, before: %r{^Padrino.mount.*\.to\('/'\)$}
           else
             append_file destination_root('config/apps.rb'), mount_command
           end

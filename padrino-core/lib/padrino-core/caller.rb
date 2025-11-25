@@ -15,8 +15,8 @@ module Padrino
       %r{shoulda/context\.rb$},
       %r{mocha/integration},
       %r{test/unit},
-      %r{rake_test_loader\.rb},
-      %r{custom_require\.rb$},
+      /rake_test_loader\.rb/,
+      /custom_require\.rb$/,
       %r{/thor}
     ]
 
