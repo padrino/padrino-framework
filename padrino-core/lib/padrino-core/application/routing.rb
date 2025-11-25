@@ -612,7 +612,7 @@ module Padrino
 
           # Now we need to parse our provides
           options.delete(:provides) if options[:provides].nil?
-        
+
           options.delete(:accepts) if options[:accepts].nil?
 
           if @_use_format || options[:provides]
@@ -935,14 +935,14 @@ module Padrino
           static! if settings.static? && (request.get? || request.head?)
           route!
         end
-      rescue ::Exception => boom
-        filter! :before if boom.kind_of? ::Sinatra::NotFound
-        invoke { @boom_handled = handle_exception!(boom) }
+      rescue ::Exception => e
+        filter! :before if e.kind_of? ::Sinatra::NotFound
+        invoke { @boom_handled = handle_exception!(e) }
       ensure
         @boom_handled or begin
           filter! :after  unless env['sinatra.static_file']
-        rescue ::Exception => boom
-          invoke { handle_exception!(boom) } unless @env['sinatra.error']
+        rescue ::Exception => e
+          invoke { handle_exception!(e) } unless @env['sinatra.error']
         end
       end
 
@@ -993,7 +993,7 @@ module Padrino
         filter! :before if first_time
 
         catch(:pass) do
-          
+
               (route.before_filters - settings.filters[:before]).each {|block| instance_eval(&block) }
               @layout = route.use_layout if route.use_layout
               route.custom_conditions.each {|block| pass if block.bind(self).call == false }
@@ -1002,7 +1002,7 @@ module Padrino
               halt(route_response)
           ensure
             (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) }
-          
+
         end
       end
 

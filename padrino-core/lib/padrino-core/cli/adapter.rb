@@ -17,11 +17,11 @@ module Padrino
             puts "=> Sending INT to process with pid #{pid}"
             begin
               Process.kill(2, pid)
-            rescue Errno::ESRCH, RangeError => error
-              puts error.message
+            rescue Errno::ESRCH, RangeError => e
+              puts e.message
               exit
-            rescue Errno::EPERM => error
-              puts error.message
+            rescue Errno::EPERM => e
+              puts e.message
               abort
             end
           else

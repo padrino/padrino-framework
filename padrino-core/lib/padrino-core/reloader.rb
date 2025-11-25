@@ -96,9 +96,9 @@ module Padrino
         with_silence { require(file) }
         Storage.commit(file)
         update_modification_time(file)
-      rescue Exception => exception
+      rescue Exception => e
         unless options[:cyclic]
-          logger.exception exception, :short
+          logger.exception e, :short
           logger.error "Failed to load #{file}; removing partially defined constants"
         end
         Storage.rollback(file)
