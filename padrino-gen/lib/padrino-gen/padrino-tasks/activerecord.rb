@@ -248,8 +248,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         with_database(Padrino.env) do |config|
           case config[:adapter]
           when 'mysql', 'mysql2', 'em_mysql2', 'oci', 'oracle', 'jdbcmysql'
-            config = config.each_with_object({}) { |(key, value), result| result[key.to_s] = value }
-            ActiveRecord::Tasks::DatabaseTasks.structure_dump(config, resolve_structure_sql)
+            ActiveRecord::Tasks::DatabaseTasks.structure_dump(config.transform_keys(&:to_s), resolve_structure_sql)
           when 'postgresql'
             ENV['PGHOST']     = config[:host] if config[:host]
             ENV['PGPORT']     = config[:port].to_s if config[:port]
