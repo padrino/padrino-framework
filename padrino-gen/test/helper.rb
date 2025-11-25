@@ -56,7 +56,7 @@ class Minitest::Spec
       root = root.split(/=/)[1]
       options, model_path = {}, File.expand_path(File.join(root, '/models/**/*.rb'))
       options = params.pop if params.last.is_a?(Hash)
-      Dir[model_path].each {|path| require path }
+      Dir[model_path].sort.each { |path| require path }
       Array(options[:apps]).each do |app_name|
         path = File.expand_path(File.join(root, "/#{app_name}/app.rb"))
         require path if File.exist?(path)
