@@ -38,7 +38,7 @@ describe 'Core' do
     end
 
     it 'should add middlewares in front if specified' do
-      test = Class.new {
+      test = Class.new do
         def initialize(app)
           @app = app
         end
@@ -48,7 +48,7 @@ describe 'Core' do
           headers['Middleware-Called'] = 'yes'
           [status, headers, body]
         end
-      }
+      end
 
       class Foo < Padrino::Application; end
 

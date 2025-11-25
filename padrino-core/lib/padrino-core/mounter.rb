@@ -132,7 +132,7 @@ module Padrino
     def named_routes
       return [] unless app_obj.respond_to?(:routes)
 
-      app_obj.routes.map { |route|
+      app_obj.routes.map do |route|
         request_method = route.request_methods.first
         next if !route.name || request_method == 'HEAD'
         route_name = route.name.to_s
@@ -146,7 +146,7 @@ module Padrino
         original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
         full_path = File.join(uri_root, original_path)
         OpenStruct.new(verb: request_method, identifier: route.name, name: name_array, path: full_path)
-      }.compact
+      end.compact
     end
 
     ##

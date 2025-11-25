@@ -11,11 +11,12 @@ end
 
 module PadrinoTasks
   def self.init(init = false)
-    Padrino::Tasks.files.flatten.uniq.each { |rakefile| begin
-                                                          Rake.application.add_import(rakefile)
-                                                        rescue StandardError
-                                                          puts "<= Failed load #{ext}"
-                                                        end }
+    Padrino::Tasks.files.flatten.uniq.each do |rakefile|
+      Rake.application.add_import(rakefile)
+    rescue StandardError
+      puts "<= Failed load #{ext}"
+    end
+
     load(File.expand_path('rake_tasks.rb', __dir__))
     Rake.application.load_imports
   end

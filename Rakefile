@@ -33,9 +33,9 @@ end
 
 desc 'Clean pkg and other stuff'
 task :uninstall do
-  GEM_PATHS.each {|gem|
+  GEM_PATHS.each do |gem|
     system("gem uninstall #{gem} --force -I -x 2>/dev/null")
-  }
+  end
 end
 
 desc 'Displays the current version'

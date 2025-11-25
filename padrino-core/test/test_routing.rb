@@ -112,9 +112,9 @@ describe 'Routing' do
     end
     get @app.url_for(:index)
     assert_equal 'okey', body
-    assert_raises(Padrino::Routing::UnrecognizedException) {
+    assert_raises(Padrino::Routing::UnrecognizedException) do
       get @app.url_for(:fake)
-    }
+    end
   end
 
   it 'should fail with unrecognized route exception when namespace is invalid' do
@@ -125,22 +125,22 @@ describe 'Routing' do
       end
     end
     assert_equal '/foo_bar', @app.url_for(:foo_bar, :index)
-    assert_raises(Padrino::Routing::UnrecognizedException) {
+    assert_raises(Padrino::Routing::UnrecognizedException) do
       get @app.url_for(:foo, :bar, :index)
-    }
-    assert_raises(Padrino::Routing::UnrecognizedException) {
+    end
+    assert_raises(Padrino::Routing::UnrecognizedException) do
       get @app.url_for(:foo, :bar_index)
-    }
+    end
     assert_equal '/foo_bar/test_baz', @app.url_for(:foo_bar, :test_baz)
-    assert_raises(Padrino::Routing::UnrecognizedException) {
+    assert_raises(Padrino::Routing::UnrecognizedException) do
       get @app.url_for(:foo_bar, :test, :baz)
-    }
-    assert_raises(Padrino::Routing::UnrecognizedException) {
+    end
+    assert_raises(Padrino::Routing::UnrecognizedException) do
       get @app.url_for(:foo, :bar_test, :baz)
-    }
-    assert_raises(Padrino::Routing::UnrecognizedException) {
+    end
+    assert_raises(Padrino::Routing::UnrecognizedException) do
       get @app.url_for(:foo, :bar_test_baz)
-    }
+    end
   end
 
   it 'should accept regexp routes' do
@@ -208,9 +208,9 @@ describe 'Routing' do
 
   it 'should parse routes that include encoded slash' do
     mock_app do
-      get('/:drive_alias/:path', path: /.*/) {
+      get('/:drive_alias/:path', path: /.*/) do
         "Show #{params[:drive_alias]} and #{params[:path]}"
-      }
+      end
     end
     get('/drive%2Ffoo/some/path')
     assert_equal 'Show drive/foo and some/path', body
@@ -1456,11 +1456,11 @@ describe 'Routing' do
   it 'should allows custom route-conditions to be set via route options and halt' do
     protector = Module.new do
       def protect(*args)
-        condition {
+        condition do
           unless authorize(params['user'], params['password'])
             halt 403, 'go away'
           end
-        }
+        end
       end
     end
 
@@ -1990,9 +1990,9 @@ describe 'Routing' do
   it 'should parse params with class level provides' do
     mock_app do
       controllers :posts, provides: [:html, :js] do
-        post(:create, map: '/foo/:bar/:baz/:id') {
+        post(:create, map: '/foo/:bar/:baz/:id') do
           "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}"
-        }
+        end
       end
       controllers :topics, provides: [:js, :html] do
         get(:show, map: '/foo/:bar/:baz/:id') { render 'topics/show' }
@@ -2012,9 +2012,9 @@ describe 'Routing' do
   it 'should parse params properly with inline provides' do
     mock_app do
       controllers :posts do
-        post(:create, map: '/foo/:bar/:baz/:id', provides: [:html, :js]) {
+        post(:create, map: '/foo/:bar/:baz/:id', provides: [:html, :js]) do
           "POST CREATE #{params[:bar]} - #{params[:baz]} - #{params[:id]}"
-        }
+        end
       end
       controllers :topics do
         get(:show, map: '/foo/:bar/:baz/:id', provides: [:html, :js]) { render 'topics/show' }

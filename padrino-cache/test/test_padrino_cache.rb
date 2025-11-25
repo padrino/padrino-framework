@@ -226,10 +226,10 @@ describe 'PadrinoCache' do
       register Padrino::Cache
       enable :caching
       controller cache: true do
-        get('/foo') {
+        get('/foo') do
           expires 1
           called ? 'test again' : (called = 'test')
-        }
+        end
       end
     end
     get '/foo'
@@ -249,12 +249,12 @@ describe 'PadrinoCache' do
       register Padrino::Cache
       enable :caching
       controller do
-        get('/foo') {
+        get('/foo') do
           expires 1
           cache(:test, expires: 2) do
             called ? 'test again' : (called = 'test')
           end
-        }
+        end
       end
     end
     get '/foo'

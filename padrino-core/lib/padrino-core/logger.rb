@@ -466,9 +466,9 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     #
     def <<(message = nil)
       message << "\n" unless message[-1] == ?\n
-      @@mutex.synchronize {
+      @@mutex.synchronize do
         @buffer << message
-      }
+      end
       flush if @auto_flush
       message
     end

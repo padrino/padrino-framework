@@ -154,10 +154,10 @@ describe 'Rendering' do
     it 'should work with set content type not contained in rack-types' do
       create_view 'index.md.erb', 'Hello'
       mock_app do
-        get('/') {
+        get('/') do
           content_type 'text/x-markdown; charset=UTF-8'
           render 'index.erb', { layout: nil }
-        }
+        end
       end
       get '/'
       assert_equal 'Hello', body

@@ -17,9 +17,10 @@ module Padrino
 
     def except?(env)
       return false unless @except
+      return @except.call(env) if @except.is_a?(Proc)
+
       path_info = env['PATH_INFO']
-      @except.is_a?(Proc) ? @except.call(env) : @except.any? {|path|
-        path.is_a?(Regexp) ? path.match(path_info) : path == path_info }
+      @except.any? { |path| path.is_a?(Regexp) ? path.match(path_info) : path == path_info }
     end
   end
 end
