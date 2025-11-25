@@ -44,11 +44,9 @@ module Padrino
         #   option_is_selected?("red", "Red", ["green", "blue"]) => false
         #
         def option_is_selected?(value, caption, selected_values)
-          Array(selected_values).any? do |selected|
-            value ?
-              value.to_s == selected.to_s :
-              caption.to_s == selected.to_s
-          end
+          check_value = (value || caption).to_s
+
+          Array(selected_values).any? { |selected| check_value == selected.to_s }
         end
 
         ##
