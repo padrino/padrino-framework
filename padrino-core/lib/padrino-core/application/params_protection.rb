@@ -49,10 +49,9 @@ module Padrino
       def prepare_allowed_params(allowed_params)
         param_filter = {}
         allowed_params.each do |key, value|
-          case
-          when key.is_a?(Hash) && !value
+          if key.is_a?(Hash) && !value
             param_filter.update(prepare_allowed_params(key))
-          when value.is_a?(Hash) || value.is_a?(Array)
+          elsif value.is_a?(Hash) || value.is_a?(Array)
             param_filter[key.to_s] = prepare_allowed_params(value)
           else
             param_filter[key.to_s] = value == false ? false : (value || true)
@@ -92,8 +91,7 @@ module Padrino
         params.each do |key, value|
           type = allowed_params[key]
           next if value.is_a?(Array) && type
-          case
-          when type.is_a?(Hash) && value.is_a?(Hash)
+          if type.is_a?(Hash) && value.is_a?(Hash)
             if key == Inflections.pluralize(key) && value.values.first.is_a?(Hash)
               value.each do |array_index, array_value|
                 value[array_index] = filter_params!(array_value, type)
@@ -101,11 +99,11 @@ module Padrino
             else
               params[key] = filter_params!(value, type)
             end
-          when type == Integer
+          elsif type == Integer
             params[key] = value.empty? ? nil : value.to_i
-          when type.is_a?(Proc)
+          elsif type.is_a?(Proc)
             params[key] = type.call(value)
-          when type != true
+          elsif type != true
             params.delete(key)
           end
         end

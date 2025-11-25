@@ -122,17 +122,18 @@ module Padrino
       def execute_runner(kind, template_file)
         # Determine resolved template path
         template_file = template_file.to_s
-        template_path = case
-          when template_file =~ %r{^https?://} && template_file !~ /gist/
+        template_path =
+          if template_file =~ %r{^https?://} && template_file !~ /gist/
             template_file
-          when template_file =~ /gist/ && template_file !~ /raw/
+          elsif template_file =~ /gist/ && template_file !~ /raw/
             raw_link, = *URI.open(template_file) { |io| io.read.scan(/<a\s+href\s?="(.*?)">raw/) }
             raw_link ? "https://gist.github.com#{raw_link[0]}" : template_file
-          when File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
+          elsif File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
             "https://raw.github.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
           else # local file on system
             File.expand_path(template_file)
           end
+
         begin
           self.apply(template_path)
         rescue StandardError => e
