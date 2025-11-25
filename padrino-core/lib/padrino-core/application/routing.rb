@@ -499,7 +499,7 @@ module Padrino
 
         # Add Sinatra condition to check rack-protection failure.
         if respond_to?(:protect_from_csrf) && protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
-          route_options[:csrf_protection] = true unless route_options.key?(:csrf_protection)
+          route_options[:csrf_protection] = route_options.fetch(:csrf_protection, :true)
         end
 
         path, *route_options[:with] = path if path.is_a?(Array)
@@ -619,13 +619,11 @@ module Padrino
 
           absolute_map = map && map[0] == '/'
 
-          unless controller.empty?
-            # Now we need to add our controller path only if not mapped directly
-            if !map && !absolute_map
-              controller_path = controller.join('/')
-              path.gsub!(%r{^\(/\)|/\?}, '')
-              path = File.join(controller_path, path)  unless @_map
-            end
+          # Now we need to add our controller path only if not mapped directly
+          if controller.any? && !map && !absolute_map
+            controller_path = controller.join('/')
+            path.gsub!(%r{^\(/\)|/\?}, '')
+            path = File.join(controller_path, path)  unless @_map
           end
 
           # Now we need to parse our 'parent' params and parent scope.

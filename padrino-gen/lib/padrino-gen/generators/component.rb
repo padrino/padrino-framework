@@ -48,15 +48,16 @@ module Padrino
 
             choice = @_components[comp] = resolve_valid_choice(comp)
             existing = fetch_component_choice(comp)
-            if existing != 'none' && existing != choice
-              next unless yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
-            end
+            ask = existing != 'none' && existing != choice
+            next if ask && !yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
+
             @project_name = fetch_component_choice(:namespace)
             if comp.to_s == 'test' && !already_exists?(@app_name, @project_name)
               say "#{@project_name}::#{@app_name} does not exist."
               say 'Please, change app name.'
               next
             end
+
             execute_component_setup(comp, choice)
             store_component_choice(comp, choice)
             if comp.to_s == 'orm' && choice.to_s != 'none'
