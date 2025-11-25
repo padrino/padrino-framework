@@ -15,7 +15,7 @@ module Padrino
         #   select_block(:color, :options => ['green', 'black'])
         #
         (self.field_types - [ :hidden_field, :radio_button ]).each do |field_type|
-          class_eval <<~EOF, __FILE__, __LINE__ + 1
+          class_eval <<~RUBY, __FILE__, __LINE__ + 1
             def #{field_type}_block(field, options={}, label_options={})
               if options[:caption]
                 options = options.dup
@@ -25,7 +25,7 @@ module Padrino
               field_html << #{field_type}(field, options)
               @template.content_tag(:p, field_html)
             end
-          EOF
+          RUBY
         end
 
         def submit_block(caption, options = {})

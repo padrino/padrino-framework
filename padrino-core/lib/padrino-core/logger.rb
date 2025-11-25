@@ -324,11 +324,11 @@ module Padrino
 
     def self.logger=(logger)
       unless logger.class.ancestors.include?(Padrino::Logger::Extensions)
-        warn <<-EOT
+        warn <<-MESSAGE
 WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and other features.
           To do it with a custom logger you have to manually `new_logger.extend(Padrino::Logger::Extensions)`
           before passing to `Padrino.logger = new_logger`.
-        EOT
+        MESSAGE
       end
       @_logger = logger
     end

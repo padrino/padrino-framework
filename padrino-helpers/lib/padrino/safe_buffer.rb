@@ -94,7 +94,7 @@ module Padrino
     UNSAFE_STRING_METHODS.each do |unsafe_method|
       next unless unsafe_method.respond_to?(unsafe_method)
 
-      class_eval <<~EOT, __FILE__, __LINE__ + 1
+      class_eval <<~RUBY, __FILE__, __LINE__ + 1
         def #{unsafe_method}(*args, &block)       # def capitalize(*args, &block)
           to_str.#{unsafe_method}(*args, &block)  #   to_str.capitalize(*args, &block)
         end                                       # end
@@ -103,7 +103,7 @@ module Padrino
           @html_safe = false                      #   @html_safe = false
           super                                   #   super
         end                                       # end
-      EOT
+      RUBY
     end
 
     private
