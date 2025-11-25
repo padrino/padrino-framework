@@ -4,7 +4,7 @@ module ReloadableApp
   class Main < Padrino::Application
     set :reload, true
     get :index do
-      "hey"
+      'hey'
     end
   end
 end

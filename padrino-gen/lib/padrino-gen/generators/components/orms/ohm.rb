@@ -1,4 +1,4 @@
-OHM = (<<-OHM) unless defined?(OHM)
+OHM = <<-OHM unless defined?(OHM)
 # Ohm does not have the concept of namespaces.
 # This means that you will not be able to have
 # a distinct test, development, or production database.
@@ -23,11 +23,11 @@ OHM = (<<-OHM) unless defined?(OHM)
 OHM
 
 def setup_orm
-  require_dependencies 'ohm', :version => "~> 1.3.0"
-  create_file("config/database.rb", OHM)
+  require_dependencies 'ohm', version: '~> 1.3.0'
+  create_file('config/database.rb', OHM)
 end
 
-OHM_MODEL = (<<-MODEL) unless defined?(OHM_MODEL)
+OHM_MODEL = <<-MODEL unless defined?(OHM_MODEL)
 class !NAME! < Ohm::Model
   # Examples:
   # attribute :name
@@ -47,10 +47,10 @@ end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
-def create_model_file(name, options={})
+def create_model_file(name, options = {})
     model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-    field_tuples = options[:fields].map { |value| value.split(":") }
-    column_declarations = field_tuples.map { |field, kind| "attribute :#{field}" }.join("\n  ")
+    field_tuples = options[:fields].map { |value| value.split(':') }
+    column_declarations = field_tuples.map { |field, _kind| "attribute :#{field}" }.join("\n  ")
     model_contents = OHM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
     model_contents.gsub!(/!FIELDS!/, column_declarations)
     create_file(model_path, model_contents)

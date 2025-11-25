@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "PadrinoConfiguration" do
+describe 'PadrinoConfiguration' do
   it 'should be able to store values' do
     Padrino.config.val1 = 12_345
     assert_equal 12_345, Padrino.config.val1

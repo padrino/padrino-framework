@@ -7,7 +7,7 @@ module Padrino
         end
 
         def add_expression_result_escaped(code)
-          @src << " #{bufvar}.safe_concat (" << code << ");"
+          @src << " #{bufvar}.safe_concat (" << code << ');'
         end
 
         def add_text(text)
@@ -31,7 +31,7 @@ end
 Tilt.prefer(Padrino::Rendering::ErubiTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
-  :bufval => "SafeBuffer.new",
-  :bufvar => "@_out_buf",
-  :engine_class => Padrino::Rendering::SafeErubi
+  bufval: 'SafeBuffer.new',
+  bufvar: '@_out_buf',
+  engine_class: Padrino::Rendering::SafeErubi
 }

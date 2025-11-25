@@ -55,7 +55,7 @@ module Padrino
         @path
       end
   
-      SIGNIFICANT_VARIABLES_REGEX = /(^|[^\\])[:*]([a-zA-Z0-9_]+)/.freeze
+      SIGNIFICANT_VARIABLES_REGEX = /(^|[^\\])[:*]([a-zA-Z0-9_]+)/
 
       ##
       # Returns signficant variable names.
@@ -64,7 +64,7 @@ module Padrino
         @significant_variable_names ||=
           if @path.is_a?(String)
             @path.scan(SIGNIFICANT_VARIABLES_REGEX).map(&:last)
-          elsif @path.is_a?(Regexp) and @path.respond_to?(:named_captures)
+          elsif @path.is_a?(Regexp) && @path.respond_to?(:named_captures)
             @path.named_captures.keys
           else
             []
@@ -75,7 +75,7 @@ module Padrino
       # Returns an instance of PathRouter::Matcher that is associated with the route.
       #
       def matcher
-        @matcher ||= Matcher.new(@path, :capture => @capture, :default_values => default_values)
+        @matcher ||= Matcher.new(@path, capture: @capture, default_values: default_values)
       end
 
       ##

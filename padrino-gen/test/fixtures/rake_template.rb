@@ -6,4 +6,4 @@ project :test => :shoulda, :orm => :activerecord
 #   }
 # end
 # RAKE
-rake "custom"
+rake 'custom'

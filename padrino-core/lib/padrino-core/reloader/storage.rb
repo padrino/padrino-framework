@@ -13,8 +13,8 @@ module Padrino
 
       def remove(name)
         file = files[name] || return
-        file[:constants].each{ |constant| Reloader.remove_constant(constant) }
-        file[:features].each{ |feature| Reloader.remove_feature(feature) }
+        file[:constants].each { |constant| Reloader.remove_constant(constant) }
+        file[:features].each { |feature| Reloader.remove_feature(feature) }
         files.delete(name)
       end
 
@@ -22,18 +22,18 @@ module Padrino
         file = remove(name)
         @old_entries ||= {}
         @old_entries[name] = {
-          :constants => object_classes,
-          :features  => old_features = Set.new($LOADED_FEATURES.dup)
+          constants: object_classes,
+          features: old_features = Set.new($LOADED_FEATURES.dup)
         }
         features = file && file[:features] || []
-        features.each{ |feature| Reloader.safe_load(feature, :force => true) }
+        features.each { |feature| Reloader.safe_load(feature, force: true) }
         Reloader.remove_feature(name) if old_features.include?(name)
       end
 
       def commit(name)
         entry = {
-          :constants => new_classes(@old_entries[name][:constants]),
-          :features  => Set.new($LOADED_FEATURES) - @old_entries[name][:features] - [name]
+          constants: new_classes(@old_entries[name][:constants]),
+          features: Set.new($LOADED_FEATURES) - @old_entries[name][:features] - [name]
         }
         files[name] = entry
         @old_entries.delete(name)

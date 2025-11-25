@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Message" do
+describe 'Message' do
   describe 'the message' do
     it 'should accept headers and body' do
       message = Mail::Message.new do
@@ -32,8 +32,8 @@ describe "Message" do
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        locals  :foo => "Im Foo!"
-        body    erb("<%= foo %>")
+        locals  foo: 'Im Foo!'
+        body    erb('<%= foo %>')
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -78,7 +78,7 @@ describe "Message" do
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        render  'sample/foo', :layout => :"layouts/sample"
+        render  'sample/foo', layout: :"layouts/sample"
       end
 
       assert_equal ['padrino@me.com'],    message.from
@@ -154,13 +154,13 @@ describe "Message" do
     end
 
     it 'should render partials' do
-      objects = [1,2,'<evil>','<good>'.html_safe]
+      objects = [1, 2, '<evil>', '<good>'.html_safe]
       message = Mail::Message.new do
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
         views        File.dirname(__FILE__) + '/fixtures/views/mailers'
-        partial 'partial/object', :collection => objects
+        partial 'partial/object', collection: objects
       end
 
       assert_equal "Object 1<br>\nObject 2<br>\nObject &lt;evil&gt;<br>\nObject <good><br>", message.body.to_s.chomp

@@ -1,4 +1,4 @@
-MONGOMATIC = (<<-MONGO) unless defined?(MONGOMATIC)
+MONGOMATIC = <<-MONGO unless defined?(MONGOMATIC)
 
 case Padrino.env
   when :development then Mongomatic.db = Mongo::Connection.new.db("!NAME!_development")
@@ -8,13 +8,13 @@ end
 MONGO
 
 def setup_orm
-  mongomatic = MONGOMATIC
+  _mongomatic = MONGOMATIC
   require_dependencies 'mongomatic'
-  require_dependencies 'bson_ext', :require => 'mongo'
-  create_file("config/database.rb", MONGOMATIC.gsub(/!NAME!/, @project_name.underscore))
+  require_dependencies 'bson_ext', require: 'mongo'
+  create_file('config/database.rb', MONGOMATIC.gsub(/!NAME!/, @project_name.underscore))
 end
 
-MONGOMATIC_MODEL = (<<-MODEL) unless defined?(MONGOMATIC_MODEL)
+MONGOMATIC_MODEL = <<-MODEL unless defined?(MONGOMATIC_MODEL)
 class !NAME! < Mongomatic::Base
   include Mongomatic::Expectations::Helper
 
@@ -63,12 +63,12 @@ end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
-def create_model_file(name, options={})
+def create_model_file(name, options = {})
     model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-    field_tuples = options[:fields].map { |value| value.split(":") }
-    column_declarations = field_tuples.map { |field, kind| "be_present self['#{field}'], '#{field} cannot be blank'" }.join("\n      ")
+    field_tuples = options[:fields].map { |value| value.split(':') }
+    column_declarations = field_tuples.map { |field, _kind| "be_present self['#{field}'], '#{field} cannot be blank'" }.join("\n      ")
     # Really ugly oneliner
-    integers = field_tuples.select { |col, type| type =~ /[Ii]nteger/ }.map { |field, kind| "be_a_number self['#{field}'], '#{field} must be a number'" }.join("\n ")
+    integers = field_tuples.select { |_col, type| type =~ /[Ii]nteger/ }.map { |field, _kind| "be_a_number self['#{field}'], '#{field} must be a number'" }.join("\n ")
     model_contents = MONGOMATIC_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
     model_contents.gsub!(/!FIELDS!/, column_declarations)
     model_contents.gsub!(/!INTEGERS!/, integers)

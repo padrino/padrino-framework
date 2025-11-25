@@ -1,7 +1,7 @@
 module Padrino
   module Rendering
     class HamlitOutputBuffer < Temple::Generators::StringBuffer
-      define_options :buffer_class => 'SafeBuffer'
+      define_options buffer_class: 'SafeBuffer'
 
       def call(exp)
         [preamble, compile(exp), postamble].flatten.compact.join('; '.freeze)
@@ -29,7 +29,7 @@ end
 Tilt.prefer(Padrino::Rendering::HamlitTemplate, :haml)
 
 Padrino::Rendering.engine_configurations[:haml] = {
-  :generator => Padrino::Rendering::HamlitOutputBuffer,
-  :buffer => "@_out_buf",
-  :use_html_safe => true,
+  generator: Padrino::Rendering::HamlitOutputBuffer,
+  buffer: '@_out_buf',
+  use_html_safe: true,
 }

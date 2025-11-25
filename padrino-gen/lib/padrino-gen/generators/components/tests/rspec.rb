@@ -1,4 +1,4 @@
-RSPEC_SETUP = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_SETUP)
+RSPEC_SETUP = <<-TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
@@ -22,7 +22,7 @@ def app(app = nil, &blk)
 end
 TEST
 
-RSPEC_CONTROLLER_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_CONTROLLER_TEST)
+RSPEC_CONTROLLER_TEST = <<-TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_CONTROLLER_TEST)
 require 'spec_helper'
 
 RSpec.describe "!PATH!" do
@@ -38,7 +38,7 @@ RSpec.describe "!PATH!" do
 end
 TEST
 
-RSPEC_RAKE = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
+RSPEC_RAKE = <<-TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
 begin
   require 'rspec/core/rake_task'
 
@@ -65,7 +65,7 @@ end
 task :default => :spec
 TEST
 
-RSPEC_MODEL_TEST = (<<-TEST).gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
+RSPEC_MODEL_TEST = <<-TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)
 require 'spec_helper'
 
 RSpec.describe !NAME! do
@@ -73,7 +73,7 @@ RSpec.describe !NAME! do
 end
 TEST
 
-RSPEC_HELPER_TEST = (<<-TEST) unless defined?(RSPEC_HELPER_TEST)
+RSPEC_HELPER_TEST = <<-TEST unless defined?(RSPEC_HELPER_TEST)
 require 'spec_helper'
 
 RSpec.describe "!NAME!" do
@@ -90,26 +90,26 @@ end
 TEST
 
 def setup_test
-  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
-  require_dependencies 'rspec', :group => 'test'
-  insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
-  create_file destination_root("spec/spec.rake"), RSPEC_RAKE
+  require_dependencies 'rack-test', require: 'rack/test', group: 'test'
+  require_dependencies 'rspec', group: 'test'
+  insert_test_suite_setup RSPEC_SETUP, path: 'spec/spec_helper.rb'
+  create_file destination_root('spec/spec.rake'), RSPEC_RAKE
 end
 
 def generate_controller_test(name, path)
-  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, "1"))
-  controller_spec_path = File.join('spec',options[:app],'controllers',"#{name.to_s.underscore}_controller_spec.rb")
-  create_file destination_root(controller_spec_path), rspec_contents, :skip => true
+  rspec_contents = RSPEC_CONTROLLER_TEST.gsub(/!PATH!/, path).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, '1'))
+  controller_spec_path = File.join('spec', options[:app], 'controllers', "#{name.to_s.underscore}_controller_spec.rb")
+  create_file destination_root(controller_spec_path), rspec_contents, skip: true
 end
 
 def generate_model_test(name)
   rspec_contents = RSPEC_MODEL_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!DNAME!/, name.to_s.underscore)
-  model_spec_path = File.join('spec',options[:app],'models',"#{name.to_s.underscore}_spec.rb")
-  create_file destination_root(model_spec_path), rspec_contents, :skip => true
+  model_spec_path = File.join('spec', options[:app], 'models', "#{name.to_s.underscore}_spec.rb")
+  create_file destination_root(model_spec_path), rspec_contents, skip: true
 end
 
 def generate_helper_test(name, project_name, app_name)
   rspec_contents = RSPEC_HELPER_TEST.gsub(/!NAME!/, "#{project_name}::#{app_name}::#{name}")
   helper_spec_path = File.join('spec', options[:app], 'helpers', "#{name.underscore}_spec.rb")
-  create_file destination_root(helper_spec_path), rspec_contents, :skip => true
+  create_file destination_root(helper_spec_path), rspec_contents, skip: true
 end

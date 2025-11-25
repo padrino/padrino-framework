@@ -4,8 +4,9 @@ class E
   end
 
   def self.inherited(subclass)
+    super
     subclass.fields.replace fields.dup
   end
 
-  fields << "name"
+  fields << 'name'
 end

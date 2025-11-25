@@ -8,10 +8,10 @@ module Padrino
       # Tag values escaped to html entities.
       #
       ESCAPE_VALUES = {
-        "&" => "&amp;",
-        "<" => "&lt;",
-        ">" => "&gt;",
-        '"' => "&quot;"
+        '&' => '&amp;',
+        '<' => '&lt;',
+        '>' => '&gt;',
+        '"' => '&quot;'
       }.freeze
 
       ##
@@ -127,7 +127,7 @@ module Padrino
         output = SafeBuffer.new
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
-          content.each{ |item| output.concat item; output.safe_concat NEWLINE }
+          content.each { |item| output.concat item; output.safe_concat NEWLINE }
         else
           output.concat content.to_s
         end
@@ -200,7 +200,7 @@ module Padrino
       #   # => <input type="number" name="credit_card" autocomplete="off" />  
       #
       def input_tag(type, options = {})
-        tag(:input, { :type => type }.update(options))
+        tag(:input, { type: type }.update(options))
       end
 
       ##
@@ -255,7 +255,7 @@ module Padrino
       #
       def tag_attributes(options)
         return '' unless options
-        options.inject('') do |all,(key,value)|
+        options.inject('') do |all, (key, value)|
           next all unless value
           all << ' ' if all.empty?
           all << if value.is_a?(Hash)
@@ -280,7 +280,7 @@ module Padrino
       # Iterate through nested values.
       #
       def nested_values(attribute, hash)
-        hash.inject('') do |all,(key,value)|
+        hash.inject('') do |all, (key, value)|
           attribute_with_name = "#{attribute}-#{key.to_s.tr('_', '-')}"
           all << if value.is_a?(Hash)
             nested_values(attribute_with_name, value)
@@ -296,7 +296,7 @@ module Padrino
       def parse_data_options(tag, options)
         return unless options
         parsed_options = options.dup
-        options.each do |key, value|
+        options.each_key do |key|
           next if !DATA_ATTRIBUTES.include?(key) || (tag.to_s == 'form' && key == :method)
           parsed_options["data-#{key}"] = parsed_options.delete(key)
           parsed_options[:rel] = 'nofollow' if key == :method

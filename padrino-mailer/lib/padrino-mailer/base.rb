@@ -82,7 +82,7 @@ module Padrino
       #
       def email(name, &block)
         raise "The email '#{name}' is already defined" if self.messages[name]
-        self.messages[name] = Proc.new { |*attrs|
+        self.messages[name] = proc { |*attrs|
           message = app.settings._padrino_mailer::Message.new(self.app)
           message.mailer_name = mailer_name
           message.message_name = name
@@ -106,7 +106,7 @@ module Padrino
       #     email(:foo) do; end
       #   end
       #
-      def defaults(attributes=nil)
+      def defaults(attributes = nil)
         if attributes.nil? # Retrieve the default values
           @app.respond_to?(:mailer_defaults) ? @app.mailer_defaults.merge(@defaults) : @defaults
         else # updates the default values

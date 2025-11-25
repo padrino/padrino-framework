@@ -24,25 +24,25 @@ class Minitest::Spec
   def stop_time_for_test
     time = Time.now
     Time.stubs(:now).returns(time)
-    return time
+    time
   end
 
   # mock_model("Business", :new_record? => true) => <Business>
-  def mock_model(klazz, options={})
-    options = { :class => klazz, :new_record? => false, :id => 20, :errors => {}}.update(options)
+  def mock_model(klazz, options = {})
+    options = { class: klazz, new_record?: false, id: 20, errors: {}}.update(options)
     record = stub(options)
-    record.stubs(:to_ary => [record])
+    record.stubs(to_ary: [record])
     record
   end
 
-  def create_template(name, content, options={})
-    FileUtils.mkdir_p(File.dirname(__FILE__) + "/views")
-    FileUtils.mkdir_p(File.dirname(__FILE__) + "/views/layouts")
+  def create_template(name, content, options = {})
+    FileUtils.mkdir_p(File.dirname(__FILE__) + '/views')
+    FileUtils.mkdir_p(File.dirname(__FILE__) + '/views/layouts')
     path  = "/views/#{name}"
     path += ".#{options.delete(:locale)}" if options[:locale]
     path += ".#{options[:format]}" if options[:format]
-    path += ".erb" unless options[:format].to_s =~ /erb|slim|haml|rss|atom|builder|liquid/
-    path += ".builder" if options[:format].to_s =~ /rss|atom/
+    path += '.erb' unless options[:format].to_s =~ /erb|slim|haml|rss|atom|builder|liquid/
+    path += '.builder' if options[:format].to_s =~ /rss|atom/
     file  = File.dirname(__FILE__) + path
     File.open(file, 'w') { |io| io.write content }
     file
@@ -51,10 +51,10 @@ class Minitest::Spec
   alias :create_layout :create_template
 
   def remove_views
-    FileUtils.rm_rf(File.dirname(__FILE__) + "/views")
+    FileUtils.rm_rf(File.dirname(__FILE__) + '/views')
   end
 
-  def with_template(name, content, options={})
+  def with_template(name, content, options = {})
     template = create_template(name, content, options)
     yield
   ensure
@@ -64,10 +64,10 @@ class Minitest::Spec
   alias :with_view   :with_template
   alias :with_layout :with_template
 
-  def mock_app(base=Padrino::Application, &block)
-    @app = Sinatra.new base do
+  def mock_app(base = Padrino::Application, &block)
+    @app = Sinatra.new(base) do
       register Padrino::Helpers
-      instance_eval &block
+      instance_eval(&block)
     end
   end
 

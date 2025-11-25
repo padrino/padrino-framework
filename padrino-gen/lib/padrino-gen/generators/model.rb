@@ -6,8 +6,8 @@ module Padrino
     class Model < Thor::Group
       Padrino::Generators.add_generator(:model, self)
 
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      def self.banner; "padrino-gen model [name] [fields]"; end
+      def self.source_root; __dir__; end
+      def self.banner; 'padrino-gen model [name] [fields]'; end
 
       include Thor::Actions
       include Padrino::Generators::Actions
@@ -15,13 +15,13 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen model generates a new model and migration files"
 
-      argument :name,               :desc => 'The name of your padrino model'
-      argument :fields,             :desc => 'The fields for the model',                                     :default => [],    :type => :array
-      class_option :root,           :desc => 'The root destination',                       :aliases => '-r', :default => '.',   :type => :string
-      class_option :app,            :desc => 'The application destination path',           :aliases => '-a', :default => '.',   :type => :string
-      class_option :destroy,                                                               :aliases => '-d', :default => false, :type => :boolean
-      class_option :skip_migration,                                                        :aliases => '-s', :default => false, :type => :boolean
-      class_option :force,          :desc => 'Generate model files if app already exists', :aliases => '-f', :default => false, :type => :boolean
+      argument :name,               desc: 'The name of your padrino model'
+      argument :fields,             desc: 'The fields for the model',                                     default: [],    type: :array
+      class_option :root,           desc: 'The root destination',                       aliases: '-r', default: '.',   type: :string
+      class_option :app,            desc: 'The application destination path',           aliases: '-a', default: '.',   type: :string
+      class_option :destroy,                                                               aliases: '-d', default: false, type: :boolean
+      class_option :skip_migration,                                                        aliases: '-s', default: false, type: :boolean
+      class_option :force,          desc: 'Generate model files if app already exists', aliases: '-f', default: false, type: :boolean
 
       # Show help if no ARGV given.
       require_arguments!
@@ -35,7 +35,7 @@ module Padrino
         include_component_module_for(:test)
         migration_name = "create_#{name.pluralize.underscore}"
         apply_default_fields fields
-        create_model_file(name, :fields => fields, :app => app)
+        create_model_file(name, fields: fields, app: app)
         generate_model_test(name) if test?
         create_model_migration(migration_name, name, fields) unless options[:skip_migration]
       end
@@ -57,7 +57,7 @@ module Padrino
         else
           unless options[:force]
             say "#{@camel_name} already exists."
-            say "Please, change the name."
+            say 'Please, change the name.'
             return false
           end
         end if model_name_already_exists?
@@ -73,7 +73,7 @@ module Padrino
       def model_name_already_exists?
         @camel_name = name.to_s.underscore.camelize
 
-        @project_name = ""
+        @project_name = ''
         @project_name = fetch_project_name
 
         return false unless already_exists?(@camel_name, @project_name)
@@ -86,7 +86,7 @@ module Padrino
       def check_orm
         return true if include_component_module_for(:orm)
 
-        say "<= You need an ORM adapter for run this generator. Sorry!"
+        say '<= You need an ORM adapter for run this generator. Sorry!'
         raise SystemExit
       end
 

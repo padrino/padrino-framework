@@ -21,7 +21,7 @@ module Padrino
       end
 
       def public_folder
-        @public_folder ||= trace_method(:public_folder) { "" }
+        @public_folder ||= trace_method(:public_folder) { '' }
       end
 
       def app_name
@@ -39,7 +39,7 @@ module Padrino
       private
 
       def require_dependencies
-        Padrino.require_dependencies(dependencies, :force => true)
+        Padrino.require_dependencies(dependencies, force: true)
       end
 
       def trace_method(method_name)

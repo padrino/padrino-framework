@@ -53,7 +53,7 @@ module Padrino
       #   strip_tags("<b>Hey</b>") => "Hey"
       #
       def strip_tags(html)
-        html.gsub(/<\/?[^>]*>/, "") if html
+        html&.gsub(/<\/?[^>]*>/, '')
       end
 
       ##
@@ -74,7 +74,7 @@ module Padrino
       #   simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
       #   simple_format("hello\nworld", :tag => :div, :class => :foo) # => "<div class="foo">hello<br/>world</div>"
       #
-      def simple_format(text, options={})
+      def simple_format(text, options = {})
         t = options.delete(:tag) || :p
         start_tag = tag(t, options, true)
         text = escape_html(text.to_s.dup) unless text.html_safe?
@@ -103,7 +103,7 @@ module Padrino
       #   pluralize(2, 'person') => '2 people'
       #
       def pluralize(count, singular, plural = nil)
-        "#{count || 0} " + ((count == 1 || count == '1') ? singular : (plural || singular.pluralize))
+        "#{count || 0} " + ([1, '1'].include?(count) ? singular : (plural || singular.pluralize))
       end
 
       ##
@@ -124,8 +124,8 @@ module Padrino
       # @example
       #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
       #
-      def truncate(text, options={})
-        options = { :length => 30, :omission => "..." }.update(options)
+      def truncate(text, options = {})
+        options = { length: 30, omission: '...' }.update(options)
         if text
           len = options[:length] - options[:omission].length
           chars = text
@@ -151,10 +151,10 @@ module Padrino
       # @example
       #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
       #
-      def truncate_words(text, options={})
-        options = { :length => 30, :omission => "..." }.update(options)
+      def truncate_words(text, options = {})
+        options = { length: 30, omission: '...' }.update(options)
         if text
-          words = text.split()
+          words = text.split
           words[0..(options[:length]-1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
         end
       end
@@ -181,7 +181,7 @@ module Padrino
         unless args.empty?
           options[:line_width] = args[0] || 80
         end
-        options = { :line_width => 80 }.update(options)
+        options = { line_width: 80 }.update(options)
 
         text.split("\n").map do |line|
           line.length > options[:line_width] ? line.gsub(/(.{1,#{options[:line_width]}})(\s+|$)/, "\\1\n").strip : line
@@ -214,7 +214,7 @@ module Padrino
       #   # => Lorem ipsum <strong class="custom">dolor</strong> sit amet
       #
       def highlight(text, words, *args)
-        options = { :highlighter => '<strong class="highlight">\1</strong>' }.update(args.last.is_a?(Hash) ? args.pop : {})
+        options = { highlighter: '<strong class="highlight">\1</strong>' }.update(args.last.is_a?(Hash) ? args.pop : {})
 
         if text.empty? || words.empty?
           text
@@ -286,47 +286,47 @@ module Padrino
       def distance_of_time_in_words(from_time, to_time = 0, include_seconds = false, options = {})
         from_time = from_time.to_time if from_time.respond_to?(:to_time)
         to_time = to_time.to_time if to_time.respond_to?(:to_time)
-        distance_in_minutes = (((to_time.to_i - from_time.to_i).abs)/60).round
-        distance_in_seconds = ((to_time.to_i - from_time.to_i).abs).round
+        distance_in_minutes = ((to_time.to_i - from_time.to_i).abs/60).round
+        distance_in_seconds = (to_time.to_i - from_time.to_i).abs.round
 
         phrase, locals =
           case distance_in_minutes
             when 0..1
               if include_seconds
                 case distance_in_seconds
-                  when 0..4   then [:less_than_x_seconds, :count => 5 ]
-                  when 5..9   then [:less_than_x_seconds, :count => 10]
-                  when 10..19 then [:less_than_x_seconds, :count => 20]
+                  when 0..4   then [:less_than_x_seconds, {count: 5} ]
+                  when 5..9   then [:less_than_x_seconds, {count: 10}]
+                  when 10..19 then [:less_than_x_seconds, {count: 20}]
                   when 20..39 then [:half_a_minute                    ]
-                  when 40..59 then [:less_than_x_minutes, :count => 1 ]
-                  else             [:x_minutes,           :count => 1 ]
+                  when 40..59 then [:less_than_x_minutes, {count: 1} ]
+                  else             [:x_minutes,           {count: 1} ]
                 end
               else
                 distance_in_minutes == 0 ?
-                  [:less_than_x_minutes, :count => 1] :
-                  [:x_minutes, :count => distance_in_minutes]
+                  [:less_than_x_minutes, {count: 1}] :
+                  [:x_minutes, {count: distance_in_minutes}]
               end
-            when 2..44           then [:x_minutes,      :count => distance_in_minutes                       ]
-            when 45..89          then [:about_x_hours,  :count => 1                                         ]
-            when 90..1439        then [:about_x_hours,  :count => (distance_in_minutes.to_f / 60.0).round   ]
-            when 1440..2529      then [:x_days,         :count => 1                                         ]
-            when 2530..43199     then [:x_days,         :count => (distance_in_minutes.to_f / 1440.0).round ]
-            when 43200..86399    then [:about_x_months, :count => 1                                         ]
-            when 86400..525599   then [:x_months,       :count => (distance_in_minutes.to_f / 43200.0).round]
+            when 2..44             then [:x_minutes,      {count: distance_in_minutes}                       ]
+            when 45..89            then [:about_x_hours,  {count: 1}                                         ]
+            when 90..1439          then [:about_x_hours,  {count: (distance_in_minutes.to_f / 60.0).round}   ]
+            when 1440..2529        then [:x_days,         {count: 1}                                         ]
+            when 2530..43_199      then [:x_days,         {count: (distance_in_minutes.to_f / 1440.0).round} ]
+            when 43_200..86_399    then [:about_x_months, {count: 1}                                         ]
+            when 86_400..525_599   then [:x_months,       {count: (distance_in_minutes.to_f / 43_200.0).round}]
             else
-              distance_in_years           = distance_in_minutes / 525600
+              distance_in_years           = distance_in_minutes / 525_600
               minute_offset_for_leap_year = (distance_in_years / 4) * 1440
-              remainder                   = ((distance_in_minutes - minute_offset_for_leap_year) % 525600)
-              if remainder < 131400
-                [:about_x_years,  :count => distance_in_years]
-              elsif remainder < 394200
-                [:over_x_years,   :count => distance_in_years]
+              remainder                   = ((distance_in_minutes - minute_offset_for_leap_year) % 525_600)
+              if remainder < 131_400
+                [:about_x_years,  {count: distance_in_years}]
+              elsif remainder < 394_200
+                [:over_x_years,   {count: distance_in_years}]
               else
-                [:almost_x_years, :count => distance_in_years + 1]
+                [:almost_x_years, {count: distance_in_years + 1}]
               end
           end
 
-        I18n.translate phrase, :count => locals[:count], :locale => options[:locale], :scope => :'datetime.distance_in_words'
+        I18n.translate phrase, count: locals[:count], locale: options[:locale], scope: :'datetime.distance_in_words'
       end
 
       ##
@@ -362,7 +362,7 @@ module Padrino
       def js_escape_html(html_content)
         return '' unless html_content
         javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
-        escaped_content = html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/){ |m| javascript_mapping[m] }
+        escaped_content = html_content.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { |m| javascript_mapping[m] }
         escaped_content = escaped_content.html_safe if html_content.html_safe?
         escaped_content
       end

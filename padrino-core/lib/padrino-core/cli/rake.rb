@@ -6,10 +6,11 @@ require 'securerandom' unless defined?(SecureRandom)
 begin
   require 'padrino-gen'
 rescue LoadError
+  # do nothing if padrino-gen is not available
 end
 
 module PadrinoTasks
-  def self.init(init=false)
+  def self.init(init = false)
     Padrino::Tasks.files.flatten.uniq.each { |rakefile| begin
                                                           Rake.application.add_import(rakefile)
                                                         rescue StandardError

@@ -62,6 +62,6 @@ end
 Tilt.prefer(Padrino::Rendering::ErubisTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
-  :engine_class => Padrino::Rendering::SafeEruby,
-  :outvar => '@_out_buf',
+  engine_class: Padrino::Rendering::SafeEruby,
+  outvar: '@_out_buf',
 }

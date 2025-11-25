@@ -9,7 +9,7 @@ class PadrinoApp < Padrino::Application
 
   mailer :sample do
     email :birthday do |name, age|
-      subject "Happy Birthday!"
+      subject 'Happy Birthday!'
       to      'john@fake.com'
       from    'noreply@birthday.com'
       locals  :name => name, :age => age
@@ -18,7 +18,7 @@ class PadrinoApp < Padrino::Application
     end
 
     email :anniversary do |names, years_married|
-      subject "Happy anniversary!"
+      subject 'Happy anniversary!'
       to   'julie@fake.com'
       from 'noreply@anniversary.com'
       content_type :html
@@ -28,7 +28,7 @@ class PadrinoApp < Padrino::Application
     end
 
     message :welcome do |name|
-      subject "Welcome Message!"
+      subject 'Welcome Message!'
       to      'john@fake.com'
       from    'noreply@custom.com'
       locals  :name => name
@@ -37,7 +37,7 @@ class PadrinoApp < Padrino::Application
     end
 
     message :helper do |name|
-      subject "Welcome Helper!"
+      subject 'Welcome Helper!'
       to      'jim@fake.com'
       from    'noreply@custom.com'
       locals  :name => name
@@ -46,7 +46,7 @@ class PadrinoApp < Padrino::Application
     end
 
     message :default_mailer_name do |name|
-      subject "Welcome Helper!"
+      subject 'Welcome Helper!'
       to      'jim@fake.com'
       from    'noreply@custom.com'
       locals  :name => name
@@ -55,7 +55,7 @@ class PadrinoApp < Padrino::Application
     end
 
     message :default_mailer_email_name do |name|
-      subject "Welcome Helper!"
+      subject 'Welcome Helper!'
       to      'jim@fake.com'
       from    'noreply@custom.com'
       locals  :name => name
@@ -64,7 +64,7 @@ class PadrinoApp < Padrino::Application
     end
 
     message :external do |name|
-      subject "Welcome Message!"
+      subject 'Welcome Message!'
       to      'john@fake.com'
       from    'noreply@custom.com'
       locals  :name => name
@@ -76,54 +76,54 @@ class PadrinoApp < Padrino::Application
   mailer :nonexistant do
   end
 
-  post "/deliver/inline" do
-    result = email(:to => "john@apple.com", :from => "joe@smith.com", :subject => "Test Email", :body => "Test Body", :via => :test)
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/inline' do
+    result = email(:to => 'john@apple.com', :from => 'joe@smith.com', :subject => 'Test Email', :body => 'Test Body', :via => :test)
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/plain" do
-    result = deliver(:sample, :birthday, "Joey", 21)
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/plain' do
+    result = deliver(:sample, :birthday, 'Joey', 21)
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/html" do
-    result = deliver(:sample, :anniversary, "Joey & Charlotte", 16)
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/html' do
+    result = deliver(:sample, :anniversary, 'Joey & Charlotte', 16)
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/custom" do
-    result = deliver(:sample, :welcome, "Bobby")
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/custom' do
+    result = deliver(:sample, :welcome, 'Bobby')
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/helper" do
-    result = deliver(:sample, :helper, "Jim")
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/helper' do
+    result = deliver(:sample, :helper, 'Jim')
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/failing_mailer" do
-    deliver(:nonregistered, :mailer, "hey")
+  post '/deliver/failing_mailer' do
+    deliver(:nonregistered, :mailer, 'hey')
   end
 
-  post "/deliver/failing_message" do
-    deliver(:nonexistant, :message, "hey")
+  post '/deliver/failing_message' do
+    deliver(:nonexistant, :message, 'hey')
   end
 
-  post "/deliver/default_mailer_name" do
-    result = deliver(:sample, :default_mailer_name, "Jim")
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/default_mailer_name' do
+    result = deliver(:sample, :default_mailer_name, 'Jim')
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/default_mailer_email_name" do
-    result = deliver(:sample, :default_mailer_email_name, "Jim")
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/default_mailer_email_name' do
+    result = deliver(:sample, :default_mailer_email_name, 'Jim')
+    result ? 'mail delivered' : 'mail not delivered'
   end
 
-  post "/deliver/external" do
-    result = deliver(:sample, :external, "Joey")
-    result ? "mail delivered" : 'mail not delivered'
+  post '/deliver/external' do
+    result = deliver(:sample, :external, 'Joey')
+    result ? 'mail delivered' : 'mail not delivered'
   end
 end
 
-Padrino.mount("PadrinoApp").to("/")
+Padrino.mount('PadrinoApp').to('/')
 Padrino.load!

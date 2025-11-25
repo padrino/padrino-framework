@@ -6,4 +6,4 @@
 # But here we need some of b.rb
 A_result = [B, C]
 
-A = "A"
+A = 'A'

@@ -4,11 +4,11 @@ module Padrino
     # Helpers related to producing assets (images, stylesheets, js, etc) within templates.
     #
     module AssetTagHelpers
-      APPEND_ASSET_EXTENSIONS = ["js", "css"]
+      APPEND_ASSET_EXTENSIONS = ['js', 'css']
       ABSOLUTE_URL_PATTERN = %r{^(https?://)}
       ASSET_FOLDERS = {
-        :js => 'javascripts',
-        :css => 'stylesheets',
+        js: 'javascripts',
+        css: 'stylesheets',
       }
 
       ##
@@ -32,11 +32,11 @@ module Padrino
       def flash_tag(*args)
         options = args.last.is_a?(Hash) ? args.pop : {}
         bootstrap = options.delete(:bootstrap) if options[:bootstrap]
-        args.inject(SafeBuffer.new) do |html,kind|
+        args.inject(SafeBuffer.new) do |html, kind|
           next html unless flash[kind]
           flash_text = SafeBuffer.new << flash[kind]
-          flash_text << content_tag(:button, '&times;'.html_safe, {:type => :button, :class => :close, :'data-dismiss' => :alert}) if bootstrap
-          html << content_tag(:div, flash_text, { :class => kind }.update(options))
+          flash_text << content_tag(:button, '&times;'.html_safe, {type: :button, class: :close, 'data-dismiss': :alert}) if bootstrap
+          html << content_tag(:div, flash_text, { class: kind }.update(options))
         end
       end
 
@@ -85,7 +85,7 @@ module Padrino
         options = args.last.is_a?(Hash) ? args.pop : {}
         name = block_given? ? '' : args.shift
         href = args.first
-        options = { :href => href ? escape_link(href) : '#' }.update(options)
+        options = { href: href ? escape_link(href) : '#' }.update(options)
         return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end
@@ -114,9 +114,9 @@ module Padrino
       #   feed_tag :rss, url(:blog, :posts, :format => :rss)
       #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
       #
-      def feed_tag(mime, url, options={})
-        full_mime = (mime == :atom) ? 'application/atom+xml' : 'application/rss+xml'
-        tag(:link, { :rel => 'alternate', :type => full_mime, :title => mime, :href => url }.update(options))
+      def feed_tag(mime, url, options = {})
+        full_mime = mime == :atom ? 'application/atom+xml' : 'application/rss+xml'
+        tag(:link, { rel: 'alternate', type: full_mime, title: mime, href: url }.update(options))
       end
 
       ##
@@ -142,12 +142,12 @@ module Padrino
       #   mail_to "me@demo.com", "My Email"
       #   # Generates: <a href="mailto:me@demo.com">My Email</a>
       #
-      def mail_to(email, caption=nil, mail_options={})
-        mail_options, html_options = mail_options.partition{ |key,_| [:cc, :bcc, :subject, :body].include?(key) }
+      def mail_to(email, caption = nil, mail_options = {})
+        mail_options, html_options = mail_options.partition { |key, _| [:cc, :bcc, :subject, :body].include?(key) }
         mail_query = Rack::Utils.build_query(Hash[mail_options]).gsub(/\+/, '%20').gsub('%40', '@')
         mail_href = "mailto:#{email}"
         mail_href << "?#{mail_query}" unless mail_query.empty?
-        link_to((caption || email), mail_href, Hash[html_options])
+        link_to(caption || email, mail_href, Hash[html_options])
       end
 
       ##
@@ -167,8 +167,8 @@ module Padrino
       #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #
-      def meta_tag(content, options={})
-        options = { "content" => content }.update(options)
+      def meta_tag(content, options = {})
+        options = { 'content' => content }.update(options)
         tag(:meta, options)
       end
 
@@ -188,9 +188,9 @@ module Padrino
       #   # or override some options
       #   favicon_tag 'favicon.png', :type => 'image/ico'
       #
-      def favicon_tag(source, options={})
-        type = File.extname(source).sub('.','')
-        options = { :href => image_path(source), :rel => 'icon', :type => "image/#{type}" }.update(options)
+      def favicon_tag(source, options = {})
+        type = File.extname(source).sub('.', '')
+        options = { href: image_path(source), rel: 'icon', type: "image/#{type}" }.update(options)
         tag(:link, options)
       end
 
@@ -207,8 +207,8 @@ module Padrino
       # @example
       #   image_tag('icons/avatar.png')
       #
-      def image_tag(url, options={})
-        options = { :src => image_path(url) }.update(options)
+      def image_tag(url, options = {})
+        options = { src: image_path(url) }.update(options)
         options[:alt] ||= image_alt(url) unless url.to_s =~ /\A(?:cid|data):|\A\Z/
         tag(:img, options)
       end
@@ -241,11 +241,11 @@ module Padrino
       # @api public.
       def stylesheet_link_tag(*sources)
         options = {
-          :rel => 'stylesheet',
-          :type => 'text/css'
+          rel: 'stylesheet',
+          type: 'text/css'
         }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
-        sources.flatten.inject(SafeBuffer.new) do |all,source|
-          all << tag(:link, { :href => asset_path(:css, source) }.update(options))
+        sources.flatten.inject(SafeBuffer.new) do |all, source|
+          all << tag(:link, { href: asset_path(:css, source) }.update(options))
         end
       end
 
@@ -265,10 +265,10 @@ module Padrino
       #
       def javascript_include_tag(*sources)
         options = {
-          :type => 'text/javascript'
+          type: 'text/javascript'
         }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
-        sources.flatten.inject(SafeBuffer.new) do |all,source|
-          all << content_tag(:script, nil, { :src => asset_path(:js, source) }.update(options))
+        sources.flatten.inject(SafeBuffer.new) do |all, source|
+          all << content_tag(:script, nil, { src: asset_path(:js, source) }.update(options))
         end
       end
 
@@ -346,7 +346,7 @@ module Padrino
       def asset_timestamp(file_path)
         return nil if file_path =~ /\?/ || (self.class.respond_to?(:asset_stamp) && !self.class.asset_stamp)
         public_path = self.class.public_folder if self.class.respond_to?(:public_folder)
-        public_path ||= Padrino.root("public") if Padrino.respond_to?(:root)
+        public_path ||= Padrino.root('public') if Padrino.respond_to?(:root)
         public_file_path = File.join(public_path, file_path) if public_path
         stamp = File.mtime(public_file_path).to_i if public_file_path && File.exist?(public_file_path)
         stamp ||= Time.now.to_i

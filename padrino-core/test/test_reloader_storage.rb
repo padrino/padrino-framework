@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Padrino::Reloader::Storage" do
-  describe "#classes" do
+describe 'Padrino::Reloader::Storage' do
+  describe '#classes' do
     it 'should take an snapshot of the current loaded classes' do
       snapshot = Padrino::Reloader::Storage.send(:object_classes)
       assert_equal snapshot.include?(Padrino::Logger), true
@@ -27,7 +27,7 @@ describe "Padrino::Reloader::Storage" do
     end
   end
 
-  describe "#new_classes" do
+  describe '#new_classes' do
     before do
       @snapshot = Padrino::Reloader::Storage.send(:object_classes)
     end

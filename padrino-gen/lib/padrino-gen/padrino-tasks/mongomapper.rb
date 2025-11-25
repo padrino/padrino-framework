@@ -7,13 +7,13 @@ if defined?(MongoMapper)
 
   namespace :mm do
     desc 'Drops all the collections for the database for the current Padrino.env'
-    task :drop => :environment do
-      MongoMapper.database.collections.select {|c| c.name !~ /system/ }.each(&:drop)
+    task drop: :environment do
+      MongoMapper.database.collections.reject {|c| c.name =~ /system/ }.each(&:drop)
     end
 
-    desc "Generates .yml files for I18n translations"
-    task :translate => :environment do
-      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+    desc 'Generates .yml files for I18n translations'
+    task translate: :environment do
+      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, '.rb') }
 
       models.each do |m|
         # Get the model class.
@@ -34,17 +34,17 @@ if defined?(MongoMapper)
             columns.each do |c|
               locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
             end
-            print "Lang #{lang.to_s.upcase} already exist ... "; $stdout.flush
           else
-            locale     = "#{lang}:" + "\n" +
-                         "  models:" + "\n" +
-                         "    #{m}:" + "\n" +
-                         "      name: #{klass.human_name}" + "\n" +
-                         "      attributes:" + "\n" +
+            locale     = "#{lang}:" + "\n" \
+                         '  models:' + "\n" \
+                         "    #{m}:" + "\n" \
+                         "      name: #{klass.human_name}" + "\n" \
+                         '      attributes:' + "\n" +
                          columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
-            print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
           end
-          File.open(filename, "w") { |f| f.puts locale }
+
+          $stdout.flush
+          File.open(filename, 'w') { |f| f.puts locale }
         end
         puts
       end

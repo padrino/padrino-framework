@@ -1,3 +1,4 @@
+require 'English'
 ENV['RACK_ENV'] = 'test'
 
 require 'padrino-core'
@@ -16,9 +17,9 @@ module MockBenchmark
 
     def run(*)
       puts 'Running ' + self.name
-      puts `pmap -x #{$$} | tail -1`
+      puts `pmap -x #{$PROCESS_ID} | tail -1`
       super
-      puts `pmap -x #{$$} | tail -1`
+      puts `pmap -x #{$PROCESS_ID} | tail -1`
     end
   end
 
@@ -43,7 +44,7 @@ class Padrino::HugeRouterBenchmark < Minitest::Benchmark
     @pathss = {}
     @requests = {}
     self.class.bench_range.each do |n|
-      @pathss[n] = paths = (1..n/5).map{ rand(36**8).to_s(36) }
+      @pathss[n] = paths = (1..n/5).map { rand(36**8).to_s(36) }
       @apps[n] = Sinatra.new Padrino::Application do
         paths.each do |p|
           get("/#{p}") { p.to_s }

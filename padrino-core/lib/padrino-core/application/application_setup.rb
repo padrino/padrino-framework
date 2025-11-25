@@ -12,7 +12,7 @@ module Padrino
       # Defines default settings for Padrino application.
       #
       def default_configuration!
-        set :app_file, File.expand_path(caller_files.first || $0)
+        set :app_file, File.expand_path(caller_files.first || $PROGRAM_NAME)
         set :app_name, Inflections.underscore(settings).to_sym
 
         set :environment, Padrino.env
@@ -66,7 +66,7 @@ module Padrino
       end
 
       def default_security
-        set :protection, :except => :path_traversal
+        set :protection, except: :path_traversal
         set :sessions, false
         set :protect_from_csrf, false
         set :report_csrf_failure, false
@@ -96,7 +96,7 @@ module Padrino
           '/models/**/*.rb',
           '/lib.rb',
           '/lib/**/*.rb'
-        ].map{ |glob| File.join(settings.root, glob) }
+        ].map { |glob| File.join(settings.root, glob) }
       end
 
       # Overrides the default middleware for Sinatra based on Padrino conventions.
@@ -168,11 +168,11 @@ module Padrino
 
       # returns the options used in the builder for csrf protection setup
       def options_for_csrf_protection_setup
-        options = { :logger => logger }
+        options = { logger: logger }
         if report_csrf_failure? || allow_disabled_csrf?
           options.merge!(
-            :reaction   => :report,
-            :report_key => 'protection.csrf.failed'
+            reaction: :report,
+            report_key: 'protection.csrf.failed'
           )
         end
         options
@@ -180,7 +180,7 @@ module Padrino
 
       # warn if the protect_from_csrf is active but sessions are not
       def check_csrf_protection_dependency
-        if (protect_from_csrf? && !sessions?) && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
+        if protect_from_csrf? && !sessions? && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
           warn(<<-ERROR)
   `protect_from_csrf` is activated, but `sessions` seem to be off. To enable csrf
   protection, use:

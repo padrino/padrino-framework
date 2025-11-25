@@ -11,16 +11,16 @@ module Padrino
       Padrino::Generators.add_generator(:task, self)
 
       class << self
-        def source_root; File.expand_path(File.dirname(__FILE__)); end
-        def banner; "padrino-gen task [name]"; end
+        def source_root; __dir__; end
+        def banner; 'padrino-gen task [name]'; end
       end
 
       desc "Description:\n\n\tpadrino-gen task generates a new task file."
 
-      argument     :name,        :desc => 'The name of your application task'
-      class_option :root,        :desc => 'The root destination',                     :aliases => '-r', :default => '.', :type => :string
-      class_option :description, :desc => 'The description of your application task', :aliases => '-d', :default => nil, :type => :string
-      class_option :namespace,   :desc => 'The namespace of your application task',   :aliases => '-n', :default => nil, :type => :string
+      argument     :name,        desc: 'The name of your application task'
+      class_option :root,        desc: 'The root destination',                     aliases: '-r', default: '.', type: :string
+      class_option :description, desc: 'The description of your application task', aliases: '-d', default: nil, type: :string
+      class_option :namespace,   desc: 'The namespace of your application task',   aliases: '-n', default: nil, type: :string
 
       # Show help if no ARGV given
       require_arguments!
@@ -29,11 +29,10 @@ module Padrino
         validate_namespace name
         self.destination_root = options[:root]
         if in_app_root?
-          app        = options[:app]
           @task_name = name.to_s.underscore
           @namespace = options[:namespace].underscore if options[:namespace]
           @desc      = options[:description]
-          filename   = @task_name + ".rake"
+          filename   = @task_name + '.rake'
           filename   = "#{@namespace}_#{filename}" if @namespace
 
           template 'templates/task.rb.tt', destination_root('tasks', filename)

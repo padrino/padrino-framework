@@ -1,6 +1,6 @@
 apply_component_for(:rspec, :test)
 
-CUCUMBER_SETUP = (<<-TEST) unless defined?(CUCUMBER_SETUP)
+CUCUMBER_SETUP = <<-TEST unless defined?(CUCUMBER_SETUP)
 RACK_ENV = 'test' unless defined?(RACK_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../../config/boot")
 Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
@@ -14,12 +14,12 @@ require 'rspec/expectations'
 Capybara.app = CLASS_NAME.tap { |app|  }
 TEST
 
-CUCUMBER_YML = (<<-TEST) unless defined?(CUCUMBER_YML)
+CUCUMBER_YML = <<-TEST unless defined?(CUCUMBER_YML)
 default: --tags ~@wip --strict features
 html_report: --tags ~@wip --strict --format html --out=features_report.html features
 TEST
 
-CUCUMBER_FEATURE = (<<-TEST) unless defined?(CUCUMBER_FEATURE)
+CUCUMBER_FEATURE = <<-TEST unless defined?(CUCUMBER_FEATURE)
 Feature: Addition
   In order to avoid silly mistakes
   As a math idiot
@@ -33,7 +33,7 @@ Feature: Addition
     Then I should see 'Answer: 120'
 TEST
 
-CUCUMBER_STEP = (<<-TEST) unless defined?(CUCUMBER_STEP)
+CUCUMBER_STEP = <<-TEST unless defined?(CUCUMBER_STEP)
 Given /^I visit the calculator page$/ do
   visit '/add'
 end
@@ -51,7 +51,7 @@ Then /^I should see '(.*)'$/ do |text|
 end
 TEST
 
-CUCUMBER_URL = (<<-TEST) unless defined?(CUCUMBER_URL)
+CUCUMBER_URL = <<-TEST unless defined?(CUCUMBER_URL)
 module Cucumber
   module Web
     module URLs
@@ -72,15 +72,15 @@ World(Cucumber::Web::URLs)
 TEST
 
 def setup_test
-  require_dependencies 'rack-test', :require => 'rack/test', :group => 'test'
-  require_dependencies 'cucumber', :group => 'test'
-  require_dependencies 'capybara', :group => 'test'
-  insert_test_suite_setup CUCUMBER_SETUP, :path => "features/support/env.rb"
-  create_file destination_root("features/support/url.rb"), CUCUMBER_URL
-  create_file destination_root("features/add.feature"), CUCUMBER_FEATURE
-  create_file destination_root("features/step_definitions/add_steps.rb"), CUCUMBER_STEP
-  create_file destination_root("cucumber.yml"), CUCUMBER_YML
-  require_dependencies 'rspec', :group => 'test'
-  insert_test_suite_setup RSPEC_SETUP, :path => "spec/spec_helper.rb"
-  create_file destination_root("spec/spec.rake"), RSPEC_RAKE
+  require_dependencies 'rack-test', require: 'rack/test', group: 'test'
+  require_dependencies 'cucumber', group: 'test'
+  require_dependencies 'capybara', group: 'test'
+  insert_test_suite_setup CUCUMBER_SETUP, path: 'features/support/env.rb'
+  create_file destination_root('features/support/url.rb'), CUCUMBER_URL
+  create_file destination_root('features/add.feature'), CUCUMBER_FEATURE
+  create_file destination_root('features/step_definitions/add_steps.rb'), CUCUMBER_STEP
+  create_file destination_root('cucumber.yml'), CUCUMBER_YML
+  require_dependencies 'rspec', group: 'test'
+  insert_test_suite_setup RSPEC_SETUP, path: 'spec/spec_helper.rb'
+  create_file destination_root('spec/spec.rake'), RSPEC_RAKE
 end

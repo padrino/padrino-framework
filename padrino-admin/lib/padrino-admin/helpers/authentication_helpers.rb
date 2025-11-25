@@ -25,7 +25,7 @@ module Padrino
         # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
-        def set_current_account(account=nil)
+        def set_current_account(account = nil)
           session[settings.session_id] = account ? account.id : nil
           @current_account = account
         end
@@ -94,7 +94,7 @@ module Padrino
         end
 
         def login_from_session
-          admin_model_obj.find_by_id(session[settings.session_id]) if admin_model_obj
+          admin_model_obj&.find_by_id(session[settings.session_id])
         end
 
         def admin_model_obj
