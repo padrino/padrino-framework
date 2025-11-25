@@ -700,7 +700,7 @@ describe 'FormBuilder' do
 
   describe 'for #select method' do
     it 'should display correct select html' do
-      actual_html = standard_builder.select(:state, options: ['California', 'Texas', 'Wyoming'], class: 'selecty')
+      actual_html = standard_builder.select(:state, options: %w[California Texas Wyoming], class: 'selecty')
       assert_html_has_tag(actual_html, 'select.selecty', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select.selecty option', count: 3)
       assert_html_has_tag(actual_html, 'select.selecty option', value: 'California', content: 'California')
@@ -710,7 +710,7 @@ describe 'FormBuilder' do
 
     it 'should display correct select html with selected item if it matches value' do
       @user.stubs(state: 'California')
-      actual_html = standard_builder.select(:state, options: ['California', 'Texas', 'Wyoming'])
+      actual_html = standard_builder.select(:state, options: %w[California Texas Wyoming])
       assert_html_has_tag(actual_html, 'select', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', value: 'California', selected: 'selected')
@@ -718,7 +718,7 @@ describe 'FormBuilder' do
 
     it 'should display correct select html with selected item if it matches full value' do
       @user.stubs(state: 'Cali')
-      actual_html = standard_builder.select(:state, options: ['Cali', 'California', 'Texas', 'Wyoming'])
+      actual_html = standard_builder.select(:state, options: %w[Cali California Texas Wyoming])
       assert_html_has_tag(actual_html, 'select', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', value: 'Cali', selected: 'selected')
@@ -726,7 +726,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct select html with multiple selected items' do
-      @user.stubs(pickles: ['foo', 'bar'])
+      @user.stubs(pickles: %w[foo bar])
       actual_html = standard_builder.select(
         :pickles, options: [ ['Foo', 'foo'], ['Bar', 'bar'], ['Baz', 'baz'], ['Bar Buz', 'bar buz'] ]
       )
@@ -737,7 +737,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct select html with include_blank true' do
-      actual_html = standard_builder.select(:state, options: ['California', 'Texas', 'Wyoming'], include_blank: true)
+      actual_html = standard_builder.select(:state, options: %w[California Texas Wyoming], include_blank: true)
       assert_html_has_tag(actual_html, 'select', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select option', count: 4)
       assert_html_has_tag(actual_html, 'select option:first-child', content: '')
@@ -745,7 +745,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct select html with include_blank string' do
-      actual_html = standard_builder.select(:state, options: ['California', 'Texas', 'Wyoming'], include_blank: 'Select')
+      actual_html = standard_builder.select(:state, options: %w[California Texas Wyoming], include_blank: 'Select')
       assert_html_has_tag(actual_html, 'select', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select option', count: 4)
       assert_html_has_tag(actual_html, 'select option:first-child', content: 'Select')
@@ -1145,7 +1145,7 @@ describe 'FormBuilder' do
 
   describe 'for #select_block method' do
     it 'should display correct select_block block html' do
-      actual_html = standard_builder.select_block(:country, options: ['USA', 'Canada'], class: 'large', caption: 'Your country')
+      actual_html = standard_builder.select_block(:country, options: %w[USA Canada], class: 'large', caption: 'Your country')
       assert_html_has_tag(actual_html, 'p label', for: 'user_country', content: 'Your country')
       assert_html_has_tag(actual_html, 'p select', id: 'user_country', name: 'user[country]')
       assert_html_has_tag(actual_html, 'p select option', content: 'USA')

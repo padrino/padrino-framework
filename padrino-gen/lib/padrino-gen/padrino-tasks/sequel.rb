@@ -71,7 +71,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
     end
 
     desc 'Drop the database, migrate from scratch and initialize with the seed data'
-    task reset: ['drop', 'create', 'migrate', 'seed']
+    task reset: %w[drop create migrate seed]
 
     task seed: :environment do
       missing_model_features = Padrino.send(:default_dependency_paths) - Padrino.send(:dependency_paths)

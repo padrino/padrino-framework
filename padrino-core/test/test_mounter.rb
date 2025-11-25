@@ -115,7 +115,7 @@ describe 'Mounter' do
       assert_equal OneApp, Padrino.mounted_apps[0].app_obj
       assert_equal TwoApp, Padrino.mounted_apps[1].app_obj
       assert_equal 2, Padrino.mounted_apps.size, 'should not mount duplicate apps'
-      assert_equal ['one_app', 'two_app'], Padrino.mounted_apps.map(&:name)
+      assert_equal %w[one_app two_app], Padrino.mounted_apps.map(&:name)
     end
 
     it 'should mount app with the same name as the module' do

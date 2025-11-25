@@ -12,7 +12,7 @@ describe 'ComplexReloader' do
 
     it 'should correctly instantiate Complex(1-2)Demo fixture' do
       assert_equal ['/complex_1_demo', '/complex_2_demo'], Padrino.mounted_apps.map(&:uri_root)
-      assert_equal ['complex_1_demo', 'complex_2_demo'], Padrino.mounted_apps.map(&:name)
+      assert_equal %w[complex_1_demo complex_2_demo], Padrino.mounted_apps.map(&:name)
       assert Complex1Demo.reload?
       assert Complex2Demo.reload?
       assert_match %r{fixtures/apps/complex.rb}, Complex1Demo.app_file

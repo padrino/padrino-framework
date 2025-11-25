@@ -6,16 +6,16 @@ class RegexpLookAlike
   # RegexpLookAlike#to_s, RegexpLookAlike#names and MatchData#names must be defined.
   class MatchData
     def captures
-      ['this', 'is', 'a', 'test']
+      %w[this is a test]
     end
 
     def names
-      ['one', 'two', 'three', 'four']
+      %w[one two three four]
     end
   end
 
   def names
-    ['one', 'two', 'three', 'four']
+    %w[one two three four]
   end
 
   def to_s
@@ -305,7 +305,7 @@ describe 'Routing' do
       post(:foo, '', with: :id) { |id| "/#{id}" }
       delete(:drugs, with: [:id, 'destroy']) { |id| "/drugs/#{id}/destroy" }
       delete(:drugs, '', with: [:id, 'destroy']) { |id| "/#{id}/destroy" }
-      get(:splatter, '/splatter/*/*') { |_a, _b| url(:splatter, splat: ['123', '456'])  }
+      get(:splatter, '/splatter/*/*') { |_a, _b| url(:splatter, splat: %w[123 456])  }
     end
     get '/foo'
     assert_equal '/foo', body

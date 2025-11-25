@@ -46,7 +46,7 @@ module Padrino
       end
 
       desc 'generate', "Executes the Padrino generator with given options (alternatively use 'gen' or 'g')."
-      map ['gen', 'g'] => :generate
+      map %w[gen g] => :generate
       def generate(*args)
         
           # We try to load the vendored padrino-gen if exist
@@ -70,7 +70,7 @@ module Padrino
       end
 
       desc 'runner', "Run a piece of code in the Padrino application environment (alternatively use 'run' or 'r')."
-      map ['run', 'r'] => :runner
+      map %w[run r] => :runner
       def runner(*args)
         prepare :runner
 

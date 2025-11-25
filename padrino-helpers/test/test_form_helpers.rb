@@ -642,7 +642,7 @@ describe 'FormHelpers' do
 
   describe 'for #select_tag method' do
     it 'should display select tag in ruby' do
-      actual_html = select_tag(:favorite_color, options: ['green', 'blue', 'black'], include_blank: true)
+      actual_html = select_tag(:favorite_color, options: %w[green blue black], include_blank: true)
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')
       assert_html_has_tag(actual_html, 'select option:first-child', content: '')
       assert_html_has_tag(actual_html, 'select option', content: 'green', value: 'green')
@@ -651,7 +651,7 @@ describe 'FormHelpers' do
     end
 
     it 'should display select tag in ruby with extended attributes' do
-      actual_html = select_tag(:favorite_color, disabled: true, options: ['only', 'option'])
+      actual_html = select_tag(:favorite_color, disabled: true, options: %w[only option])
       assert_html_has_tag(actual_html, :select, disabled: 'disabled')
     end
 
@@ -664,13 +664,13 @@ describe 'FormHelpers' do
     end
 
     it 'should include blank for grouped options' do
-      opts = { 'Red'  => ['Rose', 'Fire'], 'Blue' => ['Sky', 'Sea'] }
+      opts = { 'Red'  => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
       actual_html = select_tag( 'color', grouped_options: opts, include_blank: true )
       assert_html_has_tag(actual_html, 'select option:first-child', value: '', content: '')
     end
 
     it 'should include blank as caption' do
-      opts = { 'Red'  => ['Rose', 'Fire'], 'Blue' => ['Sky', 'Sea'] }
+      opts = { 'Red'  => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
       actual_html = select_tag( 'color', grouped_options: opts, include_blank: 'Choose your destiny' )
       assert_html_has_tag(actual_html, 'select option:first-child', value: '', content: 'Choose your destiny')
       assert_html_has_no_tag(actual_html, 'select[include_blank]')
@@ -760,12 +760,12 @@ describe 'FormHelpers' do
     end
 
     it 'should display select tag in ruby with multiple attribute' do
-      actual_html = select_tag(:favorite_color, multiple: true, options: ['only', 'option'])
+      actual_html = select_tag(:favorite_color, multiple: true, options: %w[only option])
       assert_html_has_tag(actual_html, :select, multiple: 'multiple', name: 'favorite_color[]')
     end
 
     it 'should display options with values and single selected' do
-      options = [['Green', 'green1'], ['Blue', 'blue1'], ['Black', 'black1']]
+      options = [%w[Green green1], %w[Blue blue1], %w[Black black1]]
       actual_html = select_tag(:favorite_color, options: options, selected: 'green1')
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
@@ -775,21 +775,21 @@ describe 'FormHelpers' do
     end
 
     it 'should display selected options first based on values not content' do
-      options = [['First', 'one'], ['one', 'two'], ['three', 'three']]
+      options = [%w[First one], %w[one two], %w[three three]]
       actual_html = select_tag(:number, options: options, selected: 'one')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', content: 'First', value: 'one', selected: 'selected')
     end
 
     it 'should display selected options falling back to checking content' do
-      options = [['one', nil, {value: nil}], ['two', nil, {value: nil}], ['three', 'three']]
+      options = [['one', nil, {value: nil}], ['two', nil, {value: nil}], %w[three three]]
       actual_html = select_tag(:number, options: options, selected: 'one')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', content: 'one', selected: 'selected')
     end
 
     it 'should display options with values and accept disabled options' do
-      options = [['Green', 'green1', {disabled: true}], ['Blue', 'blue1'], ['Black', 'black1']]
+      options = [['Green', 'green1', {disabled: true}], %w[Blue blue1], %w[Black black1]]
       actual_html = select_tag(:favorite_color, options: options)
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')
       assert_html_has_tag(actual_html, 'select option', disabled: 'disabled', count: 1)
@@ -799,8 +799,8 @@ describe 'FormHelpers' do
     end
 
     it 'should display option with values and multiple selected' do
-      options = [['Green', 'green1'], ['Blue', 'blue1'], ['Black', 'black1']]
-      actual_html = select_tag(:favorite_color, options: options, selected: ['green1', 'black1'])
+      options = [%w[Green green1], %w[Blue blue1], %w[Black black1]]
+      actual_html = select_tag(:favorite_color, options: options, selected: %w[green1 black1])
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 2)
       assert_html_has_tag(actual_html, 'select option', content: 'Green', value: 'green1', selected: 'selected')
@@ -809,7 +809,7 @@ describe 'FormHelpers' do
     end
 
     it 'should not misselect options with default value' do
-      options = ['Green', 'Blue']
+      options = %w[Green Blue]
       actual_html = select_tag(:favorite_color, options: options, selected: ['Green', ''])
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', content: 'Green', value: 'Green', selected: 'selected')

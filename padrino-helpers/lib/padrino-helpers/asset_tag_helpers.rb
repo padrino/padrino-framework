@@ -4,7 +4,7 @@ module Padrino
     # Helpers related to producing assets (images, stylesheets, js, etc) within templates.
     #
     module AssetTagHelpers
-      APPEND_ASSET_EXTENSIONS = ['js', 'css']
+      APPEND_ASSET_EXTENSIONS = %w[js css]
       ABSOLUTE_URL_PATTERN = %r{^(https?://)}
       ASSET_FOLDERS = {
         js: 'javascripts',

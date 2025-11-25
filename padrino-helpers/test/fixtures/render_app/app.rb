@@ -77,7 +77,7 @@ class RenderDemo < Padrino::Application
 
   get '/partial/unsafe_many' do
     block = params[:block] ? proc { params[:block] } : nil
-    partial 'unsafe_object', :collection => ['John', 'Mary'], &block
+    partial 'unsafe_object', :collection => %w[John Mary], &block
   end
 
   get '/render_block_:ext' do
