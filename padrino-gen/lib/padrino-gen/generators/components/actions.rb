@@ -112,7 +112,7 @@ module Padrino
         #   File name of the migration file.
         #
         def migration_exist?(filename)
-          Dir[destination_root("db/migrate/*_#{filename.underscore}.rb")].size > 0
+          Dir[destination_root("db/migrate/*_#{filename.underscore}.rb")].any?
         end
 
         ##

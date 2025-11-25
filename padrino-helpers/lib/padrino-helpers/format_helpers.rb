@@ -299,7 +299,7 @@ module Padrino
                   when 40..59 then [:less_than_x_minutes, {count: 1} ]
                   else             [:x_minutes,           {count: 1} ]
                 end
-              elsif distance_in_minutes == 0
+              elsif distance_in_minutes.zero?
                 [:less_than_x_minutes, {count: 1}]
               else
                 [:x_minutes, {count: distance_in_minutes}]

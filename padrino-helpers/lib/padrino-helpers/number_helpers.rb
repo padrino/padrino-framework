@@ -52,7 +52,7 @@ module Padrino
         separator = options[:separator] || defaults[:separator]
         delimiter = options[:delimiter] || defaults[:delimiter]
         format    = options[:format]    || defaults[:format]
-        separator = '' if precision == 0
+        separator = '' if precision.zero?
 
         begin
           format.gsub(/%n/, number_with_precision(number,

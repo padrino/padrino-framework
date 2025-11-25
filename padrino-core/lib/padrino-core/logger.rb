@@ -439,7 +439,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     # Flush the entire buffer to the log object.
     #
     def flush
-      return unless @buffer.size > 0
+      return unless @buffer.size.positive?
       self.class.mutex.synchronize do
         @buffer.each do |line|
           line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace) if @sanitize_encoding

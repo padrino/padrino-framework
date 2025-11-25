@@ -27,14 +27,14 @@ module Padrino
       if count_requirement
         assert_equal count_requirement, matched_count, "count of tags #{message}"
       else
-        assert matched_count > 0, "expected a tag #{message}"
+        assert matched_count.positive?, "expected a tag #{message}"
       end
     end
 
     def assert_has_no_selector(html, selector, attributes)
       message = "'#{selector}' with attributes #{attributes} in html\n#{html}"
       matched_count = html_matched_tags(html, selector.to_s, attributes)
-      assert matched_count == 0, "expected no tags #{message}"
+      assert matched_count.zero?, "expected no tags #{message}"
     end
 
     private

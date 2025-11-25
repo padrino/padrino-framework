@@ -511,7 +511,7 @@ module Padrino
         unbound_method = generate_method(method_name.to_sym, &block)
 
         block_arity = block.arity
-        block = if block_arity == 0
+        block = if block_arity.zero?
                   proc { |request, _| unbound_method.bind(request).call }
                 else
                   proc { |request, block_params| unbound_method.bind(request).call(*block_params) }
@@ -553,7 +553,7 @@ module Padrino
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
         block_parameter_length = route.block_parameter_length
-        if block_arity > 0 && block_parameter_length != block_arity
+        if block_arity.positive? && block_parameter_length != block_arity
           fail BlockArityError.new(route.path, block_arity, block_parameter_length)
         end
 
