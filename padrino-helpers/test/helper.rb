@@ -47,8 +47,8 @@ class Minitest::Spec
     File.open(file, 'w') { |io| io.write content }
     file
   end
-  alias :create_view   :create_template
-  alias :create_layout :create_template
+  alias create_view   create_template
+  alias create_layout create_template
 
   def remove_views
     FileUtils.rm_rf(File.dirname(__FILE__) + '/views')
@@ -61,8 +61,8 @@ class Minitest::Spec
     File.unlink(template) rescue nil
     remove_views
   end
-  alias :with_view   :with_template
-  alias :with_layout :with_template
+  alias with_view   with_template
+  alias with_layout with_template
 
   def mock_app(base = Padrino::Application, &block)
     @app = Sinatra.new(base) do

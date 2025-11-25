@@ -19,7 +19,7 @@ module Padrino
         # Load Padrino::Admin locales
         I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
       end
-      alias :included :registered
+      alias included registered
     end
   end
 end

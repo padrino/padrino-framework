@@ -65,7 +65,7 @@ module Padrino
           yield(*args)
         end
       end
-      alias :capture :capture_html
+      alias capture capture_html
 
       ##
       # Outputs the given text to the templates buffer directly.
@@ -85,7 +85,7 @@ module Padrino
           text
         end
       end
-      alias :concat :concat_content
+      alias concat concat_content
 
       ##
       # Outputs the given text to the templates buffer directly,

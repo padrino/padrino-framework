@@ -92,7 +92,7 @@ module Padrino
           message
         }
       end
-      alias :message :email
+      alias message email
 
       # Defines the default attributes for a message in this mailer
       # (including app-wide defaults).

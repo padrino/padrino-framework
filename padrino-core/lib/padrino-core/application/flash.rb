@@ -77,7 +77,7 @@ module Padrino
         @_now.update(hash)
         self
       end
-      alias_method :merge!, :update
+      alias merge! update
 
       # @since 0.10.8
       # @api public
@@ -130,7 +130,7 @@ module Padrino
       def length
         @_now.length
       end
-      alias_method :size, :length
+      alias size length
 
       # @since 0.10.8
       # @api public
@@ -212,7 +212,7 @@ module Padrino
 
         super(url, args)
       end
-      alias_method :redirect_to, :redirect
+      alias redirect_to redirect
 
       ###
       # Returns the flash storage object.

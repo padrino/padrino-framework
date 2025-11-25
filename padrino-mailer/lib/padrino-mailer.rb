@@ -50,7 +50,7 @@ module Padrino
           app.send(:extend, Padrino::Mailer::Helpers::ClassMethods)
         end
       end
-      alias :included :registered
+      alias included registered
     end
   end
 end

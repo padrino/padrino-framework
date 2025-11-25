@@ -323,7 +323,7 @@ module Padrino
       def telephone_field_tag(name, options = {})
         input_tag(:tel, { name: name }.update(options))
       end
-      alias_method :phone_field_tag, :telephone_field_tag
+      alias phone_field_tag telephone_field_tag
 
       ##
       # Creates an email field input with the given name and options.

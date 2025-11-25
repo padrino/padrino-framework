@@ -8,7 +8,7 @@ module Padrino
       slice squeeze strip sub succ swapcase tr tr_s upcase
     ]
 
-    alias_method :original_concat, :concat
+    alias original_concat concat
     private :original_concat
 
     class SafeConcatError < StandardError

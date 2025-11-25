@@ -64,7 +64,7 @@ module Padrino
 
     # The application the server will run.
     attr_reader :app
-    alias :wrapped_app :app
+    alias wrapped_app app
 
     attr_reader :options
 

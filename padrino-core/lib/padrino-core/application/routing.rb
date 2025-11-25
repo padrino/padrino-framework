@@ -32,7 +32,7 @@ module Padrino
     class Parent < String
       attr_reader :map, :optional, :options
 
-      alias_method :optional?, :optional
+      alias optional? optional
 
       def initialize(value, options = {})
         super(value.to_s)
@@ -50,7 +50,7 @@ module Padrino
         app.send(:include, InstanceMethods)
         app.extend(ClassMethods)
       end
-      alias :included :registered
+      alias included registered
     end
 
     # Class methods responsible for enhanced routing for controllers.
@@ -146,7 +146,7 @@ module Padrino
           include(*args) if extensions.any?
         end
       end
-      alias :controllers :controller
+      alias controllers controller
 
       ##
       # Add a before filter hook.
@@ -267,7 +267,7 @@ module Padrino
         @router ||= PathRouter.new
         block_given? ? yield(@router) : @router
       end
-      alias :urls :router
+      alias urls router
 
       def compiled_router
         if @deferred_routes
@@ -341,7 +341,7 @@ module Padrino
         path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? path << '#' << fragment.to_s : path)
       end
-      alias :url_for :url
+      alias url_for url
 
       ##
       # Returns absolute url. By default adds 'http://localhost' before generated url.
@@ -803,7 +803,7 @@ module Padrino
           settings.url(*args)
         end
       end
-      alias :url_for :url
+      alias url_for url
 
       ##
       # Returns absolute url. Calls Sinatra::Helpers#uri to generate protocol version, hostname and port.

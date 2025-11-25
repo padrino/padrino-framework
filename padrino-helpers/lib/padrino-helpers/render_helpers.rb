@@ -57,7 +57,7 @@ module Padrino
           html.safe_concat content if content
         end
       end
-      alias :render_partial :partial
+      alias render_partial partial
 
       def self.included(base)
         unless base.instance_methods.include?(:render) || base.private_instance_methods.include?(:render)

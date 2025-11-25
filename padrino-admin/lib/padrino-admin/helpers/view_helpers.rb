@@ -43,7 +43,7 @@ module Padrino
           options[:default] ||= word.to_s.humanize
           t("padrino.admin.#{word}", options)
         end
-        alias :pat :padrino_admin_translate
+        alias pat padrino_admin_translate
 
         ##
         # Translates attribute name for the given model.
@@ -62,8 +62,8 @@ module Padrino
         def model_attribute_translate(model, attribute)
           t("models.#{model}.attributes.#{attribute}", default: attribute.to_s.humanize)
         end
-        alias :t_attr :model_attribute_translate
-        alias :mat :t_attr
+        alias t_attr model_attribute_translate
+        alias mat t_attr
 
         ##
         # Translates model name.
@@ -80,7 +80,7 @@ module Padrino
         def model_translate(model)
           t("models.#{model}.name", default: model.to_s.humanize)
         end
-        alias :mt :model_translate
+        alias mt model_translate
       end
     end
   end

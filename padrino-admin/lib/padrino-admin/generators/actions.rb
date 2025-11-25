@@ -14,7 +14,7 @@ module Padrino
         def orm
           fetch_component_choice(:orm).to_sym rescue :activerecord
         end
-        alias :adapter :orm
+        alias adapter orm
 
         ##
         # Tell us which rendering engine you are using.

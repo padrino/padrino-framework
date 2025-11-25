@@ -35,5 +35,5 @@ end
 # In reloader for accessing class_name Foo._orig_klass_name
 #
 class Module
-  alias :_orig_klass_name :name
+  alias _orig_klass_name name
 end

@@ -104,7 +104,7 @@ module Padrino
 
         result
       end
-      alias :silence :capture
+      alias silence capture
     end
   end
 end

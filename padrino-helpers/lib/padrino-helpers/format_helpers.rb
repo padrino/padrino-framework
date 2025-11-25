@@ -366,7 +366,7 @@ module Padrino
         escaped_content = escaped_content.html_safe if html_content.html_safe?
         escaped_content
       end
-      alias :escape_javascript :js_escape_html
+      alias escape_javascript js_escape_html
     end
   end
 end

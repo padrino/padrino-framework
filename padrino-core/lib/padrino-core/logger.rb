@@ -472,7 +472,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
       flush if @auto_flush
       message
     end
-    alias :write :<<
+    alias write <<
 
     def format(message, level)
       @format_message % [stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip]

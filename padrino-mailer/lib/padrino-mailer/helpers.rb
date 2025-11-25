@@ -89,7 +89,7 @@ module Padrino
           registered_mailers[name] = mailer
           mailer
         end
-        alias :mailers :mailer
+        alias mailers mailer
 
         ##
         # Delivers a mailer message email with the given attributes.

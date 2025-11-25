@@ -49,7 +49,7 @@ module Padrino
         def telephone_field(field, options = {})
           @template.telephone_field_tag field_name(field), default_options(field, options)
         end
-        alias_method :phone_field, :telephone_field
+        alias phone_field telephone_field
 
         def email_field(field, options = {})
           @template.email_field_tag field_name(field), default_options(field, options)

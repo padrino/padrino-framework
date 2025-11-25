@@ -28,7 +28,7 @@ module Padrino
 
           app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
         end
-        alias :included :registered
+        alias included registered
       end
 
       ##
