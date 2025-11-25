@@ -19,7 +19,7 @@ describe 'Core' do
 
     it 'should validate global helpers' do
       assert_equal :test, Padrino.env
-      assert_match(/\/test/, Padrino.root)
+      assert_match(%r{/test}, Padrino.root)
       assert Padrino.version
     end
 

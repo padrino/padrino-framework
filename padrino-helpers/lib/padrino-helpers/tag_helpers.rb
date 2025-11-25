@@ -125,9 +125,13 @@ module Padrino
         options    = parse_data_options(name, options)
         attributes = tag_attributes(options)
         output = SafeBuffer.new
+
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
-          content.each { |item| output.concat item; output.safe_concat NEWLINE }
+          content.each do |item|
+            output.concat item
+            output.safe_concat NEWLINE
+          end
         else
           output.concat content.to_s
         end
@@ -197,7 +201,7 @@ module Padrino
       #   # => <input type="text" name="username" required autofocus />
       #
       #   input_tag :number, :name => 'credit_card', :autocomplete => :off
-      #   # => <input type="number" name="credit_card" autocomplete="off" />  
+      #   # => <input type="number" name="credit_card" autocomplete="off" />
       #
       def input_tag(type, options = {})
         tag(:input, { type: type }.update(options))
