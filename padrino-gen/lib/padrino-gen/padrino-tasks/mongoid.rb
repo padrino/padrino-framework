@@ -64,7 +64,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     def get_mongoid_models
       documents = []
       Dir['{app,.}/models/**/*.rb'].sort.each do |file|
-        model_path = file[0..-4].split('/')[2..-1]
+        model_path = file[0..-4].split('/')[2..]
 
         begin
           klass = model_path.map(&:classify).join('::').constantize

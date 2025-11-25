@@ -70,8 +70,8 @@ module Padrino
     #   irregular 'octopus', 'octopi'
     #   irregular 'person', 'people'
     def self.irregular(singular, plural)
-      plural(Regexp.new("(#{singular[0, 1]})#{singular[1..-1]}$", 'i'), '\1' + plural[1..-1])
-      singular(Regexp.new("(#{plural[0, 1]})#{plural[1..-1]}$", 'i'), '\1' + singular[1..-1])
+      plural(Regexp.new("(#{singular[0, 1]})#{singular[1..]}$", 'i'), '\1' + plural[1..])
+      singular(Regexp.new("(#{plural[0, 1]})#{plural[1..]}$", 'i'), '\1' + singular[1..])
     end
 
     # Specifies a new pluralization rule and its replacement. The rule can either be a string or a regular expression.
@@ -110,7 +110,7 @@ module Padrino
     def camelize(str)
       str = str.to_s
       return str.camelize if str.respond_to?(:camelize)
-      str.gsub(CAMELIZE_MODULE_REGEXP) {|x| "::#{x[-1..-1].upcase unless x == SLASH}"}.gsub(CAMELIZE_CONVERT_REGEXP) {|x| x[-1..-1].upcase}
+      str.gsub(CAMELIZE_MODULE_REGEXP) {|x| "::#{x[-1..].upcase unless x == SLASH}"}.gsub(CAMELIZE_CONVERT_REGEXP) {|x| x[-1..].upcase}
     end
 
     # Tries to find a declared constant with the name specified

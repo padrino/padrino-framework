@@ -372,7 +372,7 @@ module Padrino
 
       def path_and_engine(path, relative = nil)
         extname = File.extname(path)
-        engine = (extname[1..-1]||'none').to_sym
+        engine = (extname[1..]||'none').to_sym
         path = path.chomp(extname)
         path.insert(0, '/') unless Pathname.new(path).absolute?
         path = path.squeeze('/').sub(relative, '') if relative
