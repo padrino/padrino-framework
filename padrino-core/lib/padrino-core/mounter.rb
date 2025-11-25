@@ -33,14 +33,18 @@ module Padrino
       @gem       = options[:gem]       || Inflections.underscore(@app_class.split('::').first)
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
+
       ensure_app_file! || ensure_app_object!
       unless padrino_application?
         @app_obj.extend ApplicationExtension
         @app_obj.mounter_options = options
       end
+
       @app_root  = options[:app_root]  || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
       @uri_root  = '/'
-      @cascade   = options[:cascade] ? options[:cascade] == true ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
+      @cascade   = DEFAULT_CASCADE.dup if options[:cascade] == true
+      @cascade ||= options[:cascade] ? Array(options[:cascade]) : []
+
       Padrino::Reloader.exclude_constants << @app_class
     end
 

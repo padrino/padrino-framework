@@ -527,7 +527,7 @@ module Padrino
         priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
         route.cache = options.key?(:cache) ? options.delete(:cache) : @_cache
         route.cache_expires = options.key?(:expires) ? options.delete(:expires) : @_expires
-        route.parent = route_parents ? (route_parents.count == 1 ? route_parents.first : route_parents) : route_parents
+        route.parent = route_parents&.count == 1 ? route_parents.first : route_parents
         route.host = options.delete(:host) if options.key?(:host)
         route.user_agent = options.delete(:agent) if options.key?(:agent)
         if options.key?(:default_values)
@@ -593,7 +593,7 @@ module Padrino
         # path i.e :index or :show
         if path.is_a?(Symbol)
           name = path
-          path = map ? map.dup : (path == :index ? '/' : path.to_s)
+          path = map&.dup || (path == :index ? '/' : path.to_s)
         end
 
         # Build our controller
