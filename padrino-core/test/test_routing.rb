@@ -2114,7 +2114,7 @@ describe 'Routing' do
 
   it 'should parse nested params' do
     mock_app do
-      get(:index) { '%s %s' % [params[:account][:name], params[:account][:surname]] }
+      get(:index) { format('%s %s', params[:account][:name], params[:account][:surname]) }
     end
     get '/?' + Padrino::Utils.build_uri_query(account: { name: 'foo', surname: 'bar' })
     assert_equal 'foo bar', body

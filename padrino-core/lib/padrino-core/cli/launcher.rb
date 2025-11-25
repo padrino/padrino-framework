@@ -53,7 +53,7 @@ module Padrino
           has_options = false
           server.valid_options.each do |name, description|
             next if name.to_s.match(/^(Host|Port)[^a-zA-Z]/) # ignore handler's host and port options, we do our own.
-            info << '  -O %-21s %s' % [name, description]
+            info << format('  -O %-21s %s', name, description)
             has_options = true
           end
           return '' unless has_options

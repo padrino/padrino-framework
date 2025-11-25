@@ -138,7 +138,7 @@ module Padrino
         duration = Time.now - began_at
         color    = :red if duration > 1
         action   = colorize(action.to_s.upcase.rjust(@_pad), color)
-        duration = colorize('%0.4fs' % duration, color, :bold)
+        duration = colorize(Kernel.format('%0.4fs', duration), color, :bold)
         push "#{action} (#{duration}) #{message}", level
       end
 
@@ -259,8 +259,8 @@ module Padrino
       end
 
       def stylized_level(level)
-        style = "\e[%d;%dm" % ColoredLevels[level].map {|color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
-        [style, super, "\e[0m"].join
+        colors = ColoredLevels[level].map { |color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
+        [Kernel.format("\e[%d;%dm", *colors), super, "\e[0m"].join
       end
     end
 
@@ -476,7 +476,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     alias write <<
 
     def format(message, level)
-      @format_message % [stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip]
+      Kernel.format(@format_message, stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip)
     end
 
     ##

@@ -96,7 +96,7 @@ module Padrino
       #
       def git(*args)
         FileUtils.cd(destination_root) do
-          cmd = 'git %s' % args.join(' ')
+          cmd = format('git %s', args.join(' '))
           say cmd, :green
           system cmd
         end

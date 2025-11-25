@@ -14,7 +14,7 @@ end
 
 def say(text, color = :magenta)
   n = { bold: 1, red: 31, green: 32, yellow: 33, blue: 34, magenta: 35 }.fetch(color, 0)
-  puts "\e[%dm%s\e[0m" % [n, text]
+  puts format("\e[%dm%s\e[0m", n, text)
 end
 
 desc "Run 'install' for all projects"
@@ -27,7 +27,7 @@ end
 desc 'Clean pkg and other stuff'
 task :clean do
   GEM_PATHS.each do |g|
-    %w[tmp pkg coverage].each { |dir| sh 'rm -rf %s' % File.join(g, dir) }
+    %w[tmp pkg coverage].each { |dir| sh(format('rm -rf %s', File.join(g, dir))) }
   end
 end
 
@@ -50,7 +50,7 @@ task :bump, [:version] do |_t, args|
   version_text = File.read(version_path).sub(/VERSION = '[a-z0-9.]+'/, "VERSION = '#{args.version}'")
   say "Updating Padrino to version #{args.version}"
   File.open(version_path, 'w') { |f| f.write version_text }
-  sh 'git commit -am "Bumped version to %s"' % args.version
+  sh(format('git commit -am "Bumped version to %s"', args.version))
 end
 
 desc 'Executes a fresh install removing all padrino version and then reinstall all gems'

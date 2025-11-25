@@ -190,9 +190,11 @@ module Padrino
 
         begin
           rounded_number = (Float(number) * (10 ** precision)).round.to_f / 10 ** precision
-          number_with_delimiter("%01.#{precision}f" % rounded_number,
+          number_with_delimiter(
+            format("%01.#{precision}f", rounded_number),
             separator: separator,
-            delimiter: delimiter)
+            delimiter: delimiter
+          )
         rescue StandardError
           number
         end

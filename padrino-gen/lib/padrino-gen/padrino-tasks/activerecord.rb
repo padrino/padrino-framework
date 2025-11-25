@@ -213,7 +213,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         if pending_migrations.any?
           puts "You have #{pending_migrations.size} pending migrations:"
           pending_migrations.each do |pending_migration|
-            puts '  %4d %s' % [pending_migration.version, pending_migration.name]
+            puts format('  %4d %s', pending_migration.version, pending_migration.name)
           end
           abort %(Run "rake ar:migrate" to update your database then try again.)
         end
