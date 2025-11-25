@@ -31,5 +31,5 @@ Tilt.prefer(Padrino::Rendering::HamlitTemplate, :haml)
 Padrino::Rendering.engine_configurations[:haml] = {
   generator: Padrino::Rendering::HamlitOutputBuffer,
   buffer: '@_out_buf',
-  use_html_safe: true,
+  use_html_safe: true
 }

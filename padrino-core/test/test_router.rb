@@ -194,19 +194,19 @@ describe 'Router' do
        [200,
         { 'Content-Type' => 'text/plain',
           'X-Position' => 'foo.org',
-          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME'],
+          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
         }, ['']]}},
      { host: 'subdomain.foo.org', to: lambda { |env|
        [200,
         { 'Content-Type' => 'text/plain',
           'X-Position' => 'subdomain.foo.org',
-          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME'],
+          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
         }, ['']]}},
      { host: /.*\.bar.org/, to: lambda { |env|
        [200,
         { 'Content-Type' => 'text/plain',
           'X-Position' => 'bar.org',
-          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME'],
+          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
         }, ['']]}}
      )
 

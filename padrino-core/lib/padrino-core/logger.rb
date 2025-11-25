@@ -70,7 +70,7 @@ module Padrino
         warn: 2,
         info: 1,
         debug: 0,
-        devel: -1,
+        devel: -1
       }
     end
 

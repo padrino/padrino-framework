@@ -22,5 +22,5 @@ end
 Tilt.prefer(Padrino::Rendering::HamlTemplate, :haml)
 
 Padrino::Rendering.engine_configurations[:haml] = {
-  escape_html: true,
+  escape_html: true
 }

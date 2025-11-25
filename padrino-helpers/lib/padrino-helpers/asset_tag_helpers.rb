@@ -8,7 +8,7 @@ module Padrino
       ABSOLUTE_URL_PATTERN = %r{^(https?://)}
       ASSET_FOLDERS = {
         js: 'javascripts',
-        css: 'stylesheets',
+        css: 'stylesheets'
       }
 
       ##

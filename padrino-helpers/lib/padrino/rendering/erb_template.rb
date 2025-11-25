@@ -59,5 +59,5 @@ Tilt.prefer(Padrino::Rendering::ERBTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
   safe_buffer: true,
-  outvar: '@_out_buf',
+  outvar: '@_out_buf'
 }
