@@ -114,7 +114,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     def local_database?(config, &block)
-      if %w[ 127.0.0.1 localhost ].include?(config[:host]) || !config[:host]
+      if %w[127.0.0.1 localhost].include?(config[:host]) || !config[:host]
         yield
       else
         puts "This task only modifies local databases. #{config[:database]} is on a remote host."
