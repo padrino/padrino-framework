@@ -16,7 +16,7 @@ module Padrino
     # Defines common content-type alias mappings.
     CONTENT_TYPE_ALIASES = { htm: :html } unless defined?(CONTENT_TYPE_ALIASES)
     # Defines the available route priorities supporting route deferrals.
-    ROUTE_PRIORITY = {high: 0, normal: 1, low: 2} unless defined?(ROUTE_PRIORITY)
+    ROUTE_PRIORITY = { high: 0, normal: 1, low: 2 } unless defined?(ROUTE_PRIORITY)
 
     # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
@@ -485,7 +485,7 @@ module Padrino
             if args.first.is_a?(Hash)
               map ? args.first.merge(map: map) : args.first
             else
-              {map: map || args.first}
+              { map: map || args.first }
             end
           when 0
             {}

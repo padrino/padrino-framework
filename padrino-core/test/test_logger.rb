@@ -238,7 +238,7 @@ describe 'binary logger' do
   end
 
   it 'should not convert parameters to strings before formatting' do
-    logger.info({a: 2})
+    logger.info({ a: 2 })
     assert_equal '1', @log.string
   end
 end

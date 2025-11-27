@@ -23,4 +23,4 @@ RUBY = File.join(
   RbConfig::CONFIG['ruby_install_name'] + RbConfig::CONFIG['EXEEXT']).
   sub(/.*\s.*/m, '"\&"')
 
-exec({'RUBYOPT' => argv.join('')}, RUBY, '-S', *ARGV)
+exec({ 'RUBYOPT' => argv.join('') }, RUBY, '-S', *ARGV)

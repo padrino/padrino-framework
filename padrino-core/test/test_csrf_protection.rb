@@ -24,22 +24,22 @@ describe 'Application' do
       end
 
       it 'should allow requests with correct tokens' do
-        post '/', {'authenticity_token' => @token}, 'rack.session' => {csrf: @token}
+        post '/', { 'authenticity_token' => @token }, 'rack.session' => { csrf: @token }
         assert_equal 200, status
       end
 
       it 'should not allow requests with incorrect tokens' do
-        post '/', {'authenticity_token' => 'b'}, 'rack.session' => {csrf: @token}
+        post '/', { 'authenticity_token' => 'b' }, 'rack.session' => { csrf: @token }
         assert_equal 403, status
       end
 
       it 'should allow requests with correct X-CSRF-TOKEN' do
-        post '/', {}, 'rack.session' => {csrf: @token}, 'HTTP_X_CSRF_TOKEN' => @token
+        post '/', {}, 'rack.session' => { csrf: @token }, 'HTTP_X_CSRF_TOKEN' => @token
         assert_equal 200, status
       end
 
       it 'should not allow requests with incorrect X-CSRF-TOKEN' do
-        post '/', {}, 'rack.session' => {csrf: @token}, 'HTTP_X_CSRF_TOKEN' => 'b'
+        post '/', {}, 'rack.session' => { csrf: @token }, 'HTTP_X_CSRF_TOKEN' => 'b'
         assert_equal 403, status
       end
     end
@@ -59,22 +59,22 @@ describe 'Application' do
       end
 
       it 'should allow requests with correct tokens' do
-        post '/', {'authenticity_token' => 'a'}, 'rack.session' => {csrf: 'a'}
+        post '/', { 'authenticity_token' => 'a' }, 'rack.session' => { csrf: 'a' }
         assert_equal 200, status
       end
 
       it 'should allow requests with incorrect tokens' do
-        post '/', {'authenticity_token' => 'a'}, 'rack.session' => {csrf: 'b'}
+        post '/', { 'authenticity_token' => 'a' }, 'rack.session' => { csrf: 'b' }
         assert_equal 200, status
       end
 
       it 'should allow requests with correct X-CSRF-TOKEN' do
-        post '/', {}, 'rack.session' => {csrf: 'a'}, 'HTTP_X_CSRF_TOKEN' => 'a'
+        post '/', {}, 'rack.session' => { csrf: 'a' }, 'HTTP_X_CSRF_TOKEN' => 'a'
         assert_equal 200, status
       end
 
       it 'should allow requests with incorrect X-CSRF-TOKEN' do
-        post '/', {}, 'rack.session' => {csrf: 'a'}, 'HTTP_X_CSRF_TOKEN' => 'b'
+        post '/', {}, 'rack.session' => { csrf: 'a' }, 'HTTP_X_CSRF_TOKEN' => 'b'
         assert_equal 200, status
       end
     end
@@ -159,7 +159,7 @@ describe 'Application' do
       end
 
       it 'should allow configuring protection options' do
-        post '/a', {'foobar' => @token}, 'rack.session' => {csrf: @token}
+        post '/a', { 'foobar' => @token }, 'rack.session' => { csrf: @token }
         assert_equal 200, status
       end
 

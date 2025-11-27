@@ -24,12 +24,12 @@ describe 'TagHelpers' do
     end
 
     it 'should support data attributes' do
-      actual_html = tag(:a, data: { remote: true, method: 'post'})
+      actual_html = tag(:a, data: { remote: true, method: 'post' })
       assert_html_has_tag(actual_html, :a, 'data-remote' => 'true', 'data-method' => 'post')
     end
 
     it 'should support nested attributes' do
-      actual_html = tag(:div, data: {dojo: {type: 'dijit.form.TextBox', props: 'readOnly: true'}})
+      actual_html = tag(:div, data: { dojo: { type: 'dijit.form.TextBox', props: 'readOnly: true' } })
       assert_html_has_tag(actual_html, :div, 'data-dojo-type' => 'dijit.form.TextBox', 'data-dojo-props' => 'readOnly: true')
     end
 

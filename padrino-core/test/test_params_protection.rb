@@ -36,7 +36,7 @@ describe 'Padrino::ParamsProtection' do
   it 'should work with recursive data' do
     result = nil
     mock_app do
-      post :basic, params: [:name, {child: [:name, {child: [:name]}]}] do
+      post :basic, params: [:name, { child: [:name, { child: [:name] }] }] do
         result = [params, original_params]
         ''
       end
@@ -54,7 +54,7 @@ describe 'Padrino::ParamsProtection' do
   it 'should be able to process the data' do
     result = nil
     mock_app do
-      post :basic, params: [:name, {position: proc { |v| "anti-#{v}" }}] do
+      post :basic, params: [:name, { position: proc { |v| "anti-#{v}" } }] do
         result = params
         ''
       end
@@ -100,9 +100,9 @@ describe 'Padrino::ParamsProtection' do
       end
     end
     get "/hide/1?#{@jack_query}"
-    assert_equal({'id' => '1'}, result)
+    assert_equal({ 'id' => '1' }, result)
     get "/show/1?#{@jack_query}"
-    assert_equal({'id' => '1'}.merge(@jack), result)
+    assert_equal({ 'id' => '1' }.merge(@jack), result)
   end
 
   it 'should be configurable with controller options' do
@@ -140,7 +140,7 @@ describe 'Padrino::ParamsProtection' do
     post "/persons/delete?#{@jack_query}"
     assert_equal(@jack, result)
     post "/persons/destroy/1?#{@jack_query}"
-    assert_equal({'id' => '1'}, result)
+    assert_equal({ 'id' => '1' }, result)
     get '/noparam?a=1;b=2'
     assert_empty(result)
   end
@@ -154,7 +154,7 @@ describe 'Padrino::ParamsProtection' do
       end
     end
     post "/family?#{Padrino::Utils.build_uri_query(@family)}"
-    assert_equal({'persons' => {'3' => {'name' => @jack['name']}, '2' => {'name' => @kim['name']}, '1' => {'name' => @teri['name']}}}, result)
+    assert_equal({ 'persons' => { '3' => { 'name' => @jack['name'] }, '2' => { 'name' => @kim['name'] }, '1' => { 'name' => @teri['name'] } } }, result)
   end
 
   it 'should pass arrays' do
@@ -166,7 +166,7 @@ describe 'Padrino::ParamsProtection' do
       end
     end
     post "/family?#{Padrino::Utils.build_uri_query(names: %w[Jack Kim Teri])}"
-    assert_equal({'names' => %w[Jack Kim Teri]}, result)
+    assert_equal({ 'names' => %w[Jack Kim Teri] }, result)
   end
 
   it 'should tolerate weird inflections' do
@@ -178,7 +178,7 @@ describe 'Padrino::ParamsProtection' do
       end
     end
     post "/i?#{Padrino::Utils.build_uri_query(gotta: { what: 'go', who: 'self' })}"
-    assert_equal({'gotta' => {'what' => 'go'}}, result)
+    assert_equal({ 'gotta' => { 'what' => 'go' } }, result)
   end
 
   it 'should drop the key if the data type does not match route configuration' do

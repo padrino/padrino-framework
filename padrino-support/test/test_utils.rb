@@ -22,12 +22,12 @@ describe 'Padrino::Utils.build_uri_query' do
 
   it 'should expand deeply nested hashes' do
     assert_query_equal 'account%5Bperson%5D%5Bid%5D=20&person%5Bid%5D=10',
-      { account: { person: { id: 20 } }, person: {id: 10} }
+      { account: { person: { id: 20 } }, person: { id: 10 } }
   end
 
   it 'should accept arrays' do
     assert_query_equal 'person%5Bid%5D%5B%5D=10&person%5Bid%5D%5B%5D=20',
-      person: {id: [10, 20]}
+      person: { id: [10, 20] }
   end
 
   it 'should accept empty arrays' do
@@ -42,13 +42,13 @@ describe 'Padrino::Utils.build_uri_query' do
     assert_query_equal 'a=1&b%5Bc%5D=3',
       { a: 1, b: { c: 3, d: {} } }
     assert_query_equal '',
-      { a: {b: {c: {}}} }
+      { a: { b: { c: {} } } }
     assert_query_equal 'b%5Bc%5D=false&b%5Be%5D=&b%5Bf%5D=&p=12',
       { p: 12, b: { c: false, e: nil, f: '' } }
     assert_query_equal 'b%5Bc%5D=3&b%5Bf%5D=',
       { b: { c: 3, k: {}, f: '' } }
     assert_query_equal 'b=3',
-      {a: [], b: 3}
+      { a: [], b: 3 }
   end
 
   it 'should accept namespace for hashes' do

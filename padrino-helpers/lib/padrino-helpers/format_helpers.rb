@@ -292,35 +292,35 @@ module Padrino
             when 0..1
               if include_seconds
                 case distance_in_seconds
-                  when 0..4   then [:less_than_x_seconds, {count: 5}]
-                  when 5..9   then [:less_than_x_seconds, {count: 10}]
-                  when 10..19 then [:less_than_x_seconds, {count: 20}]
+                  when 0..4   then [:less_than_x_seconds, { count: 5 }]
+                  when 5..9   then [:less_than_x_seconds, { count: 10 }]
+                  when 10..19 then [:less_than_x_seconds, { count: 20 }]
                   when 20..39 then [:half_a_minute]
-                  when 40..59 then [:less_than_x_minutes, {count: 1}]
-                  else             [:x_minutes,           {count: 1}]
+                  when 40..59 then [:less_than_x_minutes, { count: 1 }]
+                  else             [:x_minutes,           { count: 1 }]
                 end
               elsif distance_in_minutes.zero?
-                [:less_than_x_minutes, {count: 1}]
+                [:less_than_x_minutes, { count: 1 }]
               else
-                [:x_minutes, {count: distance_in_minutes}]
+                [:x_minutes, { count: distance_in_minutes }]
               end
-            when 2..44             then [:x_minutes,      {count: distance_in_minutes}]
-            when 45..89            then [:about_x_hours,  {count: 1}]
-            when 90..1439          then [:about_x_hours,  {count: (distance_in_minutes.to_f / 60.0).round}]
-            when 1440..2529        then [:x_days,         {count: 1}]
-            when 2530..43_199      then [:x_days,         {count: (distance_in_minutes.to_f / 1440.0).round}]
-            when 43_200..86_399    then [:about_x_months, {count: 1}]
-            when 86_400..525_599   then [:x_months,       {count: (distance_in_minutes.to_f / 43_200.0).round}]
+            when 2..44             then [:x_minutes,      { count: distance_in_minutes }]
+            when 45..89            then [:about_x_hours,  { count: 1 }]
+            when 90..1439          then [:about_x_hours,  { count: (distance_in_minutes.to_f / 60.0).round }]
+            when 1440..2529        then [:x_days,         { count: 1 }]
+            when 2530..43_199      then [:x_days,         { count: (distance_in_minutes.to_f / 1440.0).round }]
+            when 43_200..86_399    then [:about_x_months, { count: 1 }]
+            when 86_400..525_599   then [:x_months,       { count: (distance_in_minutes.to_f / 43_200.0).round }]
             else
               distance_in_years           = distance_in_minutes / 525_600
               minute_offset_for_leap_year = (distance_in_years / 4) * 1440
               remainder                   = ((distance_in_minutes - minute_offset_for_leap_year) % 525_600)
               if remainder < 131_400
-                [:about_x_years,  {count: distance_in_years}]
+                [:about_x_years,  { count: distance_in_years }]
               elsif remainder < 394_200
-                [:over_x_years,   {count: distance_in_years}]
+                [:over_x_years,   { count: distance_in_years }]
               else
-                [:almost_x_years, {count: distance_in_years + 1}]
+                [:almost_x_years, { count: distance_in_years + 1 }]
               end
           end
 

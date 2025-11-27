@@ -195,19 +195,19 @@ describe 'Router' do
         { 'Content-Type' => 'text/plain',
           'X-Position' => 'foo.org',
           'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
-        }, ['']]}},
+        }, ['']]} },
      { host: 'subdomain.foo.org', to: lambda { |env|
        [200,
         { 'Content-Type' => 'text/plain',
           'X-Position' => 'subdomain.foo.org',
           'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
-        }, ['']]}},
+        }, ['']]} },
      { host: /.*\.bar.org/, to: lambda { |env|
        [200,
         { 'Content-Type' => 'text/plain',
           'X-Position' => 'bar.org',
           'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
-        }, ['']]}}
+        }, ['']]} }
      )
 
      res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'bar.org')
@@ -266,7 +266,7 @@ describe 'Router' do
   it 'should keep the same environment object' do
     app = lambda { |env|
       env['path'] = env['PATH_INFO']
-      [200, {'Content-Type' => 'text/plain'}, ['']]
+      [200, { 'Content-Type' => 'text/plain' }, ['']]
     }
     map = Padrino::Router.new(
       { path: '/bar',     to: app },

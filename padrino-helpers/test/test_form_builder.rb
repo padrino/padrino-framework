@@ -19,7 +19,7 @@ describe 'FormBuilder' do
     role_types = [mock_model('Role', name: 'Admin', id: 1),
       mock_model('Role', name: 'Moderate', id: 2),  mock_model('Role', name: 'Limited', id: 3)]
     @user = mock_model('User', first_name: 'Joe', email: '', session_id: 54)
-    @user.stubs(errors: {a: 'must be present', b: 'must be valid', email: 'Must be valid', first_name: []})
+    @user.stubs(errors: { a: 'must be present', b: 'must be valid', email: 'Must be valid', first_name: [] })
     @user.stubs(role_types: role_types, role: '1', roles: [1, 3])
     @user_none = mock_model('User')
   end

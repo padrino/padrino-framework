@@ -45,7 +45,7 @@ describe 'Routing' do
 
   it 'should serve static files with cache control and max_age' do
     mock_app do
-      set :static_cache_control, [:public, :must_revalidate, {max_age: 300}]
+      set :static_cache_control, [:public, :must_revalidate, { max_age: 300 }]
       set :public_folder, File.dirname(__FILE__)
     end
     get "/#{File.basename(__FILE__)}"
@@ -242,7 +242,7 @@ describe 'Routing' do
     end
     get '/main'
     assert_equal 'hello', body
-    get '/main', {}, {'HTTP_USER_AGENT' => 'This is IE'}
+    get '/main', {}, { 'HTTP_USER_AGENT' => 'This is IE' }
     assert_equal 'hello IE', body
   end
 
@@ -456,7 +456,7 @@ describe 'Routing' do
       get(:a, provides: %i[html js]) { content_type }
     end
 
-    get '/a', {}, {'HTTP_ACCEPT' => 'application/yaml'}
+    get '/a', {}, { 'HTTP_ACCEPT' => 'application/yaml' }
     assert_equal 406, status
   end
 
@@ -564,7 +564,7 @@ describe 'Routing' do
       get(:a, provides: %i[js html]) { content_type }
     end
 
-    get '/a.xml', {}, {'HTTP_ACCEPT' => 'text/html'}
+    get '/a.xml', {}, { 'HTTP_ACCEPT' => 'text/html' }
     assert_equal 404, status
   end
 
@@ -1951,7 +1951,7 @@ describe 'Routing' do
         condition { counter += 1 }
       end
 
-      controller :posts, conditions: {increment!: true} do
+      controller :posts, conditions: { increment!: true } do
         get('/foo') { 'foo' }
         get('/bar') { 'bar' }
       end
@@ -1971,7 +1971,7 @@ describe 'Routing' do
         condition { counter += 1 } if increment
       end
 
-      controller :posts, conditions: {increment!: true} do
+      controller :posts, conditions: { increment!: true } do
         get('/foo') { 'foo' }
         get('/bar', increment!: false) { 'bar' }
       end
@@ -2054,7 +2054,7 @@ describe 'Routing' do
       put('/') { 'okay' }
     end
     assert @app.method_override?
-    post '/', {'_method' => 'PUT'}, {}
+    post '/', { '_method' => 'PUT' }, {}
     assert_equal 200, status
     assert_equal 'okay', body
   end
@@ -2087,10 +2087,10 @@ describe 'Routing' do
       end
     end
 
-    post '/user', {user: {full_name: 'example user'}}
+    post '/user', { user: { full_name: 'example user' } }
     assert_equal 'example user example user', body
 
-    post '/user', {'user' => {'full_name' => 'example user'}}
+    post '/user', { 'user' => { 'full_name' => 'example user' } }
     assert_equal 'example user example user', body
   end
 
@@ -2098,10 +2098,10 @@ describe 'Routing' do
     mock_app do
       put('/hi', provides: [:json]) { 'hi' }
     end
-    post '/hi', {'_method' => 'PUT'}
+    post '/hi', { '_method' => 'PUT' }
     assert_equal 200, status
     assert_equal 'hi', body
-    post '/hi.json', {'_method' => 'PUT'}
+    post '/hi.json', { '_method' => 'PUT' }
     assert_equal 200, status
     assert_equal 'hi', body
     post '/hi.json'
@@ -2337,7 +2337,7 @@ describe 'Routing' do
       get('/foo/:id') { params.inspect }
     end
     get '/foo/123'
-    assert_equal({'id' => '123'}, Thread.current['padrino.instance'].instance_variable_get(:@params))
+    assert_equal({ 'id' => '123' }, Thread.current['padrino.instance'].instance_variable_get(:@params))
   end
 
   it 'should raise an exception if block arity is not same with captured params size' do

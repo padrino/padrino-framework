@@ -57,7 +57,7 @@ class MarkupDemo < Sinatra::Base
 end
 
 class MarkupUser
-  def errors; { :fake => 'must be valid', :second => 'must be present', :third => 'must be a number', :email => 'must be an email'}; end
+  def errors; { fake: 'must be valid', second: 'must be present', third: 'must be a number', email: 'must be an email' }; end
   def session_id; 45; end
   def gender; 'male'; end
   def remember_me; '1'; end

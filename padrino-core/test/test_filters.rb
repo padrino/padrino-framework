@@ -253,7 +253,7 @@ describe 'Filters' do
     end
     get '/'
     assert_equal '', body
-    get '/', {}, {'HTTP_USER_AGENT' => 'This is IE'}
+    get '/', {}, { 'HTTP_USER_AGENT' => 'This is IE' }
     assert_equal 'before', body
   end
 

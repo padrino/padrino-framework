@@ -35,7 +35,7 @@ module Padrino
         args.inject(SafeBuffer.new) do |html, kind|
           next html unless flash[kind]
           flash_text = SafeBuffer.new << flash[kind]
-          flash_text << content_tag(:button, '&times;'.html_safe, {type: :button, class: :close, 'data-dismiss': :alert}) if bootstrap
+          flash_text << content_tag(:button, '&times;'.html_safe, { type: :button, class: :close, 'data-dismiss': :alert }) if bootstrap
           html << content_tag(:div, flash_text, { class: kind }.update(options))
         end
       end
