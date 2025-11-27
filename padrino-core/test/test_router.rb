@@ -143,9 +143,9 @@ describe 'Router' do
     end
 
     map = Padrino::Router.new(
-        { path: '/bar',     to: api },
-        { path: '/bar',   to: app  },
-        { path: '/bar',     to: app2 }
+      { path: '/bar', to: api },
+      { path: '/bar', to: app  },
+      { path: '/bar', to: app2 }
     )
 
     res = Rack::MockRequest.new(map).get('/bar/scary')
@@ -160,26 +160,20 @@ describe 'Router' do
 
   it 'should dispatch requests to cascade mounted apps until it sees a cascade == false or []g' do
     app = mock_app do
-      get 'scary' do
-        ''
-      end
+      get('scary') { '' }
       set :cascade, []
     end
 
     app2 = mock_app do
-      get 'terrifying' do
-        ''
-      end
+      get('terrifying') { '' }
     end
 
     map = Padrino::Router.new(
-        { path: '/bar',   to: app  },
-        { path: '/bar',     to: app2 }
+      { path: '/bar', to: app },
+      { path: '/bar', to: app2 }
     )
 
-    request_case = lambda {
-      Rack::MockRequest.new(map).get('/bar/terrifying')
-    }
+    request_case = lambda { Rack::MockRequest.new(map).get('/bar/terrifying') }
 
     app.cascade = false
     assert !request_case.call.ok?
@@ -200,9 +194,9 @@ describe 'Router' do
     end.curry
 
     map = Padrino::Router.new(
-     { host: 'foo.org',           to: app['foo.org'] },
-     { host: 'subdomain.foo.org', to: app['subdomain.foo.org'] },
-     { host: /.*\.bar.org/,       to: app['bar.org'] }
+      { host: 'foo.org',           to: app['foo.org'] },
+      { host: 'subdomain.foo.org', to: app['subdomain.foo.org'] },
+      { host: /.*\.bar.org/,       to: app['bar.org'] }
     )
 
     res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'bar.org')
