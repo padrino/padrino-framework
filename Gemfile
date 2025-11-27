@@ -62,5 +62,5 @@ end
 
 load File.expand_path('padrino/subgems.rb', __dir__)
 PADRINO_GEMS.each_key do |name|
-  gem name, path: File.expand_path('../' + name, __FILE__)
+  gem name, path: File.expand_path("../#{name}", __FILE__)
 end

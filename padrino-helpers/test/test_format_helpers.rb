@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require File.expand_path("#{File.dirname(__FILE__)}/fixtures/markup_app/app")
 
 describe 'FormatHelpers' do
   include Padrino::Helpers::FormatHelpers
@@ -68,9 +68,9 @@ describe 'FormatHelpers' do
     end
     it 'should return proper formatting for default width' do
       actual_text = word_wrap((1..50).to_a.join(' '))
-      assert_equal (1..30).to_a.join(' ') + "\n" + (31..50).to_a.join(' '), actual_text
+      assert_equal "#{(1..30).to_a.join(' ')}\n#{(31..50).to_a.join(' ')}", actual_text
       actual_text = word_wrap((1..50).to_a.join(' '), 80)
-      assert_equal (1..30).to_a.join(' ') + "\n" + (31..50).to_a.join(' '), actual_text
+      assert_equal "#{(1..30).to_a.join(' ')}\n#{(31..50).to_a.join(' ')}", actual_text
     end
   end
 

@@ -48,7 +48,7 @@ module Padrino
 
           tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
           unless supported_ext.include?(tmp_ext.to_sym)
-            say "<= You are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use #{supported_ext.map { |ext| '-e ' + ext.to_s }.join(' or ')}", :yellow
+            say "<= You are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use #{supported_ext.map { |ext| "-e #{ext.to_s}" }.join(' or ')}", :yellow
             raise SystemExit
           end
 
@@ -72,7 +72,7 @@ module Padrino
 
           directory 'templates/app',       destination_root(@admin_path)
           directory 'templates/assets',    destination_root('public', @admin_path)
-          template  'templates/app.rb.tt', destination_root(@admin_path + '/app.rb')
+          template  'templates/app.rb.tt', destination_root("#{@admin_path}/app.rb")
           inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount(\"#{@app_name}::#{@admin_name}\", :app_file => Padrino.root('#{@admin_path}/app.rb')).to(\"/#{@admin_path}\")\n", before: %r{^Padrino.mount.*\.to\('/'\)$}
           unless options[:destroy]
             insert_middleware 'ConnectionPoolManagement', @admin_path if %i[minirecord activerecord].include?(orm)
@@ -112,12 +112,12 @@ module Padrino
           run "mv #{seed_destination} #{destination_root('db/seeds.old')}" if File.exist?(seed_destination)
           template 'templates/account/seeds.rb.tt', seed_destination
 
-          empty_directory destination_root(@admin_path+'/controllers')
-          empty_directory destination_root(@admin_path+'/views')
-          empty_directory destination_root(@admin_path+'/views/base')
-          empty_directory destination_root(@admin_path+'/views/layouts')
-          empty_directory destination_root(@admin_path+'/views/sessions')
-          empty_directory destination_root(@admin_path+'/views/errors')
+          empty_directory destination_root("#{@admin_path}/controllers")
+          empty_directory destination_root("#{@admin_path}/views")
+          empty_directory destination_root("#{@admin_path}/views/base")
+          empty_directory destination_root("#{@admin_path}/views/layouts")
+          empty_directory destination_root("#{@admin_path}/views/sessions")
+          empty_directory destination_root("#{@admin_path}/views/errors")
 
           template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root(@admin_path+"/views/base/index.#{ext}")
           template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root(@admin_path+"/views/layouts/application.#{ext}")

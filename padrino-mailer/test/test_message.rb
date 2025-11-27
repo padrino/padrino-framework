@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
 
 describe 'Message' do
   describe 'the message' do
@@ -44,7 +44,7 @@ describe 'Message' do
 
     it 'should use views paths' do
       message = Mail::Message.new do
-        views   File.dirname(__FILE__) + '/fixtures/views/mailers'
+        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
@@ -59,7 +59,7 @@ describe 'Message' do
 
     it 'should use views and mailers paths' do
       message = Mail::Message.new do
-        views   File.dirname(__FILE__) + '/fixtures/views/mailers'
+        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
@@ -74,7 +74,7 @@ describe 'Message' do
 
     it 'should use layouts' do
       message = Mail::Message.new do
-        views   File.dirname(__FILE__) + '/fixtures/views/mailers'
+        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
@@ -91,7 +91,7 @@ describe 'Message' do
       I18n.locale = :en
 
       message = Mail::Message.new do
-        views   File.dirname(__FILE__) + '/fixtures/views/mailers'
+        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
@@ -106,7 +106,7 @@ describe 'Message' do
       I18n.locale = :it
 
       message = Mail::Message.new do
-        views   File.dirname(__FILE__) + '/fixtures/views/mailers'
+        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
@@ -121,7 +121,7 @@ describe 'Message' do
 
     it 'should auto lookup template for the given content_type' do
       message = Mail::Message.new do
-        views        File.dirname(__FILE__) + '/fixtures/views/mailers'
+        views        "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         from         'padrino@me.com'
         to           'padrino@you.com'
         subject      'Hello there Padrino'
@@ -137,7 +137,7 @@ describe 'Message' do
       assert_equal :html,                 message.content_type
 
       message = Mail::Message.new do
-        views        File.dirname(__FILE__) + '/fixtures/views/mailers'
+        views        "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         from         'padrino@me.com'
         to           'padrino@you.com'
         subject      'Hello there Padrino'
@@ -159,7 +159,7 @@ describe 'Message' do
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        views        File.dirname(__FILE__) + '/fixtures/views/mailers'
+        views        "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         partial 'partial/object', collection: objects
       end
 

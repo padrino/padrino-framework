@@ -32,7 +32,7 @@ module Padrino
           @task_name = name.to_s.underscore
           @namespace = options[:namespace].underscore if options[:namespace]
           @desc      = options[:description]
-          filename   = @task_name + '.rake'
+          filename   = "#{@task_name}.rake"
           filename   = "#{@namespace}_#{filename}" if @namespace
 
           template 'templates/task.rb.tt', destination_root('tasks', filename)

@@ -410,7 +410,7 @@ WARNING
       #
       def require_contrib(contrib)
         insert_into_gemfile 'padrino-contrib'
-        contrib = "require '" + File.join('padrino-contrib', contrib) + "'\n"
+        contrib = "require '#{File.join('padrino-contrib', contrib)}'\n"
         inject_into_file destination_root('/config/boot.rb'), contrib, before: "\nPadrino.load!"
       end
 

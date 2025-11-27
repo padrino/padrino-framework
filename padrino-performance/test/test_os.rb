@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
 
 describe 'Padrino Performance OS Module' do
   WINDOWS_RELATED_SYSTEMS = %w[cygwin mswin mingw bccwin wince emx]

@@ -514,7 +514,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
           [
             @uri_root.to_s,
             env['PATH_INFO'],
-            env['QUERY_STRING'].empty? ? '' : '?' + env['QUERY_STRING'],
+            env['QUERY_STRING'].empty? ? '' : "?#{env['QUERY_STRING']}",
             ' - ',
             logger.colorize(status.to_s[0..3], :default, :bold),
             ' ',

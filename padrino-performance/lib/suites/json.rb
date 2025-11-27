@@ -34,7 +34,7 @@ module Padrino
 
         loaded_libs.each_key do |name|
           $stderr.puts '=================='
-          $stderr.puts 'libname: ' + name
+          $stderr.puts "libname: #{name}"
           $stderr.puts '=================='
           $stderr.puts caller
         end

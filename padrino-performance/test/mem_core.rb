@@ -16,7 +16,7 @@ module MockBenchmark
     end
 
     def run(*)
-      puts 'Running ' + self.name
+      puts "Running #{self.name}"
       puts `pmap -x #{$PROCESS_ID} | tail -1`
       super
       puts `pmap -x #{$PROCESS_ID} | tail -1`

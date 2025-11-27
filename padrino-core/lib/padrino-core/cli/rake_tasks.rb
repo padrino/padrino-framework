@@ -31,7 +31,7 @@ def list_app_routes(app, args)
   max_col2 = app_routes.max { |a, b| a[1].size <=> b[1].size }[1].size
   app_routes.each_with_index do |row, i|
     message = [row[1].ljust(max_col2+2), row[0].center(max_col1+2), row[2]]
-    shell.say('    ' + message.join(' '), i.zero? ? :bold : nil)
+    shell.say("    #{message.join(' ')}", i.zero? ? :bold : nil)
   end
 end
 

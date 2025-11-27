@@ -351,7 +351,7 @@ module Padrino
         if respond_to?(:request) && request.respond_to?(:controller) && request.controller && Pathname.new(template_path).relative?
           parts << "{,#{request.controller}}"
         end
-        parts << template_path.chomp(File.extname(template_path)) + '.*'
+        parts << "#{template_path.chomp(File.extname(template_path))}.*"
         Dir.glob(File.join(parts)).inject([]) do |all, file|
           next all if IGNORE_FILE_PATTERN.any? { |pattern| file.to_s =~ pattern }
           all << path_and_engine(file, views_path)

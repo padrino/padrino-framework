@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../helper')
+require File.expand_path("#{File.dirname(__FILE__)}/../helper")
 
 describe 'AdminAppGenerator' do
   before do
@@ -217,8 +217,8 @@ describe 'AdminAppGenerator' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
 
       # Add seeds file
-      FileUtils.mkdir_p @apptmp + '/sample_project/db' unless File.exist?(@apptmp + '/sample_project/db')
-      File.open(@apptmp + '/sample_project/db/seeds.rb', 'w+') do |seeds_rb|
+      FileUtils.mkdir_p "#{@apptmp}/sample_project/db" unless File.exist?("#{@apptmp}/sample_project/db")
+      File.open("#{@apptmp}/sample_project/db/seeds.rb", 'w+') do |seeds_rb|
         seeds_rb.puts '# Old Seeds Content'
       end
 

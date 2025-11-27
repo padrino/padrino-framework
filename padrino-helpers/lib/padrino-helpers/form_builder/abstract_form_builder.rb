@@ -77,7 +77,7 @@ module Padrino
 
         def check_box_group(field, options = {})
           labeled_group(field, options) do |attributes|
-            @template.check_box_tag(field_name(field)+'[]', attributes)
+            @template.check_box_tag("#{field_name(field)}[]", attributes)
           end
         end
 

@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require File.expand_path("#{File.dirname(__FILE__)}/fixtures/markup_app/app")
 
 describe 'AssetTagHelpers' do
   include Padrino::Helpers::AssetTagHelpers

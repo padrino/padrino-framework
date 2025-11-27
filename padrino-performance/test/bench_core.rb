@@ -15,7 +15,7 @@ module MockBenchmark
     end
 
     def run(*)
-      puts 'Running ' + self.name
+      puts "Running #{self.name}"
       super
     end
   end

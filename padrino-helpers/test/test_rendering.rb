@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
 require 'slim'
 require 'liquid'
 
@@ -507,7 +507,7 @@ describe 'Rendering' do
     end
 
     it 'should resolve layouts from specific application' do
-      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/render")
       @app = RenderDemo2
       get '/blog/override'
       assert_equal 'otay', body
@@ -515,7 +515,7 @@ describe 'Rendering' do
 
     it 'should resolve templates and layouts located in absolute paths' do
       mock_app do
-        get('/foo') { render 'apps/views/blog/post', layout: 'layout', views: File.dirname(__FILE__)+'/fixtures' }
+        get('/foo') { render 'apps/views/blog/post', layout: 'layout', views: "#{File.dirname(__FILE__)}/fixtures" }
       end
       get '/foo'
       assert_match(/okay absolute layout/, body)
@@ -569,14 +569,14 @@ describe 'Rendering' do
     end
 
     it 'should resolve template location relative to controller name' do
-      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/render")
       @app = RenderDemo2
       get '/blog'
       assert_equal 'okay', body
     end
 
     it 'should resolve nested template location relative to controller name' do
-      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/render")
       @app = RenderDemo2
       get '/article/comment'
       assert_equal 'okay comment', body
@@ -706,7 +706,7 @@ describe 'Rendering' do
       class Application < Sinatra::Base
         register Padrino::Rendering
         get '/' do
-          render :post, views: File.dirname(__FILE__)+'/fixtures/apps/views/blog'
+          render :post, views: "#{File.dirname(__FILE__)}/fixtures/apps/views/blog"
         end
       end
       @app = Application.new
@@ -719,7 +719,7 @@ describe 'Rendering' do
     it 'should locate controller templates' do
       mock_app do
         disable :reload_templates
-        set :views, File.dirname(__FILE__)+'/fixtures/apps/views'
+        set :views, "#{File.dirname(__FILE__)}/fixtures/apps/views"
         controller :test do
           get :index do
             render 'test/post'
@@ -732,7 +732,7 @@ describe 'Rendering' do
     it 'should properly cache template path' do
       mock_app do
         disable :reload_templates
-        set :views, File.dirname(__FILE__)+'/fixtures/apps/views'
+        set :views, "#{File.dirname(__FILE__)}/fixtures/apps/views"
         controller :blog do
           get :index do
             render :post

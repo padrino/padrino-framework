@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
 
 class PadrinoPristine < Padrino::Application; end
 class PadrinoTestApp  < Padrino::Application; end
@@ -120,8 +120,8 @@ describe 'Application' do
     end
 
     it 'should resolve views and layouts paths' do
-      assert_equal Padrino.root('views')+'/users/index', PadrinoPristine.view_path('users/index')
-      assert_equal Padrino.root('views')+'/layouts/app', PadrinoPristine.layout_path(:app)
+      assert_equal "#{Padrino.root('views')}/users/index", PadrinoPristine.view_path('users/index')
+      assert_equal "#{Padrino.root('views')}/layouts/app", PadrinoPristine.layout_path(:app)
     end
 
     describe 'errors' do
@@ -166,7 +166,7 @@ describe 'Application' do
 
     describe 'pre-compile routes' do
       it 'should compile routes before first request if enabled the :precompile_routes option' do
-        require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/precompiled_app')
+        require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/precompiled_app")
         assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::App.compiled_router.engine
         assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::SubApp.compiled_router.engine
         assert_equal true, PrecompiledApp::App.compiled_router.engine.compiled?

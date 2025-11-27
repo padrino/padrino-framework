@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
 
 describe 'Dependencies' do
   describe 'when we require a dependency that have another dependency' do

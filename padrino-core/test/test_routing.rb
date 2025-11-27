@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
 
 class FooError < RuntimeError; end
 
@@ -202,7 +202,7 @@ describe 'Routing' do
     mock_app do
       get('/щч') { 'success!' }
     end
-    get('/' + CGI.escape('щч'))
+    get("/#{CGI.escape('щч')}")
     assert_equal 'success!', body
   end
 
@@ -2112,7 +2112,7 @@ describe 'Routing' do
     mock_app do
       get(:index) { format('%s %s', params[:account][:name], params[:account][:surname]) }
     end
-    get '/?' + Padrino::Utils.build_uri_query(account: { name: 'foo', surname: 'bar' })
+    get "/?#{Padrino::Utils.build_uri_query(account: { name: 'foo', surname: 'bar' })}"
     assert_equal 'foo bar', body
     get @app.url(:index, 'account[name]' => 'foo', 'account[surname]' => 'bar')
     assert_equal 'foo bar', body

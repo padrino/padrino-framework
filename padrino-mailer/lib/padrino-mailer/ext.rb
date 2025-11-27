@@ -117,7 +117,7 @@ module Mail # @private
 
     def do_delivery_with_logging
       logger.debug "Sending email to: #{destinations.join(' ')}"
-      encoded.each_line { |line| logger << ('  ' + line.strip) } if logger.debug?
+      encoded.each_line { |line| logger << ("  #{line.strip}") } if logger.debug?
       do_delivery_without_logging
     end
     if Padrino.respond_to?(:logger)

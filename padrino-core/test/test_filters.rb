@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
 
 describe 'Filters' do
   it 'should filters by accept header' do
@@ -151,13 +151,13 @@ describe 'Filters' do
       controller :foo do
         before(:test) { @test = 'foo'}
         get :test do
-          @test.to_s + ' response'
+          "#{@test.to_s} response"
         end
       end
       controller :bar do
         before(:test) { @test = 'bar'}
         get :test do
-          @test.to_s + ' response'
+          "#{@test.to_s} response"
         end
       end
     end

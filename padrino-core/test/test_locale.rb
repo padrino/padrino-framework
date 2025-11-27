@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require File.expand_path("#{File.dirname(__FILE__)}/helper")
 
 describe 'Locales' do
   Dir[File.expand_path('../lib/padrino-core/locale/*.yml', __dir__)].each do |file|
