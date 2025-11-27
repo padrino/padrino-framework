@@ -14,22 +14,22 @@ describe 'Application' do
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal :test, PadrinoPristine.environment
       assert_equal Padrino.root('views'), PadrinoPristine.views
-      assert  PadrinoPristine.raise_errors
-      assert !PadrinoPristine.logging
-      assert !PadrinoPristine.sessions
-      assert !PadrinoPristine.dump_errors
-      assert !PadrinoPristine.show_exceptions
-      assert  PadrinoPristine.raise_errors
-      assert !Padrino.configure_apps
+      assert PadrinoPristine.raise_errors
+      refute PadrinoPristine.logging
+      refute PadrinoPristine.sessions
+      refute PadrinoPristine.dump_errors
+      refute PadrinoPristine.show_exceptions
+      assert PadrinoPristine.raise_errors
+      refute Padrino.configure_apps
     end
 
     it 'should check padrino specific options' do
-      assert !PadrinoPristine.instance_variable_get(:@_configured)
+      refute PadrinoPristine.instance_variable_get(:@_configured)
       PadrinoPristine.send(:setup_application!)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal 'StandardFormBuilder', PadrinoPristine.default_builder
-      assert  PadrinoPristine.instance_variable_get(:@_configured)
-      assert !PadrinoPristine.reload?
+      assert PadrinoPristine.instance_variable_get(:@_configured)
+      refute PadrinoPristine.reload?
     end
 
     it 'should set global project settings' do

@@ -82,12 +82,12 @@ describe 'Part' do
 
     it 'should works with provides' do
       message = Mail::Message.new do
-        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
-        to      'padrino@test.lindsaar.net'
-        subject 'nested multipart'
-        from    'test@example.com'
+        views    "#{File.dirname(__FILE__)}/fixtures/views/mailers"
+        to       'padrino@test.lindsaar.net'
+        subject  'nested multipart'
+        from     'test@example.com'
         provides :plain, :html
-        render  'multipart/basic'
+        render   'multipart/basic'
       end
 
       assert_match(%r{^multipart/alternative}, message['content-type'].value)

@@ -32,7 +32,7 @@ describe 'AdminApplication' do
 
       # Do a simple mapping
       access_control.roles_for :any do |role|
-        role.protect  '/foo'
+        role.protect '/foo'
       end
 
       get '/foo', provides: %i[html js] do

@@ -159,7 +159,7 @@ describe 'Message' do
         from    'padrino@me.com'
         to      'padrino@you.com'
         subject 'Hello there Padrino'
-        views        "#{File.dirname(__FILE__)}/fixtures/views/mailers"
+        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
         partial 'partial/object', collection: objects
       end
 

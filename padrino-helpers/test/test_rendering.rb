@@ -630,7 +630,7 @@ describe 'Rendering' do
         end
 
         get '/' do
-          render  :erb, '<%== "<script></script>" %>'
+          render :erb, '<%== "<script></script>" %>'
         end
       end
 
