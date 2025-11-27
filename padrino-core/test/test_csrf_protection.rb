@@ -106,7 +106,7 @@ describe 'Application' do
       before do
         mock_app do
           enable :sessions
-          set :protect_from_csrf, except: proc {|env| ['/', '/foo'].any? {|path| path == env['PATH_INFO'] }}
+          set :protect_from_csrf, except: proc { |env| ['/', '/foo'].any? { |path| path == env['PATH_INFO'] } }
           post('/') { 'Hello' }
           post('/foo') { 'Hello, foo' }
           post('/bar') { 'Hello, bar' }
@@ -178,7 +178,7 @@ describe 'Application' do
         end
         mock_app do
           enable :sessions
-          set :protect_from_csrf, except: proc {|env| ['/', '/middleware'].any? {|path| path == env['PATH_INFO'] }}
+          set :protect_from_csrf, except: proc { |env| ['/', '/middleware'].any? { |path| path == env['PATH_INFO'] } }
           use Middleware
           post('/') { 'Hello' }
         end

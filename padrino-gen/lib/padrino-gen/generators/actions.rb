@@ -577,7 +577,7 @@ WARNING
             [:stylesheet, 'stylesheet engine',  { aliases: '-c', default: :none }]
           ].each do |name, caption, opts|
             opts[:default] = '' if options[:default] == false
-            component_option name, caption, opts.merge(choices: Dir["#{File.dirname(__FILE__)}/components/#{name.to_s.pluralize}/*.rb"].map {|lib| File.basename(lib, '.rb').to_sym})
+            component_option name, caption, opts.merge(choices: Dir["#{File.dirname(__FILE__)}/components/#{name.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb').to_sym })
           end
         end
 

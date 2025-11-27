@@ -214,7 +214,7 @@ module Padrino
       # @return [SafeBuffer, Array<SafeBuffer>]
       def mark_safe(value)
         if value.respond_to? :map!
-          value.map! {|v| v&.html_safe }
+          value.map! { |v| v&.html_safe }
         else
           value&.html_safe
         end

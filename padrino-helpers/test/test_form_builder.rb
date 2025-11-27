@@ -142,12 +142,12 @@ describe 'FormBuilder' do
     end
 
     it 'should have a class of "invalid" for fields with errors' do
-      actual_html = form_for(@user, '/register') {|f| f.text_field(:email) }
+      actual_html = form_for(@user, '/register') { |f| f.text_field(:email) }
       assert_html_has_tag(actual_html, :input, type: 'text', name: 'user[email]', id: 'user_email', class: 'invalid')
     end
 
     it 'should not have a class of "invalid" for fields with no errors' do
-      actual_html = form_for(@user, '/register') {|f| f.text_field(:first_name) }
+      actual_html = form_for(@user, '/register') { |f| f.text_field(:first_name) }
       assert_html_has_no_tag(actual_html, :input, type: 'text', name: 'user[first_name]', id: 'user_first_name', class: 'invalid')
     end
   end

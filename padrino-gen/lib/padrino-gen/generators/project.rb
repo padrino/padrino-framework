@@ -113,7 +113,7 @@ module Padrino
         controller_content = instance_eval(controller_template_name).gsub(/!PATH!/, 'Controller').gsub(/!NAME!/, '').gsub(/!EXPANDED_PATH!/, '/')
         helper_content     = instance_eval(helper_template_name).gsub(/!NAME!/, "#{@project_name}::#{@app_name}::#{DEFAULT_HELPER_NAME}")
 
-        proc {|*args| args.map {|str| str.gsub!(/!PATH!/, recognize_path)} }.call(controller_content, helper_content)
+        proc { |*args| args.map { |str| str.gsub!(/!PATH!/, recognize_path) } }.call(controller_content, helper_content)
 
         directory_name = [:rspec].include?(test_component.to_sym) ? 'spec' : 'test'
         base_path      = File.join(directory_name, 'app')

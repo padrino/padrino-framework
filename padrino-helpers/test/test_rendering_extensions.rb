@@ -6,7 +6,7 @@ describe 'Rendering Extensions' do
       skip unless Padrino::Helpers::OutputHelpers.handlers[:haml].to_s == 'Padrino::Helpers::OutputHelpers::HamlHandler'
 
       mock_app do
-        get('/') { render :haml, '-haml_tag :div'}
+        get('/') { render :haml, '-haml_tag :div' }
       end
 
       get '/'

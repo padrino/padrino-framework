@@ -518,7 +518,7 @@ describe 'Routing' do
 
   it 'should send the appropriate number of params' do
     mock_app do
-      get('/id/:user_id', provides: [:json]) { |user_id, _format| user_id}
+      get('/id/:user_id', provides: [:json]) { |user_id, _format| user_id }
     end
     get '/id/5.json'
     assert_equal '5', body
@@ -756,7 +756,7 @@ describe 'Routing' do
       get(:a, provides: :js) { 'js' }
       get(:b, provides: :any) { 'any' }
       get(:c, provides: %i[js json]) { 'js,json' }
-      get(:d, provides: %i[html js]) { 'html,js'}
+      get(:d, provides: %i[html js]) { 'html,js' }
     end
     get '/a'
     assert_equal 200, status
@@ -1042,7 +1042,7 @@ describe 'Routing' do
     mock_app do
       get(:index, with: :slug, priority: :low) { 'catch all' }
       controllers :contact do
-        get(:index) { 'contact'}
+        get(:index) { 'contact' }
       end
     end
     get '/contact'
@@ -1099,8 +1099,8 @@ describe 'Routing' do
       controllers :project do
         get(:index, parent: :user) { "index #{params[:user_id]}" }
         get(:index, parent: %i[user section]) { "index #{params[:user_id]} #{params[:section_id]}" }
-        get(:edit, with: :id, parent: :user) { "edit #{params[:id]} #{params[:user_id]}"}
-        get(:show, with: :id, parent: %i[user product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
+        get(:edit, with: :id, parent: :user) { "edit #{params[:id]} #{params[:user_id]}" }
+        get(:show, with: :id, parent: %i[user product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}" }
       end
     end
     get '/user/1/project'
@@ -1138,8 +1138,8 @@ describe 'Routing' do
       controllers :project do
         get(:index, parent: :user) { "index #{params[:user_id]}" }
         get(:index, parent: %i[user section]) { "index #{params[:user_id]} #{params[:section_id]}" }
-        get(:edit, with: :id, parent: :user) { "edit #{params[:id]} #{params[:user_id]}"}
-        get(:show, with: :id, parent: %i[user product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
+        get(:edit, with: :id, parent: :user) { "edit #{params[:id]} #{params[:user_id]}" }
+        get(:show, with: :id, parent: %i[user product]) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}" }
       end
 
       controllers :bar, parent: :foo do
@@ -1165,9 +1165,9 @@ describe 'Routing' do
   it 'should apply parent to controller' do
     mock_app do
       controller :project, parent: :user do
-        get(:index) { "index #{params[:user_id]}"}
-        get(:edit, with: :id, parent: :user) { "edit #{params[:id]} #{params[:user_id]}"}
-        get(:show, with: :id, parent: :product) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}"}
+        get(:index) { "index #{params[:user_id]}" }
+        get(:edit, with: :id, parent: :user) { "edit #{params[:id]} #{params[:user_id]}" }
+        get(:show, with: :id, parent: :product) { "show #{params[:id]} #{params[:user_id]} #{params[:product_id]}" }
       end
     end
 
@@ -1669,7 +1669,7 @@ describe 'Routing' do
 
   it 'should be able to access params normally when a before filter is specified' do
     mock_app do
-      before { }
+      before {}
       get :index do
         params.to_json
       end
@@ -2061,7 +2061,7 @@ describe 'Routing' do
 
   it 'should return value from params' do
     mock_app do
-      get('/foo/:bar') { raise "'bar' should be a string" unless params[:bar].is_a? String}
+      get('/foo/:bar') { raise "'bar' should be a string" unless params[:bar].is_a? String }
     end
     get '/foo/50'
     assert ok?
@@ -2165,10 +2165,10 @@ describe 'Routing' do
   it 'should recognize paths' do
     mock_app do
       controller :foo do
-        get(:bar, map: '/my/:id/custom-route') { }
+        get(:bar, map: '/my/:id/custom-route') {}
       end
-      get(:simple, map: '/simple/:id') { }
-      get(:with_format, with: :id, provides: :js) { }
+      get(:simple, map: '/simple/:id') {}
+      get(:with_format, with: :id, provides: :js) {}
     end
     assert_equal [:"foo bar", { 'id' => 'fantastic' }], @app.recognize_path(@app.url(:foo, :bar, id: :fantastic))
     assert_equal [:"foo bar", { 'id' => '18' }], @app.recognize_path(@app.url(:foo, :bar, id: 18))

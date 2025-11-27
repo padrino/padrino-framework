@@ -57,7 +57,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
 
     desc 'Drops all the collections for the database for the current Padrino.env'
     task drop: :environment do
-      mongoid_collections.reject {|c| c.name =~ /system/ }.each(&:drop)
+      mongoid_collections.reject { |c| c.name =~ /system/ }.each(&:drop)
     end
 
     # Helper to retrieve a list of models.

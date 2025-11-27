@@ -337,7 +337,7 @@ describe 'options :source_location' do
 
   it 'should output source_location if file path is relative' do
     stub_message = "test/test_logger.rb:269:in `test'"
-    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root { Padrino.logger.debug('hello relative path') }}
+    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root { Padrino.logger.debug('hello relative path') } }
     assert_match(%r{\[test/test_logger\.rb:269\] hello relative path}, Padrino.logger.log.string)
   end
 
