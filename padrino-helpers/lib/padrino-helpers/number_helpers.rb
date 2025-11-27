@@ -55,7 +55,8 @@ module Padrino
         separator = '' if precision.zero?
 
         begin
-          format.gsub(/%n/, number_with_precision(number,
+          format.gsub(/%n/, number_with_precision(
+            number,
             precision: precision,
             delimiter: delimiter,
             separator: separator)
@@ -100,10 +101,12 @@ module Padrino
         delimiter = options[:delimiter] || defaults[:delimiter]
 
         begin
-          number_with_precision(number,
+          number_with_precision(
+            number,
             precision: precision,
             separator: separator,
-            delimiter: delimiter) + '%'
+            delimiter: delimiter
+          ) + '%'
         rescue StandardError
           number
         end
@@ -266,11 +269,14 @@ module Padrino
 
           begin
             escaped_separator = Regexp.escape(separator)
-            formatted_number = number_with_precision(number,
-              precision: precision,
-              separator: separator,
-              delimiter: delimiter
-            ).sub(/(#{escaped_separator})(\d*[1-9])?0+\z/, '\1\2').sub(/#{escaped_separator}\z/, '')
+            formatted_number =
+              number_with_precision(
+                number,
+                precision: precision,
+                separator: separator,
+                delimiter: delimiter
+              ).sub(/(#{escaped_separator})(\d*[1-9])?0+\z/, '\1\2').sub(/#{escaped_separator}\z/, '')
+
             storage_units_format.gsub(/%n/, formatted_number).gsub(/%u/, unit)
           rescue StandardError
             number

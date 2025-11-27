@@ -202,7 +202,8 @@ drop_table :!TABLE!
 MIGRATION
 
 def create_model_migration(migration_name, name, columns)
-  output_model_migration(migration_name, name, columns,
+  output_model_migration(
+    migration_name, name, columns,
     base: AR_MIGRATION,
     column_format: proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
     up: AR_MODEL_UP_MG,
@@ -217,7 +218,8 @@ end
 MIGRATION
 
 def create_migration_file(migration_name, name, columns)
-  output_migration_file(migration_name, name, columns,
+  output_migration_file(
+    migration_name, name, columns,
     base: AR_MIGRATION,
     change_format: AR_CHANGE_MG,
     add: proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
