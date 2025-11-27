@@ -189,41 +189,36 @@ describe 'Router' do
   end
 
   it 'should dispatches hosts correctly' do
+    app = lambda do |position, env|
+      headers = {
+        'Content-Type' => 'text/plain',
+        'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME'],
+        'X-Position' => position
+      }
+
+      [200, headers, ['']]
+    end.curry
+
     map = Padrino::Router.new(
-     { host: 'foo.org', to: lambda { |env|
-       [200,
-        { 'Content-Type' => 'text/plain',
-          'X-Position' => 'foo.org',
-          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
-        }, ['']]} },
-     { host: 'subdomain.foo.org', to: lambda { |env|
-       [200,
-        { 'Content-Type' => 'text/plain',
-          'X-Position' => 'subdomain.foo.org',
-          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
-        }, ['']]} },
-     { host: /.*\.bar.org/, to: lambda { |env|
-       [200,
-        { 'Content-Type' => 'text/plain',
-          'X-Position' => 'bar.org',
-          'X-Host' => env['HTTP_HOST'] || env['SERVER_NAME']
-        }, ['']]} }
-     )
+     { host: 'foo.org',           to: app['foo.org'] },
+     { host: 'subdomain.foo.org', to: app['subdomain.foo.org'] },
+     { host: /.*\.bar.org/,       to: app['bar.org'] }
+    )
 
-     res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'bar.org')
-     assert res.not_found?
+    res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'bar.org')
+    assert res.not_found?
 
-     res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'at.bar.org')
-     assert res.ok?
-     assert_equal 'bar.org', res['X-Position']
+    res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'at.bar.org')
+    assert res.ok?
+    assert_equal 'bar.org', res['X-Position']
 
-     res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'foo.org')
-     assert res.ok?
-     assert_equal 'foo.org', res['X-Position']
+    res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'foo.org')
+    assert res.ok?
+    assert_equal 'foo.org', res['X-Position']
 
-     res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'subdomain.foo.org', 'SERVER_NAME' => 'foo.org')
-     assert res.ok?
-     assert_equal 'subdomain.foo.org', res['X-Position']
+    res = Rack::MockRequest.new(map).get('/', 'HTTP_HOST' => 'subdomain.foo.org', 'SERVER_NAME' => 'foo.org')
+    assert res.ok?
+    assert_equal 'subdomain.foo.org', res['X-Position']
   end
 
   it 'should works with padrino core applications' do
@@ -264,10 +259,11 @@ describe 'Router' do
   end
 
   it 'should keep the same environment object' do
-    app = lambda { |env|
+    app = lambda do |env|
       env['path'] = env['PATH_INFO']
       [200, { 'Content-Type' => 'text/plain' }, ['']]
-    }
+    end
+
     map = Padrino::Router.new(
       { path: '/bar',     to: app },
       { path: '/foo/bar', to: app },
