@@ -297,7 +297,7 @@ describe 'Rendering' do
     create_layout :application, 'erb template <%= yield %>', format: :erb
     create_view 'foo', 'xml.instruct!', format: :builder
     mock_app do
-      get('/layout_test.xml' ) { render :foo }
+      get('/layout_test.xml') { render :foo }
     end
     get '/layout_test.xml'
     refute_match(/erb template/, body)

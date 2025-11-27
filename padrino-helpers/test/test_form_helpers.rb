@@ -665,13 +665,13 @@ describe 'FormHelpers' do
 
     it 'should include blank for grouped options' do
       opts = { 'Red' => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
-      actual_html = select_tag( 'color', grouped_options: opts, include_blank: true )
+      actual_html = select_tag('color', grouped_options: opts, include_blank: true)
       assert_html_has_tag(actual_html, 'select option:first-child', value: '', content: '')
     end
 
     it 'should include blank as caption' do
       opts = { 'Red' => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
-      actual_html = select_tag( 'color', grouped_options: opts, include_blank: 'Choose your destiny' )
+      actual_html = select_tag('color', grouped_options: opts, include_blank: 'Choose your destiny')
       assert_html_has_tag(actual_html, 'select option:first-child', value: '', content: 'Choose your destiny')
       assert_html_has_no_tag(actual_html, 'select[include_blank]')
     end
@@ -681,7 +681,7 @@ describe 'FormHelpers' do
         ['Friends', ['Yoda', ['Obiwan', 2]]],
         ['Enemies', ['Palpatine', ['Darth Vader', 3]]]
       ]
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :optgroup, label: 'Friends')
       assert_html_has_tag(actual_html, :option,   value: 'Yoda', content: 'Yoda')
@@ -696,7 +696,7 @@ describe 'FormHelpers' do
         ['Friends', ['Yoda', ['Obiwan', 2]]],
         ['Enemies', ['Palpatine', ['Darth Vader', 3]], { disabled: true }]
       ]
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :option,   disabled: 'disabled', count: 0)
       assert_html_has_tag(actual_html, :optgroup, disabled: 'disabled', count: 1)
@@ -708,7 +708,7 @@ describe 'FormHelpers' do
         ['Friends', ['Yoda', ['Obiwan', 2, { disabled: true }]]],
         ['Enemies', [['Palpatine', 'Palpatine', { disabled: true }], ['Darth Vader', 3]], { disabled: true }]
       ]
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :option,   disabled: 'disabled', count: 2)
       assert_html_has_tag(actual_html, :optgroup, disabled: 'disabled', count: 1)
@@ -722,7 +722,7 @@ describe 'FormHelpers' do
         'Friends' => ['Yoda', ['Obiwan', 2]],
         'Enemies' => ['Palpatine', ['Darth Vader', 3]]
       }
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :optgroup, label: 'Friends')
       assert_html_has_tag(actual_html, :option,   value: 'Yoda', content: 'Yoda')
@@ -737,7 +737,7 @@ describe 'FormHelpers' do
         'Friends' => ['Yoda', ['Obiwan', 2, { disabled: true }]],
         'Enemies' => [['Palpatine', 'Palpatine', { disabled: true }], ['Darth Vader', 3], { disabled: true }]
       }
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :option,   disabled: 'disabled', count: 2)
       assert_html_has_tag(actual_html, :optgroup, disabled: 'disabled', count: 1)
@@ -751,7 +751,7 @@ describe 'FormHelpers' do
         'Friends' => ['Yoda', ['Obiwan', 2, { magister: 'no' }], { lame: 'yes' }],
         'Enemies' => [['Palpatine', 'Palpatine', { scary: 'yes', old: 'yes' }], ['Darth Vader', 3, { disabled: true }]]
       }
-      actual_html = select_tag( 'name', grouped_options: opts, disabled_options: [2], selected: ['Yoda'] )
+      actual_html = select_tag('name', grouped_options: opts, disabled_options: [2], selected: ['Yoda'])
       assert_html_has_tag(actual_html, :optgroup, label: 'Friends', lame: 'yes')
       assert_html_has_tag(actual_html, :option,   value: 'Palpatine', content: 'Palpatine', scary: 'yes', old: 'yes')
       assert_html_has_tag(actual_html, :option,   content: 'Darth Vader', disabled: 'disabled')
