@@ -206,7 +206,7 @@ describe 'RenderHelpers' do
       get '/ruby_block_capture_haml'
       assert_response_has_tag 'b', content: 'c'
     end
-    
+
     it 'should support weird ruby blocks in slim' do
       get '/ruby_block_capture_slim'
       assert_response_has_tag 'b', content: 'c'

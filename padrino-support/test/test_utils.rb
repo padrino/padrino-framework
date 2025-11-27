@@ -52,7 +52,7 @@ describe 'Padrino::Utils.build_uri_query' do
   end
 
   it 'should accept namespace for hashes' do
-    assert_query_equal 'user%5Bname%5D=Nakshay&user%5Bnationality%5D=Indian', 
+    assert_query_equal 'user%5Bname%5D=Nakshay&user%5Bnationality%5D=Indian',
       { name: 'Nakshay', nationality: 'Indian' },
       'user'
   end

@@ -42,7 +42,7 @@ module Padrino
       def render(*args)
         app       = args.first
         app_class = app.class
-        @is_padrino_app = (defined?(Padrino::Application) && app.is_a?(Padrino::Application)) || 
+        @is_padrino_app = (defined?(Padrino::Application) && app.is_a?(Padrino::Application)) ||
                           (app_class.respond_to?(:erb) && app_class.erb[:engine_class] == Padrino::Rendering::SafeEruby)
         super
       end

@@ -12,7 +12,7 @@ module Padrino
       def initialize(routes)
         @routes = routes
       end
-  
+
       ##
       # Compiles all routes into regexps.
       #
@@ -63,7 +63,7 @@ module Padrino
         pattern  = decode_pattern(pattern)
         rotation { |offset| match?(offset, pattern) }
       end
-  
+
       private
 
       ##

@@ -2,7 +2,7 @@ require File.expand_path("#{File.dirname(__FILE__)}/../helper")
 require File.join(File.dirname(__FILE__), '../fixtures/sequel')
 
 describe 'AdminPageGenerator' do
-  before do 
+  before do
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
     `mkdir -p #{@apptmp}`
   end

@@ -196,7 +196,7 @@ describe 'Mounter' do
       nested_route = Padrino.mounted_apps[1].named_routes[10]
       assert_equal '(:test_nested, :test1)', nested_route.name
     end
-    
+
     it 'should configure cascade apps' do
       class ::App1 < Padrino::Application
         get(:index) { halt 404, 'index1' }

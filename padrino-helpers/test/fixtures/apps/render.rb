@@ -12,7 +12,7 @@ RenderDemo2.controllers :blog do
   end
 
   get '/override' do
-    render 'post', layout: RenderDemo2.layout_path('specific') 
+    render 'post', layout: RenderDemo2.layout_path('specific')
   end
 end
 

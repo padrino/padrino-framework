@@ -19,9 +19,9 @@ end
 #     gem install fake_dynamo --version 0.1.3
 #   - run
 #     fake_dynamo --port 4567
-# 
+##{' '}
 # And then setting for AWS.config is as following:
-# 
+##{' '}
 #   AWS.config({
 #     :access_key_id => 'xxx', # everything is ok
 #     :secret_access_key => 'xxx', # everything is ok
