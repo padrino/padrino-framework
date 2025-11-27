@@ -266,11 +266,11 @@ module Padrino
 
           say 'Autodetecting project namespace using folder name.', :red
           say ''
-          say <<-WARNING, :red
-From v0.11.0 on, applications should have a `namespace` setting
-in their .components file. Please include a line like the following
-in your .components file:
-WARNING
+          say <<~WARNING, :red
+            From v0.11.0 on, applications should have a `namespace` setting
+            in their .components file. Please include a line like the following
+            in your .components file:
+          WARNING
           say "\t:namespace: #{detected_namespace}", :yellow
           say ''
 
