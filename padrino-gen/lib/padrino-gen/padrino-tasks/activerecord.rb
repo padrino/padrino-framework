@@ -164,7 +164,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     task(forward: :skeleton) { move_as(:forward) }
 
     desc 'Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.'
-    task reset: [ 'ar:drop', 'ar:setup' ]
+    task reset: ['ar:drop', 'ar:setup']
 
     desc "Retrieves the charset for the current environment's database"
     task charset: :skeleton do
@@ -221,7 +221,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     desc 'Create the database, load the schema, and initialize with the seed data.'
-    task setup: [ 'ar:create', 'ar:schema:load', 'seed' ]
+    task setup: ['ar:create', 'ar:schema:load', 'seed']
 
     namespace :schema do
       desc 'Create a db/schema.rb file that can be portably used against any DB supported by AR.'

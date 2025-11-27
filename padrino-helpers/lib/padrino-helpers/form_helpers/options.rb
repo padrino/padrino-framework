@@ -88,7 +88,7 @@ module Padrino
           if options[:collection]
             fields = options.delete(:fields)
             collection = options.delete(:collection)
-            collection.map { |item| [ item.send(fields.first), item.send(fields.last) ] }
+            collection.map { |item| [item.send(fields.first), item.send(fields.last)] }
           else
             options.delete(:options) || []
           end

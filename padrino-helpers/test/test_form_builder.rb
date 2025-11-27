@@ -728,7 +728,7 @@ describe 'FormBuilder' do
     it 'should display correct select html with multiple selected items' do
       @user.stubs(pickles: %w[foo bar])
       actual_html = standard_builder.select(
-        :pickles, options: [ ['Foo', 'foo'], ['Bar', 'bar'], ['Baz', 'baz'], ['Bar Buz', 'bar buz'] ]
+        :pickles, options: [['Foo', 'foo'], ['Bar', 'bar'], ['Baz', 'baz'], ['Bar Buz', 'bar buz']]
       )
       assert_html_has_tag(actual_html, 'option', value: 'foo', content: 'Foo', selected: 'selected')
       assert_html_has_tag(actual_html, 'option', value: 'bar', content: 'Bar', selected: 'selected')
@@ -859,9 +859,9 @@ describe 'FormBuilder' do
     before do
       @telephone = mock_model('Telephone', number: '4568769876')
       @user.stubs(:telephone).returns(@telephone)
-      @businesses = [ mock_model('Business', name: 'Silver', new_record?: false, id: 20) ]
+      @businesses = [mock_model('Business', name: 'Silver', new_record?: false, id: 20)]
       @businesses <<  mock_model('Business', name: 'Gold', new_record?: true)
-      @addresses = [ mock_model('Address', name: 'Foo', new_record?: false, id: 20, businesses: @businesses) ]
+      @addresses = [mock_model('Address', name: 'Foo', new_record?: false, id: 20, businesses: @businesses)]
       @addresses <<  mock_model('Address', name: 'Bar', new_record?: true, businesses: @businesses)
       @user.stubs(:addresses).returns(@addresses)
     end

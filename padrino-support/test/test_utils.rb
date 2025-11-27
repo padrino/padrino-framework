@@ -76,7 +76,7 @@ describe 'Padrino::Utils.deep_dup' do
   end
 
   it 'should recursively dup array with hash' do
-    array = [1, { a: 2, b: 3 } ]
+    array = [1, { a: 2, b: 3 }]
     dup = Padrino::Utils.deep_dup(array)
     dup[1][:c] = 4
     refute_includes array[1], :c
