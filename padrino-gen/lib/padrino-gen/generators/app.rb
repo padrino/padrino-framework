@@ -1,6 +1,5 @@
 module Padrino
   module Generators
-
     ##
     # Responsible for applications within a Padrino project. Creates and mounts
     # the application and gives the user related information.

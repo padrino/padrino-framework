@@ -1,6 +1,5 @@
 module Padrino
   module Flash
-
     class << self
       def registered(app)
         app.helpers Helpers

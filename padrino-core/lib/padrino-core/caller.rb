@@ -1,5 +1,4 @@
 module Padrino
-
   unless defined?(PADRINO_IGNORE_CALLERS)
     # List of callers in a Padrino application that should be ignored as part of a stack trace.
     PADRINO_IGNORE_CALLERS = [

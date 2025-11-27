@@ -10,7 +10,6 @@ module Padrino
   #   Padrino::Tasks.files.unshift("yourtask.rb")
   #
   module Tasks
-
     ##
     # Returns a list of files to handle with padrino rake
     #

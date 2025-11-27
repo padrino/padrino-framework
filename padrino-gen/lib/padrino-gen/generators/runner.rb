@@ -8,7 +8,6 @@ module Padrino
     # common actions for modifying a project or application.
     #
     module Runner
-
       # Generates project scaffold based on a given template file.
       #
       # @param [Hash] options

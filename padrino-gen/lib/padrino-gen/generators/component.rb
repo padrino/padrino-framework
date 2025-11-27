@@ -1,6 +1,5 @@
 module Padrino
   module Generators
-
     ##
     # Responsible for add components within a Padrino project.
     #
