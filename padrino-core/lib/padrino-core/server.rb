@@ -12,18 +12,16 @@ module Padrino
     Server.start(*detect_application(options))
   end
 
-  #
-  #
   def self.detect_application(options)
     default_config_file = 'config.ru'
-    if (config_file = options.delete(:config)) || File.file?(default_config_file)
-      config_file ||= default_config_file
-      raise "Rack config file `#{config_file}` must have `.ru` extension" unless config_file =~ /\.ru$/
-      rack_app, rack_options = Rack::Builder.parse_file(config_file)
-      [rack_app, (rack_options || {}).merge(options)]
-    else
-      [Padrino.application, options]
-    end
+
+    config_file = options.delete(:config)
+    config_file ||= default_config_file if File.file?(default_config_file)
+    return [Padrino.application, options] unless config_file
+
+    raise "Rack config file `#{config_file}` must have `.ru` extension" unless config_file =~ /\.ru$/
+    rack_app, rack_options = Rack::Builder.parse_file(config_file)
+    [rack_app, (rack_options || {}).merge(options)]
   end
 
   ##

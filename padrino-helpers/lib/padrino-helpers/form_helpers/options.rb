@@ -7,11 +7,13 @@ module Padrino
       module Options
         def extract_option_tags!(options)
           state = extract_option_state!(options)
-          option_tags = if options[:grouped_options]
-            grouped_options_for_select(options.delete(:grouped_options), state)
-          else
-            options_for_select(extract_option_items!(options), state)
-          end
+          option_tags =
+            if options[:grouped_options]
+              grouped_options_for_select(options.delete(:grouped_options), state)
+            else
+              options_for_select(extract_option_items!(options), state)
+            end
+
           if (prompt = options.delete(:include_blank))
             option_tags.unshift(blank_option(prompt))
           end

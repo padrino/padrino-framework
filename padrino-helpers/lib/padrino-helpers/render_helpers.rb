@@ -38,11 +38,12 @@ module Padrino
         template_path = path.empty? ? :"_#{name}" : :"#{path}#{File::SEPARATOR}_#{name}"
         item_name = name.partition('.').first.to_sym
 
-        items, counter = if options[:collection].respond_to?(:inject)
-          [options.delete(:collection), 0]
-        else
-          [[options.delete(:object)], nil]
-        end
+        items, counter =
+          if options[:collection].respond_to?(:inject)
+            [options.delete(:collection), 0]
+          else
+            [[options.delete(:object)], nil]
+          end
 
         locals = options.delete(:locals) || {}
         items.each_with_object(SafeBuffer.new) do |item, html|
