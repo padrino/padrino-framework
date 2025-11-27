@@ -272,7 +272,7 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string =  string.collect(&:to_s).join(' ') if string.is_a?(Array)
+        string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
         string.to_s.gsub(ESCAPE_REGEXP, ESCAPE_VALUES)
       end
 

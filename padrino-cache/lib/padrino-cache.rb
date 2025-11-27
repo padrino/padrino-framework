@@ -46,7 +46,7 @@ module Padrino
     #   Padrino.cache.clear
     #
     def cache=(value)
-      @_cache= value
+      @_cache = value
     end
   end
 

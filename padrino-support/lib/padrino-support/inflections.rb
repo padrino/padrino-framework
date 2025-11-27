@@ -26,7 +26,7 @@ module Padrino
     CAMELIZE_MODULE_REGEXP = %r{/(.?)}
     DASH = '-'.freeze
     DEMODULIZE_CONVERT_REGEXP = /^.*::/
-    EMPTY_STRING= ''.freeze
+    EMPTY_STRING = ''.freeze
     SLASH = '/'.freeze
     VALID_CONSTANT_NAME_REGEXP = /\A(?:::)?([A-Z]\w*(?:::[A-Z]\w*)*)\z/
     UNDERSCORE = '_'.freeze

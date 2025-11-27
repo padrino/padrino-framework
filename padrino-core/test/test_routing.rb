@@ -2054,7 +2054,7 @@ describe 'Routing' do
       put('/') { 'okay' }
     end
     assert @app.method_override?
-    post '/', {'_method'=>'PUT'}, {}
+    post '/', {'_method' => 'PUT'}, {}
     assert_equal 200, status
     assert_equal 'okay', body
   end
@@ -2098,10 +2098,10 @@ describe 'Routing' do
     mock_app do
       put('/hi', provides: [:json]) { 'hi' }
     end
-    post '/hi', {'_method'=>'PUT'}
+    post '/hi', {'_method' => 'PUT'}
     assert_equal 200, status
     assert_equal 'hi', body
-    post '/hi.json', {'_method'=>'PUT'}
+    post '/hi.json', {'_method' => 'PUT'}
     assert_equal 200, status
     assert_equal 'hi', body
     post '/hi.json'
@@ -2337,7 +2337,7 @@ describe 'Routing' do
       get('/foo/:id') { params.inspect }
     end
     get '/foo/123'
-    assert_equal({'id'=>'123'}, Thread.current['padrino.instance'].instance_variable_get(:@params))
+    assert_equal({'id' => '123'}, Thread.current['padrino.instance'].instance_variable_get(:@params))
   end
 
   it 'should raise an exception if block arity is not same with captured params size' do

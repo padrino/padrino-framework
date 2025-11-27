@@ -56,7 +56,7 @@ module Padrino
           return [] if option_items.none?
 
           option_items.map do |caption, value, attributes|
-            html_attributes = { value: value || caption }.merge(attributes||{})
+            html_attributes = { value: value || caption }.merge(attributes || {})
             html_attributes[:selected] ||= option_is_selected?(html_attributes[:value], caption, state[:selected])
             html_attributes[:disabled] ||= option_is_selected?(html_attributes[:value], caption, state[:disabled])
             content_tag(:option, caption, html_attributes)
@@ -72,14 +72,14 @@ module Padrino
             attributes = item.last.is_a?(Hash) ? item.pop : {}
             value = item.flatten(1)
             attributes = value.pop if value.last.is_a?(Hash)
-            html_attributes = { label: caption }.merge(attributes||{})
+            html_attributes = { label: caption }.merge(attributes || {})
             content_tag(:optgroup, options_for_select(value, state), html_attributes)
           end
         end
 
         def extract_option_state!(options)
           {
-            selected: Array(options.delete(:value))|Array(options.delete(:selected))|Array(options.delete(:selected_options)),
+            selected: Array(options.delete(:value)) | Array(options.delete(:selected)) | Array(options.delete(:selected_options)),
             disabled: Array(options.delete(:disabled_options))
           }
         end

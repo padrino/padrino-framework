@@ -96,7 +96,7 @@ describe 'PluginGenerator' do
     end
 
     it 'should print a warning if template cannot be found' do
-      template_file  = 'hwat'
+      template_file = 'hwat'
       resolved_path = 'https://raw.github.com/padrino/padrino-recipes/master/plugins/hwat_plugin.rb'
       stub_request(:get, resolved_path).to_return(status: 404)
       plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"], {})

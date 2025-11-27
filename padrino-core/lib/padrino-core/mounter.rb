@@ -40,7 +40,7 @@ module Padrino
         @app_obj.mounter_options = options
       end
 
-      @app_root  = options[:app_root]  || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
+      @app_root  = options[:app_root] || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
       @uri_root  = '/'
       @cascade   = DEFAULT_CASCADE.dup if options[:cascade] == true
       @cascade ||= options[:cascade] ? Array(options[:cascade]) : []

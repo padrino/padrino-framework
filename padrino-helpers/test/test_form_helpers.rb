@@ -664,13 +664,13 @@ describe 'FormHelpers' do
     end
 
     it 'should include blank for grouped options' do
-      opts = { 'Red'  => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
+      opts = { 'Red' => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
       actual_html = select_tag( 'color', grouped_options: opts, include_blank: true )
       assert_html_has_tag(actual_html, 'select option:first-child', value: '', content: '')
     end
 
     it 'should include blank as caption' do
-      opts = { 'Red'  => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
+      opts = { 'Red' => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
       actual_html = select_tag( 'color', grouped_options: opts, include_blank: 'Choose your destiny' )
       assert_html_has_tag(actual_html, 'select option:first-child', value: '', content: 'Choose your destiny')
       assert_html_has_no_tag(actual_html, 'select[include_blank]')

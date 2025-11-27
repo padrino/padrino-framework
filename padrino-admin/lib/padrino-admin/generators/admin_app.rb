@@ -119,14 +119,14 @@ module Padrino
           empty_directory destination_root("#{@admin_path}/views/sessions")
           empty_directory destination_root("#{@admin_path}/views/errors")
 
-          template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root(@admin_path+"/views/base/index.#{ext}")
-          template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root(@admin_path+"/views/layouts/application.#{ext}")
-          template "templates/#{ext}/app/layouts/error.#{ext}.tt",       destination_root(@admin_path+"/views/layouts/error.#{ext}")
-          template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root(@admin_path+"/views/sessions/new.#{ext}")
+          template "templates/#{ext}/app/base/index.#{ext}.tt",          destination_root("#{@admin_path}/views/base/index.#{ext}")
+          template "templates/#{ext}/app/layouts/application.#{ext}.tt", destination_root("#{@admin_path}/views/layouts/application.#{ext}")
+          template "templates/#{ext}/app/layouts/error.#{ext}.tt",       destination_root("#{@admin_path}/views/layouts/error.#{ext}")
+          template "templates/#{ext}/app/sessions/new.#{ext}.tt",        destination_root("#{@admin_path}/views/sessions/new.#{ext}")
           # Custom error.
-          template "templates/#{ext}/app/errors/403.#{ext}.tt",          destination_root(@admin_path+"/views/errors/403.#{ext}")
-          template "templates/#{ext}/app/errors/404.#{ext}.tt",          destination_root(@admin_path+"/views/errors/404.#{ext}")
-          template "templates/#{ext}/app/errors/500.#{ext}.tt",          destination_root(@admin_path+"/views/errors/500.#{ext}")
+          template "templates/#{ext}/app/errors/403.#{ext}.tt",          destination_root("#{@admin_path}/views/errors/403.#{ext}")
+          template "templates/#{ext}/app/errors/404.#{ext}.tt",          destination_root("#{@admin_path}/views/errors/404.#{ext}")
+          template "templates/#{ext}/app/errors/500.#{ext}.tt",          destination_root("#{@admin_path}/views/errors/500.#{ext}")
 
           unless options[:destroy]
             add_project_module @model_plural
@@ -140,7 +140,7 @@ module Padrino
           # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
 
           # Destroy account only if not logged in.
-          gsub_file destination_root(@admin_path+"/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"
+          gsub_file destination_root("#{@admin_path}/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"
           return if self.behavior == :revoke
 
           instructions = []
@@ -152,14 +152,14 @@ module Padrino
           instructions << "Now repeat after me... 'ohm mani padme hum', 'ohm mani padme hum'... :)" if orm == :ohm
           instructions << "Run 'bundle exec rake db:seed'"
           instructions << "Visit the admin panel in the browser at '/#{@admin_path}'"
-          instructions.map! { |i| "  #{instructions.index(i)+1}) #{i}" }
+          instructions.map! { |i| "  #{instructions.index(i) + 1}) #{i}" }
 
           say
-          say '='*65, :green
+          say '=' * 65, :green
           say 'The admin panel has been mounted! Next, follow these steps:', :green
-          say '='*65, :green
+          say '=' * 65, :green
           say instructions.join("\n")
-          say '='*65, :green
+          say '=' * 65, :green
           say
         else
           say 'You are not at the root of a Padrino application! (config/boot.rb not found)'

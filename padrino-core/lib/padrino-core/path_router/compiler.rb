@@ -37,7 +37,7 @@ module Padrino
       #
       def find_by(request_or_env)
         request = request_or_env.is_a?(Hash) ? Sinatra::Request.new(request_or_env) : request_or_env
-        pattern  = decode_pattern(request.path_info)
+        pattern = decode_pattern(request.path_info)
         verb    = request.request_method
         rotation { |offset| match?(offset, pattern) }.select { |route| route.verb == verb }
       end
@@ -47,7 +47,7 @@ module Padrino
       #
       def call_by_request(request)
         rotation do |offset|
-          pattern  = decode_pattern(request.path_info)
+          pattern = decode_pattern(request.path_info)
           if (route = match?(offset, pattern))
             params = route.params_for(pattern, request.params)
             yield(route, params) if route.verb == request.request_method

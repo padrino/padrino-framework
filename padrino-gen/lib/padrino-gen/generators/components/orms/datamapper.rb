@@ -133,14 +133,14 @@ migration !VERSION!, :!FILENAME! do
 end
 MIGRATION
 
-DM_MODEL_UP_MG =  <<-MIGRATION.gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
+DM_MODEL_UP_MG = <<-MIGRATION.gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
 create_table :!TABLE! do
   column :id, Integer, :serial => true
   !FIELDS!
 end
 MIGRATION
 
-DM_MODEL_DOWN_MG =  <<-MIGRATION unless defined?(DM_MODEL_DOWN_MG)
+DM_MODEL_DOWN_MG = <<-MIGRATION unless defined?(DM_MODEL_DOWN_MG)
 drop_table :!TABLE!
 MIGRATION
 

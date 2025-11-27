@@ -41,7 +41,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       config = Sequel::Model.db.opts
       user, password, host = config[:user], config[:password], config[:host]
       database = config[:database]
-      charset = config[:charset] || ENV['CHARSET']   || 'utf8'
+      charset = config[:charset] || ENV['CHARSET'] || 'utf8'
       collation = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
 
       puts "=> Creating database '#{database}'"

@@ -189,7 +189,7 @@ module Padrino
         delimiter ||= options[:delimiter] || defaults[:delimiter]
 
         begin
-          rounded_number = (Float(number) * (10 ** precision)).round.to_f / 10 ** precision
+          rounded_number = (Float(number) * (10**precision)).round.to_f / 10**precision
           number_with_delimiter(
             format("%01.#{precision}f", rounded_number),
             separator: separator,
@@ -259,7 +259,7 @@ module Padrino
           number   = Float(number)
           exponent = (Math.log(number) / Math.log(1024)).to_i # Convert to base 1024
           exponent = max_exp if exponent > max_exp # we need this to avoid overflow for the highest unit
-          number  /= 1024 ** exponent
+          number  /= 1024**exponent
 
           unit_key = STORAGE_UNITS[exponent]
           unit = I18n.translate(:"number.human.storage_units.units.#{unit_key}", locale: options[:locale], count: number, raise: true)

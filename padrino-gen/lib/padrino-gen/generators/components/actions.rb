@@ -122,7 +122,7 @@ module Padrino
         #   File name of the migration.
         #
         def remove_migration(name)
-          migration_path =  Dir[destination_root('db/migrate/*.rb')].find do |f|
+          migration_path = Dir[destination_root('db/migrate/*.rb')].find do |f|
             File.basename(f) =~ /#{name.to_s.underscore}/
           end
           return unless migration_path

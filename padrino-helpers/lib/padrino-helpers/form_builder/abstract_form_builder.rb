@@ -261,7 +261,7 @@ module Padrino
 
         def variants_for_group(options)
           if (variants = options[:options])
-            variants.map { |caption, value| [caption.to_s, (value||caption).to_s] }
+            variants.map { |caption, value| [caption.to_s, (value || caption).to_s] }
           elsif (collection = options[:collection])
             collection.map { |variant| field_values(variant, options) }
           else

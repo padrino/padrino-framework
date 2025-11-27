@@ -100,9 +100,9 @@ describe 'Padrino::ParamsProtection' do
       end
     end
     get "/hide/1?#{@jack_query}"
-    assert_equal({'id'=>'1'}, result)
+    assert_equal({'id' => '1'}, result)
     get "/show/1?#{@jack_query}"
-    assert_equal({'id'=>'1'}.merge(@jack), result)
+    assert_equal({'id' => '1'}.merge(@jack), result)
   end
 
   it 'should be configurable with controller options' do
@@ -140,7 +140,7 @@ describe 'Padrino::ParamsProtection' do
     post "/persons/delete?#{@jack_query}"
     assert_equal(@jack, result)
     post "/persons/destroy/1?#{@jack_query}"
-    assert_equal({'id'=>'1'}, result)
+    assert_equal({'id' => '1'}, result)
     get '/noparam?a=1;b=2'
     assert_empty(result)
   end
