@@ -143,6 +143,7 @@ module Padrino
         end
 
         private
+
         ##
         # Returns the parsed delivery method options.
         #

@@ -176,6 +176,7 @@ module Padrino
     end
 
     protected
+
     ##
     # Locates and requires the file to load the app constant.
     #

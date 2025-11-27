@@ -184,6 +184,7 @@ module Padrino
       end
 
       protected
+
       ##
       # Retrieves content_blocks stored by content_for or within yield_content.
       #
