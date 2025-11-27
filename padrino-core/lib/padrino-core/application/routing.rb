@@ -990,16 +990,14 @@ module Padrino
         filter! :before if first_time
 
         catch(:pass) do
-
-              (route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
-              @layout = route.use_layout if route.use_layout
-              route.custom_conditions.each { |block| pass if block.bind(self).call == false }
-              route_response = route.block[self, captured_params]
-              @_response_buffer = route_response.instance_of?(Array) ? route_response.last : route_response
-              halt(route_response)
-          ensure
-            (route.after_filters - settings.filters[:after]).each { |block| instance_eval(&block) }
-
+          (route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
+          @layout = route.use_layout if route.use_layout
+          route.custom_conditions.each { |block| pass if block.bind(self).call == false }
+          route_response = route.block[self, captured_params]
+          @_response_buffer = route_response.instance_of?(Array) ? route_response.last : route_response
+          halt(route_response)
+        ensure
+          (route.after_filters - settings.filters[:after]).each { |block| instance_eval(&block) }
         end
       end
 

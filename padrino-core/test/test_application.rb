@@ -8,7 +8,6 @@ describe 'Application' do
   before { Padrino.clear! }
 
   describe 'for application functionality' do
-
     it 'should check default options' do
       assert File.identical?(__FILE__, PadrinoPristine.app_file)
       assert_equal :padrino_pristine, PadrinoPristine.app_name

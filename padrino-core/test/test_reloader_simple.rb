@@ -2,19 +2,19 @@ require File.expand_path("#{File.dirname(__FILE__)}/helper")
 require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/simple")
 
 describe 'SimpleReloader' do
-
   describe 'for simple reset functionality' do
-
     it 'should reset routes' do
       mock_app do
         (1..10).each do |i|
           get("/#{i}") { "Foo #{i}" }
         end
       end
+
       (1..10).each do |i|
         get "/#{i}"
         assert_equal "Foo #{i}", body
       end
+
       @app.reset_routes!
       (1..10).each do |i|
         get "/#{i}"
@@ -27,6 +27,7 @@ describe 'SimpleReloader' do
         set :environment, :development
         get('/') { 'ok' }
       end
+
       assert_equal :development, @app.environment
       get '/'
       assert_equal 200, status
@@ -62,6 +63,7 @@ describe 'SimpleReloader' do
       new_phrase = "The magick number is: #{rand(2**255)}!"
       buffer     = File.read(SimpleDemo.app_file)
       new_buffer = buffer.sub(/The magick number is: \d+!/, new_phrase)
+
       begin
         File.open(SimpleDemo.app_file, 'w') { |f| f.write(new_buffer) }
         Time.stub(:now, Time.now + 2) { get '/' }
@@ -86,6 +88,7 @@ describe 'SimpleReloader' do
       assert_equal 4, @app.routes.size # GET+HEAD of "/" + GET+HEAD of "/rand" = 4
       assert_equal 4, @app.extensions.size # [Padrino::ApplicationSetup, Padrino::ParamsProtection, Padrino::Routing, Padrino::Flash]
       assert_equal 0, @app.templates.size
+
       @app.reload!
       get '/rand'
       refute_equal last_body, body

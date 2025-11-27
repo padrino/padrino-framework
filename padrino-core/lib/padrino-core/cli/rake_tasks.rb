@@ -64,9 +64,7 @@ namespace :routes do
 end
 
 Dir['{lib/tasks/**,tasks/**,test,spec}/*.rake'].each do |file|
-
-    load(File.expand_path(file))
-  rescue LoadError => e
-    warn "#{file}: #{e.message}"
-
+  load(File.expand_path(file))
+rescue LoadError => e
+  warn "#{file}: #{e.message}"
 end

@@ -699,7 +699,6 @@ describe 'FormBuilder' do
       actual_html = form_for(@user, '/register', "accept-charset": 'UTF-8', multipart: false) { |f| f.file_field :photo }
       assert_html_has_no_tag(actual_html, 'form', "accept-charset": 'UTF-8', action: '/register', enctype: 'multipart/form-data')
     end
-
   end
 
   describe 'for #select method' do

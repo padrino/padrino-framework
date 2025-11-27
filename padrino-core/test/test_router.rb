@@ -2,7 +2,6 @@ require File.expand_path("#{File.dirname(__FILE__)}/helper")
 require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/simple")
 
 describe 'Router' do
-
   def setup
     Padrino.clear!
   end
@@ -121,25 +120,18 @@ describe 'Router' do
   end
 
   it 'should dispatch requests to cascade mounted apps and not cascade ok statuses' do
-
     api = mock_app do
-      get 'scary' do
-        '1'
-      end
+      get('scary') { '1' }
       set :cascade, true
     end
 
     app = mock_app do
-      get 'scary' do
-        '2'
-      end
+      get('scary') { '2' }
       set :cascade, false
     end
 
     app2 = mock_app do
-      get 'terrifying' do
-        ''
-      end
+      get('terrifying') { '' }
     end
 
     map = Padrino::Router.new(
@@ -155,7 +147,6 @@ describe 'Router' do
 
     res = Rack::MockRequest.new(map).get('/bar/terrifying')
     assert !res.ok?
-
   end
 
   it 'should dispatch requests to cascade mounted apps until it sees a cascade == false or []g' do

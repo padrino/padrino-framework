@@ -1955,7 +1955,6 @@ describe 'Routing' do
         get('/foo') { 'foo' }
         get('/bar') { 'bar' }
       end
-
     end
 
     get '/posts/foo'
@@ -1975,7 +1974,6 @@ describe 'Routing' do
         get('/foo') { 'foo' }
         get('/bar', increment!: false) { 'bar' }
       end
-
     end
 
     get '/posts/foo'

@@ -1,7 +1,6 @@
 require File.expand_path("#{File.dirname(__FILE__)}/helper")
 
 describe 'AdminApplication' do
-
   def setup
     load_fixture 'sequel'
   end
@@ -42,7 +41,6 @@ describe 'AdminApplication' do
       get '/unauthenticated' do
         'unauthenticated'
       end
-
     end
 
     get '/foo'

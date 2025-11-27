@@ -2,7 +2,6 @@ require File.expand_path("#{File.dirname(__FILE__)}/helper")
 require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/complex")
 
 describe 'ComplexReloader' do
-
   describe 'for complex reload functionality' do
     before do
       Padrino.clear!
@@ -45,6 +44,7 @@ describe 'ComplexReloader' do
       buffer     = File.read(Complex1Demo.app_file)
       new_buffer = buffer.sub(/The magick number is: \d+!/, new_phrase)
       new_buffer.sub!(/get\(:destroy\)/, 'get(:destroy, :with => :id)')
+
       begin
         File.open(Complex1Demo.app_file, 'w') { |f| f.write(new_buffer) }
         Time.stub(:now, Time.now + 2) { get '/complex_2_demo' }

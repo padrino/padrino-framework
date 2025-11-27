@@ -2,7 +2,6 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
   require 'mongoid'
 
   namespace :mi do
-
     if Mongoid::VERSION =~ /^[012]\./
       # Mongoid 2 API
       def mongoid_collections

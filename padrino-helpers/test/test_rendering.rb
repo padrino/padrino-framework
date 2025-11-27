@@ -14,7 +14,6 @@ describe 'Rendering' do
   end
 
   describe 'for application layout functionality' do
-
     it 'should get no layout' do
       mock_app do
         get('/') { 'no layout' }
@@ -305,7 +304,6 @@ describe 'Rendering' do
   end
 
   describe 'for application render functionality' do
-
     it 'should work properly with logging and missing layout' do
       create_view :index, '<%= foo %>'
       mock_app do
@@ -565,7 +563,6 @@ describe 'Rendering' do
       assert_equal 'Im a json', body
       get '/bar.pk'
       assert_equal 404, status
-
     end
 
     it 'should resolve template location relative to controller name' do

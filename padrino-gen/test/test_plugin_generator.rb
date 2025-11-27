@@ -51,7 +51,6 @@ describe 'PluginGenerator' do
   end
 
   describe 'with resolving urls' do
-
     it 'should resolve generic url properly' do
       template_file = 'http://www.example.com/test.rb'
       stub_request :get, template_file
