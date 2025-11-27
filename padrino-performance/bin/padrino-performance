@@ -20,7 +20,7 @@ end.parse!
 # This little gem is stolen from Rake, thanks Jim!
 RUBY = File.join(
   RbConfig::CONFIG['bindir'],
-  RbConfig::CONFIG['ruby_install_name'] + RbConfig::CONFIG['EXEEXT']).
-  sub(/.*\s.*/m, '"\&"')
+  RbConfig::CONFIG['ruby_install_name'] + RbConfig::CONFIG['EXEEXT']
+).sub(/.*\s.*/m, '"\&"')
 
 exec({ 'RUBYOPT' => argv.join('') }, RUBY, '-S', *ARGV)

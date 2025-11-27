@@ -153,8 +153,12 @@ module Padrino
     def underscore(str)
       str = str.to_s
       return str.underscore if str.respond_to?(:underscore)
-      str.gsub(UNDERSCORE_MODULE_REGEXP, SLASH).gsub(UNDERSCORE_CONVERT_REGEXP1, UNDERSCORE_CONVERT_REPLACE).
-          gsub(UNDERSCORE_CONVERT_REGEXP2, UNDERSCORE_CONVERT_REPLACE).tr(DASH, UNDERSCORE).downcase
+
+      str.gsub(UNDERSCORE_MODULE_REGEXP, SLASH)
+         .gsub(UNDERSCORE_CONVERT_REGEXP1, UNDERSCORE_CONVERT_REPLACE)
+         .gsub(UNDERSCORE_CONVERT_REGEXP2, UNDERSCORE_CONVERT_REPLACE)
+         .tr(DASH, UNDERSCORE)
+         .downcase
     end
 
     ##
