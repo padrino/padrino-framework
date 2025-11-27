@@ -5,4 +5,3 @@ SystemDemo.helpers do
     Resolv.name
   end
 end
-

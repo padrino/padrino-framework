@@ -102,4 +102,3 @@ describe 'SqlHelpers' do
     end
   end
 end
-
