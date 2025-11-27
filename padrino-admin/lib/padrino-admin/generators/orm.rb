@@ -35,19 +35,21 @@ module Padrino
         def field_type(type)
           type = :string if type.nil? # couchrest-Hack to avoid the next line to fail
           type = type.to_s.demodulize.downcase.to_sym unless type.is_a?(Symbol)
+
           case type
-            when :integer, :float, :decimal   then :text_field
-            when :string                      then :text_field
-            when :text                        then :text_area
-            when :boolean                     then :check_box
-            else :text_field
+          when :integer, :float, :decimal   then :text_field
+          when :string                      then :text_field
+          when :text                        then :text_area
+          when :boolean                     then :check_box
+          else :text_field
           end
         end
 
         Column = Struct.new(:name, :type) # for compatibility
 
         def columns
-          @columns ||= case orm
+          @columns ||=
+            case orm
             when :activerecord then @klass.columns
             when :minirecord   then @klass.columns
             when :datamapper   then @klass.properties.map { |p| dm_column(p) }
@@ -58,7 +60,7 @@ module Padrino
             when :ohm          then @klass.attributes.map { |a| Column.new(a.to_s, :string) } # ohm has strings
             when :dynamoid     then @klass.attributes.map { |k, v| Column.new(k.to_s, v[:type]) }
             else raise OrmError, "Adapter #{orm} is not yet supported!"
-          end
+            end
         end
 
         def dm_column(property)
@@ -95,10 +97,10 @@ module Padrino
 
         def find(params = nil)
           case orm
-            when :activerecord, :minirecord, :mongomapper, :mongoid, :dynamoid then "#{klass_name}.find(#{params})"
-            when :datamapper, :couchrest then "#{klass_name}.get(#{params})"
-            when :sequel, :ohm then "#{klass_name}[#{params}]"
-            else raise OrmError, "Adapter #{orm} is not yet supported!"
+          when :activerecord, :minirecord, :mongomapper, :mongoid, :dynamoid then "#{klass_name}.find(#{params})"
+          when :datamapper, :couchrest then "#{klass_name}.get(#{params})"
+          when :sequel, :ohm then "#{klass_name}[#{params}]"
+          else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
 
@@ -111,54 +113,48 @@ module Padrino
         end
 
         def save
-          case orm
-            when :sequel then "(@#{name_singular}.save rescue false)"
-            else "@#{name_singular}.save"
-          end
+          orm == :sequel ? "(@#{name_singular}.save rescue false)" : "@#{name_singular}.save"
         end
 
         def update_attributes(params = nil)
           case orm
-            when :mongomapper, :mongoid, :couchrest, :dynamoid then "@#{name_singular}.update_attributes(#{params})"
-            when :activerecord, :minirecord, :datamapper, :ohm then "@#{name_singular}.update(#{params})"
-            when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
-            else raise OrmError, "Adapter #{orm} is not yet supported!"
+          when :mongomapper, :mongoid, :couchrest, :dynamoid then "@#{name_singular}.update_attributes(#{params})"
+          when :activerecord, :minirecord, :datamapper, :ohm then "@#{name_singular}.update(#{params})"
+          when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
+          else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
 
         def destroy
-          case orm
-            when :ohm then "#{name_singular}.delete"
-            else "#{name_singular}.destroy"
-          end
+          orm == :ohm ? "#{name_singular}.delete" : "#{name_singular}.destroy"
         end
 
         def find_by_ids(params = nil)
           case orm
-            when :ohm then "#{klass_name}.fetch(#{params})"
-            when :datamapper then "#{klass_name}.all(:id => #{params})"
-            when :sequel then "#{klass_name}.where(:id => #{params})"
-            when :mongoid then "#{klass_name}.find(#{params})"
-            when :couchrest then "#{klass_name}.all(:keys => #{params})"
-            when :dynamoid then "#{klass_name}.find(#{params})"
-            else find(params)
+          when :ohm then "#{klass_name}.fetch(#{params})"
+          when :datamapper then "#{klass_name}.all(:id => #{params})"
+          when :sequel then "#{klass_name}.where(:id => #{params})"
+          when :mongoid then "#{klass_name}.find(#{params})"
+          when :couchrest then "#{klass_name}.all(:keys => #{params})"
+          when :dynamoid then "#{klass_name}.find(#{params})"
+          else find(params)
           end
         end
 
         def multiple_destroy(params = nil)
           case orm
-            when :ohm then "#{params}.each(&:delete)"
-            when :sequel then  "#{params}.destroy"
-            when :datamapper then "#{params}.destroy"
-            when :couchrest, :mongoid, :mongomapper, :dynamoid then "#{params}.each(&:destroy)"
-            else "#{klass_name}.destroy #{params}"
+          when :ohm then "#{params}.each(&:delete)"
+          when :sequel then  "#{params}.destroy"
+          when :datamapper then "#{params}.destroy"
+          when :couchrest, :mongoid, :mongomapper, :dynamoid then "#{params}.each(&:destroy)"
+          else "#{klass_name}.destroy #{params}"
           end
         end
 
         def has_error(field)
           case orm
-            when :datamapper, :ohm, :sequel then "@#{name_singular}.errors.key?(:#{field}) && @#{name_singular}.errors[:#{field}].count > 0"
-            else "@#{name_singular}.errors.include?(:#{field})"
+          when :datamapper, :ohm, :sequel then "@#{name_singular}.errors.key?(:#{field}) && @#{name_singular}.errors[:#{field}].count > 0"
+          else "@#{name_singular}.errors.include?(:#{field})"
           end
         end
       end

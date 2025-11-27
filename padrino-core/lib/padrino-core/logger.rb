@@ -357,7 +357,8 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
         config = Config[:production]
       end
 
-      stream = case config[:stream]
+      stream =
+        case config[:stream]
         when :to_file
           if (filename = config[:log_path])
             filename = Padrino.root(filename) unless Pathname.new(filename).absolute?
@@ -375,7 +376,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
         when :stdout then $stdout
         when :stderr then $stderr
         else config[:stream] # return itself, probabilly is a custom stream.
-      end
+        end
 
       new_logger = Padrino::Logger.new(config.merge(stream: stream))
       new_logger.extend(Padrino::Logger::Extensions)

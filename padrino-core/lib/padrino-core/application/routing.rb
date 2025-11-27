@@ -477,7 +477,8 @@ module Padrino
       #   get :list, :priority => :low                           # Defers route to be last
       #   get /pattern/, :name => :foo, :generate_with => '/foo' # Generates :foo as /foo
       def route(verb, path, *args, &block)
-        options = case args.size
+        options =
+          case args.size
           when 2
             args.last.merge(map: args.first)
           when 1
@@ -490,7 +491,7 @@ module Padrino
           when 0
             {}
           else raise
-        end
+          end
 
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
