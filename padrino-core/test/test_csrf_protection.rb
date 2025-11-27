@@ -6,11 +6,13 @@ describe 'Application' do
   describe 'CSRF protection' do
     describe 'with CSRF protection on' do
       before do
-        @token = begin
-                   Rack::Protection::AuthenticityToken.random_token
-                 rescue StandardError
-                   'a_token'
-                 end
+        @token =
+          begin
+            Rack::Protection::AuthenticityToken.random_token
+          rescue StandardError
+            'a_token'
+          end
+
         mock_app do
           enable :sessions
           enable :protect_from_csrf
@@ -146,11 +148,13 @@ describe 'Application' do
 
     describe 'with custom protection options' do
       before do
-        @token = begin
-                   Rack::Protection::AuthenticityToken.random_token
-                 rescue StandardError
-                   'a_token'
-                 end
+        @token =
+          begin
+            Rack::Protection::AuthenticityToken.random_token
+          rescue StandardError
+            'a_token'
+          end
+
         mock_app do
           enable :sessions
           set :protect_from_csrf, authenticity_param: 'foobar', message: 'sucker!'
