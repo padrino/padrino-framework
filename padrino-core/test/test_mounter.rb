@@ -141,6 +141,7 @@ describe 'Mounter' do
         get('/test') { 'test' }
         get(:index, provides: %i[js json]) { 'index' }
         get(%r{/foo|/baz}) { 'regexp' }
+
         controllers :posts do
           get(:index) { 'index' }
           get(:new, provides: :js) { 'new' }
@@ -149,6 +150,7 @@ describe 'Mounter' do
           get(:regexp, map: %r{/foo|/baz}) { 'regexp' }
         end
       end
+
       class ::TwoApp < Padrino::Application
         controllers :users do
           get(:index) { 'users' }
@@ -157,6 +159,7 @@ describe 'Mounter' do
           put(:update) { 'users update' }
           delete(:destroy) { 'users delete' }
         end
+
         controllers :foo_bar do
           get(:index) { 'foo bar index' }
           get(:new) { 'foo bar new' }
@@ -164,6 +167,7 @@ describe 'Mounter' do
           put(:update) { 'foo bar update' }
           delete(:destroy) { 'foo bar delete' }
         end
+
         controllers :test, :nested do
           get(:test1) { 'test1' }
         end
@@ -201,12 +205,15 @@ describe 'Mounter' do
       class ::App1 < Padrino::Application
         get(:index) { halt 404, 'index1' }
       end
+
       class ::App2 < Padrino::Application
         get(:index) { halt 404, 'index2' }
       end
+
       class ::App3 < Padrino::Application
         get(:index) { halt 404, 'index3' }
       end
+
       Padrino.mount('app1', cascade: true).to('/foo')
       Padrino.mount('app2').to('/foo')
       Padrino.mount('app3').to('/foo')

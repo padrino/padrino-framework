@@ -8,6 +8,7 @@ module PrecompiledApp
   class App < Padrino::Application
     10.times { |n| get("/#{n}") {} }
   end
+
   class SubApp < Padrino::Application
     10.times { |n| get("/#{n}") {} }
   end

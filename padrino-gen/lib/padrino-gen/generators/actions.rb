@@ -15,6 +15,7 @@ module Padrino
       def self.included(base)
         base.extend(ClassMethods)
       end
+
       ##
       # Avoids editing destination file if it does not exist.
       #

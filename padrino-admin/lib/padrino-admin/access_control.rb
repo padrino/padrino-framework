@@ -2,6 +2,7 @@ module Padrino
   module Admin
     class AccessControlError < StandardError
     end
+
     ##
     # This module enables access control functionality within a Padrino application.
     #

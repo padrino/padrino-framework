@@ -183,10 +183,12 @@ end
 describe 'alternate logger' do
   class FancyLogger
     attr_accessor :level, :log
+
     def initialize(buf)
       self.log = buf
       self.level = 0
     end
+
     def add(level, text)
       self.log << text
     end

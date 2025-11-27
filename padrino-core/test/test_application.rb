@@ -88,9 +88,11 @@ describe 'Application' do
       class PadrinoTestApp4 < Padrino::Application
         enable :sessions
       end
+
       class PadrinoTestApp5 < Padrino::Application
         set :sessions, use: Rack::Session::Pool
       end
+
       Padrino.mount('PadrinoTestApp4').to('/write')
       Padrino.mount('PadrinoTestApp5').to('/read')
       PadrinoTestApp4.get('/') { session[:foo] = 'cookie' }

@@ -590,12 +590,15 @@ describe 'Rendering' do
             yield
             @_out_buf << 'SPARTA!'
           end
+
           def is; 'IS.'; end
         end
+
         get '/' do
           render :erb, '<% container do %> <%= is %> <% end %>'
         end
       end
+
       get '/'
       assert ok?
       assert_equal 'THIS. IS. SPARTA!', body
