@@ -21,16 +21,16 @@ module Padrino
 
       argument :name, desc: 'The name of your padrino project'
 
-      class_option :app ,             desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
+      class_option :app,              desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
       class_option :bundle,           desc: 'Run bundle install',                                               aliases: '-b', default: false,       type: :boolean
       class_option :root,             desc: 'The root destination',                                             aliases: '-r', default: '.',         type: :string
-      class_option :dev,              desc: 'Use padrino from a git checkout',                                                    default: false,       type: :boolean
+      class_option :dev,              desc: 'Use padrino from a git checkout',                                                 default: false,       type: :boolean
       class_option :tiny,             desc: 'Generate tiny app skeleton',                                       aliases: '-i', default: false,       type: :boolean
       class_option :lean,             desc: 'Generate lean project without apps',                               aliases: '-l', default: false,       type: :boolean
-      class_option :api,              desc: 'Generate minimal project for APIs',                                                  default: false,       type: :boolean
+      class_option :api,              desc: 'Generate minimal project for APIs',                                               default: false,       type: :boolean
       class_option :template,         desc: 'Generate project from template',                                   aliases: '-p', default: nil,         type: :string
       class_option :gem,              desc: 'Generate project as a gem',                                        aliases: '-g', default: false,       type: :boolean
-      class_option :migration_format, desc: 'Filename format for migrations (number, timestamp)',                                 default: 'number',    type: :string
+      class_option :migration_format, desc: 'Filename format for migrations (number, timestamp)',                              default: 'number',    type: :string
       class_option :adapter,          desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: 'sqlite',    type: :string
       class_option :server,           desc: 'HTTP server to use (webrick, thin, puma)',                         aliases: '-s', default: 'webrick',   type: :string
 

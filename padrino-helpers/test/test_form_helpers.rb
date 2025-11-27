@@ -263,17 +263,17 @@ describe 'FormHelpers' do
       assert_response_has_tag 'form.simple-form label', count: 9
       assert_response_has_tag 'form.simple-form label', content: 'Username', for: 'username'
       assert_response_has_tag 'form.simple-form label', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.simple-form label', content: 'Gender', for: 'gender'
+      assert_response_has_tag 'form.simple-form label', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in erb for advanced form' do
       get '/erb/form_tag'
       assert_response_has_tag 'form.advanced-form label', count: 11
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Nickname', for: 'username'
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.advanced-form label.about', content: 'About Me', for: 'about'
-      assert_response_has_tag 'form.advanced-form label.photo', content: 'Photo'   , for: 'photo'
-      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender'   , for: 'gender'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Nickname', for: 'username'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Password', for: 'password'
+      assert_response_has_tag 'form.advanced-form label.about',  content: 'About Me', for: 'about'
+      assert_response_has_tag 'form.advanced-form label.photo',  content: 'Photo',    for: 'photo'
+      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in haml for simple form' do
@@ -281,17 +281,17 @@ describe 'FormHelpers' do
       assert_response_has_tag 'form.simple-form label', count: 9
       assert_response_has_tag 'form.simple-form label', content: 'Username', for: 'username'
       assert_response_has_tag 'form.simple-form label', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.simple-form label', content: 'Gender', for: 'gender'
+      assert_response_has_tag 'form.simple-form label', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in haml for advanced form' do
       get '/haml/form_tag'
       assert_response_has_tag 'form.advanced-form label', count: 11
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Nickname', for: 'username'
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.advanced-form label.about', content: 'About Me', for: 'about'
-      assert_response_has_tag 'form.advanced-form label.photo', content: 'Photo'   , for: 'photo'
-      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender'   , for: 'gender'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Nickname', for: 'username'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Password', for: 'password'
+      assert_response_has_tag 'form.advanced-form label.about',  content: 'About Me', for: 'about'
+      assert_response_has_tag 'form.advanced-form label.photo',  content: 'Photo',    for: 'photo'
+      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in slim for simple form' do
@@ -299,17 +299,17 @@ describe 'FormHelpers' do
       assert_response_has_tag 'form.simple-form label', count: 9
       assert_response_has_tag 'form.simple-form label', content: 'Username', for: 'username'
       assert_response_has_tag 'form.simple-form label', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.simple-form label', content: 'Gender', for: 'gender'
+      assert_response_has_tag 'form.simple-form label', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in slim for advanced form' do
       get '/slim/form_tag'
       assert_response_has_tag 'form.advanced-form label', count: 11
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Nickname', for: 'username'
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.advanced-form label.about', content: 'About Me', for: 'about'
-      assert_response_has_tag 'form.advanced-form label.photo', content: 'Photo'   , for: 'photo'
-      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender'   , for: 'gender'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Nickname', for: 'username'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Password', for: 'password'
+      assert_response_has_tag 'form.advanced-form label.about',  content: 'About Me', for: 'about'
+      assert_response_has_tag 'form.advanced-form label.photo',  content: 'Photo',    for: 'photo'
+      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender',   for: 'gender'
     end
   end
 
