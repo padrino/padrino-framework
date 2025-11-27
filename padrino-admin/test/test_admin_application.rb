@@ -121,11 +121,11 @@ describe 'AdminApplication' do
     assert @app.access_control.allowed?(Account.admin, '/login')
     assert @app.access_control.allowed?(Account.admin, '/any')
     assert @app.access_control.allowed?(Account.admin, '/settings')
-    assert ! @app.access_control.allowed?(Account.admin, '/posts')
+    refute @app.access_control.allowed?(Account.admin, '/posts')
 
     assert @app.access_control.allowed?(Account.editor, '/login')
     assert @app.access_control.allowed?(Account.editor, '/any')
-    assert ! @app.access_control.allowed?(Account.editor, '/settings')
+    refute @app.access_control.allowed?(Account.editor, '/settings')
     assert @app.access_control.allowed?(Account.editor, '/posts')
 
     get '/login'
