@@ -72,6 +72,7 @@ end
 
 class Address
   attr_accessor :name
+
   def initialize(name, existing); @name, @existing = name, existing; end
   def new_record?; !@existing; end
   def id; @existing ? 25 : nil; end
