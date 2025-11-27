@@ -4,7 +4,6 @@ module Padrino
     # Responsible for the generating mailers and message definitions.
     #
     class Mailer < Thor::Group
-
       Padrino::Generators.add_generator(:mailer, self)
 
       def self.source_root; __dir__; end

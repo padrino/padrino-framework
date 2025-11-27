@@ -6,7 +6,6 @@ module Padrino
     # Responsible for generating route controllers and associated tests within a Padrino application.
     #
     class Controller < Thor::Group
-
       Padrino::Generators.add_generator(:controller, self)
 
       def self.source_root; __dir__; end

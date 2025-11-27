@@ -4,7 +4,6 @@ module Padrino
     # Defines the generator for creating a new admin app.
     #
     class AdminApp < Thor::Group
-
       # Add this generator to our padrino-gen
       Padrino::Generators.add_generator(:admin, self)
 

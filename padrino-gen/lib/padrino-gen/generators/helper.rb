@@ -4,7 +4,6 @@ module Padrino
     # Responsible for generating route helpers and associated tests within a Padrino application.
     #
     class Helper < Thor::Group
-
       Padrino::Generators.add_generator(:helper, self)
 
       def self.source_root; __dir__; end

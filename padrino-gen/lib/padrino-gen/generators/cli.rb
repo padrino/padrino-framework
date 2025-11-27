@@ -7,7 +7,6 @@ module Padrino
     # +Padrino::Generators.load_components!+ for handle 3rd party generators.
     #
     class Cli < Thor::Group
-
       include Thor::Actions
 
       class_option :root, desc: 'The root destination', aliases: '-r', default: '.', type: :string

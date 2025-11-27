@@ -6,7 +6,6 @@ module Padrino
     # the application and gives the user related information.
     #
     class App < Thor::Group
-
       Padrino::Generators.add_generator(:app, self)
 
       def self.source_root; __dir__; end

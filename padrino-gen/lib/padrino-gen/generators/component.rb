@@ -5,7 +5,6 @@ module Padrino
     # Responsible for add components within a Padrino project.
     #
     class Component < Thor::Group
-
       Padrino::Generators.add_generator(:component, self)
 
       def self.source_root; __dir__; end
