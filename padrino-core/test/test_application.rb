@@ -148,19 +148,17 @@ describe 'Application' do
         assert_equal 'custom error', body
       end
 
+      # see naming collision in issue #1814
       it 'should pass Routing#parent to Module#parent' do
-        # see naming collision in issue #1814
-
-          ConstTest = Class.new(Padrino::Application)
-          class Module
-            def parent
-              :dirty
-            end
+        ConstTest = Class.new(Padrino::Application)
+        class Module
+          def parent
+            :dirty
           end
-          assert_equal :dirty, ConstTest.parent
-        ensure
-          Module.instance_eval { undef :parent }
-
+        end
+        assert_equal :dirty, ConstTest.parent
+      ensure
+        Module.instance_eval { undef :parent }
       end
     end
 

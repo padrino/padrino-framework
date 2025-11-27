@@ -7,7 +7,7 @@ module Padrino
           JSON.loaded_lib!(lib) if JSON.registered_libs.include? lib
           super
         end
-      end # InfectedRequire
+      end
 
       def self.registered_libs
         @registered_libs ||= []
@@ -46,8 +46,6 @@ module Padrino
 
       infect_require!
       setup_captures!('json', 'json_pure', 'yajl-ruby', 'oj', 'crack')
-    end # JSON
-  # Performance
+    end
   end
-  # Padrino
 end
