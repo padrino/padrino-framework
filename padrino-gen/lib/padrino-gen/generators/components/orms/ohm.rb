@@ -48,12 +48,14 @@ MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
 def create_model_file(name, options = {})
-    model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-    field_tuples = options[:fields].map { |value| value.split(':') }
-    column_declarations = field_tuples.map { |field, _kind| "attribute :#{field}" }.join("\n  ")
-    model_contents = OHM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
-    model_contents.gsub!(/!FIELDS!/, column_declarations)
-    create_file(model_path, model_contents)
+  model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
+  column_declarations = options[:fields].map do |value|
+    "attribute :#{value.split(':').first}"
+  end
+
+  model_contents = OHM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  model_contents.gsub!(/!FIELDS!/, column_declarations.join("\n  "))
+  create_file(model_path, model_contents)
 end
 
 def create_model_migration(filename, name, fields)
