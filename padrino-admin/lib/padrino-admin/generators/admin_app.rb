@@ -72,7 +72,10 @@ module Padrino
           directory 'templates/app',       destination_root(@admin_path)
           directory 'templates/assets',    destination_root('public', @admin_path)
           template  'templates/app.rb.tt', destination_root("#{@admin_path}/app.rb")
-          inject_into_file destination_root('config/apps.rb'), "\nPadrino.mount(\"#{@app_name}::#{@admin_name}\", :app_file => Padrino.root('#{@admin_path}/app.rb')).to(\"/#{@admin_path}\")\n", before: %r{^Padrino.mount.*\.to\('/'\)$}
+          inject_into_file destination_root('config/apps.rb'), "\n" + <<~RUBY, before: %r{^Padrino.mount.*\.to\('/'\)$}
+            Padrino.mount("#{@app_name}::#{@admin_name}", :app_file => Padrino.root('#{@admin_path}/app.rb')).to("/#{@admin_path}")
+          RUBY
+
           unless options[:destroy]
             insert_middleware 'ConnectionPoolManagement', @admin_path if %i[minirecord activerecord].include?(orm)
             insert_middleware 'IdentityMap', @admin_path if orm == :datamapper

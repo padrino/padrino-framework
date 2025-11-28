@@ -103,7 +103,10 @@ describe 'FormatHelpers' do
 
   describe 'for #truncate_words method' do
     it 'should support default truncation' do
-      actual_text = truncate_words('Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about interesting people, but most of them were about the ways of fairies and giants.')
+      actual_text = truncate_words(<<~TEXT.chomp)
+        Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about interesting people,
+        but most of them were about the ways of fairies and giants.
+      TEXT
       assert_equal 'Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about...', actual_text
     end
     it 'should support specifying length' do

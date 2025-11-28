@@ -17,7 +17,9 @@ module Padrino
       method_option :daemonize,      type: :boolean, aliases: '-d', desc: 'Run daemonized in the background.'
       method_option :pid,            type: :string,  aliases: '-i', desc: 'File to store pid.'
       method_option :debug,          type: :boolean,                desc: 'Set debugging flags.'
-      method_option :options,        type: :array,   aliases: '-O', desc: "--options NAME=VALUE NAME2=VALUE2'. pass VALUE to the server as option NAME. If no VALUE, sets it to true. Run '#{$PROGRAM_NAME} --server_options"
+      method_option :options,        type: :array,   aliases: '-O', desc: <<~DESC.chomp
+        --options NAME=VALUE NAME2=VALUE2'. pass VALUE to the server as option NAME. If no VALUE, sets it to true. Run '#{$PROGRAM_NAME} --server_options
+      DESC
       method_option :server_options, type: :boolean,                desc: "Tells the current server handler's options that can be used with --options"
 
       def start(*args)

@@ -315,9 +315,10 @@ module Padrino
         end
 
         def default_options(field, options, defaults = {})
-          { value: field_value(field),
-            id: field_id(field)
-          }.update(defaults).update(options).update(error_class(field)) { |_, *values| values.compact.join(' ') }
+          { value: field_value(field), id: field_id(field) }
+            .update(defaults)
+            .update(options)
+            .update(error_class(field)) { |_, *values| values.compact.join(' ') }
         end
       end
     end
