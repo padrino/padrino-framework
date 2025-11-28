@@ -1,80 +1,80 @@
-BACON_SETUP = <<-TEST.gsub(/^ {10}/, '') unless defined?(BACON_SETUP)
-RACK_ENV = 'test' unless defined?(RACK_ENV)
-require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+BACON_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_SETUP)
+  RACK_ENV = 'test' unless defined?(RACK_ENV)
+  require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
+  Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
 
-class Bacon::Context
-  include Rack::Test::Methods
-end
+  class Bacon::Context
+    include Rack::Test::Methods
+  end
 
-# You can use this method to custom specify a Rack app
-# you want rack-test to invoke:
-#
-#   app CLASS_NAME
-#   app CLASS_NAME.tap { |a| }
-#   app(CLASS_NAME) do
-#     set :foo, :bar
-#   end
-#
-def app(app = nil, &blk)
-  @app ||= block_given? ? app.instance_eval(&blk) : app
-  @app ||= Padrino.application
-end
+  # You can use this method to custom specify a Rack app
+  # you want rack-test to invoke:
+  #
+  #   app CLASS_NAME
+  #   app CLASS_NAME.tap { |a| }
+  #   app(CLASS_NAME) do
+  #     set :foo, :bar
+  #   end
+  #
+  def app(app = nil, &blk)
+    @app ||= block_given? ? app.instance_eval(&blk) : app
+    @app ||= Padrino.application
+  end
 TEST
 
-BACON_CONTROLLER_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(BACON_CONTROLLER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+BACON_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_CONTROLLER_TEST)
+  require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
-describe "!PATH!" do
-  it 'returns text at root' do
-    get "!EXPANDED_PATH!"
-    last_response.body.should == "some text"
+  describe "!PATH!" do
+    it 'returns text at root' do
+      get "!EXPANDED_PATH!"
+      last_response.body.should == "some text"
+    end
   end
-end
 TEST
 
-BACON_RAKE = <<-TEST.gsub(/^ {10}/, '') unless defined?(BACON_RAKE)
-require 'rake/testtask'
+BACON_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_RAKE)
+  require 'rake/testtask'
 
-test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
+  test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
 
-test_tasks.each do |folder|
-  Rake::TestTask.new("test:\#{folder}") do |test|
-    test.pattern = "test/\#{folder}/**/*_test.rb"
-    test.verbose = true
+  test_tasks.each do |folder|
+    Rake::TestTask.new("test:\#{folder}") do |test|
+      test.pattern = "test/\#{folder}/**/*_test.rb"
+      test.verbose = true
+    end
   end
-end
 
-desc "Run application test suite"
-task 'test' => test_tasks.map { |f| "test:\#{f}" }
+  desc "Run application test suite"
+  task 'test' => test_tasks.map { |f| "test:\#{f}" }
 
-task :default => :test
+  task :default => :test
 TEST
 
-BACON_MODEL_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(BACON_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+BACON_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_MODEL_TEST)
+  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
-describe "!NAME! Model" do
-  it 'can be created' do
-    @!DNAME! = !NAME!.new
-    @!DNAME!.should.not.be.nil
+  describe "!NAME! Model" do
+    it 'can be created' do
+      @!DNAME! = !NAME!.new
+      @!DNAME!.should.not.be.nil
+    end
   end
-end
 TEST
 
-BACON_HELPER_TEST = <<-TEST unless defined?(BACON_HELPER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+BACON_HELPER_TEST = <<~TEST unless defined?(BACON_HELPER_TEST)
+  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
-describe "!NAME!" do
-  before do
-    @helpers = Class.new
-    @helpers.extend !NAME!
-  end
+  describe "!NAME!" do
+    before do
+      @helpers = Class.new
+      @helpers.extend !NAME!
+    end
 
-  it "should return nil" do
-    @helpers.foo.should.equal nil
+    it "should return nil" do
+      @helpers.foo.should.equal nil
+    end
   end
-end
 TEST
 
 def setup_test

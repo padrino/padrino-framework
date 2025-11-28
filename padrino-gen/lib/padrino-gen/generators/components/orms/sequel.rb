@@ -1,10 +1,10 @@
-SEQUEL = <<-SEQUEL unless defined?(SEQUEL)
-Sequel::Model.raise_on_save_failure = false # Do not throw exceptions on failure
-Sequel::Model.db = case Padrino.env
-  when :development then Sequel.connect(!DB_DEVELOPMENT!, :loggers => [logger])
-  when :production  then Sequel.connect(!DB_PRODUCTION!,  :loggers => [logger])
-  when :test        then Sequel.connect(!DB_TEST!,        :loggers => [logger])
-end
+SEQUEL = <<~SEQUEL unless defined?(SEQUEL)
+  Sequel::Model.raise_on_save_failure = false # Do not throw exceptions on failure
+  Sequel::Model.db = case Padrino.env
+    when :development then Sequel.connect(!DB_DEVELOPMENT!, :loggers => [logger])
+    when :production  then Sequel.connect(!DB_PRODUCTION!,  :loggers => [logger])
+    when :test        then Sequel.connect(!DB_TEST!,        :loggers => [logger])
+  end
 SEQUEL
 
 def setup_orm
@@ -47,10 +47,10 @@ def setup_orm
   empty_directory('db/migrate')
 end
 
-SQ_MODEL = <<-MODEL unless defined?(SQ_MODEL)
-class !NAME! < Sequel::Model
+SQ_MODEL = <<~MODEL unless defined?(SQ_MODEL)
+  class !NAME! < Sequel::Model
 
-end
+  end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
@@ -60,27 +60,27 @@ def create_model_file(name, options = {})
   create_file(model_path, model_contents)
 end
 
-SQ_MIGRATION = <<-MIGRATION unless defined?(SQ_MIGRATION)
-Sequel.migration do
-  up do
-    !UP!
-  end
+SQ_MIGRATION = <<~MIGRATION unless defined?(SQ_MIGRATION)
+  Sequel.migration do
+    up do
+      !UP!
+    end
 
-  down do
-    !DOWN!
+    down do
+      !DOWN!
+    end
   end
-end
 MIGRATION
 
-SQ_MODEL_UP_MG = <<-MIGRATION.gsub(/^/, '    ') unless defined?(SQ_MODEL_UP_MG)
-create_table :!TABLE! do
-  primary_key :id
-  !FIELDS!
-end
+SQ_MODEL_UP_MG = <<~MIGRATION.gsub(/^/, '    ') unless defined?(SQ_MODEL_UP_MG)
+  create_table :!TABLE! do
+    primary_key :id
+    !FIELDS!
+  end
 MIGRATION
 
-SQ_MODEL_DOWN_MG = <<-MIGRATION unless defined?(SQ_MODEL_DOWN_MG)
-drop_table :!TABLE!
+SQ_MODEL_DOWN_MG = <<~MIGRATION unless defined?(SQ_MODEL_DOWN_MG)
+  drop_table :!TABLE!
 MIGRATION
 
 def create_model_migration(migration_name, name, columns)
@@ -93,10 +93,10 @@ def create_model_migration(migration_name, name, columns)
   )
 end
 
-SQ_CHANGE_MG = <<-MIGRATION.gsub(/^/, '    ') unless defined?(SQ_CHANGE_MG)
-alter_table :!TABLE! do
-  !COLUMNS!
-end
+SQ_CHANGE_MG = <<~MIGRATION.gsub(/^/, '    ') unless defined?(SQ_CHANGE_MG)
+  alter_table :!TABLE! do
+    !COLUMNS!
+  end
 MIGRATION
 
 def create_migration_file(migration_name, name, columns)

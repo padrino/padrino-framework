@@ -1,91 +1,91 @@
-SHOULDA_SETUP = <<-TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
-RACK_ENV = 'test' unless defined?(RACK_ENV)
-require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+SHOULDA_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
+  RACK_ENV = 'test' unless defined?(RACK_ENV)
+  require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
+  Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
 
-require "test/unit"
+  require "test/unit"
 
-class Test::Unit::TestCase
-  include Rack::Test::Methods
+  class Test::Unit::TestCase
+    include Rack::Test::Methods
 
-  # You can use this method to custom specify a Rack app
-  # you want rack-test to invoke:
-  #
-  #   app CLASS_NAME
-  #   app CLASS_NAME.tap { |a| }
-  #   app(CLASS_NAME) do
-  #     set :foo, :bar
-  #   end
-  #
-  def app(app = nil, &blk)
-    @app ||= block_given? ? app.instance_eval(&blk) : app
-    @app ||= Padrino.application
+    # You can use this method to custom specify a Rack app
+    # you want rack-test to invoke:
+    #
+    #   app CLASS_NAME
+    #   app CLASS_NAME.tap { |a| }
+    #   app(CLASS_NAME) do
+    #     set :foo, :bar
+    #   end
+    #
+    def app(app = nil, &blk)
+      @app ||= block_given? ? app.instance_eval(&blk) : app
+      @app ||= Padrino.application
+    end
   end
-end
 TEST
 
-SHOULDA_CONTROLLER_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_CONTROLLER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+SHOULDA_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_CONTROLLER_TEST)
+  require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
 
-class !NAME!ControllerTest < Test::Unit::TestCase
-  context "!NAME!Controller" do
-    setup do
-      get '/'
-    end
+  class !NAME!ControllerTest < Test::Unit::TestCase
+    context "!NAME!Controller" do
+      setup do
+        get '/'
+      end
 
-    should "return hello world text" do
-      assert_equal "Hello World", last_response.body
+      should "return hello world text" do
+        assert_equal "Hello World", last_response.body
+      end
     end
   end
-end
 TEST
 
-SHOULDA_RAKE = <<-TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE)
-require 'rake/testtask'
+SHOULDA_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE)
+  require 'rake/testtask'
 
-test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
+  test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
 
-test_tasks.each do |folder|
-  Rake::TestTask.new("test:\#{folder}") do |test|
-    test.pattern = "test/\#{folder}/**/*_test.rb"
-    test.verbose = true
+  test_tasks.each do |folder|
+    Rake::TestTask.new("test:\#{folder}") do |test|
+      test.pattern = "test/\#{folder}/**/*_test.rb"
+      test.verbose = true
+    end
   end
-end
 
-desc "Run application test suite"
-task 'test' => test_tasks.map { |f| "test:\#{f}" }
+  desc "Run application test suite"
+  task 'test' => test_tasks.map { |f| "test:\#{f}" }
 
-task :default => :test
+  task :default => :test
 TEST
 
-SHOULDA_MODEL_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+SHOULDA_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)
+  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
-class !NAME!Test < Test::Unit::TestCase
-  context "!NAME! Model" do
-    should 'construct new instance' do
-      @!DNAME! = !NAME!.new
-      assert_not_nil @!DNAME!
+  class !NAME!Test < Test::Unit::TestCase
+    context "!NAME! Model" do
+      should 'construct new instance' do
+        @!DNAME! = !NAME!.new
+        assert_not_nil @!DNAME!
+      end
     end
   end
-end
 TEST
 
-SHOULDA_HELPER_TEST = <<-TEST unless defined?(SHOULDA_HELPER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+SHOULDA_HELPER_TEST = <<~TEST unless defined?(SHOULDA_HELPER_TEST)
+  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
 
-class !NAME!Test < Test::Unit::TestCase
-  context "!NAME!" do
-    setup do
-      @helpers = Class.new
-      @helpers.extend !NAME!
-    end
+  class !NAME!Test < Test::Unit::TestCase
+    context "!NAME!" do
+      setup do
+        @helpers = Class.new
+        @helpers.extend !NAME!
+      end
 
-    should "return nil" do
-      assert_equal nil, @helpers.foo
+      should "return nil" do
+        assert_equal nil, @helpers.foo
+      end
     end
   end
-end
 TEST
 
 def setup_test
