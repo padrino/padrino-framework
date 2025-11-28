@@ -49,7 +49,8 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
           admin.command(
             renameCollection: "#{db_name}.#{collection.name}",
             to: "#{db_name}.#{new_name}",
-            dropTarget: true)
+            dropTarget: true
+          )
         end
       end
     end
