@@ -28,13 +28,13 @@ describe 'Email' do
       mock_app do
         register Padrino::Mailer
         get '/' do
-          email({
+          email(
             from: 'padrino@me.com',
             to: 'padrino@you.com',
             subject: 'Hello there Padrino',
             body: 'Body',
             via: :test
-          })
+          )
         end
       end
       get '/'
