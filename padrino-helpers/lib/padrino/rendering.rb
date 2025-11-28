@@ -363,11 +363,12 @@ module Padrino
         simple_content_type = %i[html plain].include?(symbol)
         target_path, target_engine = path_and_engine(template_path)
 
+        # FIXME: We can probable iterate just 1 time over the templates
         templates.find { |file, _| file.to_s == "#{target_path}.#{locale}.#{symbol}" } ||
-        templates.find { |file, _| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
-        templates.find { |file, engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
-        templates.find { |file, _| file.to_s == "#{target_path}.#{symbol}" } ||
-        templates.find { |file, _| file.to_s == target_path.to_s && simple_content_type }
+          templates.find { |file, _| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
+          templates.find { |file, engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
+          templates.find { |file, _| file.to_s == "#{target_path}.#{symbol}" } ||
+          templates.find { |file, _| file.to_s == target_path.to_s && simple_content_type }
       end
 
       def path_and_engine(path, relative = nil)

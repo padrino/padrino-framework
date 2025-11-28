@@ -871,10 +871,9 @@ describe 'FormBuilder' do
 
     it 'should display nested children fields one-to-one within form' do
       actual_html = standard_builder.fields_for :telephone do |child_form|
-        child_form.label(:number) +
-        child_form.text_field(:number) +
-        child_form.check_box('_destroy')
+        child_form.label(:number) + child_form.text_field(:number) + child_form.check_box('_destroy')
       end
+
       assert_html_has_tag(actual_html, 'label', for: 'user_telephone_attributes_number')
       assert_html_has_tag(actual_html, 'input', type: 'text', id: 'user_telephone_attributes_number', name: 'user[telephone_attributes][number]', value: '4568769876')
       assert_html_has_tag(actual_html, 'input', type: 'hidden', name: 'user[telephone_attributes][_destroy]', value: '0')
@@ -915,10 +914,9 @@ describe 'FormBuilder' do
     it 'should display fields for collection object' do
       addresses = @addresses + [mock_model('Address', name: 'Walter', new_record?: false, id: 50)]
       actual_html = standard_builder.fields_for(:addresses, addresses) do |child_form|
-        child_form.label(:name) +
-        child_form.text_field(:name) +
-        child_form.check_box('_destroy')
+        child_form.label(:name) + child_form.text_field(:name) + child_form.check_box('_destroy')
       end
+
       # Address 1
       assert_html_has_tag(actual_html, 'input', type: 'hidden', id: 'user_addresses_attributes_0_id', name: 'user[addresses_attributes][0][id]', value: '20')
       assert_html_has_tag(actual_html, 'label', for: 'user_addresses_attributes_0_name', content: 'Name')
@@ -935,10 +933,11 @@ describe 'FormBuilder' do
       actual_html = standard_builder.fields_for :addresses do |child_form|
         child_form.fields_for(:businesses) do |second_child_form|
           second_child_form.label(:name) +
-          second_child_form.text_field(:name) +
-          second_child_form.check_box('_destroy')
+            second_child_form.text_field(:name) +
+            second_child_form.check_box('_destroy')
         end
       end
+
       assert_html_has_tag(actual_html, 'label', for: 'user_addresses_attributes_1_businesses_attributes_0_name', content: 'Name')
       assert_html_has_tag(actual_html, 'input', type: 'text', id: 'user_addresses_attributes_1_businesses_attributes_0_name', name: 'user[addresses_attributes][1][businesses_attributes][0][name]')
     end
@@ -949,8 +948,8 @@ describe 'FormBuilder' do
         child_form.object.businesses.each_with_index do |business, i|
           html += child_form.fields_for(:businesses, business, index: ('a'..'z').to_a[i]) do |second_child_form|
             second_child_form.label(:name) +
-            second_child_form.text_field(:name) +
-            second_child_form.check_box('_destroy')
+              second_child_form.text_field(:name) +
+              second_child_form.check_box('_destroy')
           end
         end
         html
