@@ -142,7 +142,7 @@ describe 'Router' do
 
     res = Rack::MockRequest.new(map).get('/bar/scary')
     assert res.ok?
-    #asserting that on ok we're good to go
+    # asserting that on ok we're good to go
     assert_equal '1', res.body
 
     res = Rack::MockRequest.new(map).get('/bar/terrifying')

@@ -531,11 +531,13 @@ module Padrino
         route.parent = route_parents&.count == 1 ? route_parents.first : route_parents
         route.host = options.delete(:host) if options.key?(:host)
         route.user_agent = options.delete(:agent) if options.key?(:agent)
+
         if options.key?(:default_values)
           defaults = options.delete(:default_values)
-          #route.options[:default_values] = defaults if defaults
+          # route.options[:default_values] = defaults if defaults
           route.default_values = defaults if defaults
         end
+
         options.delete_if do |option, captures|
           if route.significant_variable_names.include?(option.to_s)
             route.capture[option] = Array(captures).first
@@ -548,6 +550,7 @@ module Padrino
           option = :provides_format if option == :provides
           route.respond_to?(option) ? route.send(option, *args) : send(option, *args)
         end
+
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
 
