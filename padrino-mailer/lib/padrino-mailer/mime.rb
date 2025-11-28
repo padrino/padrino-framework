@@ -39,9 +39,9 @@ module Padrino
       #   Padrino::Mailer::Mime::MIME_TYPES.merge!("text/xml" => :xml)
       #
       MIME_TYPES = {
-        'text/html'  => :html,
+        'text/html' => :html,
         'text/plain' => :plain,
-        'text/xml'   => :xml
+        'text/xml' => :xml
       }
     end
   end
