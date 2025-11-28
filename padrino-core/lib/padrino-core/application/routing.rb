@@ -624,7 +624,7 @@ module Padrino
           if controller.any? && !map && !absolute_map
             controller_path = controller.join('/')
             path.gsub!(%r{^\(/\)|/\?}, '')
-            path = File.join(controller_path, path)  unless @_map
+            path = File.join(controller_path, path) unless @_map
           end
 
           # Now we need to parse our 'parent' params and parent scope.
@@ -935,7 +935,7 @@ module Padrino
         invoke { @boom_handled = handle_exception!(e) }
       ensure
         @boom_handled or begin
-          filter! :after  unless env['sinatra.static_file']
+          filter! :after unless env['sinatra.static_file']
         rescue ::Exception => e
           invoke { handle_exception!(e) } unless @env['sinatra.error']
         end

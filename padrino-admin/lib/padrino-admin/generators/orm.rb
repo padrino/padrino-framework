@@ -144,7 +144,7 @@ module Padrino
         def multiple_destroy(params = nil)
           case orm
           when :ohm then "#{params}.each(&:delete)"
-          when :sequel then  "#{params}.destroy"
+          when :sequel then "#{params}.destroy"
           when :datamapper then "#{params}.destroy"
           when :couchrest, :mongoid, :mongomapper, :dynamoid then "#{params}.each(&:destroy)"
           else "#{klass_name}.destroy #{params}"

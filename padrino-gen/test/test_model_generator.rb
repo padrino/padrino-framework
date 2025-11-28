@@ -82,11 +82,11 @@ describe 'ModelGenerator' do
       capture_io { generate(:model, 'friend', 'name', 'age:integer', 'email', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_friends.rb"
       assert_match_in_file(/class CreateFriends < ActiveRecord::Migration/m, migration_file_path)
-      assert_match_in_file(/    create_table :friends/m, migration_file_path)
-      assert_match_in_file(/      t.string :name/m,   migration_file_path)
-      assert_match_in_file(/      t.integer :age/m,   migration_file_path)
-      assert_match_in_file(/      t.string :email/m,  migration_file_path)
-      assert_match_in_file(/    drop_table :friends/m, migration_file_path)
+      assert_match_in_file(/    create_table :friends/m,                     migration_file_path)
+      assert_match_in_file(/      t.string :name/m,                          migration_file_path)
+      assert_match_in_file(/      t.integer :age/m,                          migration_file_path)
+      assert_match_in_file(/      t.string :email/m,                         migration_file_path)
+      assert_match_in_file(/    drop_table :friends/m,                       migration_file_path)
     end
 
     it 'should abort if model name already exists' do
@@ -285,12 +285,12 @@ describe 'ModelGenerator' do
       capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'created:datetime', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_friends.rb"
       assert_match_in_file(/class Friend < Sequel::Model/m, "#{@apptmp}/sample_project/models/friend.rb")
-      assert_match_in_file(/Sequel\.migration do/m, migration_file_path)
+      assert_match_in_file(/Sequel\.migration do/m,  migration_file_path)
       assert_match_in_file(/create_table :friends/m, migration_file_path)
-      assert_match_in_file(/String :name/m,   migration_file_path)
-      assert_match_in_file(/Integer :age/m,   migration_file_path)
-      assert_match_in_file(/DateTime :created/m,  migration_file_path)
-      assert_match_in_file(/drop_table :friends/m, migration_file_path)
+      assert_match_in_file(/String :name/m,          migration_file_path)
+      assert_match_in_file(/Integer :age/m,          migration_file_path)
+      assert_match_in_file(/DateTime :created/m,     migration_file_path)
+      assert_match_in_file(/drop_table :friends/m,   migration_file_path)
     end
   end
 

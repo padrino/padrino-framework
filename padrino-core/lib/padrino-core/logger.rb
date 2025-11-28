@@ -317,7 +317,7 @@ module Padrino
     #   PADRINO_LOGGER = { :staging => { :log_level => :debug, :stream => :to_file }}
     #
     Config = {
-      production: { log_level: :warn,  stream: :to_file },
+      production: { log_level: :warn, stream: :to_file },
       development: { log_level: :debug, stream: :stdout, format_datetime: '' },
       test: { log_level: :debug, stream: :null }
     }

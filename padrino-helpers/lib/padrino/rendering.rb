@@ -253,7 +253,7 @@ module Padrino
 
         # Cleanup the template.
         @current_engine, engine_was = engine, @current_engine
-        @_out_buf,  buf_was = SafeBuffer.new, @_out_buf
+        @_out_buf, buf_was = SafeBuffer.new, @_out_buf
 
         # Pass arguments to Sinatra render method.
         render_like_sinatra(engine, data, with_layout(options), locals, &block)
@@ -302,7 +302,7 @@ module Padrino
           selected_template = select_template(template_candidates, *rendering_options)
           selected_template ||= template_candidates.first unless options[:strict_format]
 
-          raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'"  if !selected_template && options[:raise_exceptions]
+          raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'" if !selected_template && options[:raise_exceptions]
           selected_template
         end
       end

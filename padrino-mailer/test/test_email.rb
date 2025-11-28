@@ -85,11 +85,12 @@ describe 'Email' do
         end
         get('/') { deliver(:alternate, :foo) }
       end
+
       get '/'
       assert ok?
       email = pop_last_delivery
-      assert_equal ['padrino@from.com'],    email.from, 'should have used default value'
-      assert_equal ['padrino@different.com'],   email.to, 'should have overwritten default value'
+      assert_equal ['padrino@from.com'], email.from, 'should have used default value'
+      assert_equal ['padrino@different.com'], email.to, 'should have overwritten default value'
       assert_equal 'Hello there again Padrino', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
@@ -109,11 +110,12 @@ describe 'Email' do
         end
         get('/') { deliver(:alternate, :foo) }
       end
+
       get '/'
       assert ok?
       email = pop_last_delivery
-      assert_equal ['padrino@from.com'],    email.from, 'should have used default value'
-      assert_equal ['padrino@different.com'],   email.to, 'should have overwritten default value'
+      assert_equal ['padrino@from.com'], email.from, 'should have used default value'
+      assert_equal ['padrino@different.com'], email.to, 'should have overwritten default value'
       assert_equal 'This is a test', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end

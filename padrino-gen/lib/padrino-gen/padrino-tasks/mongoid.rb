@@ -188,12 +188,12 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
               locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
             end
           else
-            locale     = "#{lang}:" + "\n" \
-            '  models:' + "\n" \
-            "    #{m}:" + "\n" \
-            "      name: #{klass.name}" + "\n" \
-            '      attributes:' + "\n" +
-            columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
+            locale = "#{lang}:" + "\n" \
+                     '  models:' + "\n" \
+                     "    #{m}:" + "\n" \
+                     "      name: #{klass.name}" + "\n" \
+                     '      attributes:' + "\n" +
+                     columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
           end
 
           $stdout.flush

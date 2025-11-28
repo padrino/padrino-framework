@@ -33,26 +33,26 @@ describe 'ProjectGenerator' do
     it 'should generate a valid name' do
       capture_io { generate(:project, 'project.com', "--root=#{@apptmp}") }
       assert_dir_exists("#{@apptmp}/project.com")
-      assert_match_in_file(/module ProjectCom/,  "#{@apptmp}/project.com/app/app.rb")
-      assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/project.com/app/app.rb")
+      assert_match_in_file(/module ProjectCom/, "#{@apptmp}/project.com/app/app.rb")
+      assert_match_in_file(/class App < Padrino::Application/, "#{@apptmp}/project.com/app/app.rb")
       assert_match_in_file("Padrino.mount('ProjectCom::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/project.com/config/apps.rb")
       capture_io { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/project.com") }
       assert_dir_exists("#{@apptmp}/project.com/ws_dci_2011")
-      assert_match_in_file(/module ProjectCom/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
-      assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/project.com/ws_dci_2011/app.rb")
+      assert_match_in_file(/module ProjectCom/, "#{@apptmp}/project.com/ws_dci_2011/app.rb")
+      assert_match_in_file(/class WsDci2011 < Padrino::Application/, "#{@apptmp}/project.com/ws_dci_2011/app.rb")
       assert_match_in_file("Padrino.mount('ProjectCom::WsDci2011', :app_file => Padrino.root('ws_dci_2011/app.rb')).to('/ws_dci_2011')", "#{@apptmp}/project.com/config/apps.rb")
     end
 
     it 'should generate nested path with dashes in name' do
       capture_io { generate(:project, 'sample-project', "--root=#{@apptmp}") }
       assert_dir_exists("#{@apptmp}/sample-project")
-      assert_match_in_file(/module SampleProject/,  "#{@apptmp}/sample-project/app/app.rb")
-      assert_match_in_file(/class App < Padrino::Application/,  "#{@apptmp}/sample-project/app/app.rb")
+      assert_match_in_file(/module SampleProject/, "#{@apptmp}/sample-project/app/app.rb")
+      assert_match_in_file(/class App < Padrino::Application/, "#{@apptmp}/sample-project/app/app.rb")
       assert_match_in_file("Padrino.mount('SampleProject::App', :app_file => Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/sample-project/config/apps.rb")
       capture_io { generate(:app, 'ws-dci-2011', "--root=#{@apptmp}/sample-project") }
       assert_dir_exists("#{@apptmp}/sample-project/ws_dci_2011")
-      assert_match_in_file(/module SampleProject/,  "#{@apptmp}/sample-project/ws_dci_2011/app.rb")
-      assert_match_in_file(/class WsDci2011 < Padrino::Application/,  "#{@apptmp}/sample-project/ws_dci_2011/app.rb")
+      assert_match_in_file(/module SampleProject/, "#{@apptmp}/sample-project/ws_dci_2011/app.rb")
+      assert_match_in_file(/class WsDci2011 < Padrino::Application/, "#{@apptmp}/sample-project/ws_dci_2011/app.rb")
       assert_match_in_file("Padrino.mount('SampleProject::WsDci2011', :app_file => Padrino.root('ws_dci_2011/app.rb')).to('/ws_dci_2011')", "#{@apptmp}/sample-project/config/apps.rb")
     end
 

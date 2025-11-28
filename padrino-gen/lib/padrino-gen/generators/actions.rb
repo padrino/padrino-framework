@@ -3,11 +3,13 @@ require 'pathname'
 module Padrino
   module Generators
     # Raised when an application does not have a resolved root path.
-    class  AppRootNotFound < RuntimeError; end
+    class AppRootNotFound < RuntimeError; end
+
     ##
     # Default helper name for use in tiny app skeleton generator.
     #
     DEFAULT_HELPER_NAME = 'Helper'.freeze
+
     ##
     # Common actions needed to support project and component generation.
     #

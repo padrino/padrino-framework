@@ -863,9 +863,9 @@ describe 'FormBuilder' do
       @telephone = mock_model('Telephone', number: '4568769876')
       @user.stubs(:telephone).returns(@telephone)
       @businesses = [mock_model('Business', name: 'Silver', new_record?: false, id: 20)]
-      @businesses <<  mock_model('Business', name: 'Gold', new_record?: true)
+      @businesses << mock_model('Business', name: 'Gold', new_record?: true)
       @addresses = [mock_model('Address', name: 'Foo', new_record?: false, id: 20, businesses: @businesses)]
-      @addresses <<  mock_model('Address', name: 'Bar', new_record?: true, businesses: @businesses)
+      @addresses << mock_model('Address', name: 'Bar', new_record?: true, businesses: @businesses)
       @user.stubs(:addresses).returns(@addresses)
     end
 

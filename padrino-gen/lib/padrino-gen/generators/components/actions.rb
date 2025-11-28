@@ -195,7 +195,7 @@ module Padrino
         end
 
         def create_helper_files(app, name)
-          @helper_name  = "#{name.to_s.underscore.camelize}Helper"
+          @helper_name = "#{name.to_s.underscore.camelize}Helper"
           template 'templates/helper.rb.tt', destination_root(app, 'helpers', "#{name.to_s.underscore}_helper.rb")
           return unless test?
 

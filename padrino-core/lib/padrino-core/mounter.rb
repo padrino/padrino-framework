@@ -64,7 +64,7 @@ module Padrino
     #   Mounter.new("blog_app").to("/blog")
     #
     def to(mount_url)
-      @uri_root  = mount_url
+      @uri_root = mount_url
       Padrino.insert_mounted_app(self)
       self
     end

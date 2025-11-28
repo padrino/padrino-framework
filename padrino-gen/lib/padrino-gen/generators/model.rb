@@ -16,11 +16,11 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen model generates a new model and migration files"
 
       argument :name,               desc: 'The name of your padrino model'
-      argument :fields,             desc: 'The fields for the model',                                     default: [],    type: :array
+      argument :fields,             desc: 'The fields for the model',                                  default: [],    type: :array
       class_option :root,           desc: 'The root destination',                       aliases: '-r', default: '.',   type: :string
       class_option :app,            desc: 'The application destination path',           aliases: '-a', default: '.',   type: :string
-      class_option :destroy,                                                               aliases: '-d', default: false, type: :boolean
-      class_option :skip_migration,                                                        aliases: '-s', default: false, type: :boolean
+      class_option :destroy,                                                            aliases: '-d', default: false, type: :boolean
+      class_option :skip_migration,                                                     aliases: '-s', default: false, type: :boolean
       class_option :force,          desc: 'Generate model files if app already exists', aliases: '-f', default: false, type: :boolean
 
       # Show help if no ARGV given.

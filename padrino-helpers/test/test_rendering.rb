@@ -202,7 +202,7 @@ describe 'Rendering' do
         end
         controller :none do
           get('/') { render :erb, 'none' }
-          get('/with_foo_layout')  { render :erb, 'none with layout', layout: :foo }
+          get('/with_foo_layout') { render :erb, 'none with layout', layout: :foo }
         end
       end
       get '/foo'
@@ -469,12 +469,13 @@ describe 'Rendering' do
     end
 
     it 'should resolve template content_type and locale' do
-      create_view :foo, 'Im Js',          format: :js
       create_view :foo, 'Im Erb'
-      create_view :foo, 'Im English Erb', locale: :en
-      create_view :foo, 'Im Italian Erb', locale: :it
+      create_view :foo, 'Im English Erb',              locale: :en
+      create_view :foo, 'Im Italian Erb',              locale: :it
+      create_view :foo, 'Im Js',          format: :js
       create_view :foo, 'Im English Js',  format: :js, locale: :en
       create_view :foo, 'Im Italian Js',  format: :js, locale: :it
+
       mock_app do
         get('/foo', provides: %i[html js]) { render :foo }
       end
@@ -526,13 +527,15 @@ describe 'Rendering' do
       create_layout :foo, 'Hello <%= yield %> in a Erb-En layout', locale: :en
       create_layout :foo, 'Hello <%= yield %> in a Erb-It layout', locale: :it
       create_layout :foo, 'Hello <%= yield %> in a Erb layout'
-      create_view   :bar, 'Im Js',          format: :js
+
       create_view   :bar, 'Im Erb'
-      create_view   :bar, 'Im English Erb', locale: :en
-      create_view   :bar, 'Im Italian Erb', locale: :it
+      create_view   :bar, 'Im English Erb',              locale: :en
+      create_view   :bar, 'Im Italian Erb',              locale: :it
+      create_view   :bar, 'Im Js',          format: :js
       create_view   :bar, 'Im English Js',  format: :js, locale: :en
       create_view   :bar, 'Im Italian Js',  format: :js, locale: :it
       create_view   :bar, 'Im a json',      format: :json
+
       mock_app do
         layout :foo
         get('/bar', provides: %i[html js json]) { render :bar }

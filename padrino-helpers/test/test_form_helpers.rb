@@ -685,7 +685,7 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :optgroup, label: 'Friends')
       assert_html_has_tag(actual_html, :option,   value: 'Yoda', content: 'Yoda')
-      assert_html_has_tag(actual_html, :option,   value: '2',  content: 'Obiwan')
+      assert_html_has_tag(actual_html, :option,   value: '2', content: 'Obiwan')
       assert_html_has_tag(actual_html, :optgroup, label: 'Enemies')
       assert_html_has_tag(actual_html, :option,   value: 'Palpatine', content: 'Palpatine')
       assert_html_has_tag(actual_html, :option,   value: '3', content: 'Darth Vader')

@@ -28,7 +28,7 @@ group :development do
     puts '=> Using Hamlit Haml engine'
     gem 'hamlit'
   else
-    gem 'haml',      '~> 5'
+    gem 'haml', '~> 5'
   end
 
   case ENV['ERB_ENGINE']
@@ -41,19 +41,19 @@ group :development do
     gem 'erubi',     '>= 1.6.1'
   end
 
-  gem 'builder',    '>= 2.1.2'
-  gem 'minitest', '>= 4.0'
-  gem 'mocha',    '>= 2.0'
-  gem 'oga',       '>= 2.5', '< 3'
-  gem 'rack',      '~> 3'
-  gem 'rackup',    '~> 2.1'
-  gem 'rack-test', '~> 2.1'
-  gem 'rake',      '>= 10.5.0'
-  gem 'rb-readline', '~> 0.4.2'
-  gem 'rubocop', '~> 1.6', platforms: [:mri]
+  gem 'builder',          '>= 2.1.2'
+  gem 'minitest',         '>= 4.0'
+  gem 'mocha',            '>= 2.0'
+  gem 'oga',              '>= 2.5', '< 3'
+  gem 'rack',             '~> 3'
+  gem 'rackup',           '~> 2.1'
+  gem 'rack-test',        '~> 2.1'
+  gem 'rake',             '>= 10.5.0'
+  gem 'rb-readline',      '~> 0.4.2'
+  gem 'rubocop',          '~> 1.6', platforms: [:mri]
   gem 'rubocop-minitest', '~>0.34.4', platforms: [:mri]
-  gem 'webmock', '~> 3.19'
-  gem 'yard',      '>= 0.7.2'
+  gem 'webmock',          '~> 3.19'
+  gem 'yard',             '>= 0.7.2'
 
   platforms :jruby do
     gem 'jruby-openssl'

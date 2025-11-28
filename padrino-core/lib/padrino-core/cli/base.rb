@@ -10,7 +10,7 @@ module Padrino
       def rake(*args)
         prepare :rake
         args << '-T' if options[:list]
-        args << options[:list]  unless options[:list].nil? || options[:list].to_s == 'list'
+        args << options[:list] unless options[:list].nil? || options[:list].to_s == 'list'
         args << '--trace' if options[:trace]
         args << '--verbose' if options[:verbose]
         ARGV.clear

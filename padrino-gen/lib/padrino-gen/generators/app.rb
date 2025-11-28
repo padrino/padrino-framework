@@ -16,7 +16,7 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen app generates a new Padrino application"
       argument     :name,      desc: 'The name of your padrino application'
       class_option :root,      desc: 'The root destination',                     aliases: '-r', default: '.',   type: :string
-      class_option :destroy,                                                        aliases: '-d', default: false, type: :boolean
+      class_option :destroy,                                                     aliases: '-d', default: false, type: :boolean
       class_option :tiny,      desc: 'Generate tiny app skeleton',               aliases: '-i', default: false, type: :boolean
       class_option :namespace, desc: 'The name space of your padrino project',   aliases: '-n', default: '',    type: :string
       class_option :force,     desc: 'Generate app files if app already exists', aliases: '-f', default: false, type: :boolean

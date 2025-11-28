@@ -147,20 +147,20 @@ describe 'RenderHelpers' do
   describe 'for #current_engine method' do
     it 'should detect correctly current engine for a padrino application' do
       get '/current_engine'
-      assert_response_has_tag 'p.start', content: 'haml'
-      assert_response_has_tag 'p.haml span',  content: 'haml'
-      assert_response_has_tag 'p.erb span',   content: 'erb'
-      assert_response_has_tag 'p.slim span',  content: 'slim'
-      assert_response_has_tag 'p.end',   content: 'haml'
+      assert_response_has_tag 'p.start',     content: 'haml'
+      assert_response_has_tag 'p.haml span', content: 'haml'
+      assert_response_has_tag 'p.erb span',  content: 'erb'
+      assert_response_has_tag 'p.slim span', content: 'slim'
+      assert_response_has_tag 'p.end',       content: 'haml'
     end
 
     it 'should detect correctly current engine for explicit engine on partials' do
       get '/explicit_engine'
-      assert_response_has_tag 'p.start', content: 'haml'
-      assert_response_has_tag 'p.haml span',  content: 'haml'
-      assert_response_has_tag 'p.erb span',   content: 'erb'
-      assert_response_has_tag 'p.slim span',  content: 'slim'
-      assert_response_has_tag 'p.end',   content: 'haml'
+      assert_response_has_tag 'p.start',     content: 'haml'
+      assert_response_has_tag 'p.haml span', content: 'haml'
+      assert_response_has_tag 'p.erb span',  content: 'erb'
+      assert_response_has_tag 'p.slim span', content: 'slim'
+      assert_response_has_tag 'p.end',       content: 'haml'
     end
 
     it 'should capture slim template once and only once' do

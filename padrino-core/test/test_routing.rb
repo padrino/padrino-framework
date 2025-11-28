@@ -305,7 +305,7 @@ describe 'Routing' do
       post(:foo, '', with: :id) { |id| "/#{id}" }
       delete(:drugs, with: [:id, 'destroy']) { |id| "/drugs/#{id}/destroy" }
       delete(:drugs, '', with: [:id, 'destroy']) { |id| "/#{id}/destroy" }
-      get(:splatter, '/splatter/*/*') { |_a, _b| url(:splatter, splat: %w[123 456])  }
+      get(:splatter, '/splatter/*/*') { |_a, _b| url(:splatter, splat: %w[123 456]) }
     end
     get '/foo'
     assert_equal '/foo', body
@@ -1019,8 +1019,8 @@ describe 'Routing' do
     route_order = []
     mock_app do
       get(:index, priority: :normal) { route_order << :normal; pass }
-      get(:index, priority: :low)  { route_order << :low; 'hello' }
-      get(:index, priority: :high)  { route_order << :high; pass }
+      get(:index, priority: :low)    { route_order << :low; 'hello' }
+      get(:index, priority: :high)   { route_order << :high; pass }
     end
     get '/'
     assert_equal %i[high normal low], route_order
