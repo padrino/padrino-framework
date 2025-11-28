@@ -937,11 +937,11 @@ module Padrino
         filter! :before if e.is_a? ::Sinatra::NotFound
         invoke { @boom_handled = handle_exception!(e) }
       ensure
-        @boom_handled or begin
-          filter! :after unless env['sinatra.static_file']
-        rescue ::Exception => e
-          invoke { handle_exception!(e) } unless @env['sinatra.error']
-        end
+        @boom_handled || begin
+                           filter! :after unless env['sinatra.static_file']
+                         rescue ::Exception => e
+                           invoke { handle_exception!(e) } unless @env['sinatra.error']
+                         end
       end
 
       def route!(base = settings, pass_block = nil)
