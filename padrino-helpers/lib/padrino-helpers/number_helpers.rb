@@ -55,12 +55,8 @@ module Padrino
         separator = '' if precision.zero?
 
         begin
-          format.gsub(/%n/, number_with_precision(
-            number,
-            precision: precision,
-            delimiter: delimiter,
-            separator: separator)
-          ).gsub(/%u/, unit)
+          value = number_with_precision(number, precision: precision, delimiter: delimiter, separator: separator)
+          format.gsub(/%n/, value).gsub(/%u/, unit)
         rescue StandardError
           number
         end
