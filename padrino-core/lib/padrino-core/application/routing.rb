@@ -500,7 +500,7 @@ module Padrino
 
         # Add Sinatra condition to check rack-protection failure.
         if respond_to?(:protect_from_csrf) && protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
-          route_options[:csrf_protection] = route_options.fetch(:csrf_protection, :true)
+          route_options[:csrf_protection] = route_options.fetch(:csrf_protection, true)
         end
 
         path, *route_options[:with] = path if path.is_a?(Array)
@@ -938,10 +938,10 @@ module Padrino
         invoke { @boom_handled = handle_exception!(e) }
       ensure
         @boom_handled || begin
-                           filter! :after unless env['sinatra.static_file']
-                         rescue ::Exception => e
-                           invoke { handle_exception!(e) } unless @env['sinatra.error']
-                         end
+          filter! :after unless env['sinatra.static_file']
+        rescue ::Exception => e
+          invoke { handle_exception!(e) } unless @env['sinatra.error']
+        end
       end
 
       def route!(base = settings, pass_block = nil)

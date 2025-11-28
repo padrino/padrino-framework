@@ -150,19 +150,18 @@ describe 'Filters' do
     mock_app do
       controller :foo do
         before(:test) { @test = 'foo' }
-        get :test do
-          "#{@test.to_s} response"
-        end
+        get(:test) { "#{@test} response" }
       end
+
       controller :bar do
         before(:test) { @test = 'bar' }
-        get :test do
-          "#{@test.to_s} response"
-        end
+        get(:test) { "#{@test} response" }
       end
     end
+
     get '/foo/test'
     assert_equal 'foo response', body
+
     get '/bar/test'
     assert_equal 'bar response', body
   end

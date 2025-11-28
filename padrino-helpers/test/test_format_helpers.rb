@@ -15,7 +15,7 @@ describe 'FormatHelpers' do
   describe 'for #simple_format method' do
     it 'should format simple text into html format' do
       actual_text = simple_format("Here is some basic text...\n...with a line break.")
-      assert_equal true, actual_text.html_safe?
+      assert actual_text.html_safe?
       assert_equal "<p>Here is some basic text...\n<br />...with a line break.</p>", actual_text
     end
 
@@ -135,9 +135,9 @@ describe 'FormatHelpers' do
       assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h!('<h1>hello</h1>')
     end
     it 'should mark escaped text as safe' do
-      assert_equal false, '<h1>hello</h1>'.html_safe?
-      assert_equal true, h('<h1>hello</h1>').html_safe?
-      assert_equal true, h!('', 'default').html_safe?
+      refute '<h1>hello</h1>'.html_safe?
+      assert h('<h1>hello</h1>').html_safe?
+      assert h!('', 'default').html_safe?
     end
   end
 
@@ -227,8 +227,8 @@ describe 'FormatHelpers' do
       assert_equal '<data-confirm=\"are you sure\">', js_escape_html(SafeBuffer.new('<data-confirm="are you sure">'))
     end
     it 'should keep html_safe content html_safe' do
-      assert_equal false, js_escape_html('"hello"').html_safe?
-      assert_equal true, js_escape_html(SafeBuffer.new('"hello"')).html_safe?
+      refute js_escape_html('"hello"').html_safe?
+      assert js_escape_html(SafeBuffer.new('"hello"')).html_safe?
     end
   end
 end

@@ -106,7 +106,7 @@ describe 'Router' do
 
     res = Rack::MockRequest.new(map).get('/bar?spooky')
     assert res.ok?
-    assert_equal true, res['X-API']
+    assert res['X-API']
     assert_equal 'application/json', res['Content-Type']
     assert_equal '/bar', res['X-ScriptName']
     assert_equal '/', res['X-PathInfo']
@@ -146,7 +146,7 @@ describe 'Router' do
     assert_equal '1', res.body
 
     res = Rack::MockRequest.new(map).get('/bar/terrifying')
-    assert !res.ok?
+    refute res.ok?
   end
 
   it 'should dispatch requests to cascade mounted apps until it sees a cascade == false or []g' do
@@ -164,10 +164,10 @@ describe 'Router' do
       { path: '/bar', to: app2 }
     )
 
-    request_case = lambda { Rack::MockRequest.new(map).get('/bar/terrifying') }
+    request_case = -> { Rack::MockRequest.new(map).get('/bar/terrifying') }
 
     app.cascade = false
-    assert !request_case.call.ok?
+    refute request_case.call.ok?
 
     app.cascade = true
     assert request_case.call.ok?

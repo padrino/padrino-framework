@@ -308,12 +308,16 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
               locale += "\n        #{c}: #{klass.human_attribute_name(c)}" unless locale.include?("#{c}:")
             end
           else
-            locale = "#{lang}:" + "\n" \
-                     '  models:' + "\n" \
-                     "    #{m}:" + "\n" \
-                     "      name: #{klass.model_name.human}" + "\n" \
-                     '      attributes:' + "\n" +
-                     columns.map { |c| "        #{c}: #{klass.human_attribute_name(c)}" }.join("\n")
+            locale = <<~YAML
+              #{lang}:
+                models:
+                  #{m}:
+                    name: #{klass.model_name.human}
+                    attributes:
+            YAML
+
+            columns.each { |c| locale += "        #{c}: #{klass.human_attribute_name(c)}\n" }
+            locale.chomp!
           end
 
           $stdout.flush

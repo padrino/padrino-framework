@@ -117,8 +117,8 @@ describe 'AssetTagHelpers' do
     it 'should not double-escape' do
       actual_link = link_to('test escape', '?a=1&b=2')
       assert_html_has_tag(actual_link, 'a', href: '?a=1&b=2')
-      assert_match /&amp;/, actual_link
-      refute_match /&amp;amp;/, actual_link
+      assert_match(/&amp;/, actual_link)
+      refute_match(/&amp;amp;/, actual_link)
     end
 
     it 'should escape scary things' do
@@ -141,9 +141,9 @@ describe 'AssetTagHelpers' do
     it 'should display link element for mail to with caption and mail options' do
       actual_html = mail_to('test@demo.com', 'My Email', subject: 'demo test', class: 'demo', cc: 'foo@test.com')
       assert_html_has_tag(actual_html, :a, class: 'demo')
-      assert_match /mailto:test@demo.com\?/, actual_html
-      assert_match /cc=foo@test\.com/, actual_html
-      assert_match /subject=demo%20test/, actual_html
+      assert_match(/mailto:test@demo.com\?/, actual_html)
+      assert_match(/cc=foo@test\.com/, actual_html)
+      assert_match(/subject=demo%20test/, actual_html)
     end
 
     it 'should escape & with encoded string and &amp; in HTML' do
@@ -155,8 +155,8 @@ describe 'AssetTagHelpers' do
     it 'should not double-escape ampersands in query' do
       actual_html = mail_to('to@demo.com', 'Email', bcc: 'bcc@test.com', subject: 'Hi there')
       assert_html_has_tag(actual_html, :a, href: 'mailto:to@demo.com?bcc=bcc@test.com&subject=Hi%20there', content: 'Email')
-      assert_match /&amp;/, actual_html
-      refute_match /&amp;amp;/, actual_html
+      assert_match(/&amp;/, actual_html)
+      refute_match(/&amp;amp;/, actual_html)
     end
 
     it 'should display mail link element in haml' do

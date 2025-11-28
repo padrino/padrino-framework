@@ -307,14 +307,17 @@ describe 'Mounter' do
     it "should not load dependency files if app's root isn't started with Padrino.root" do
       path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/demo_project/app")
       fake_path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/external_apps/fake_root")
+
       require path
       require fake_path
+
       Padrino.mount('fake_root', app_class: 'FakeRoot').to('/fake_root')
       Padrino.mount('main_app', app_class: 'DemoProject::App').to('/')
       Padrino.stub(:root, File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/demo_project")) do
         Padrino.application
       end
-      assert !defined?(FakeLib)
+
+      refute defined?(FakeLib)
     end
   end
 end

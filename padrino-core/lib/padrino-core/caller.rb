@@ -44,7 +44,7 @@ module Padrino
   #
   def self.caller_files
     caller(1).each_with_object([]) do |line, result|
-      file, _ = line.split(/:(?=\d|in )/)[0, 2]
+      file, = line.split(/:(?=\d|in )/)[0, 2]
       result << file unless PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern }
     end
   end

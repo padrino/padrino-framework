@@ -74,8 +74,7 @@ module Padrino
     #
     def lock!
       klasses = Storage.send(:object_classes) do |klass|
-        original_klass_name = constant_name(klass)
-        original_klass_name.split('::').first if original_klass_name
+        constant_name(klass)&.split('::')&.first
       end
       klasses |= Padrino.mounted_apps.map(&:app_class)
       exclude_constants.merge(klasses)

@@ -35,12 +35,16 @@ if defined?(MongoMapper)
               locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
             end
           else
-            locale = "#{lang}:" + "\n" \
-                     '  models:' + "\n" \
-                     "    #{m}:" + "\n" \
-                     "      name: #{klass.human_name}" + "\n" \
-                     '      attributes:' + "\n" +
-                     columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
+            locale = <<~YAML
+              #{lang}:
+                models:
+                  #{m}:
+                    name: #{klass.model_name.human}
+                    attributes:
+            YAML
+
+            columns.each { |c| locale += "        #{c}: #{c.humanize}\n" }
+            locale.chomp!
           end
 
           $stdout.flush

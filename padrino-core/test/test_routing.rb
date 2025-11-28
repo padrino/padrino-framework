@@ -2120,7 +2120,7 @@ describe 'Routing' do
     mock_app { set :environment, :development }
     get '/'
     assert_equal 404, status
-    assert_match /Not Found/, body
+    assert_match(/Not Found/, body)
   end
 
   it 'should render a custom NotFound page' do

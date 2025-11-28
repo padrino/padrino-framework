@@ -96,7 +96,7 @@ describe 'Padrino::Utils.deep_dup' do
     object = Object.new
     dup = Padrino::Utils.deep_dup(object)
     dup.instance_variable_set(:@a, 1)
-    assert !object.instance_variable_defined?(:@a)
+    refute object.instance_variable_defined?(:@a)
     assert dup.instance_variable_defined?(:@a)
   end
 
