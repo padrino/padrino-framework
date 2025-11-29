@@ -295,7 +295,7 @@ module Padrino
     # :colorize_logging:: Whether or not to colorize log messages. Defaults to: true
     #
     # @example
-    #   Padrino::Logger::Config[:development] = { :log_level => :debug, :stream => :to_file }
+    #   Padrino::Logger::Config[:development] = { log_level: :debug, stream: :to_file }
     #   # or you can edit our defaults
     #   Padrino::Logger::Config[:development][:log_level] = :error
     #   # or change log file path
@@ -307,14 +307,14 @@ module Padrino
     #
     # Defaults are:
     #
-    #   :production  => { :log_level => :warn, :stream => :to_file }
-    #   :development => { :log_level => :debug, :stream => :stdout }
-    #   :test        => { :log_level => :fatal, :stream => :null }
+    #   :production  => { log_level: :warn, stream: :to_file }
+    #   :development => { log_level: :debug, stream: :stdout }
+    #   :test        => { log_level: :fatal, stream: :null }
     #
     # In some cases, configuring the loggers before loading the framework is necessary.
     # You can do so by setting PADRINO_LOGGER:
     #
-    #   PADRINO_LOGGER = { :staging => { :log_level => :debug, :stream => :to_file }}
+    #   PADRINO_LOGGER = { staging: { log_level: :debug, stream: :to_file }}
     #
     Config = {
       production: { log_level: :warn, stream: :to_file },

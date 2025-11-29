@@ -16,7 +16,7 @@ RIPPLE_DB = <<~RIAK unless defined?(RIPPLE_DB)
     pb_port: 9002
     host: localhost
     bin_dir: /usr/local/bin   # Default for Homebrew.
-    js_source_dir: <%%= Padrino.root + "app/mapreduce" %>
+    js_source_dir: <%%= Padrino.root + 'app/mapreduce' %>
 
   production:
     http_port: 8098
@@ -28,7 +28,7 @@ RIPPLE_CFG = <<~RIAK unless defined?(RIPPLE_CFG)
 
   require 'ripple'
 
-  if File.exist?(Padrino.root + "config/riak.yml")
+  if File.exist?(Padrino.root + 'config/riak.yml')
     Ripple.load_configuration Padrino.root.join('config', 'riak.yml'), [Padrino.env]
   end
 RIAK
@@ -51,12 +51,12 @@ RIPPLE_MODEL = <<~MODEL unless defined?(RIPPLE_MODEL)
 
     # Relations
     # many :addresses
-    # many :friends, :class_name => "Person"
+    # many :friends, class_name: 'Person'
     # one :account
   end
 
 MODEL
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ['title:string', 'body:string'], app: 'app' }
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(':') }

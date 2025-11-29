@@ -1,5 +1,5 @@
 <% @user = MarkupUser.new %>
-<% form_for @user , '/demo1', :id => 'demo-fields-for' do |f| %>
+<% form_for @user, '/demo1', id: 'demo-fields-for' do |f| %>
   <%= f.text_field :gender %>
   <% fields_for @user.permission do |permission| %>
     <%= permission.check_box :can_edit %>
@@ -14,7 +14,7 @@
     <%= child_form.text_field :name %>
     <% unless child_form.object.new_record? %>
       <%= child_form.check_box '_destroy' %>
-      <%= child_form.label '_destroy', :caption => 'Remove' %>
+      <%= child_form.label '_destroy', caption: 'Remove' %>
     <% end %>
   <% end %>
 <% end %>

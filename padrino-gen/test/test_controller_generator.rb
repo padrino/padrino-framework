@@ -81,7 +81,7 @@ describe 'ControllerGenerator' do
     it 'should generate controller with specified parent' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-p=user') }
-      assert_match_in_file(/SampleProject::App.controllers :demo_items, :parent => :user do/m, @controller_path)
+      assert_match_in_file(/SampleProject::App.controllers :demo_items, parent: :user do/m, @controller_path)
       assert_match_in_file(%r{describe "/user/:user_id/demo_items" do}, @controller_test_path)
       assert_match_in_file(%r{get "/user/1/demo_items"}, @controller_test_path)
     end
@@ -95,7 +95,7 @@ describe 'ControllerGenerator' do
     it 'should generate controller with specified providers' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project", '-f=:html, :js') }
-      assert_match_in_file(/SampleProject::App.controllers :demo_items, :provides => \[:html, :js\] do/m, @controller_path)
+      assert_match_in_file(/SampleProject::App.controllers :demo_items, provides: \[:html, :js\] do/m, @controller_path)
     end
 
     it 'should generate controller without specified providers' do

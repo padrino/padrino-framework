@@ -3,15 +3,15 @@ MR = <<~MR unless defined?(MR)
   # You can use other adapters like:
   #
   #   ActiveRecord::Base.configurations[:development] = {
-  #     :adapter   => 'mysql2',
-  #     :encoding  => 'utf8',
-  #     :reconnect => true,
-  #     :database  => 'your_database',
-  #     :pool      => 5,
-  #     :username  => 'root',
-  #     :password  => '',
-  #     :host      => 'localhost',
-  #     :socket    => '/tmp/mysql.sock'
+  #     adapter:   'mysql2',
+  #     encoding:  'utf8',
+  #     reconnect: true,
+  #     database:  'your_database',
+  #     pool:      5,
+  #     username:  'root',
+  #     password:  '',
+  #     host:      'localhost',
+  #     socket:    '/tmp/mysql.sock'
   #   }
   #
   ActiveRecord::Base.configurations[:development] = {
@@ -59,41 +59,41 @@ MR = <<~MR unless defined?(MR)
 MR
 
 MYSQL = <<-MYSQL unless defined?(MYSQL)
-  :adapter   => 'mysql',
-  :encoding  => 'utf8',
-  :reconnect => true,
-  :database  => !DB_NAME!,
-  :pool      => 5,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :socket    => '/tmp/mysql.sock'
+  adapter:   'mysql',
+  encoding:  'utf8',
+  reconnect: true,
+  database:  !DB_NAME!,
+  pool:      5,
+  username:  'root',
+  password:  '',
+  host:      'localhost',
+  socket:    '/tmp/mysql.sock'
 MYSQL
 
 MYSQL2 = <<-MYSQL2 unless defined?(MYSQL2)
-  :adapter   => 'mysql2',
-  :encoding  => 'utf8',
-  :reconnect => true,
-  :database  => !DB_NAME!,
-  :pool      => 5,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :socket    => '/tmp/mysql.sock'
+  adapter:   'mysql2',
+  encoding:  'utf8',
+  reconnect: true,
+  database:  !DB_NAME!,
+  pool:      5,
+  username:  'root',
+  password:  '',
+  host:      'localhost',
+  socket:    '/tmp/mysql.sock'
 MYSQL2
 
 POSTGRES = <<-POSTGRES unless defined?(POSTGRES)
-  :adapter   => 'postgresql',
-  :database  => !DB_NAME!,
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :port      => 5432
+  adapter:   'postgresql',
+  database:  !DB_NAME!,
+  username:  'root',
+  password:  '',
+  host:      'localhost',
+  port:      5432
 POSTGRES
 
 SQLITE = <<-SQLITE unless defined?(SQLITE)
-  :adapter => 'sqlite3',
-  :database => !DB_NAME!
+  adapter: 'sqlite3',
+  database: !DB_NAME!
 SQLITE
 
 CONNECTION_POOL_MIDDLEWARE = <<~MIDDLEWARE
@@ -156,11 +156,11 @@ MR_MODEL = <<~MODEL unless defined?(MR_MODEL)
   end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ['title:string', 'body:string'], app: 'app' }
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(':') }
-  column_declarations = field_tuples.map { |field, kind| "field :#{field}, :as => :#{kind}" }.join("\n  ")
+  column_declarations = field_tuples.map { |field, kind| "field :#{field}, as: :#{kind}" }.join("\n  ")
   model_contents = MR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)

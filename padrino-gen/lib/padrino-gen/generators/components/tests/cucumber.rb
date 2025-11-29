@@ -39,7 +39,7 @@ CUCUMBER_STEP = <<~TEST unless defined?(CUCUMBER_STEP)
   end
 
   Given /^I fill in '(.*)' for '(.*)'$/ do |value, field|
-    fill_in(field, :with => value)
+    fill_in(field, with: value)
   end
 
   When /^I press '(.*)'$/ do |name|

@@ -18,12 +18,12 @@ module Padrino
       #   The type of flash to display in the tag.
       # @param [Hash] options
       #   The html options for this section.
-      #   use :bootstrap => true to support Twitter's bootstrap dismiss alert button.
+      #   use +bootstrap: true+ to support Twitter's bootstrap dismiss alert button.
       #
       # @return [String] Flash tag html with specified +options+.
       #
       # @example
-      #   flash_tag(:notice, :id => 'flash-notice')
+      #   flash_tag(:notice, id: 'flash-notice')
       #   # Generates: <div class="notice" id="flash-notice">flash-notice</div>
       #   flash_tag(:error, :success)
       #   # Generates: <div class="error">flash-error</div>
@@ -66,16 +66,16 @@ module Padrino
       # @return [String] Link tag html with specified +options+.
       #
       # @example
-      #   link_to('click me', '/dashboard', :class => 'linky')
+      #   link_to('click me', '/dashboard', class: 'linky')
       #   # Generates <a class="linky" href="/dashboard">click me</a>
       #
-      #   link_to('click me', '/dashboard', :remote => true)
+      #   link_to('click me', '/dashboard', remote: true)
       #   # Generates <a href="/dashboard" data-remote="true">click me</a>
       #
-      #   link_to('click me', '/dashboard', :method => :delete)
+      #   link_to('click me', '/dashboard', method: :delete)
       #   # Generates <a href="/dashboard" data-method="delete" rel="nofollow">click me</a>
       #
-      #   link_to('/dashboard', :class => 'blocky') { 'click me' }
+      #   link_to('/dashboard', class: 'blocky') { 'click me' }
       #   # Generates <a class="blocky" href="/dashboard">click me</a>
       #
       # Note that you can pass :+if+ or :+unless+ conditions, but if you provide :current as
@@ -109,9 +109,9 @@ module Padrino
       # @return [String] Feed link html tag with specified +options+.
       #
       # @example
-      #   feed_tag :atom, url(:blog, :posts, :format => :atom), :title => "ATOM"
+      #   feed_tag :atom, url(:blog, :posts, format: :atom), title: "ATOM"
       #   # Generates: <link type="application/atom+xml" rel="alternate" href="/blog/posts.atom" title="ATOM" />
-      #   feed_tag :rss, url(:blog, :posts, :format => :rss)
+      #   feed_tag :rss, url(:blog, :posts, format: :rss)
       #   # Generates: <link type="application/rss+xml" rel="alternate" href="/blog/posts.rss" title="rss" />
       #
       def feed_tag(mime, url, options = {})
@@ -161,10 +161,10 @@ module Padrino
       # @return [String] Meta html tag with specified +options+.
       #
       # @example
-      #   meta_tag "weblog,news", :name => "keywords"
+      #   meta_tag 'weblog,news', name: 'keywords'
       #   # Generates: <meta name="keywords" content="weblog,news" />
       #
-      #   meta_tag "text/html; charset=UTF-8", 'http-equiv' => "Content-Type"
+      #   meta_tag 'text/html; charset=UTF-8', 'http-equiv' => 'Content-Type'
       #   # Generates: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       #
       def meta_tag(content, options = {})
@@ -186,7 +186,7 @@ module Padrino
       #   favicon_tag 'favicon.png'
       #   favicon_tag 'icons/favicon.png'
       #   # or override some options
-      #   favicon_tag 'favicon.png', :type => 'image/ico'
+      #   favicon_tag 'favicon.png', type: 'image/ico'
       #
       def favicon_tag(source, options = {})
         type = File.extname(source).sub('.', '')
@@ -329,8 +329,8 @@ module Padrino
       # Returns the URI root of the application with optional paths appended.
       #
       # @example
-      #   uri_root_path("/some/path") => "/root/some/path"
-      #   uri_root_path("javascripts", "test.js") => "/uri/root/javascripts/test.js"
+      #   uri_root_path('/some/path') => "/root/some/path"
+      #   uri_root_path('javascripts', 'test.js') => "/uri/root/javascripts/test.js"
       #
       def uri_root_path(*paths)
         root_uri = self.class.uri_root if self.class.respond_to?(:uri_root)
@@ -341,7 +341,7 @@ module Padrino
       # Returns the timestamp mtime for an asset.
       #
       # @example
-      #   asset_timestamp("some/path/to/file.png") => "?154543678"
+      #   asset_timestamp('some/path/to/file.png') => "?154543678"
       #
       def asset_timestamp(file_path)
         return nil if file_path =~ /\?/ || (self.class.respond_to?(:asset_stamp) && !self.class.asset_stamp)
@@ -377,8 +377,8 @@ module Padrino
       #
       #  @example
       #
-      #    asset_normalize_extension(:images, "/foo/bar/baz.png") => "/foo/bar/baz.png"
-      #    asset_normalize_extension(:js, "/foo/bar/baz") => "/foo/bar/baz.js"
+      #    asset_normalize_extension(:images, '/foo/bar/baz.png') => "/foo/bar/baz.png"
+      #    asset_normalize_extension(:js, '/foo/bar/baz') => "/foo/bar/baz.js"
       #
       def asset_normalize_extension(kind, source)
         ignore_extension = !APPEND_ASSET_EXTENSIONS.include?(kind.to_s)
@@ -390,7 +390,7 @@ module Padrino
       # Parses link_to options for given correct conditions.
       #
       # @example
-      #   parse_conditions("/some/url", :if => false) => true
+      #   parse_conditions("/some/url", if: false) => true
       #
       def parse_conditions(url, options)
         if options.key?(:if)

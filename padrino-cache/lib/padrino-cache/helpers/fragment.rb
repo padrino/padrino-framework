@@ -33,11 +33,11 @@ module Padrino
         #     enable :caching          # turns on caching mechanism
         #
         #     controller '/tweets' do
-        #       get :feed, :map => '/:username' do
+        #       get :feed, map: '/:username' do
         #         username = params[:username]
         #
-        #         @feed = cache( "feed_for_#{username}", :expires => 3 ) do
-        #           @tweets = Tweet.all( :username => username )
+        #         @feed = cache("feed_for_#{username}", expires: 3) do
+        #           @tweets = Tweet.all(username: username)
         #           render 'partials/feedcontent'
         #         end
         #

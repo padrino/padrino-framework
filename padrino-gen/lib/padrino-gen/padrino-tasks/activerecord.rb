@@ -457,8 +457,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   task 'db:migrate' => 'ar:migrate'
-  task 'db:create'  => 'ar:create'
-  task 'db:drop'    => 'ar:drop'
-  task 'db:reset'   => 'ar:reset'
-  task 'db:setup'   => 'ar:setup'
+  task 'db:create' => 'ar:create'
+  task 'db:drop' => 'ar:drop'
+  task 'db:reset' => 'ar:reset'
+  task 'db:setup' => 'ar:setup'
 end

@@ -47,17 +47,17 @@ describe 'AssetTagHelpers' do
 
     it 'should display link element with remote option' do
       actual_link = link_to('Sign up', '/register', remote: true)
-      assert_html_has_tag(actual_link, 'a', :content => 'Sign up', :href => '/register', 'data-remote' => 'true')
+      assert_html_has_tag(actual_link, 'a', content: 'Sign up', href: '/register', 'data-remote' => 'true')
     end
 
     it 'should display link element with method option' do
       actual_link = link_to('Sign up', '/register', method: :delete)
-      assert_html_has_tag(actual_link, 'a', :content => 'Sign up', :href => '/register', 'data-method' => 'delete', :rel => 'nofollow')
+      assert_html_has_tag(actual_link, 'a', content: 'Sign up', href: '/register', 'data-method' => 'delete', rel: 'nofollow')
     end
 
     it 'should display link element with confirm option' do
       actual_link = link_to('Sign up', '/register', confirm: 'Are you sure?')
-      assert_html_has_tag(actual_link, 'a', :content => 'Sign up', :href => '/register', 'data-confirm' => 'Are you sure?')
+      assert_html_has_tag(actual_link, 'a', content: 'Sign up', href: '/register', 'data-confirm' => 'Are you sure?')
     end
 
     it 'should display link element with ruby block' do

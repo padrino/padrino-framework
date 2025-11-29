@@ -180,9 +180,9 @@ describe 'ModelGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=minirecord') }
       capture_io { generate(:model, 'user', 'name:string', 'surname:string', 'age:integer', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :name, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :surname, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :age, :as => :integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :name, as: :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :surname, as: :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :age, as: :integer/m, "#{@apptmp}/sample_project/models/user.rb")
     end
 
     it 'should generate model file with camelized name' do
@@ -320,16 +320,16 @@ describe 'ModelGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
       capture_io { generate(:model, 'person', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class Person\n\s+include Mongoid::Document/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/# field <name>, :type => <type>, :default => <value>/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/# field <name>, type: <type>, default: <value>/m, "#{@apptmp}/sample_project/models/person.rb")
     end
 
     it 'should generate model file with given fields' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
       capture_io { generate(:model, 'user', 'name:string', 'age:integer', 'email:string', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User\n\s+include Mongoid::Document/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :name, :type => String/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :age, :type => Integer/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :email, :type => String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :name, type: String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :age, type: Integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :email, type: String/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 

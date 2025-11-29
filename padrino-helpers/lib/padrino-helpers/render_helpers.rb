@@ -23,10 +23,10 @@ module Padrino
       # @return [String] The html generated from this partial.
       #
       # @example
-      #   partial 'photo/item', :object => @photo
-      #   partial 'photo/item', :collection => @photos
-      #   partial 'photo/item', :locals => { :foo => :bar }
-      #   partial 'photo/item', :engine => :erb
+      #   partial 'photo/item', object: @photo
+      #   partial 'photo/item', collection: @photos
+      #   partial 'photo/item', locals: { foo: :bar }
+      #   partial 'photo/item', engine: :erb
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #

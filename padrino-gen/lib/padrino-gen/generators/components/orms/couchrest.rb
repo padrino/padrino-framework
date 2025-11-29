@@ -10,14 +10,14 @@ COUCHREST = <<~COUCHREST unless defined?(COUCHREST)
     conf.database = CouchRest.database!(db_name)
     conf.environment = Padrino.env
     # conf.connection = {
-    #   :protocol => 'http',
-    #   :host     => 'localhost',
-    #   :port     => '5984',
-    #   :prefix   => 'padrino',
-    #   :suffix   => nil,
-    #   :join     => '_',
-    #   :username => nil,
-    #   :password => nil
+    #   protocol: 'http',
+    #   host:     'localhost',
+    #   port:     '5984',
+    #   prefix:   'padrino',
+    #   suffix:   nil,
+    #   join:     '_',
+    #   username: nil,
+    #   password: nil
     # }
   end
 COUCHREST
@@ -36,7 +36,7 @@ CR_MODEL = <<~MODEL unless defined?(CR_MODEL)
   end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ['title:string', 'body:string'], app: 'app' }
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(':') }

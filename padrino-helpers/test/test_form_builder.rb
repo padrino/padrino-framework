@@ -60,8 +60,8 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct form html with remote option' do
-      actual_html = form_for(@user, '/update', "accept-charset": 'UTF-8', remote: true) { 'Demo' }
-      assert_html_has_tag(actual_html, 'form', :"accept-charset" => 'UTF-8', :action => '/update', :method => 'post', 'data-remote' => 'true')
+      actual_html = form_for(@user, '/update', 'accept-charset' => 'UTF-8', remote: true) { 'Demo' }
+      assert_html_has_tag(actual_html, 'form', 'accept-charset' => 'UTF-8', action: '/update', method: 'post', 'data-remote' => 'true')
     end
 
     it 'should display correct form html with namespace option' do
@@ -85,8 +85,8 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct form html with remote option and method put' do
-      actual_html = form_for(@user, '/update', "accept-charset": 'UTF-8', remote: true, method: 'put') { 'Demo' }
-      assert_html_has_tag(actual_html, 'form', :"accept-charset" => 'UTF-8', :method => 'post', 'data-remote' => 'true')
+      actual_html = form_for(@user, '/update', 'accept-charset' => 'UTF-8', remote: true, method: 'put') { 'Demo' }
+      assert_html_has_tag(actual_html, 'form', 'accept-charset' => 'UTF-8', method: 'post', 'data-remote' => 'true')
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', value: 'put')
     end
 

@@ -6,8 +6,8 @@ module Padrino
   # Stores the name of the application (app folder name) and url mount path.
   #
   # @example
-  #   Mounter.new("blog_app", :app_class => "Blog").to("/blog")
-  #   Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
+  #   Mounter.new('blog_app', app_class: 'Blog').to('/blog')
+  #   Mounter.new('blog_app', app_file: '/path/to/blog/app.rb').to('/blog')
   #
   class Mounter
     DEFAULT_CASCADE = [404, 405]
@@ -211,7 +211,7 @@ module Padrino
     # Raises an exception unless app_file is located properly.
     #
     def ensure_app_file!
-      message = "Unable to locate source file for app '#{app_class}', try with :app_file => '/path/app.rb'"
+      message = "Unable to locate source file for app '#{app_class}', try with app_file: '/path/app.rb'"
       raise MounterException, message unless @app_file
     end
 
@@ -219,7 +219,7 @@ module Padrino
     # Raises an exception unless app_obj is defined properly.
     #
     def ensure_app_object!
-      message = "Unable to locate app for '#{app_class}', try with :app_class => 'MyAppClass'"
+      message = "Unable to locate app for '#{app_class}', try with app_class: 'MyAppClass'"
       raise MounterException, message unless @app_obj
     end
   end

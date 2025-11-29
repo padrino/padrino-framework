@@ -1,36 +1,36 @@
 !!! 5
-%html{:lang => 'en'}
+%html{lang: 'en'}
   %head
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    %meta{:content => 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
-    %meta{:name => :viewport, :content => 'width=device-width,initial-scale=1'}
-    %title= @title.present? ? "#{@title} | Padrino Admin" : "Padrino Admin"
+    %meta{content: 'text/html; charset=utf-8', 'http-equiv' => 'Content-Type'}
+    %meta{name: :viewport, content: 'width=device-width,initial-scale=1'}
+    %title= @title.present? ? "#{@title} | Padrino Admin" : 'Padrino Admin'
     =favicon_tag 'favicon.ico'
-    %link{:href => 'http://fonts.googleapis.com/css?family=Varela', :rel => :stylesheet}
+    %link{href: 'http://fonts.googleapis.com/css?family=Varela', rel: :stylesheet}
     =stylesheet_link_tag 'bootstrap', 'application'
 
   %body
     .navbar.navbar-fixed-top
       .navbar-inner
         .container
-          =link_to 'Padrino', url(:base, :index), :class => 'navbar-brand', :title => 'Padrino Admin'
+          =link_to 'Padrino', url(:base, :index), class: 'navbar-brand', title: 'Padrino Admin'
           %ul.nav.navbar-nav.pull-right
-            %li.navbar-edit-account=link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
+            %li.navbar-edit-account=link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, id: current_account.id), title: pat(:profile), class: 'navbar-nav-link'
             %li.navbar-logout
-              = button_to :logout, url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form', :submit_options => { :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link' } do
+              = button_to :logout, url(:sessions, :destroy), method: :delete, class: 'navbar-nav-form', submit_options: { type: :submit, title: pat(:logout), class: 'navbar-nav-form-link' } do
                 = tag_icon('power-off')
 
           %ul.nav.navbar-nav.pull-left
             - project_modules.each do |project_module|
-              %li{:class => "navbar-module #{('active' if request.path_info =~ /^#{project_module.path}/)}"}
+              %li{class: "navbar-module #{('active' if request.path_info =~ /^#{project_module.path}/)}"}
                 =link_to project_module.human_name, url(project_module.path)
 
     .container.main
       .main-wrapper
-        ={:error => 'danger', :warning => 'warning', :success => 'success', :notice => 'info'}.map { |type, class_name| flash_tag(type, :class => "alert alert-#{class_name} fade in", :bootstrap => true) }.join.html_safe
+        = { error: 'danger', warning: 'warning', success: 'success', notice: 'info' }.map { |type, class_name| flash_tag(type, class: "alert alert-#{class_name} fade in", bootstrap: true) }.join.html_safe
         .row=yield
         .main-wrapper-push
 
@@ -41,9 +41,9 @@
           =Time.now.year
           Your Site - Powered by Padrino v.#{Padrino.version}
         %ul.pull-right.footer-links
-          %li= link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank, :class => 'footer-links-link'
-          %li= link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank, :class => 'footer-links-link'
-          %li= link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', :target => :_blank, :class => 'footer-links-link'
-          %li= link_to tag_icon(:twitter, 'twitter'), 'http://twitter.com/padrinorb', :target => :_blank, :class => 'footer-links-link'
+          %li= link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', target: :_blank, class: 'footer-links-link'
+          %li= link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', target: :_blank, class: 'footer-links-link'
+          %li= link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', target: :_blank, class: 'footer-links-link'
+          %li= link_to tag_icon(:twitter, 'twitter'), 'http://twitter.com/padrinorb', target: :_blank, class: 'footer-links-link'
 
     =javascript_include_tag 'jquery-1.11.0.min', (Padrino.env == :production ? 'bootstrap/bootstrap.min' : %w[bootstrap/affix bootstrap/alert bootstrap/button bootstrap/carousel bootstrap/collapse bootstrap/dropdown  bootstrap/tooltip bootstrap/transition  bootstrap/modal bootstrap/popover bootstrap/scrollspy bootstrap/tab]), :application

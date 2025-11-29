@@ -42,8 +42,8 @@ module Padrino
         # Returns whether the option should be selected or not.
         #
         # @example
-        #   option_is_selected?("red", "Red", ["red", "blue"])   => true
-        #   option_is_selected?("red", "Red", ["green", "blue"]) => false
+        #   option_is_selected?('red', 'Red', ['red', 'blue'])   => true
+        #   option_is_selected?('red', 'Red', ['green', 'blue']) => false
         #
         def option_is_selected?(value, caption, selected_values)
           check_value = (value || caption).to_s

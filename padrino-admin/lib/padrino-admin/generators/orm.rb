@@ -132,10 +132,10 @@ module Padrino
         def find_by_ids(params = nil)
           case orm
           when :ohm then "#{klass_name}.fetch(#{params})"
-          when :datamapper then "#{klass_name}.all(:id => #{params})"
-          when :sequel then "#{klass_name}.where(:id => #{params})"
+          when :datamapper then "#{klass_name}.all(id: #{params})"
+          when :sequel then "#{klass_name}.where(id: #{params})"
           when :mongoid then "#{klass_name}.find(#{params})"
-          when :couchrest then "#{klass_name}.all(:keys => #{params})"
+          when :couchrest then "#{klass_name}.all(keys: #{params})"
           when :dynamoid then "#{klass_name}.find(#{params})"
           else find(params)
           end

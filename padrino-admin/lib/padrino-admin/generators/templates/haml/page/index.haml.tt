@@ -8,23 +8,23 @@
       %tr
         %th.header.list-menu
           .dropdown
-            %a.list-menu-toggle.dropdown-toggle{:href => '#', :'data-toggle' => :dropdown}
+            %a.list-menu-toggle.dropdown-toggle{href: '#', 'data-toggle' => :dropdown}
               =tag_icon :magic
               %span.caret
-            %ul.list-menu.dropdown-menu{:role => :menu}
-              %li.list-menu-wrapper=link_to tag_icon('check-square-o', pat(:select_all)), '#', :id => 'select-all', :class => 'list-menu-link'
+            %ul.list-menu.dropdown-menu{role: :menu}
+              %li.list-menu-wrapper=link_to tag_icon('check-square-o', pat(:select_all)), '#', id: 'select-all', class: 'list-menu-link'
               %li.list-menu-wrapper.list-menu-wrapper-disabled
-                =link_to tag_icon('square-o', pat(:deselect_all)), '#', :id => 'deselect-all', :class => 'list-menu-link list-menu-link-disabled'
+                =link_to tag_icon('square-o', pat(:deselect_all)), '#', id: 'deselect-all', class: 'list-menu-link list-menu-link-disabled'
               %li.list-menu-divider.divider
               %li.list-menu-wrapper.list-menu-wrapper-disabled
-                =link_to tag_icon('trash-o', pat(:delete_selected)), '#', :id => 'delete-selected', :class => 'list-menu-link list-menu-link-disabled'
+                =link_to tag_icon('trash-o', pat(:delete_selected)), '#', id: 'delete-selected', class: 'list-menu-link list-menu-link-disabled'
                 .list-menu-popover-delete-selected.popover.right
                   .arrow
                   %h3.popover-title=pat(:delete_selected_title)
                   .popover-content
-                    = form_tag url(:<%= @orm.name_plural %>, :destroy_many), :method => :delete do
-                      =hidden_field_tag :<%= @orm.name_singular %>_ids, :'data-delete-many-ids' => true
-                      =submit_tag pat(:delete), :class =>'list-menu-popover-delete-selected-btn btn btn-danger btn-small'
+                    = form_tag url(:<%= @orm.name_plural %>, :destroy_many), method: :delete do
+                      =hidden_field_tag :<%= @orm.name_singular %>_ids, 'data-delete-many-ids' => true
+                      =submit_tag pat(:delete), class: 'list-menu-popover-delete-selected-btn btn btn-danger btn-small'
                       .btn.btn-default.btn-small.cancel=pat(:cancel)
         <%- @orm.columns.each_with_index do |column, i| -%>
         %th.header= mat(:<%= @orm.name_singular %>, :<%= column.name %>)
@@ -35,7 +35,7 @@
       -@<%= @orm.name_plural %>.each do |<%= @orm.name_singular %>|
         %tr.list-row
           %td.list-column.list-selectable
-            =check_box_tag '<%= @orm.name_singular %>_ids[]', :value => <%= @orm.name_singular %>.id, :class => 'list-selectable-checkbox'
+            =check_box_tag '<%= @orm.name_singular %>_ids[]', value: <%= @orm.name_singular %>.id, class: 'list-selectable-checkbox'
           <%- @orm.columns.each_with_index do |column, i| -%>
           <%- if column.name == "created_at" || column.name == "updated_at" -%>
           %td.list-column=time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
@@ -47,12 +47,12 @@
           <%- end -%>
           %td.list-column.list-row-action
             .list-row-action-wrapper
-              =link_to tag_icon(:edit), :href => url(:<%= @orm.name_plural %>, :edit, :id => <%= @orm.name_singular %>.id), :rel => :tooltip, :title => "#{pat(:edit)} <%= @orm.name_singular %>", :class => 'list-row-action-wrapper-link'
-              =link_to tag_icon('trash-o'), :rel => :tooltip, :title => "#{pat(:delete)} <%= @orm.name_singular %>", :class => 'list-row-action-delete-one list-row-action-wrapper-link'
+              =link_to tag_icon(:edit), href: url(:<%= @orm.name_plural %>, :edit, id: <%= @orm.name_singular %>.id), rel: :tooltip, title: "#{pat(:edit)} <%= @orm.name_singular %>", class: 'list-row-action-wrapper-link'
+              =link_to tag_icon('trash-o'), rel: :tooltip, title: "#{pat(:delete)} <%= @orm.name_singular %>", class: 'list-row-action-delete-one list-row-action-wrapper-link'
               .popover.list-row-action-popover-delete-one.left
                 .arrow
-                %h3.popover-title=pat(:delete, :model => "<%= @orm.name_singular %>")
+                %h3.popover-title=pat(:delete, model: '<%= @orm.name_singular %>')
                 .popover-content
-                  = form_tag url(:<%= @orm.name_plural %>, :destroy, :id => <%= @orm.name_singular %>.id), :method => :delete do
-                    =submit_tag pat(:delete), :class =>'list-row-action-popover-delete-one-btn btn btn-danger btn-small'
+                  = form_tag url(:<%= @orm.name_plural %>, :destroy, id: <%= @orm.name_singular %>.id), method: :delete do
+                    =submit_tag pat(:delete), class: 'list-row-action-popover-delete-one-btn btn btn-danger btn-small'
                     .btn.btn-default.btn-small.cancel=pat(:cancel)

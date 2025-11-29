@@ -37,7 +37,7 @@ MINITEST_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_RAKE)
   desc "Run application test suite"
   task 'test' => test_tasks.map { |f| "test:\#{f}" }
 
-  task :default => :test
+  task default: :test
 TEST
 
 MINITEST_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_CONTROLLER_TEST)

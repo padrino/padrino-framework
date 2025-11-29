@@ -9,10 +9,10 @@ module Padrino
     #
     # Examples (~ marks here that output is actually escaped by CGI):
     #
-    #   Utils.build_uri_query(:a => 1, :b => 2)           #=> "a=1&b=2"
-    #   Utils.build_uri_query(:a => [1, 2])               #=> ~"a[]=1&a[]=2"
-    #   Utils.build_uri_query([1, 2], 'namespace')        #=> ~"namespace[]=1&namespace[]=2"
-    #   Utils.build_uri_query(:a => { :d => 2 }, :b => 3) #=> ~"a[d]=2&b=3"
+    #   Utils.build_uri_query(a: 1, b: 2)           # => 'a=1&b=2'
+    #   Utils.build_uri_query(a: [1, 2])            # => ~'a[]=1&a[]=2'
+    #   Utils.build_uri_query([1, 2], 'namespace')  # => ~'namespace[]=1&namespace[]=2'
+    #   Utils.build_uri_query(a: { d: 2 }, b: 3)    # => ~'a[d]=2&b=3'
     #
     def build_uri_query(object, namespace = nil)
       case object

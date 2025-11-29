@@ -28,13 +28,13 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen admin generates a new Padrino Admin application"
 
-      class_option :skip_migration, aliases: '-s', default: false, type: :boolean
-      # class_option :models_path,     :desc => 'The models destination path', :default => '.', :type => :string
-      class_option :root, desc: 'The root destination', aliases: '-r', default: '.', type: :string
-      class_option :destroy, aliases: '-d', default: false, type: :boolean
-      class_option :renderer, aliases: '-e', desc: 'Rendering engine (erb, haml, slim)', type: :string
-      class_option :admin_model, aliases: '-m', desc: 'The name of model for access controlling', default: 'Account', type: :string
-      class_option :admin_name,  aliases: '-a', desc: 'The admin application name and path', default: 'admin', type: :string
+      class_option :skip_migration, type: :boolean, aliases: '-s', default: false
+      class_option :root,           type: :string,  aliases: '-r', default: '.',       desc: 'The root destination'
+      class_option :destroy,        type: :boolean, aliases: '-d', default: false
+      class_option :renderer,       type: :string,  aliases: '-e',                     desc: 'Rendering engine (erb, haml, slim)'
+      class_option :admin_model,    type: :string,  aliases: '-m', default: 'Account', desc: 'The name of model for access controlling'
+      class_option :admin_name,     type: :string,  aliases: '-a', default: 'admin',   desc: 'The admin application name and path'
+      # class_option :models_path,     desc: 'The models destination path', default: '.', type: :string
 
       # Copies over the Padrino base admin application.
       def create_admin
@@ -73,7 +73,7 @@ module Padrino
           directory 'templates/assets',    destination_root('public', @admin_path)
           template  'templates/app.rb.tt', destination_root("#{@admin_path}/app.rb")
           inject_into_file destination_root('config/apps.rb'), <<~RUBY.prepend("\n"), before: %r{^Padrino.mount.*\.to\('/'\)$}
-            Padrino.mount("#{@app_name}::#{@admin_name}", :app_file => Padrino.root('#{@admin_path}/app.rb')).to("/#{@admin_path}")
+            Padrino.mount('#{@app_name}::#{@admin_name}', app_file: Padrino.root('#{@admin_path}/app.rb')).to('/#{@admin_path}')
           RUBY
 
           unless options[:destroy]
@@ -139,7 +139,7 @@ module Padrino
 
           # A nicer select box.
           # TODO FIXME This doesn't make much sense in here. Review.
-          # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, :class => :text_field", "f.select :role, :options => access_control.roles"
+          # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, class: :text_field", "f.select :role, options: access_control.roles"
 
           # Destroy account only if not logged in.
           gsub_file destination_root("#{@admin_path}/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"

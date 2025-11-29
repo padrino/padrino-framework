@@ -68,20 +68,20 @@ module Padrino
       # @example
       #   controller :admin do
       #     get :index do; ...; end
-      #     get :show, :with => :id  do; ...; end
+      #     get :show, with: :id  do; ...; end
       #   end
       #
       #   url(:admin_index) # => "/admin"
-      #   url(:admin_show, :id => 1) # "/admin/show/1"
+      #   url(:admin_show, id: 1) # "/admin/show/1"
       #
       # @example Using named routes follow the sinatra way:
-      #   controller "/admin" do
-      #     get "/index" do; ...; end
-      #     get "/show/:id" do; ...; end
+      #   controller '/admin' do
+      #     get '/index' do; ...; end
+      #     get '/show/:id' do; ...; end
       #   end
       #
       # @example Supply +:provides+ to all controller routes:
-      #   controller :provides => [:html, :xml, :json] do
+      #   controller provides: [:html, :xml, :json] do
       #     get :index do; "respond to html, xml and json"; end
       #     post :index do; "respond to html, xml and json"; end
       #     get :foo do; "respond to html, xml and json"; end
@@ -91,40 +91,42 @@ module Padrino
       #   controllers :product, :parent => :user do
       #     get :index do
       #       # url is generated as "/user/#{params[:user_id]}/product"
-      #       # url_for(:product, :index, :user_id => 5) => "/user/5/product"
+      #       # url_for(:product, :index, user_id: 5) => "/user/5/product"
       #     end
-      #     get :show, :with => :id do
+      #     get :show, with: :id do
       #       # url is generated as "/user/#{params[:user_id]}/product/show/#{params[:id]}"
-      #       # url_for(:product, :show, :user_id => 5, :id => 10) => "/user/5/product/show/10"
+      #       # url_for(:product, :show, user_id: 5, id: 10) => "/user/5/product/show/10"
       #     end
       #   end
       #
       # @example Specify conditions to run for all routes:
-      #   controller :conditions => {:protect => true} do
+      #   controller conditions: { protect: true } do
       #     def self.protect(protected)
       #       condition do
-      #         halt 403, "No secrets for you!" unless params[:key] == "s3cr3t"
+      #         halt 403, 'No secrets for you!' unless params[:key] == 's3cr3t'
       #       end if protected
       #     end
       #
       #     # This route will only return "secret stuff" if the user goes to
       #     # `/private?key=s3cr3t`.
-      #     get("/private") { "secret stuff" }
+      #     get("/private") { 'secret stuff' }
       #
       #     # And this one, too!
-      #     get("/also-private") { "secret stuff" }
+      #     get("/also-private") { 'secret stuff' }
       #
       #     # But you can override the conditions for each route as needed.
       #     # This route will be publicly accessible without providing the
       #     # secret key.
-      #     get :index, :protect => false do
-      #       "Welcome!"
+      #     get :index, protect: false do
+      #       'Welcome!'
       #     end
       #   end
       #
       # @example Supply default values:
-      #   controller :lang => :de do
-      #     get :index, :map => "/:lang" do; "params[:lang] == :de"; end
+      #   controller lang: :de do
+      #     get :index, map: '/:lang' do
+      #       params[:lang] == :de
+      #     end
       #   end
       #
       # In a controller, before and after filters are scoped and don't
@@ -206,10 +208,10 @@ module Padrino
       #   # => match only path that are  +/+ or contains +main+
       #
       # @example filtering everything except an occurrence
-      #   before :except => :index do; ...; end
+      #   before except: :index do; ...; end
       #
       # @example you can also filter using a request param
-      #   before :agent => /IE/ do; ...; end
+      #   before agent: /IE/ do; ...; end
       #   # => match +HTTP_USER_AGENT+ containing +IE+
       #
       # @see http://padrinorb.com/guides/controllers/route-filters/
@@ -235,16 +237,16 @@ module Padrino
       #
       # @example
       #   controllers :product do
-      #     parent :shop, :optional => true, :map => "/my/stand"
-      #     parent :category, :optional => true
-      #     get :show, :with => :id do
+      #     parent :shop, optional: true, map: "/my/stand"
+      #     parent :category, optional: true
+      #     get :show, with: :id do
       #       # generated urls:
       #       #   "/product/show/#{params[:id]}"
       #       #   "/my/stand/#{params[:shop_id]}/product/show/#{params[:id]}"
       #       #   "/my/stand/#{params[:shop_id]}/category/#{params[:category_id]}/product/show/#{params[:id]}"
-      #       # url_for(:product, :show, :id => 10) => "/product/show/10"
-      #       # url_for(:product, :show, :shop_id => 5, :id => 10) => "/my/stand/5/product/show/10"
-      #       # url_for(:product, :show, :shop_id => 5, :category_id => 1, :id => 10) => "/my/stand/5/category/1/product/show/10"
+      #       # url_for(:product, :show, id: 10) => "/product/show/10"
+      #       # url_for(:product, :show, shop_id: 5, id: 10) => "/my/stand/5/product/show/10"
+      #       # url_for(:product, :show, shop_id: 5, category_id: 1, id: 10) => "/my/stand/5/category/1/product/show/10"
       #     end
       #   end
       #
@@ -303,16 +305,16 @@ module Padrino
       #
       # @example Giving a controller like:
       #   controller :foo do
-      #     get :bar, :map => 'foo-bar-:id'; ...; end
+      #     get :bar, map: 'foo-bar-:id'; ...; end
       #   end
       #
       # @example You should be able to reverse:
-      #   MyApp.url(:foo_bar, :id => :mine)
+      #   MyApp.url(:foo_bar, id: :mine)
       #   # => /foo-bar-mine
       #
       # @example Into this:
       #   MyApp.recognize_path('foo-bar-mine')
-      #   # => [:foo_bar, :id => :mine]
+      #   # => [:foo_bar, { id: :mine }]
       #
       def recognize_path(path)
         responses = @router.recognize_path(path)
@@ -328,12 +330,12 @@ module Padrino
       #   Synonym for fragment.
       #
       # @example
-      #   url(:show, :id => 1)
-      #   url(:show, :name => 'test', :id => 24)
+      #   url(:show, id: 1)
+      #   url(:show, name: 'test', id: 24)
       #   url(:show, 1)
-      #   url(:controller_name, :show, :id => 21)
-      #   url(:controller_show, :id => 29)
-      #   url(:index, :fragment => 'comments')
+      #   url(:controller_name, :show, id: 21)
+      #   url(:controller_show, id: 29)
+      #   url(:index, fragment: 'comments')
       #
       def url(*args)
         params = args.last.is_a?(Hash) ? args.pop : {}
@@ -458,24 +460,24 @@ module Padrino
       # Rewrite default routes.
       #
       # @example
-      #   get :index                                             # => "/"
-      #   get :index, "/"                                        # => "/"
-      #   get :index, :map => "/"                                # => "/"
-      #   get :show, "/show-me"                                  # => "/show-me"
-      #   get :show,  :map => "/show-me"                         # => "/show-me"
-      #   get "/foo/bar"                                         # => "/show"
-      #   get :index, :parent => :user                           # => "/user/:user_id/index"
-      #   get :show, :with => :id, :parent => :user              # => "/user/:user_id/show/:id"
-      #   get :show, :with => :id                                # => "/show/:id"
-      #   get [:show, :id]                                       # => "/show/:id"
-      #   get :show, :with => [:id, :name]                       # => "/show/:id/:name"
-      #   get [:show, :id, :name]                                # => "/show/:id/:name"
-      #   get :list, :provides => :js                            # => "/list.{:format,js)"
-      #   get :list, :provides => :any                           # => "/list(.:format)"
-      #   get :list, :provides => [:js, :json]                   # => "/list.{!format,js|json}"
-      #   get :list, :provides => [:html, :js, :json]            # => "/list(.{!format,js|json})"
-      #   get :list, :priority => :low                           # Defers route to be last
-      #   get /pattern/, :name => :foo, :generate_with => '/foo' # Generates :foo as /foo
+      #   get :index                                       # => "/"
+      #   get :index, '/'                                  # => "/"
+      #   get :index, map: '/'                             # => "/"
+      #   get :show, '/show-me'                            # => "/show-me"
+      #   get :show,  map: '/show-me'                      # => "/show-me"
+      #   get '/foo/bar'                                   # => "/show"
+      #   get :index, parent: :user                        # => "/user/:user_id/index"
+      #   get :show, with: :id, parent: :user              # => "/user/:user_id/show/:id"
+      #   get :show, with: :id                             # => "/show/:id"
+      #   get [:show, :id]                                 # => "/show/:id"
+      #   get :show, with: [:id, :name]                    # => "/show/:id/:name"
+      #   get [:show, :id, :name]                          # => "/show/:id/:name"
+      #   get :list, provides: :js                         # => "/list.{:format,js)"
+      #   get :list, provides: :any                        # => "/list(.:format)"
+      #   get :list, provides: [:js, :json]                # => "/list.{!format,js|json}"
+      #   get :list, provides: [:html, :js, :json]         # => "/list(.{!format,js|json})"
+      #   get :list, priority: :low                        # Defers route to be last
+      #   get /pattern/, name: :foo, generate_with: '/foo' # Generates :foo as /foo
       def route(verb, path, *args, &block)
         options =
           case args.size
@@ -694,17 +696,17 @@ module Padrino
       # returned.
       #
       # @example
-      #   get "/a", :provides => [:html, :js]
+      #   get "/a", provides: [:html, :js]
       #   # => GET /a      => :html
       #   # => GET /a.js   => :js
       #   # => GET /a.xml  => 404
       #
-      #   get "/b", :provides => [:html]
+      #   get "/b", provides: [:html]
       #   # => GET /b; ACCEPT: html => html
       #   # => GET /b; ACCEPT: js   => 406
       #
       #   enable :treat_format_as_accept
-      #   get "/c", :provides => [:html, :js]
+      #   get "/c", provides: [:html, :js]
       #   # => GET /c.xml => 406
       #
       def provides(*types)
@@ -742,7 +744,7 @@ module Padrino
       # Allows routing by Media type.
       #
       # @example
-      #   get "/a", :accepts => [:html, :js]
+      #   get "/a", accepts: [:html, :js]
       #   # => GET /a CONTENT_TYPE text/html => :html
       #   # => GET /a CONTENT_TYPE application/javascript => :js
       #   # => GET /a CONTENT_TYPE application/xml => 406
@@ -760,7 +762,7 @@ module Padrino
       # `report_csrf_failure` is enabled.
       #
       # @example
-      #   post("/", :csrf_protection => false)
+      #   post("/", csrf_protection: false)
       #
       def csrf_protection(enabled)
         return unless enabled
@@ -781,8 +783,8 @@ module Padrino
       # Instance method for URL generation.
       #
       # @example
-      #   url(:show, :id => 1)
-      #   url(:show, :name => :test)
+      #   url(:show, id: 1)
+      #   url(:show, name: :test)
       #   url(:show, 1)
       #   url("/foo", false, false)
       #
@@ -809,10 +811,10 @@ module Padrino
       # Returns absolute url. Calls Sinatra::Helpers#uri to generate protocol version, hostname and port.
       #
       # @example
-      #   absolute_url(:show, :id => 1)  # => http://example.com/show?id=1
-      #   absolute_url(:show, 24)        # => https://example.com/admin/show/24
-      #   absolute_url('/foo/bar')       # => https://example.com/admin/foo/bar
-      #   absolute_url('baz')            # => https://example.com/admin/foo/baz
+      #   absolute_url(:show, id: 1)  # => http://example.com/show?id=1
+      #   absolute_url(:show, 24)     # => https://example.com/admin/show/24
+      #   absolute_url('/foo/bar')    # => https://example.com/admin/foo/bar
+      #   absolute_url('baz')         # => https://example.com/admin/foo/baz
       #
       def absolute_url(*args)
         url_path = args.shift

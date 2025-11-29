@@ -68,10 +68,10 @@ module Padrino
         #   error_message_on @post, :title
         #
         #   # => <div class="custom" style="border:1px solid red">can't be blank</div>
-        #   error_message_on :post, :title, :tag => :id, :class => :custom, :style => "border:1px solid red"
+        #   error_message_on :post, :title, tag: :id, class: :custom, style: 'border:1px solid red'
         #
         #   # => <div class="error">This title can't be blank (or it won't work)</div>
-        #   error_message_on :post, :title, :prepend => "This title", :append => "(or it won't work)"
+        #   error_message_on :post, :title, prepend: 'This title', append: "(or it won't work)"
         #
         # @return [String] The html display of an error for a particular +object+ and +field+.
         #

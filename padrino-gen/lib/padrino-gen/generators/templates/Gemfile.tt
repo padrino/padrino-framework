@@ -8,7 +8,7 @@ source 'https://rubygems.org'
 
 # Server requirements
 <% if options.server == 'trinidad' -%>
-gem 'trinidad', :platform => 'jruby'
+gem 'trinidad', platform: 'jruby'
 <% else -%>
 gem '<%= options.server %>'
 <% end -%>
@@ -25,8 +25,8 @@ gem 'rake'
 
 <% if options.api? -%>
 <% if options.dev? -%>
-gem 'padrino-core', :path => '<%= Padrino::Generators::DEV_PATH %>/padrino-core'
-gem 'padrino-gen', :path => '<%= Padrino::Generators::DEV_PATH %>/padrino-gen'
+gem 'padrino-core', path: '<%= Padrino::Generators::DEV_PATH %>/padrino-core'
+gem 'padrino-gen', path: '<%= Padrino::Generators::DEV_PATH %>/padrino-gen'
 <% else -%>
 gem 'padrino-core', '<%= Padrino.version %>'
 gem 'padrino-gen', '<%= Padrino.version %>'
@@ -36,10 +36,10 @@ gem 'padrino-gen', '<%= Padrino.version %>'
 <% if options.dev? %># <% end %>gem 'padrino', '<%= Padrino.version %>'
 
 # Or Padrino Edge
-# gem 'padrino', :github => 'padrino/padrino-framework'
+# gem 'padrino', github: 'padrino/padrino-framework'
 
 # Or Individual Gems
 <% unless options.dev? %># <% end %>%w(core support gen helpers cache mailer admin).each do |g|
-<% unless options.dev? %># <% end %>  gem 'padrino-' + g, <% if options.dev? %>:path => '<%= Padrino::Generators::DEV_PATH %>/padrino-' + g<% else %>'<%= Padrino.version %>'<% end %>
+<% unless options.dev? %># <% end %>  gem 'padrino-' + g, <% if options.dev? %>path: '<%= Padrino::Generators::DEV_PATH %>/padrino-' + g<% else %>'<%= Padrino.version %>'<% end %>
 <% unless options.dev? %># <% end %>end
 <% end -%>

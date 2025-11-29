@@ -114,8 +114,8 @@ within a more structured layout. Simply add a <tt>controllers</tt> or <tt>app/co
 
   # Simple Example
   SimpleApp.controllers do
-    get "/test" do
-      "Text to return"
+    get '/test' do
+      'Text to return'
     end
   end
 
@@ -127,7 +127,7 @@ You can also do more complex route alias definitions:
       ...
     end
 
-    get :show, :with => :id do
+    get :show, with: :id do
       # url generated is '/posts/show/:id'
       # access params[:id]
     end
@@ -141,7 +141,7 @@ as well as mapping the route aliases to an explicit url:
       ...
     end
 
-    get :account, :map => '/the/accounts/:name/and/:id' do
+    get :account, map: '/the/accounts/:name/and/:id' do
       # access params[:name] and params[:index]
     end
   end
@@ -150,11 +150,11 @@ and even configure the +provides+ for each route:
 
   # app/controllers/example.rb
   SimpleApp.controllers :admin do
-    get :show, :with => :id, :provides => :js do
+    get :show, with: :id, provides: :js do
       "Url is /admin/show/#{params[:id]}.#{params[:format]}"
     end
 
-    get :other, :with => [:id, :name], :provides => [:html, :json] do
+    get :other, with: [:id, :name], provides: [:html, :json] do
       case content_type
         when :js    then ... end
         when :json  then ... end
@@ -166,7 +166,7 @@ or auto lookup for current locale or content_type
 
   # app/controllers/example.rb
   SimpleApp.controllers :admin do
-    get :show, :with => :id, :provides => [:html, :js] do
+    get :show, with: :id, provides: [:html, :js] do
       render "admin/show"
     end
   end

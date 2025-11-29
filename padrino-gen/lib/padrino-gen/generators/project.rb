@@ -63,7 +63,7 @@ module Padrino
           store_component_config('.components')
           unless options[:lean]
             app_skeleton('app', options[:tiny])
-            append_file destination_root('config/apps.rb'), "Padrino.mount('#{@project_name}::#{@app_name}', :app_file => Padrino.root('app/app.rb')).to('/')\n"
+            append_file destination_root('config/apps.rb'), "Padrino.mount('#{@project_name}::#{@app_name}', app_file: Padrino.root('app/app.rb')).to('/')\n"
           end
           template 'templates/Gemfile.tt', destination_root('Gemfile')
           template 'templates/Rakefile.tt', destination_root('Rakefile')

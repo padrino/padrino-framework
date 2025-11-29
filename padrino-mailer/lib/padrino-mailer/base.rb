@@ -5,12 +5,12 @@ module Padrino
     #
     # You can set the default delivery settings from your app through:
     #
-    #  set :delivery_method, :smtp => {
-    #    :address         => 'smtp.yourserver.com',
-    #    :port            => '25',
-    #    :user_name       => 'user',
-    #    :password        => 'pass',
-    #    :authentication  => :plain
+    #  set :delivery_method, smtp: {
+    #    address:        'smtp.yourserver.com',
+    #    port:           '25',
+    #    user_name:      'user',
+    #    password:       'pass',
+    #    authentication: :plain
     #  }
     #
     # or sendmail:
@@ -27,12 +27,12 @@ module Padrino
     #
     #   # app/mailers/sample_mailer.rb
     #   MyAppName.mailers :sample do
-    #     defaults :content_type => 'html'
+    #     defaults content_type: 'html'
     #     email :registration do |name, age|
     #       to      'user@domain.com'
     #       from    'admin@site.com'
     #       subject 'Welcome to the site!'
-    #       locals  :name => name
+    #       locals  name: name
     #       render  'registration'
     #     end
     #   end
@@ -74,9 +74,9 @@ module Padrino
       # @example
       #   email :birthday do |name, age|
       #     subject "Happy Birthday!"
-      #     to   'john@fake.com'
-      #     from 'noreply@birthday.com'
-      #     locals 'name' => name, 'age' => age
+      #     to      'john@fake.com'
+      #     from    'noreply@birthday.com'
+      #     locals  name: name, age: age
       #     render 'birthday'
       #   end
       #
@@ -102,7 +102,7 @@ module Padrino
       #
       # @example
       #   mailer :alternate do
-      #     defaults :from => 'padrino@from.com', :to => 'padrino@to.com'
+      #     defaults from: 'padrino@from.com', to: 'padrino@to.com'
       #     email(:foo) do; end
       #   end
       #

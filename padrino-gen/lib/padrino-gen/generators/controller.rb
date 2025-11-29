@@ -48,8 +48,8 @@ module Padrino
           @layout       = options[:layout] if options[:layout] && !options[:layout].empty?
 
           block_opts = []
-          block_opts << ":parent => :#{options[:parent]}" if options[:parent] && !options[:parent].empty?
-          block_opts << ":provides => [#{options[:provides]}]" if options[:provides] && !options[:provides].empty?
+          block_opts << "parent: :#{options[:parent]}" if options[:parent] && !options[:parent].empty?
+          block_opts << "provides: [#{options[:provides]}]" if options[:provides] && !options[:provides].empty?
           @block_opts_string = block_opts.join(', ') unless block_opts.empty?
 
           self.behavior = :revoke if options[:destroy]

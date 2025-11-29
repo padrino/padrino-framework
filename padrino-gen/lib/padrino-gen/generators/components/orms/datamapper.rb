@@ -110,7 +110,7 @@ DM_MODEL = <<~MODEL unless defined?(DM_MODEL)
   end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ['title:string', 'body:string'], app: 'app' }
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = DM_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
@@ -135,7 +135,7 @@ MIGRATION
 
 DM_MODEL_UP_MG = <<~MIGRATION.gsub(/^/, '    ') unless defined?(DM_MODEL_UP_MG)
   create_table :!TABLE! do
-    column :id, Integer, :serial => true
+    column :id, Integer, serial: true
     !FIELDS!
   end
 MIGRATION
@@ -147,7 +147,7 @@ MIGRATION
 def create_model_migration(migration_name, name, columns)
   output_model_migration(
     migration_name, name, columns,
-    column_format: proc { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', :length => 255' if kind =~ /string/i}" },
+    column_format: proc { |field, kind| "column :#{field}, DataMapper::Property::#{kind.classify}#{', length: 255' if kind =~ /string/i}" },
     base: DM_MIGRATION,
     up: DM_MODEL_UP_MG,
     down: DM_MODEL_DOWN_MG

@@ -72,7 +72,7 @@ module Padrino
       #
       # @example
       #   simple_format("hello\nworld") # => "<p>hello<br/>world</p>"
-      #   simple_format("hello\nworld", :tag => :div, :class => :foo) # => "<div class="foo">hello<br/>world</div>"
+      #   simple_format("hello\nworld", tag: :div, class: :foo) # => "<div class="foo">hello<br/>world</div>"
       #
       def simple_format(text, options = {})
         t = options.delete(:tag) || :p
@@ -122,7 +122,7 @@ module Padrino
       # @return [String] The text truncated after the given number of characters.
       #
       # @example
-      #   truncate("Once upon a time in a world far far away", :length => 8) => "Once upon..."
+      #   truncate('Once upon a time in a world far far away', length: 8) => "Once upon..."
       #
       def truncate(text, options = {})
         options = { length: 30, omission: '...' }.update(options)
@@ -149,7 +149,7 @@ module Padrino
       # @return [String] The text truncated after the given number of words.
       #
       # @example
-      #   truncate_words("Once upon a time in a world far far away", :length => 8) => "Once upon a time in a world far..."
+      #   truncate_words('Once upon a time in a world far far away', length: 8) => "Once upon a time in a world far..."
       #
       def truncate_words(text, options = {})
         options = { length: 30, omission: '...' }.update(options)
@@ -174,7 +174,7 @@ module Padrino
       # @return [String] The text with line wraps for lines longer then +line_width+.
       #
       # @example
-      #   word_wrap('Once upon a time', :line_width => 8) => "Once upon\na time"
+      #   word_wrap('Once upon a time', line_width: 8) => "Once upon\na time"
       #
       def word_wrap(text, *args)
         options = args.last.is_a?(Hash) ? args.pop : {}
@@ -208,7 +208,7 @@ module Padrino
       #   highlight('Lorem ipsum dolor sit amet', 'dolor')
       #   # => Lorem ipsum <strong class="highlight">dolor</strong> sit amet
       #
-      #   highlight('Lorem ipsum dolor sit amet', 'dolor', :highlighter => '<span class="custom">\1</span>')
+      #   highlight('Lorem ipsum dolor sit amet', 'dolor', highlighter: '<span class="custom">\1</span>')
       #   # => Lorem ipsum <strong class="custom">dolor</strong> sit amet
       #
       def highlight(text, words, *args)

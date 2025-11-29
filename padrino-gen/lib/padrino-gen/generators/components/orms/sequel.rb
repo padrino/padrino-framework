@@ -1,9 +1,9 @@
 SEQUEL = <<~SEQUEL unless defined?(SEQUEL)
   Sequel::Model.raise_on_save_failure = false # Do not throw exceptions on failure
   Sequel::Model.db = case Padrino.env
-    when :development then Sequel.connect(!DB_DEVELOPMENT!, :loggers => [logger])
-    when :production  then Sequel.connect(!DB_PRODUCTION!,  :loggers => [logger])
-    when :test        then Sequel.connect(!DB_TEST!,        :loggers => [logger])
+    when :development then Sequel.connect(!DB_DEVELOPMENT!, loggers: [logger])
+    when :production  then Sequel.connect(!DB_PRODUCTION!,  loggers: [logger])
+    when :test        then Sequel.connect(!DB_TEST!,        loggers: [logger])
   end
 SEQUEL
 
@@ -53,7 +53,7 @@ SQ_MODEL = <<~MODEL unless defined?(SQ_MODEL)
   end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ['title:string', 'body:string'], app: 'app' }
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   model_contents = SQ_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)

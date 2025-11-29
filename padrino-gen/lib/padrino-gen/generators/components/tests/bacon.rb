@@ -48,7 +48,7 @@ BACON_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_RAKE)
   desc "Run application test suite"
   task 'test' => test_tasks.map { |f| "test:\#{f}" }
 
-  task :default => :test
+  task default: :test
 TEST
 
 BACON_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_MODEL_TEST)

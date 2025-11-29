@@ -66,8 +66,8 @@ class Account < Sequel::Model
 
   one_to_many :sections
 
-  def self.admin;  first(:role => 'admin');  end
-  def self.editor; first(:role => 'editor'); end
+  def self.admin;  first(role: 'admin');  end
+  def self.editor; first(role: 'editor'); end
 
   ##
   # Replace ActiveRecord method.
@@ -78,12 +78,12 @@ class Account < Sequel::Model
 end
 
 # We build some fake accounts
-admin  = Account.create(:name => 'DAddYE', :role => 'admin',  :email => 'd.dagostino@lipsiasoft.com',
-                        :password => 'some', :password_confirmation => 'some')
-editor = Account.create(:name => 'Dexter', :role => 'editor', :email => 'editor@lipsiasoft.com',
-                        :password => 'some', :password_confirmation => 'some')
+admin  = Account.create(name: 'DAddYE', role: 'admin',  email: 'd.dagostino@lipsiasoft.com',
+                        password: 'some', password_confirmation: 'some')
+editor = Account.create(name: 'Dexter', role: 'editor', email: 'editor@lipsiasoft.com',
+                        password: 'some', password_confirmation: 'some')
 
 %w[News Press HowTo].each do |c|
-  admin.add_section(:name => c)
-  editor.add_section(:name => c)
+  admin.add_section(name: c)
+  editor.add_section(name: c)
 end

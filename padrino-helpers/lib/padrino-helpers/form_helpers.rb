@@ -38,8 +38,8 @@ module Padrino
       #
       # @example
       #   form_for :user, '/register' do |f| ... end
-      #   form_for @user, '/register', :id => 'register' do |f| ... end
-      #   form_for @user, '/register', :as => :customer do |f| ... end
+      #   form_for @user, '/register', id: 'register' do |f| ... end
+      #   form_for @user, '/register', as: :customer do |f| ... end
       #
       def form_for(object, url, options = {}, &block)
         instance = builder_instance(object, options)
@@ -86,12 +86,12 @@ module Padrino
       # @return [String] The HTML form with the specified options and input fields.
       #
       # @example
-      #   form_tag '/register', :class => "registration_form" do ... end
+      #   form_tag '/register', class: 'registration_form' do ... end
       #
       def form_tag(url, options = {}, &block)
         options = {
-          :action => escape_link(url),
-          :protect_from_csrf => is_protected_from_csrf?,
+          action: escape_link(url),
+          protect_from_csrf: is_protected_from_csrf?,
           'accept-charset' => 'UTF-8'
         }.update(options)
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
@@ -139,8 +139,8 @@ module Padrino
       # @return [String] The html for the fieldset tag based on given +options+.
       #
       # @example
-      #   field_set_tag(:class => "office-set") { }
-      #   field_set_tag("Office", :class => 'office-set') { }
+      #   field_set_tag(class: 'office-set') { }
+      #   field_set_tag("Office", class: 'office-set') { }
       #
       def field_set_tag(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
@@ -163,8 +163,8 @@ module Padrino
       # @return [String] The html for this label with the given +options+.
       #
       # @example
-      #   label_tag :username, :class => 'long-label'
-      #   label_tag :username, :class => 'long-label' do ... end
+      #   label_tag :username, class: 'long-label'
+      #   label_tag :username, class: 'long-label' do ... end
       #
       def label_tag(name, options = {}, &block)
         options = { caption: "#{Inflections.humanize(name)}: ", for: name }.update(options)
@@ -226,13 +226,13 @@ module Padrino
       #     Generated HTML with specified +options+.
       #
       # @example
-      #   text_field_tag :first_name, :maxlength => 40, :required => true
+      #   text_field_tag :first_name, maxlength: 40, required: true
       #   # => <input name="first_name" maxlength="40" required type="text" />
       #
-      #   text_field_tag :last_name, :class => 'string', :size => 40
+      #   text_field_tag :last_name, class: 'string', size: 40
       #   # => <input name="last_name" class="string" size="40" type="text" />
       #
-      #   text_field_tag :username, :placeholder => 'Your Username'
+      #   text_field_tag :username, placeholder: 'Your Username'
       #   # => <input name="username" placeholder="Your Username" type="text" />
       #
       def text_field_tag(name, options = {})
@@ -287,16 +287,16 @@ module Padrino
       #     Generated HTML with specified +options+.
       #
       # @example
-      #   number_field_tag :quantity, :class => 'numeric'
+      #   number_field_tag :quantity, class: 'numeric'
       #   # => <input name="quantity" class="numeric" type="number" />
       #
-      #   number_field_tag :zip_code, :pattern => /[0-9]{5}/
+      #   number_field_tag :zip_code, pattern: /[0-9]{5}/
       #   # => <input name="zip_code" pattern="[0-9]{5}" type="number" />
       #
-      #   number_field_tag :credit_card, :autocomplete => :off
+      #   number_field_tag :credit_card, autocomplete: :off
       #   # => <input name="credit_card" autocomplete="off" type="number" />
       #
-      #   number_field_tag :age, :min => 18, :max => 120, :step => 1
+      #   number_field_tag :age, min: 18, max: 120, step: 1
       #   # => <input name="age" min="18" max="120" step="1" type="number" />
       #
       def number_field_tag(name, options = {})
@@ -309,12 +309,12 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   telephone_field_tag :phone_number, :class => 'string'
+      #   telephone_field_tag :phone_number, class: 'string'
       #   # => <input name="phone_number" class="string" type="tel" />
       #
-      #  telephone_field_tag :cell_phone, :tabindex => 1
-      #  telephone_field_tag :work_phone, :tabindex => 2
-      #  telephone_field_tag :home_phone, :tabindex => 3
+      #  telephone_field_tag :cell_phone, tabindex: 1
+      #  telephone_field_tag :work_phone, tabindex: 2
+      #  telephone_field_tag :home_phone, tabindex: 3
       #
       #  # => <input name="cell_phone" tabindex="1" type="tel" />
       #  # => <input name="work_phone" tabindex="2" type="tel" />
@@ -331,10 +331,10 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #   email_field_tag :email, :placeholder => 'you@example.com'
+      #   email_field_tag :email, placeholder: 'you@example.com'
       #   # => <input name="email" placeholder="you@example.com" type="email" />
       #
-      #   email_field_tag :email, :value => 'padrinorb@gmail.com', :readonly => true
+      #   email_field_tag :email, value: 'padrinorb@gmail.com', readonly: true
       #   # => <input name="email" value="padrinorb@gmail.com" readonly type="email" />
       #
       def email_field_tag(name, options = {})
@@ -347,16 +347,16 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #  search_field_tag :search, :placeholder => 'Search this website...'
+      #  search_field_tag :search, placeholder: 'Search this website...'
       #  # => <input name="search" placeholder="Search this website..." type="search" />
       #
-      #  search_field_tag :search, :maxlength => 15, :class => ['search', 'string']
+      #  search_field_tag :search, maxlength: 15, class: ['search', 'string']
       #  # => <input name="search" maxlength="15" class="search string" />
       #
-      #  search_field_tag :search, :id => 'search'
+      #  search_field_tag :search, id: 'search'
       #  # => <input name="search" id="search" type="search" />
       #
-      #  search_field_tag :search, :autofocus => true
+      #  search_field_tag :search, autofocus: true
       #  # => <input name="search" autofocus type="search" />
       #
       def search_field_tag(name, options = {})
@@ -369,10 +369,10 @@ module Padrino
       # @macro text_field
       #
       # @example
-      #  url_field_tag :favorite_website, :placeholder => 'http://padrinorb.com'
+      #  url_field_tag :favorite_website, placeholder: 'http://padrinorb.com'
       #  <input name="favorite_website" placeholder="http://padrinorb.com." type="url" />
       #
-      #  url_field_tag :home_page, :class => 'string url'
+      #  url_field_tag :home_page, class: 'string url'
       #  <input name="home_page" class="string url", type="url" />
       #
       def url_field_tag(name, options = {})
@@ -383,7 +383,7 @@ module Padrino
       # Constructs a hidden field input from the given options.
       #
       # @example
-      #   hidden_field_tag :session_key, :value => "__secret__"
+      #   hidden_field_tag :session_key, value: '__secret__'
       #
       def hidden_field_tag(name, options = {})
         input_tag(:hidden, { name: name }.update(options))
@@ -393,7 +393,7 @@ module Padrino
       # Constructs a text area input from the given options.
       #
       # @example
-      #   text_area_tag :username, :class => 'long', :value => "Demo?"
+      #   text_area_tag :username, class: 'long', value: 'Demo?'
       #
       def text_area_tag(name, options = {})
         inner_html = TagHelpers::NEWLINE + options.delete(:value).to_s
@@ -404,7 +404,7 @@ module Padrino
       # Constructs a password field input from the given options.
       #
       # @example
-      #   password_field_tag :password, :class => 'long'
+      #   password_field_tag :password, class: 'long'
       #
       # @api public
       def password_field_tag(name, options = {})
@@ -415,7 +415,7 @@ module Padrino
       # Constructs a check_box from the given options.
       #
       # @example
-      #   check_box_tag :remember_me, :value => 'Yes'
+      #   check_box_tag :remember_me, value: 'Yes'
       #
       def check_box_tag(name, options = {})
         input_tag(:checkbox, { name: name, value: '1' }.update(options))
@@ -425,7 +425,7 @@ module Padrino
       # Constructs a radio_button from the given options.
       #
       # @example
-      #   radio_button_tag :remember_me, :value => 'true'
+      #   radio_button_tag :remember_me, value: 'true'
       #
       def radio_button_tag(name, options = {})
         input_tag(:radio, { name: name }.update(options))
@@ -435,7 +435,7 @@ module Padrino
       # Constructs a file field input from the given options.
       #
       # @example
-      #   file_field_tag :photo, :class => 'long'
+      #   file_field_tag :photo, class: 'long'
       #
       # @api public
       def file_field_tag(name, options = {})
@@ -449,20 +449,20 @@ module Padrino
       # @example
       #   options = [['caption', 'value'], ['Green', 'green1'], ['Blue', 'blue1'], ['Black', "black1"]]
       #   options = ['option', 'red', 'yellow' ]
-      #   select_tag(:favorite_color, :options => ['red', 'yellow'], :selected => 'green1')
-      #   select_tag(:country, :collection => @countries, :fields => [:name, :code], :include_blank => 'None')
+      #   select_tag(:favorite_color, options: ['red', 'yellow'], selected: 'green1')
+      #   select_tag(:country, collection: @countries, fields: [:name, :code], include_blank: 'None')
       #
       #   # Optgroups can be generated using :grouped_options => (Hash or nested Array)
-      #   grouped_options = [['Friends',['Yoda',['Obiwan',1]]],['Enemies',['Palpatine',['Darth Vader',3]]]]
-      #   grouped_options = {'Friends' => ['Yoda',['Obiwan',1]],'Enemies' => ['Palpatine',['Darth Vader',3]]}
-      #   select_tag(:color, :grouped_options => [['warm',['red','yellow']],['cool',['blue', 'purple']]])
+      #   grouped_options = [['Friends', ['Yoda', ['Obiwan', 1]]], ['Enemies', ['Palpatine', ['Darth Vader', 3]]]]
+      #   grouped_options = {'Friends' => ['Yoda', ['Obiwan', 1]], { 'Enemies' => ['Palpatine', ['Darth Vader', 3]] }}
+      #   select_tag(:color, grouped_options: [['warm', ['red','yellow']], ['cool', ['blue', 'purple']]])
       #
       #   # Optgroups can be generated using the rails-style attribute hash.
       #   grouped_options = {
-      #     "Friends" => ["Yoda", ["Obiwan", 2, {:magister => 'no'}], {:lame => 'yes'}],
-      #     "Enemies" => [["Palpatine", "Palpatine", {:scary => 'yes', :old => 'yes'}], ["Darth Vader", 3, {:disabled => true}]]
+      #     'Friends' => ['Yoda', ['Obiwan', 2, { magister: 'no' }], { lame: 'yes' }],
+      #     'Enemies' => [['Palpatine', 'Palpatine', { scary: 'yes', old: 'yes' }], ['Darth Vader', 3, { disabled: true }]]
       #   }
-      #   select_tag(:name, :grouped_options => grouped_options)
+      #   select_tag(:name, grouped_options: grouped_options)
       #
       # @param [String] name
       #   The name of the input field.
@@ -502,7 +502,7 @@ module Padrino
       # @return [String] The html button based on the +options+ specified.
       #
       # @example
-      #   button_tag "Cancel", :class => 'clear'
+      #   button_tag 'Cancel', class: 'clear'
       #
       def button_tag(caption, options = {})
         input_tag(:button, { value: caption }.update(options))
@@ -520,8 +520,8 @@ module Padrino
       # @return [String] The html submit button based on the +options+ specified.
       #
       # @example
-      #   submit_tag "Create", :class => 'success'
-      #   submit_tag :class => 'btn'
+      #   submit_tag 'Create', class: 'success'
+      #   submit_tag class: 'btn'
       #
       def submit_tag(*args)
         options = args.last.is_a?(Hash) ? args.pop : {}
@@ -570,7 +570,7 @@ module Padrino
       # @return [String] Form and button html with specified +options+.
       #
       # @example
-      #   button_to 'Delete', url(:accounts_destroy, :id => account), :method => :delete, :class => :form
+      #   button_to 'Delete', url(:accounts_destroy, id: account), method: :delete, class: :form
       #   # Generates:
       #   # <form class="form" action="/admin/accounts/destroy/2" method="post">
       #   #   <input type="hidden" value="delete" name="_method" />
@@ -595,8 +595,8 @@ module Padrino
       # Constructs a range tag from the given options.
       #
       # @example
-      #   range_field_tag('ranger_with_min_max', :min => 1, :max => 50)
-      #   range_field_tag('ranger_with_range', :range => 1..5)
+      #   range_field_tag('ranger_with_min_max', min: 1, max: 50)
+      #   range_field_tag('ranger_with_range', range: 1..5)
       #
       # @param [String] name
       #   The name of the range field.
@@ -625,9 +625,9 @@ module Padrino
       # Constructs a datetime tag from the given options.
       #
       # @example
-      #   datetime_field_tag('datetime_with_min_max', :min => DateTime.new(1993, 2, 24, 12, 30, 45),
-      #                                               :max => DateTime.new(2000, 4, 1, 12, 0, 0))
-      #   datetime_field_tag('datetime_with_value', :value => DateTime.new(2000, 4, 1, 12, 0, 0))
+      #   datetime_field_tag('datetime_with_min_max', min: DateTime.new(1993, 2, 24, 12, 30, 45),
+      #                                               max: DateTime.new(2000, 4, 1, 12, 0, 0))
+      #   datetime_field_tag('datetime_with_value', value: DateTime.new(2000, 4, 1, 12, 0, 0))
       #
       # @param [String] name
       #   The name of the datetime field.
@@ -651,9 +651,9 @@ module Padrino
       # Constructs a datetime-local tag from the given options.
       #
       # @example
-      #   datetime_local_field_tag('datetime_local_with_min_max', :min => DateTime.new(1993, 2, 24, 12, 30, 45),
-      #                                                           :max => DateTime.new(2000, 4, 1, 12, 0, 0))
-      #   datetime_local_field_tag('datetime_local_with_value', :value => DateTime.new(2000, 4, 1, 12, 0, 0))
+      #   datetime_local_field_tag('datetime_local_with_min_max', min: DateTime.new(1993, 2, 24, 12, 30, 45),
+      #                                                           max: DateTime.new(2000, 4, 1, 12, 0, 0))
+      #   datetime_local_field_tag('datetime_local_with_value', value: DateTime.new(2000, 4, 1, 12, 0, 0))
       #
       # @param [String] name
       #   The name of the datetime local field.
@@ -677,9 +677,9 @@ module Padrino
       # Constructs a date tag from the given options.
       #
       # @example
-      #   date_field_tag('date_with_min_max', :min => DateTime.new(1993, 2, 24),
-      #                                       :max => DateTime.new(2000, 4, 1))
-      #   date_field_tag('date_with_value', :value => DateTime.new(2000, 4, 1))
+      #   date_field_tag('date_with_min_max', min: DateTime.new(1993, 2, 24),
+      #                                       max: DateTime.new(2000, 4, 1))
+      #   date_field_tag('date_with_value', value: DateTime.new(2000, 4, 1))
       #
       # @param [String] name
       #   The name of the date field.
@@ -703,9 +703,9 @@ module Padrino
       # Constructs a month tag from the given options.
       #
       # @example
-      #   month_field_tag('month_with_min_max', :min => DateTime.new(1993, 2, 24),
-      #                                         :max => DateTime.new(2000, 4, 1))
-      #   month_field_tag('month_with_value', :value => DateTime.new(2000, 4, 1))
+      #   month_field_tag('month_with_min_max', min: DateTime.new(1993, 2, 24),
+      #                                         max: DateTime.new(2000, 4, 1))
+      #   month_field_tag('month_with_value', value: DateTime.new(2000, 4, 1))
       #
       # @param [String] name
       #   The name of the month field.
@@ -729,9 +729,9 @@ module Padrino
       # Constructs a week tag from the given options.
       #
       # @example
-      #   week_field_tag('week_with_min_max', :min => DateTime.new(1993, 2, 24),
-      #                                       :max => DateTime.new(2000, 4, 1))
-      #   week_field_tag('week_with_value', :value => DateTime.new(2000, 4, 1))
+      #   week_field_tag('week_with_min_max', min: DateTime.new(1993, 2, 24),
+      #                                       max: DateTime.new(2000, 4, 1))
+      #   week_field_tag('week_with_value', value: DateTime.new(2000, 4, 1))
       #
       # @param [String] name
       #   The name of the week field.
@@ -755,9 +755,9 @@ module Padrino
       # Constructs a time tag from the given options.
       #
       # @example
-      #   time_field_tag('time_with_min_max', :max => Time.new(1993, 2, 24, 1, 19, 12),
-      #                                       :min => Time.new(2008, 6, 21, 13, 30, 0))
-      #   time_field_tag('time_with_value', :value => Time.new(2008, 6, 21, 13, 30, 0))
+      #   time_field_tag('time_with_min_max', max: Time.new(1993, 2, 24, 1, 19, 12),
+      #                                       min: Time.new(2008, 6, 21, 13, 30, 0))
+      #   time_field_tag('time_with_value', value: Time.new(2008, 6, 21, 13, 30, 0))
       #
       # @param [String] name
       #   The name of the time field.
@@ -781,8 +781,8 @@ module Padrino
       # Constructs a color tag from the given options.
       #
       # @example
-      #   color_field_tag('color', :value => "#ff0000")
-      #   color_field_tag('color', :value => "#f00")
+      #   color_field_tag('color', value: '#ff0000')
+      #   color_field_tag('color', value: '#f00')
       #
       # @param [String] name
       #   The name of the color field.
@@ -803,7 +803,7 @@ module Padrino
       # Returns an initialized builder instance for the given object and settings.
       #
       # @example
-      #   builder_instance(@account, :nested => { ... }) => <FormBuilder>
+      #   builder_instance(@account, nested: { ... }) => <FormBuilder>
       #
       def builder_instance(object, options = {})
         default_builder = respond_to?(:settings) && settings.default_builder || 'StandardFormBuilder'

@@ -62,7 +62,7 @@ RSPEC_RAKE = <<~TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_RAKE)
     end
   end
 
-  task :default => :spec
+  task default: :spec
 TEST
 
 RSPEC_MODEL_TEST = <<~TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_MODEL_TEST)

@@ -57,7 +57,7 @@ module Padrino
       #   apply_component_for('rr', :mock)
       #
       def apply_component_for(choice, component)
-        # I need to override Thor#apply because for unknow reason :verbose => false break tasks.
+        # I need to override Thor#apply because for unknown reason verbose: false break tasks.
         path = File.expand_path(File.dirname(__FILE__) + "/components/#{component.to_s.pluralize}/#{choice}.rb")
         say_status :apply, "#{component.to_s.pluralize}/#{choice}"
         shell.padding += 1
@@ -130,7 +130,7 @@ module Padrino
       #
       # @example
       #   retrieve_component_config(...)
-      #   # => { :mock => 'rr', :test => 'rspec', ... }
+      #   # => { mock: 'rr', test: 'rspec', ... }
       #
       def retrieve_component_config(target)
         YAML.load_file(target)
@@ -307,8 +307,8 @@ module Padrino
       #
       # @example
       #   require_dependencies('active_record')
-      #   require_dependencies('mocha', 'bacon', :group => 'test')
-      #   require_dependencies('json', :version => ">=1.2.3")
+      #   require_dependencies('mocha', 'bacon', group: 'test')
+      #   require_dependencies('json', version: ">=1.2.3")
       #
       def require_dependencies(*gem_names)
         options = gem_names.last.is_a?(Hash) ? gem_names.pop : {}
@@ -325,13 +325,13 @@ module Padrino
       #
       # @example
       #   insert_into_gemfile(name)
-      #   insert_into_gemfile(name, :group => 'test', :require => 'foo')
-      #   insert_into_gemfile(name, :group => 'test', :version => ">1.2.3")
+      #   insert_into_gemfile(name, group: 'test', require: 'foo')
+      #   insert_into_gemfile(name, group: 'test', version: ">1.2.3")
       #
       def insert_into_gemfile(name, options = {})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
-        gem_options   = options.map { |k, v| k.to_s == 'require' && [true, false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(', ')
+        gem_options   = options.map { |k, v| k.to_s == 'require' && [true, false].include?(v) ? "#{k}: #{v}" : "#{k}: '#{v}'" }.join(', ')
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"
         write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
@@ -558,7 +558,7 @@ module Padrino
         #   Additional parameters for component choice.
         #
         # @example
-        #   component_option :test, "Testing framework", :aliases => '-t', :choices => [:bacon, :shoulda]
+        #   component_option :test, 'Testing framework', aliases: '-t', choices: [:bacon, :shoulda]
         #
         def component_option(name, caption, options = {})
           (@component_types   ||= []) << name # TODO: use ordered hash and combine with choices below

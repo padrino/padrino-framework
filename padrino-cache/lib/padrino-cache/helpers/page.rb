@@ -6,7 +6,7 @@ module Padrino
     module Helpers
       ##
       # Page caching is easy to integrate into your application. To turn it on, simply provide the
-      # <tt>:cache => true</tt> option on either a controller or one of its routes.
+      # <tt>cache: true</tt> option on either a controller or one of its routes.
       # By default, cached content is persisted with a "file store" --that is, in a
       # subdirectory of your application root.
       #
@@ -15,7 +15,7 @@ module Padrino
       #   class CachedApp < Padrino::Application
       #     enable :caching          # turns on caching mechanism
       #
-      #     controller '/blog', :cache => true do
+      #     controller '/blog', cache: true do
       #       expires 15
       #
       #       get '/entries' do
@@ -50,7 +50,7 @@ module Padrino
         #   Time til expiration (seconds)
         #
         # @example
-        #   controller '/blog', :cache => true do
+        #   controller '/blog', cache: true do
         #     expires 15
         #
         #     get '/entries' do
@@ -72,7 +72,7 @@ module Padrino
         #   block to be evaluated to cache key
         #
         # @example
-        #   controller '/blog', :cache => true do
+        #   controller '/blog', cache: true do
         #
         #     get '/post/:id' do
         #       cache_key :my_name
@@ -81,7 +81,7 @@ module Padrino
         #   end
         #
         # @example
-        #     get '/foo', :cache => true do
+        #     get '/foo', cache: true do
         #       cache_key { param[:id] }
         #       "My id is #{param[:id}"
         #     end

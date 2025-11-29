@@ -137,7 +137,7 @@ module Padrino
       #   content_for(:name) { ...content... }
       #   content_for(:name) { |name| ...content... }
       #   content_for(:name, "I'm Jeff")
-      #   content_for(:name, :flush => true) { ...new content... }
+      #   content_for(:name, flush: true) { ...new content... }
       #
       def content_for(key, content = nil, options = {}, &block)
         options = content if content.is_a?(Hash)
@@ -154,7 +154,7 @@ module Padrino
       # @return [TrueClass,FalseClass] Result html for the given +key+
       #
       # @example
-      #   content_for? :header => true
+      #   content_for?(:header) => true
       #
       def content_for?(key)
         !content_blocks[key.to_sym].empty?

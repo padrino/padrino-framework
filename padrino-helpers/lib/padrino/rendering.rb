@@ -232,16 +232,16 @@ module Padrino
       # * Use render 'path/to/my/template'   (without symbols)
       # * Use render 'path/to/my/template'   (with engine lookup)
       # * Use render 'path/to/template.haml' (with explicit engine lookup)
-      # * Use render 'path/to/template', :layout => false
-      # * Use render 'path/to/template', :layout => false, :engine => 'haml'
+      # * Use render 'path/to/template', layout: false
+      # * Use render 'path/to/template', layout: false, engine: 'haml'
       #
       def render(engine, data = nil, options = {}, locals = {}, &block)
         # If engine is nil, ignore engine parameter and shift up all arguments
-        # render nil, "index", { :layout => true }, { :localvar => "foo" }
+        # render nil, 'index', { layout: true }, { localvar: "foo" }
         engine, data, options = data, options, locals if engine.nil? && data
 
         # Data is a hash of options when no engine isn't explicit
-        # render "index", { :layout => true }, { :localvar => "foo" }
+        # render 'index', { layout: true }, { localvar: "foo" }
         # Data is options, and options is locals in this case
         data, options, locals = nil, data, options if data.is_a?(Hash)
 
@@ -285,7 +285,7 @@ module Padrino
       #   The template could not be found.
       #
       # @example
-      #   get "/foo", :provides => [:html, :js] do; render 'path/to/foo'; end
+      #   get "/foo", provides: [:html, :js] do; render 'path/to/foo'; end
       #   # If you request "/foo.js" with I18n.locale == :ru => [:"/path/to/foo.ru.js", :erb]
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #

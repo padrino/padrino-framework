@@ -13,13 +13,13 @@ module Padrino
         #   Array of column names and property type.
         # @param [Hash] options
         #   Additional migration options, e.g
-        #   { :base => "....text...", :up => "..text...",
-        #     :down => "..text...", column_format => "t.column :#{field}, :#{kind}" }
+        #   { base: '....text...', up: '..text...',
+        #     down: '..text...', column_format: "t.column :#{field}, :#{kind}" }
         # @example
-        #   output_model_migration("AddPerson", "person", ["name:string", "age:integer"],
-        #     :base => AR_MIGRATION,
-        #     :column_format => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-        #     :up => AR_MODEL_UP_MG, :down => AR_MODEL_DOWN_MG)
+        #   output_model_migration('AddPerson', 'person', ["name:string", "age:integer"],
+        #     base: AR_MIGRATION,
+        #     column_format: Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+        #     up: AR_MODEL_UP_MG, down: AR_MODEL_DOWN_MG)
         #
         def output_model_migration(filename, name, columns, options = {})
           if behavior == :revoke
@@ -51,14 +51,14 @@ module Padrino
         #   Array of column names and property type.
         # @param [Hash] options
         #   Additional migration options, e.g
-        #     { :base "...text...", :change_format => "...text...",
-        #       :add => proc { |field, kind| "add_column :#{table_name}, :#{field}, :#{kind}" },
-        #       :remove => proc { |field, kind| "remove_column :#{table_name}, :#{field}" }
+        #     { base:..text...", change_format: "...text...",
+        #       add: proc { |field, kind| "add_column :#{table_name}, :#{field}, :#{kind}" },
+        #       remove: proc { |field, kind| "remove_column :#{table_name}, :#{field}" }
         # @example
         #   output_migration_file(migration_name, name, columns,
-        #     :base => AR_MIGRATION, :change_format => AR_CHANGE_MG,
-        #     :add => Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-        #     :remove => Proc.new { |field, kind| "t.remove :#{field}" }
+        #     base: AR_MIGRATION, change_format: AR_CHANGE_MG,
+        #     add: Proc.new { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+        #     remove: Proc.new { |field, kind| "t.remove :#{field}" }
         #   )
         #
         def output_migration_file(filename, name, columns, options = {})
@@ -141,7 +141,7 @@ module Padrino
         #
         # @example
         #   insert_test_suite_setup('...CLASS_NAME...')
-        #   => inject_into_file("test/test_config.rb", TEST.gsub(/CLASS_NAME/, @app_name), :after => "set :environment, :test")
+        #   => inject_into_file('test/test_config.rb', TEST.gsub(/CLASS_NAME/, @app_name), after: 'set :environment, :test')
         #
         def insert_test_suite_setup(suite_text, options = {})
           options = { path: 'test/test_config.rb' }.update(options)
@@ -158,7 +158,7 @@ module Padrino
         #
         # @example
         #   insert_mocking_include('Mocha::API'):
-        #   => inject_into_file("test/test_config.rb", "  include Mocha::API\n", :after => /class.*?\n/)
+        #   => inject_into_file('test/test_config.rb', "  include Mocha::API\n", after: /class.*?\n/)
         #
         def insert_mocking_include(library_name, options = {})
           options = { indent: 2, after: /class.*?\n/, path: 'test/test_config.rb' }.update(options)

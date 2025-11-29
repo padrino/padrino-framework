@@ -32,30 +32,30 @@ describe 'FormHelpers' do
     end
 
     it 'should display correct form with remote and method is put' do
-      actual_html = form_tag('/update', "accept-charset": 'UTF-8', method: 'put', remote: true) { 'Demo' }
-      assert_html_has_tag(actual_html, :form, 'data-remote' => 'true', :"accept-charset" => 'UTF-8')
+      actual_html = form_tag('/update', 'accept-charset' => 'UTF-8', method: 'put', remote: true) { 'Demo' }
+      assert_html_has_tag(actual_html, :form, 'data-remote' => 'true', 'accept-charset' => 'UTF-8')
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', value: 'put')
     end
 
     it 'should display correct form with method :put' do
-      actual_html = form_tag('/update', "accept-charset": 'UTF-8', class: 'put-form', method: 'put') { 'Demo' }
-      assert_html_has_tag(actual_html, :form, class: 'put-form', "accept-charset": 'UTF-8', method: 'post')
+      actual_html = form_tag('/update', 'accept-charset' => 'UTF-8', class: 'put-form', method: 'put') { 'Demo' }
+      assert_html_has_tag(actual_html, :form, class: 'put-form', 'accept-charset' => 'UTF-8', method: 'post')
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', value: 'put')
     end
 
     it 'should display correct form with method :delete and charset' do
-      actual_html = form_tag('/remove', "accept-charset": 'UTF-8', class: 'delete-form', method: 'delete') { 'Demo' }
-      assert_html_has_tag(actual_html, :form, class: 'delete-form', "accept-charset": 'UTF-8', method: 'post')
+      actual_html = form_tag('/remove', 'accept-charset' => 'UTF-8', class: 'delete-form', method: 'delete') { 'Demo' }
+      assert_html_has_tag(actual_html, :form, class: 'delete-form', 'accept-charset' => 'UTF-8', method: 'post')
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', value: 'delete')
     end
 
     it 'should display correct form with charset' do
-      actual_html = form_tag('/charset', "accept-charset": 'UTF-8', class: 'charset-form') { 'Demo' }
-      assert_html_has_tag(actual_html, :form, class: 'charset-form', "accept-charset": 'UTF-8', method: 'post')
+      actual_html = form_tag('/charset', 'accept-charset' => 'UTF-8', class: 'charset-form') { 'Demo' }
+      assert_html_has_tag(actual_html, :form, class: 'charset-form', 'accept-charset' => 'UTF-8', method: 'post')
     end
 
     it 'should display correct form with multipart encoding' do
-      actual_html = form_tag('/remove', "accept-charset": 'UTF-8', multipart: true) { 'Demo' }
+      actual_html = form_tag('/remove', 'accept-charset' => 'UTF-8', multipart: true) { 'Demo' }
       assert_html_has_tag(actual_html, :form, enctype: 'multipart/form-data')
     end
 

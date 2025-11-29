@@ -55,7 +55,7 @@ SHOULDA_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE)
   desc "Run application test suite"
   task 'test' => test_tasks.map { |f| "test:\#{f}" }
 
-  task :default => :test
+  task default: :test
 TEST
 
 SHOULDA_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)

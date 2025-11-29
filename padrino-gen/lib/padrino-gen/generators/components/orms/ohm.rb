@@ -7,18 +7,18 @@ OHM = <<~OHM unless defined?(OHM)
   # and point to them based on the environment:
   #
   # case Padrino.env
-  #  when :development then Ohm.connect(:port => 6379)
-  #  when :production then Ohm.connect(:port => 6380)
-  #  when :test then Ohm.connect(:port => 6381)
+  #  when :development then Ohm.connect(port: 6379)
+  #  when :production then Ohm.connect(port: 6380)
+  #  when :test then Ohm.connect(port: 6381)
   # end
 
   # Alternatively, you can try specifying a difference :db
   # which, outside of confirmation, appears to provide distinct
   # namespaces from testing:
   # case Padrino.env
-  #  when :development then Ohm.connect(:db => 0)
-  #  when :production then Ohm.connect(:db => 1)
-  #  when :test then Ohm.connect(:db => 2)
+  #  when :development then Ohm.connect(db: 0)
+  #  when :production then Ohm.connect(db: 1)
+  #  when :test then Ohm.connect(db: 2)
   # end
 OHM
 
@@ -46,7 +46,7 @@ OHM_MODEL = <<~MODEL unless defined?(OHM_MODEL)
   end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ['title:string', 'body:string'], app: 'app' }
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   column_declarations = options[:fields].map do |value|

@@ -14,13 +14,13 @@ module Padrino
   # @example
   #
   #   routes = Padrino::Router.new do
-  #     map(:path => "/", :to => PadrinoWeb, :host => "padrino.local")
-  #     map(:path => "/", :to => Admin, :host => "admin.padrino.local")
+  #     map(path: '/', to: PadrinoWeb, host: 'padrino.local')
+  #     map(path: '/', to: Admin, host: 'admin.padrino.local')
   #   end
   #   run routes
   #
   #   routes = Padrino::Router.new do
-  #     map(:path => "/", :to => PadrinoWeb, :host => /*.padrino.local/)
+  #     map(path: '/', to: PadrinoWeb, host: /*.padrino.local/)
   #   end
   #   run routes
   #
@@ -45,7 +45,7 @@ module Padrino
     #  The host to map the specified application.
     #
     # @example
-    #  map(:path => "/", :to => PadrinoWeb, :host => "padrino.local")
+    #  map(path: '/', to: PadrinoWeb, host: 'padrino.local')
     #
     # @return [Array] The sorted route mappings.
     # @api semipublic

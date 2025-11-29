@@ -46,7 +46,7 @@ module Padrino
       # feel free to update with yours:
       #
       #   Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
-      #   text_field :foo, :dialog => true
+      #   text_field :foo, dialog: true
       #   # Generates: <input type="text" data-dialog="true" name="foo" />
       #
       DATA_ATTRIBUTES = %i[method remote confirm]
@@ -98,13 +98,13 @@ module Padrino
       #   Generated HTML with specified +options+.
       #
       # @example
-      #   content_tag(:p, 'Hello World', :class => 'light')
+      #   content_tag(:p, 'Hello World', class: 'light')
       #
       #   # => <p class="light">
       #   # =>   Hello World
       #   # => </p>
       #
-      #   content_tag(:p, :class => 'dark') do
+      #   content_tag(:p, class: 'dark') do
       #     link_to 'Padrino', 'http://www.padrinorb.com'
       #   end
       #
@@ -187,16 +187,16 @@ module Padrino
       #   Generated HTML with specified +options+.
       #
       # @example
-      #   input_tag :text, :name => 'handle'
+      #   input_tag :text, name: 'handle'
       #   # => <input type="test" name="handle" />
       #
-      #   input_tag :password, :name => 'password', :size => 20
+      #   input_tag :password, name: 'password', size: 20
       #   # => <input type="password" name="password" size="20" />
       #
-      #   input_tag :text, :name => 'username', :required => true, :autofocus => true
+      #   input_tag :text, name: 'username', required: true, autofocus: true
       #   # => <input type="text" name="username" required autofocus />
       #
-      #   input_tag :number, :name => 'credit_card', :autocomplete => :off
+      #   input_tag :number, name: 'credit_card', autocomplete: :off
       #   # => <input type="number" name="credit_card" autocomplete="off" />
       #
       def input_tag(type, options = {})
@@ -217,16 +217,16 @@ module Padrino
       #   Generated HTML with specified +options+.
       #
       # @example
-      #   tag :hr, :class => 'dotted'
+      #   tag :hr, class: 'dotted'
       #   # => <hr class="dotted" />
       #
-      #   tag :input, :name => 'username', :type => :text
+      #   tag :input, name: 'username', type: :text
       #   # => <input name="username" type="text" />
       #
-      #   tag :img, :src => 'images/pony.jpg', :alt => 'My Little Pony'
+      #   tag :img, src: 'images/pony.jpg', alt: 'My Little Pony'
       #   # => <img src="images/pony.jpg" alt="My Little Pony" />
       #
-      #   tag :img, :src => 'sinatra.jpg', :data => { :nsfw => false, :geo => [34.087, -118.407] }
+      #   tag :img, src: 'sinatra.jpg', data: { nsfw: false, geo: [34.087, -118.407] }
       #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407" />
       #
       def tag(name, options = nil, open = false)
