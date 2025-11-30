@@ -1,5 +1,5 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
-require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/simple")
+require_relative 'helper'
+require_relative 'fixtures/apps/simple'
 
 describe 'Router' do
   def setup

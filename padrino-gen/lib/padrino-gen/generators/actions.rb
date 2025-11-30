@@ -58,7 +58,7 @@ module Padrino
       #
       def apply_component_for(choice, component)
         # I need to override Thor#apply because for unknown reason verbose: false break tasks.
-        path = File.expand_path(File.dirname(__FILE__) + "/components/#{component.to_s.pluralize}/#{choice}.rb")
+        path = File.expand_path(__dir__ + "/components/#{component.to_s.pluralize}/#{choice}.rb")
         say_status :apply, "#{component.to_s.pluralize}/#{choice}"
         shell.padding += 1
         instance_eval(File.read(path))
@@ -580,7 +580,7 @@ module Padrino
             [:stylesheet, 'stylesheet engine',  { aliases: '-c', default: :none }]
           ].each do |name, caption, opts|
             opts[:default] = '' if options[:default] == false
-            component_option name, caption, opts.merge(choices: Dir["#{File.dirname(__FILE__)}/components/#{name.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb').to_sym })
+            component_option name, caption, opts.merge(choices: Dir["#{__dir__}/components/#{name.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb').to_sym })
           end
         end
 

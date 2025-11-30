@@ -2,8 +2,8 @@ apply_component_for(:rspec, :test)
 
 CUCUMBER_SETUP = <<~TEST unless defined?(CUCUMBER_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
-  require File.expand_path(File.dirname(__FILE__) + "/../../config/boot")
-  Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+  require_relative '../../config/boot'
+  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
 
   require 'capybara/cucumber'
   require 'rspec/expectations'

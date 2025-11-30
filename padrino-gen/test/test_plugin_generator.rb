@@ -1,4 +1,4 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require_relative 'helper'
 
 describe 'PluginGenerator' do
   def setup
@@ -44,7 +44,7 @@ describe 'PluginGenerator' do
       expects_initializer :test, '# Example', root: "#{@apptmp}/sample_project"
       expects_generated :app, "testapp -r=#{@apptmp}/sample_project"
       expects_generated :controller, "users get:index -r=#{@apptmp}/sample_project --app=testapp"
-      example_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'example_template.rb')
+      example_template_path = File.join(__dir__, 'fixtures', 'example_template.rb')
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
       File.unstub(:exist?)
     end
@@ -127,7 +127,7 @@ describe 'PluginGenerator' do
       expects_git :init, root: "#{@apptmp}/sample_git"
       expects_git :add, arguments: '.', root: "#{@apptmp}/sample_git"
       expects_git :commit, arguments: 'hello', root: "#{@apptmp}/sample_git"
-      git_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'git_template.rb')
+      git_template_path = File.join(__dir__, 'fixtures', 'git_template.rb')
       capture_io { generate(:project, 'sample_git', "-p=#{git_template_path}", "-r=#{@apptmp}", '2>&1 /dev/null') }
     end
   end
@@ -136,7 +136,7 @@ describe 'PluginGenerator' do
     it 'should Run rake task and list tasks' do
       expects_generated_project test: :shoulda, orm: :activerecord, name: 'sample_rake', root: @apptmp.to_s
       expects_rake 'custom', root: "#{@apptmp}/sample_rake"
-      rake_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'rake_template.rb')
+      rake_template_path = File.join(__dir__, 'fixtures', 'rake_template.rb')
       capture_io { generate(:project, 'sample_rake', "-p=#{rake_template_path}", "-r=#{@apptmp}", '> /dev/null') }
     end
   end
@@ -149,7 +149,7 @@ describe 'PluginGenerator' do
       expects_generated :admin, "-r=#{@apptmp}/sample_admin"
       expects_rake 'ar:migrate', root: "#{@apptmp}/sample_admin"
       expects_generated :admin_page, "post -r=#{@apptmp}/sample_admin"
-      admin_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'admin_template.rb')
+      admin_template_path = File.join(__dir__, 'fixtures', 'admin_template.rb')
       capture_io { generate(:project, 'sample_admin', "-p=#{admin_template_path}", "-r=#{@apptmp}", '> /dev/null') }
     end
   end

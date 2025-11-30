@@ -1,7 +1,7 @@
 MINITEST_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
-  require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-  Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+  require_relative '../config/boot'
+  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
 
   class Minitest::Spec
     include Rack::Test::Methods
@@ -41,7 +41,7 @@ MINITEST_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_RAKE)
 TEST
 
 MINITEST_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_CONTROLLER_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+  require File.expand_path("\#{__dir__}/../../test_config.rb")
 
   describe "!PATH!" do
     before do
@@ -55,7 +55,7 @@ MINITEST_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_C
 TEST
 
 MINITEST_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_MODEL_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   describe "!NAME! Model" do
     it 'can construct a new instance' do
@@ -66,7 +66,7 @@ MINITEST_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_MODEL_
 TEST
 
 MINITEST_HELPER_TEST = <<~TEST unless defined?(MINITEST_HELPER_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   describe "!NAME!" do
     before do

@@ -1,7 +1,7 @@
 TESTUNIT_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
-  require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-  Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+  require_relative '../config/boot'
+  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
 
   class Test::Unit::TestCase
     include Rack::Test::Methods
@@ -41,7 +41,7 @@ TESTUNIT_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_RAKE)
 TEST
 
 TESTUNIT_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_CONTROLLER_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+  require File.expand_path("\#{__dir__}/../../test_config.rb")
 
   class !NAME!ControllerTest < Test::Unit::TestCase
     def setup
@@ -55,7 +55,7 @@ TESTUNIT_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_C
 TEST
 
 TESTUNIT_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_MODEL_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   class !NAME!Test < Test::Unit::TestCase
     def test_constructs_a_new_instance
@@ -66,7 +66,7 @@ TESTUNIT_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_MODEL_
 TEST
 
 TESTUNIT_HELPER_TEST = <<~TEST unless defined?(TESTUNIT_HELPER_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   class !NAME!Test < Test::Unit::TestCase
     def self.setup

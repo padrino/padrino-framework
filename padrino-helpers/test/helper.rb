@@ -36,14 +36,14 @@ class Minitest::Spec
   end
 
   def create_template(name, content, options = {})
-    FileUtils.mkdir_p("#{File.dirname(__FILE__)}/views")
-    FileUtils.mkdir_p("#{File.dirname(__FILE__)}/views/layouts")
+    FileUtils.mkdir_p("#{__dir__}/views")
+    FileUtils.mkdir_p("#{__dir__}/views/layouts")
     path  = "/views/#{name}"
     path += ".#{options.delete(:locale)}" if options[:locale]
     path += ".#{options[:format]}" if options[:format]
     path += '.erb' unless options[:format].to_s =~ /erb|slim|haml|rss|atom|builder|liquid/
     path += '.builder' if options[:format].to_s =~ /rss|atom/
-    file  = File.dirname(__FILE__) + path
+    file  = __dir__ + path
     File.open(file, 'w') { |io| io.write content }
     file
   end
@@ -51,7 +51,7 @@ class Minitest::Spec
   alias create_layout create_template
 
   def remove_views
-    FileUtils.rm_rf("#{File.dirname(__FILE__)}/views")
+    FileUtils.rm_rf("#{__dir__}/views")
   end
 
   def with_template(name, content, options = {})

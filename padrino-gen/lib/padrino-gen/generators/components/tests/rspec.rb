@@ -1,7 +1,7 @@
 RSPEC_SETUP = <<~TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
-  require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-  Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+  require_relative '../config/boot'
+  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
 
   RSpec.configure do |conf|
     conf.include Rack::Test::Methods

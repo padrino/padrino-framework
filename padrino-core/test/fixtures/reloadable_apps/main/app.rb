@@ -1,4 +1,4 @@
-require File.expand_path("#{File.dirname(__FILE__)}/../external/app/app")
+require_relative '../external/app/app'
 
 module ReloadableApp
   class Main < Padrino::Application

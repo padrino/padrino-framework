@@ -1,5 +1,5 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
-require File.expand_path("#{File.dirname(__FILE__)}/../lib/padrino-gen/padrino-tasks/sql-helpers")
+require_relative 'helper'
+require_relative '../lib/padrino-gen/padrino-tasks/sql-helpers'
 
 describe 'SqlHelpers' do
   def setup

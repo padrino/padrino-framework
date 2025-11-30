@@ -1,4 +1,4 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require_relative 'helper'
 
 describe 'Rendering Extensions' do
   describe 'for haml' do

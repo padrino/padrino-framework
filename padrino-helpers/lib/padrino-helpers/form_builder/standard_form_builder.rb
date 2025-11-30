@@ -1,4 +1,4 @@
-require File.expand_path("#{File.dirname(__FILE__)}/abstract_form_builder") unless defined?(AbstractFormBuilder)
+require_relative 'abstract_form_builder' unless defined?(AbstractFormBuilder)
 
 module Padrino
   module Helpers

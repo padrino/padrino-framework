@@ -1,7 +1,7 @@
 SHOULDA_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
-  require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-  Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+  require_relative '../config/boot'
+  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
 
   require "test/unit"
 
@@ -25,7 +25,7 @@ SHOULDA_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
 TEST
 
 SHOULDA_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_CONTROLLER_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+  require File.expand_path("\#{__dir__}/../../test_config.rb")
 
   class !NAME!ControllerTest < Test::Unit::TestCase
     context "!NAME!Controller" do
@@ -59,7 +59,7 @@ SHOULDA_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_RAKE)
 TEST
 
 SHOULDA_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   class !NAME!Test < Test::Unit::TestCase
     context "!NAME! Model" do
@@ -72,7 +72,7 @@ SHOULDA_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_MODEL_TE
 TEST
 
 SHOULDA_HELPER_TEST = <<~TEST unless defined?(SHOULDA_HELPER_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   class !NAME!Test < Test::Unit::TestCase
     context "!NAME!" do

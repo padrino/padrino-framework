@@ -1,5 +1,5 @@
 # coding:utf-8
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require_relative 'helper'
 require 'logger'
 require 'tempfile'
 
@@ -358,8 +358,8 @@ describe 'options :source_location' do
   end
 
   it 'should not output source_location if source file path is started with Padrino.root + vendor' do
-    base_path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/")
-    stub_message = "#{File.expand_path("#{File.dirname(__FILE__)}/fixtures/vendor/logger.rb")}:291:in `test'"
+    base_path = File.expand_path("#{__dir__}/fixtures/")
+    stub_message = "#{File.expand_path("#{__dir__}/fixtures/vendor/logger.rb")}:291:in `test'"
     Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root(base_path) { Padrino.logger.debug('hello vendor') } }
     assert_match(/hello vendor/, Padrino.logger.log.string)
     refute_match(/\[.+?\] hello vendor/, Padrino.logger.log.string)

@@ -1,7 +1,7 @@
 BACON_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
-  require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-  Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+  require_relative '../config/boot'
+  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
 
   class Bacon::Context
     include Rack::Test::Methods
@@ -23,7 +23,7 @@ BACON_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_SETUP)
 TEST
 
 BACON_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_CONTROLLER_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+  require File.expand_path("\#{__dir__}/../../test_config.rb")
 
   describe "!PATH!" do
     it 'returns text at root' do
@@ -52,7 +52,7 @@ BACON_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_RAKE)
 TEST
 
 BACON_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_MODEL_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   describe "!NAME! Model" do
     it 'can be created' do
@@ -63,7 +63,7 @@ BACON_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_MODEL_TEST)
 TEST
 
 BACON_HELPER_TEST = <<~TEST unless defined?(BACON_HELPER_TEST)
-  require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   describe "!NAME!" do
     before do

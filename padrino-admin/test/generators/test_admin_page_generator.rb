@@ -1,5 +1,5 @@
-require File.expand_path("#{File.dirname(__FILE__)}/../helper")
-require File.join(File.dirname(__FILE__), '../fixtures/sequel')
+require_relative '../helper'
+require_relative '../fixtures/sequel'
 
 describe 'AdminPageGenerator' do
   before do

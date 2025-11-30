@@ -1,4 +1,4 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require_relative 'helper'
 
 describe 'Mounter' do
   class ::TestApp < Padrino::Application; end
@@ -28,7 +28,7 @@ describe 'Mounter' do
     end
 
     it 'should use app.root if available' do
-      require File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/kiq")
+      require File.expand_path("#{__dir__}/fixtures/apps/kiq")
       mounter = Padrino::Mounter.new('kiq', app_class: 'Kiq')
       mounter.to('/test_app')
       assert_equal '/weird', mounter.app_root
@@ -119,8 +119,8 @@ describe 'Mounter' do
     end
 
     it 'should mount app with the same name as the module' do
-      Padrino.mount('Demo::App',  app_file: File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/demo_app.rb")).to('/app')
-      Padrino.mount('Demo::Demo', app_file: File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/demo_demo.rb")).to('/')
+      Padrino.mount('Demo::App',  app_file: File.expand_path("#{__dir__}/fixtures/apps/demo_app.rb")).to('/app')
+      Padrino.mount('Demo::Demo', app_file: File.expand_path("#{__dir__}/fixtures/apps/demo_demo.rb")).to('/')
 
       Padrino.mounted_apps.each do |app|
         assert_equal app.app_obj.setup_application!, true
@@ -262,7 +262,7 @@ describe 'Mounter' do
     end
 
     it 'should support the Rack Application' do
-      path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/mountable_apps/rack_apps")
+      path = File.expand_path("#{__dir__}/fixtures/apps/mountable_apps/rack_apps")
       require path
       Padrino.mount('rack_app', app_class: 'RackApp', app_file: path).to('/rack_app')
       Padrino.mount('rack_app2', app_class: 'RackApp2', app_file: path).to('/rack_app2')
@@ -280,7 +280,7 @@ describe 'Mounter' do
     end
 
     it 'should support the Rack Application with cascading style' do
-      path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/mountable_apps/rack_apps")
+      path = File.expand_path("#{__dir__}/fixtures/apps/mountable_apps/rack_apps")
       require path
       Padrino.mount('rack_app', app_class: 'RackApp', app_file: path, cascade: false).to('/rack_app')
       Padrino.mount('sinatra_app', app_class: 'SinatraApp', app_file: path).to('/')
@@ -290,8 +290,8 @@ describe 'Mounter' do
     end
 
     it 'should support the Rack Application inside padrino project' do
-      path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/demo_project/app")
-      api_path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/demo_project/api/app")
+      path = File.expand_path("#{__dir__}/fixtures/apps/demo_project/app")
+      api_path = File.expand_path("#{__dir__}/fixtures/apps/demo_project/api/app")
       require path
       require api_path
       Padrino.mount('api_app', app_class: 'DemoProject::API', app_file: api_path).to('/api')
@@ -305,15 +305,15 @@ describe 'Mounter' do
     end
 
     it "should not load dependency files if app's root isn't started with Padrino.root" do
-      path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/demo_project/app")
-      fake_path = File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/external_apps/fake_root")
+      path = File.expand_path("#{__dir__}/fixtures/apps/demo_project/app")
+      fake_path = File.expand_path("#{__dir__}/fixtures/apps/external_apps/fake_root")
 
       require path
       require fake_path
 
       Padrino.mount('fake_root', app_class: 'FakeRoot').to('/fake_root')
       Padrino.mount('main_app', app_class: 'DemoProject::App').to('/')
-      Padrino.stub(:root, File.expand_path("#{File.dirname(__FILE__)}/fixtures/apps/demo_project")) do
+      Padrino.stub(:root, File.expand_path("#{__dir__}/fixtures/apps/demo_project")) do
         Padrino.application
       end
 

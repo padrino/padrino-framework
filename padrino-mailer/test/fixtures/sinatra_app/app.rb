@@ -3,7 +3,7 @@ require 'sinatra/base'
 class SinatraApp < Sinatra::Base
   register Padrino::Mailer
 
-  set :root, File.dirname(__FILE__)
+  set :root, __dir__
   set :delivery_method, :test
 
   mailer :sample do

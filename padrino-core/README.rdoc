@@ -87,7 +87,7 @@ the padrino framework's functionalities.
 Let us first take a look at the simplest possible Padrino application:
 
   # app.rb
-  PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+  PADRINO_ROOT = __dir__ unless defined? PADRINO_ROOT
   require 'padrino'
   Padrino.load!
 

@@ -1,10 +1,10 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require_relative 'helper'
 
 describe 'Part' do
   describe 'the part' do
     it 'should use correctly parts' do
       message = Mail::Message.new do
-        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
+        views   "#{__dir__}/fixtures/views/mailers"
         to      'padrino@test.lindsaar.net'
         subject 'nested multipart'
         from    'test@example.com'
@@ -37,7 +37,7 @@ describe 'Part' do
 
     it 'should works with multipart templates' do
       message = Mail::Message.new do
-        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
+        views   "#{__dir__}/fixtures/views/mailers"
         to      'padrino@test.lindsaar.net'
         subject 'nested multipart'
         from    'test@example.com'
@@ -62,7 +62,7 @@ describe 'Part' do
 
     it 'should works with less explict multipart templates' do
       message = Mail::Message.new do
-        views   "#{File.dirname(__FILE__)}/fixtures/views/mailers"
+        views   "#{__dir__}/fixtures/views/mailers"
         to      'padrino@test.lindsaar.net'
         subject 'nested multipart'
         from    'test@example.com'
@@ -82,7 +82,7 @@ describe 'Part' do
 
     it 'should works with provides' do
       message = Mail::Message.new do
-        views    "#{File.dirname(__FILE__)}/fixtures/views/mailers"
+        views    "#{__dir__}/fixtures/views/mailers"
         to       'padrino@test.lindsaar.net'
         subject  'nested multipart'
         from     'test@example.com'

@@ -1,4 +1,4 @@
-PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+PADRINO_ROOT = __dir__ unless defined? PADRINO_ROOT
 
 Padrino.configure_apps do
   set :precompile_routes, true

@@ -1,4 +1,4 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require_relative 'helper'
 
 class FooError < RuntimeError; end
 
@@ -36,7 +36,7 @@ describe 'Routing' do
   it 'should serve static files with simple cache control' do
     mock_app do
       set :static_cache_control, :public
-      set :public_folder, File.dirname(__FILE__)
+      set :public_folder, __dir__
     end
     get "/#{File.basename(__FILE__)}"
     assert headers.key?('Cache-Control')
@@ -46,7 +46,7 @@ describe 'Routing' do
   it 'should serve static files with cache control and max_age' do
     mock_app do
       set :static_cache_control, [:public, :must_revalidate, { max_age: 300 }]
-      set :public_folder, File.dirname(__FILE__)
+      set :public_folder, __dir__
     end
     get "/#{File.basename(__FILE__)}"
     assert headers.key?('Cache-Control')
@@ -56,7 +56,7 @@ describe 'Routing' do
   it 'should render static files with custom status via options' do
     mock_app do
       set :static, true
-      set :public_folder, File.dirname(__FILE__)
+      set :public_folder, __dir__
 
       post '/*' do
         static!(status: params[:status])

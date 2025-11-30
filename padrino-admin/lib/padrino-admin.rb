@@ -17,7 +17,7 @@ module Padrino
     class << self
       def registered(app)
         # Load Padrino::Admin locales
-        I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-admin/locale/**/*.yml"]
+        I18n.load_path += Dir["#{__dir__}/padrino-admin/locale/**/*.yml"]
       end
       alias included registered
     end
@@ -29,7 +29,7 @@ end
 #
 begin
   require 'padrino-gen'
-  Padrino::Generators.load_paths << Dir["#{File.dirname(__FILE__)}/padrino-admin/generators/{actions,orm,admin_app,admin_page}.rb"]
+  Padrino::Generators.load_paths << Dir["#{__dir__}/padrino-admin/generators/{actions,orm,admin_app,admin_page}.rb"]
 rescue LoadError
   # do nothing if padrino-gen is not available
 end

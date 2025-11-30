@@ -1,5 +1,5 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
-require File.expand_path("#{File.dirname(__FILE__)}/fixtures/markup_app/app")
+require_relative 'helper'
+require_relative 'fixtures/markup_app/app'
 
 describe 'FormHelpers' do
   include Padrino::Helpers::FormHelpers

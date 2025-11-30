@@ -15,7 +15,7 @@ end
 RackApp2 = ->(_) { [200, {}, ['hello rack app2']] }
 
 class SinatraApp < Sinatra::Base
-  set :public_folder, File.dirname(__FILE__)
+  set :public_folder, __dir__
 
   get '/' do
     'hello sinatra app'

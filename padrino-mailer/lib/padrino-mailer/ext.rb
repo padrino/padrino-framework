@@ -193,7 +193,7 @@ module Mail # @private
     # Return the path of this file, only for compatibility with Sinatra rendering methods.
     #
     def self.caller_locations
-      [[File.dirname(__FILE__), 1]]
+      [[__dir__, 1]]
     end
 
     ##

@@ -1,4 +1,4 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
+require_relative 'helper'
 
 class Minitest::Spec
   def assert_query_equal(expected, actual, namespace = nil)

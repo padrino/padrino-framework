@@ -122,7 +122,7 @@ module Padrino
         configure :development do
           get '*__sinatra__/:image.png' do
             content_type :png
-            send_file(File.dirname(__FILE__) + "/../images/#{params[:image]}.png")
+            send_file("#{__dir__}/../images/#{params[:image]}.png")
           end
         end
       end

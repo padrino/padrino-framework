@@ -1,5 +1,5 @@
 ENV['RACK_ENV'] = 'test'
-PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+PADRINO_ROOT = __dir__ unless defined? PADRINO_ROOT
 
 require 'minitest/autorun'
 require 'minitest/pride'
@@ -19,7 +19,7 @@ module Kernel
     Object.send(:remove_const, :Account)  if defined?(Account)
     Object.send(:remove_const, :Category) if defined?(Category)
     file += '.rb' if file !~ /.rb$/
-    capture_io { load File.join(File.dirname(__FILE__), 'fixtures', file) }
+    capture_io { load File.join(__dir__, 'fixtures', file) }
   end
 end
 

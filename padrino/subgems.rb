@@ -1,5 +1,5 @@
-padrino_gemspec = ::Gem::Specification.load(File.expand_path("#{File.dirname(__FILE__)}/padrino.gemspec"))
-performance_gemspec = ::Gem::Specification.load(File.expand_path("#{File.dirname(__FILE__)}/../padrino-performance/padrino-performance.gemspec"))
+padrino_gemspec = ::Gem::Specification.load(File.expand_path("#{__dir__}/padrino.gemspec"))
+performance_gemspec = ::Gem::Specification.load(File.expand_path("#{__dir__}/../padrino-performance/padrino-performance.gemspec"))
 
 PADRINO_SUBGEMS ||= Hash[padrino_gemspec.dependencies.map { |gem| [gem.name, gem.requirement.to_s] }]
 

@@ -7,7 +7,7 @@ class MarkupDemo < Sinatra::Base
     set :logging, false
     set :padrino_logging, false
     set :environment, :test
-    set :root, File.dirname(__FILE__)
+    set :root, __dir__
     set :sessions, true
     set :protect_from_csrf, true
   end

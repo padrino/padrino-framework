@@ -1,5 +1,5 @@
-require File.expand_path("#{File.dirname(__FILE__)}/helper")
-require File.expand_path("#{File.dirname(__FILE__)}/fixtures/render_app/app")
+require_relative 'helper'
+require_relative 'fixtures/render_app/app'
 
 describe 'RenderHelpers' do
   def app
@@ -219,7 +219,7 @@ describe 'RenderHelpers' do
         include Padrino::Helpers::RenderHelpers
       end
       locals = { user: OpenStruct.new(name: 'Joe') }
-      result = Standalone.new.partial(File.join(File.dirname(__FILE__), 'fixtures/render_app/views/template/user'), engine: :haml, locals: locals)
+      result = Standalone.new.partial(File.join(__dir__, 'fixtures/render_app/views/template/user'), engine: :haml, locals: locals)
       assert_equal '<h1>User name is Joe</h1>', result.chomp
     end
 
@@ -231,7 +231,7 @@ describe 'RenderHelpers' do
         end
       end
 
-      result = Standalone1.new.partial(File.join(File.dirname(__FILE__), 'fixtures/render_app/views/template/user.haml'))
+      result = Standalone1.new.partial(File.join(__dir__, 'fixtures/render_app/views/template/user.haml'))
       assert_equal '<h1>User name is Jane</h1>', result.chomp
     end
 
