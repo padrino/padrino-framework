@@ -1,7 +1,6 @@
 require 'padrino-support'
 require 'padrino-support/inflections'
 require 'i18n'
-require 'enumerator'
 
 # remove at 0.14
 require 'padrino/rendering'

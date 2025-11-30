@@ -14,7 +14,7 @@ module Padrino
       include Enumerable
 
       # @private
-      def initialize(session=nil)
+      def initialize(session = nil)
         @_now  = session || {}
         @_next = {}
       end

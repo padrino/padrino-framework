@@ -1,5 +1,5 @@
 class M
   def self.hello
-    "hello"
+    'hello'
   end
 end

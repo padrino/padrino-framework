@@ -9,8 +9,8 @@ module Padrino
 
       Padrino::Generators.add_generator(:controller, self)
 
-      def self.source_root; File.expand_path(File.dirname(__FILE__)); end
-      def self.banner; "padrino-gen controller [name]"; end
+      def self.source_root; __dir__; end
+      def self.banner; 'padrino-gen controller [name]'; end
 
       include Thor::Actions
       include Padrino::Generators::Actions
@@ -18,16 +18,16 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen controller generates a new Padrino controller"
 
-      argument     :name,       :desc => 'The name of your padrino controller'
-      argument     :fields,     :desc => 'The fields for the controller',                            :default => [],     :type => :array
-      class_option :root,       :desc => 'The root destination',                   :aliases => '-r', :default => '.',    :type => :string
-      class_option :app,        :desc => 'The application destination path',       :aliases => '-a', :default => '/app', :type => :string
-      class_option :destroy,                                                       :aliases => '-d', :default => false,  :type => :boolean
-      class_option :namespace,  :desc => 'The name space of your padrino project', :aliases => '-n', :default => '',     :type => :string
-      class_option :layout,     :desc => 'The layout for the controller',          :aliases => '-l', :default => '',     :type => :string
-      class_option :parent,     :desc => 'The parent of the controller',           :aliases => '-p', :default => '',     :type => :string
-      class_option :provides,   :desc => 'The formats provided by the controller', :aliases => '-f', :default => '',     :type => :string
-      class_option :'no-helper',:desc => 'Not generate helper',                                      :default => false,  :type => :boolean
+      argument     :name,       desc: 'The name of your padrino controller'
+      argument     :fields,     desc: 'The fields for the controller',                            default: [],     type: :array
+      class_option :root,       desc: 'The root destination',                   aliases: '-r', default: '.',    type: :string
+      class_option :app,        desc: 'The application destination path',       aliases: '-a', default: '/app', type: :string
+      class_option :destroy,                                                       aliases: '-d', default: false,  type: :boolean
+      class_option :namespace,  desc: 'The name space of your padrino project', aliases: '-n', default: '',     type: :string
+      class_option :layout,     desc: 'The layout for the controller',          aliases: '-l', default: '',     type: :string
+      class_option :parent,     desc: 'The parent of the controller',           aliases: '-p', default: '',     type: :string
+      class_option :provides,   desc: 'The formats provided by the controller', aliases: '-f', default: '',     type: :string
+      class_option :'no-helper', desc: 'Not generate helper',                                      default: false,  type: :boolean
 
       # Show help if no ARGV given
       require_arguments!
@@ -62,9 +62,9 @@ module Padrino
             path = @controller.dup
 
             if options[:parent] && !options[:parent].empty?
-              path = Application.process_path_for_parent_params(path, [options[:parent]]).prepend("/")
+              path = Application.process_path_for_parent_params(path, [options[:parent]]).prepend('/')
             end
-            path.prepend("/") unless path.start_with?("/")
+            path.prepend('/') unless path.start_with?('/')
             generate_controller_test(name, path)
           end
 

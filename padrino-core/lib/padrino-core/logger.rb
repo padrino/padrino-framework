@@ -64,12 +64,12 @@ module Padrino
     # :devel:: Development-related information that is unnecessary in debug mode
     #
     Levels = {
-      :fatal =>  4,
-      :error =>  3,
-      :warn  =>  2,
-      :info  =>  1,
-      :debug =>  0,
-      :devel => -1,
+      fatal: 4,
+      error: 3,
+      warn: 2,
+      info: 1,
+      debug: 0,
+      devel: -1,
     } unless defined?(Levels)
 
     module Extensions
@@ -94,7 +94,7 @@ module Padrino
         end
       end
 
-      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in `.+?')?$/.freeze
+      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in `.+?')?$/
 
       ##
       # Returns true if :source_location is set to true.
@@ -111,7 +111,7 @@ module Padrino
         return unless path && line
         root = Padrino.root
         path = File.realpath(path) if Pathname.new(path).relative?
-        if path.start_with?(root) && !path.start_with?(Padrino.root("vendor"))
+        if path.start_with?(root) && !path.start_with?(Padrino.root('vendor'))
           "[#{path.gsub("#{root}/", "")}:#{line}] "
         end
       end
@@ -132,7 +132,7 @@ module Padrino
       #   logger.bench 'GET', started_at, '/blog/categories'
       #   # => DEBUG - GET (0.0056s) - /blog/categories
       #
-      def bench(action, began_at, message, level=:debug, color=:yellow)
+      def bench(action, began_at, message, level = :debug, color = :yellow)
         @_pad  ||= 8
         @_pad    = action.to_s.size if action.to_s.size > @_pad
         duration = Time.now - began_at
@@ -239,12 +239,12 @@ module Padrino
     module Colorize
       # Colors for levels
       ColoredLevels = {
-        :fatal => [:bold, :red],
-        :error => [:default, :red],
-        :warn  => [:default, :yellow],
-        :info  => [:default, :green],
-        :debug => [:default, :cyan],
-        :devel => [:default, :magenta]
+        fatal: [:bold, :red],
+        error: [:default, :red],
+        warn: [:default, :yellow],
+        info: [:default, :green],
+        debug: [:default, :cyan],
+        devel: [:default, :magenta]
       } unless defined?(ColoredLevels)
 
       ##
@@ -255,11 +255,11 @@ module Padrino
       # @see Padrino::Logging::ColorizedLogger::ColoredLevels
       #
       def colorize(string, *colors)
-        string.colorize(:color => colors[0], :mode => colors[1])
+        string.colorize(color: colors[0], mode: colors[1])
       end
 
       def stylized_level(level)
-        style = "\e[%d;%dm" % ColoredLevels[level].map{|color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
+        style = "\e[%d;%dm" % ColoredLevels[level].map {|color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
         [style, super, "\e[0m"] * ''
       end
     end
@@ -311,9 +311,9 @@ module Padrino
     #   PADRINO_LOGGER = { :staging => { :log_level => :debug, :stream => :to_file }}
     #
     Config = {
-      :production  => { :log_level => :warn,  :stream => :to_file },
-      :development => { :log_level => :debug, :stream => :stdout, :format_datetime => '' },
-      :test        => { :log_level => :debug, :stream => :null }
+      production: { log_level: :warn,  stream: :to_file },
+      development: { log_level: :debug, stream: :stdout, format_datetime: '' },
+      test: { log_level: :debug, stream: :null }
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
@@ -368,7 +368,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
         else config[:stream] # return itself, probabilly is a custom stream.
       end
 
-      new_logger = Padrino::Logger.new(config.merge(:stream => stream))
+      new_logger = Padrino::Logger.new(config.merge(stream: stream))
       new_logger.extend(Padrino::Logger::Extensions)
       self.logger = new_logger
     end
@@ -406,14 +406,14 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     #   Can be an encoding, false or true.
     #   If it's true, logger sanitizes to Encoding.default_external.
     #
-    def initialize(options={})
+    def initialize(options = {})
       @buffer           = []
       @auto_flush       = options.has_key?(:auto_flush) ? options[:auto_flush] : true
       @level            = options[:log_level] ? Padrino::Logger::Levels[options[:log_level]] : Padrino::Logger::Levels[:debug]
       @log              = options[:stream]  || $stdout
       @log.sync         = true
-      @format_datetime  = options[:format_datetime] || "%d/%b/%Y %H:%M:%S"
-      @format_message   = options[:format_message]  || "%s - %s %s"
+      @format_datetime  = options[:format_datetime] || '%d/%b/%Y %H:%M:%S'
+      @format_message   = options[:format_message]  || '%s - %s %s'
       @log_static       = options.has_key?(:log_static) ? options[:log_static] : false
       @colorize_logging = options.has_key?(:colorize_logging) ? options[:colorize_logging] : true
       @source_location  = options[:source_location]
@@ -433,7 +433,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
       return unless @buffer.size > 0
       @@mutex.synchronize do
         @buffer.each do |line|
-          line.encode!(@sanitize_encoding, :invalid => :replace, :undef => :replace) if @sanitize_encoding
+          line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace) if @sanitize_encoding
           @log.write(line)
         end
         @buffer.clear
@@ -486,7 +486,7 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
     class Rack
       def initialize(app, uri_root)
         @app = app
-        @uri_root = uri_root.sub(/\/$/,"")
+        @uri_root = uri_root.sub(/\/$/, '')
       end
 
       def call(env)
@@ -502,12 +502,12 @@ WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and 
       def log(env, status, header, began_at)
         return if env['sinatra.static_file'] && (!logger.respond_to?(:log_static) || !logger.log_static)
         logger.bench(
-          env["REQUEST_METHOD"],
+          env['REQUEST_METHOD'],
           began_at,
           [
             @uri_root.to_s,
-            env["PATH_INFO"],
-            env["QUERY_STRING"].empty? ? "" : "?" + env["QUERY_STRING"],
+            env['PATH_INFO'],
+            env['QUERY_STRING'].empty? ? '' : '?' + env['QUERY_STRING'],
             ' - ',
             logger.colorize(status.to_s[0..3], :default, :bold),
             ' ',

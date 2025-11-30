@@ -38,26 +38,26 @@ class MarkupDemo < Sinatra::Base
 
     def concat_ruby_not_template_block
       concat_if_block_is_template('ruby') do
-        content_tag(:span, "This not a template block")
+        content_tag(:span, 'This not a template block')
       end
     end
 
     def content_tag_with_block
       one = content_tag(:p) do
-        "one"
+        'one'
       end
       two = content_tag(:p) do
-        "two"
+        'two'
       end
       one << two
-    rescue
-      "<p>failed</p>".html_safe
+    rescue StandardError
+      '<p>failed</p>'.html_safe
     end
   end
 end
 
 class MarkupUser
-  def errors; { :fake => "must be valid", :second => "must be present", :third  => "must be a number", :email => "must be an email"}; end
+  def errors; { :fake => 'must be valid', :second => 'must be present', :third  => 'must be a number', :email => 'must be an email'}; end
   def session_id; 45; end
   def gender; 'male'; end
   def remember_me; '1'; end
@@ -67,7 +67,7 @@ class MarkupUser
 end
 
 class Telephone
-  def number; "62634576545"; end
+  def number; '62634576545'; end
 end
 
 class Address

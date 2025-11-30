@@ -43,8 +43,8 @@ module Padrino
       def number_to_currency(number, options = {})
         options = Utils.symbolize_keys(options)
 
-        defaults  = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
-        currency  = I18n.translate(:'number.currency.format', :locale => options[:locale], :raise => true) rescue {}
+        defaults  = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
+        currency  = I18n.translate(:'number.currency.format', locale: options[:locale], raise: true) rescue {}
         defaults  = defaults.merge(currency)
 
         precision = options[:precision] || defaults[:precision]
@@ -56,11 +56,11 @@ module Padrino
 
         begin
           format.gsub(/%n/, number_with_precision(number,
-            :precision => precision,
-            :delimiter => delimiter,
-            :separator => separator)
+            precision: precision,
+            delimiter: delimiter,
+            separator: separator)
           ).gsub(/%u/, unit)
-        rescue
+        rescue StandardError
           number
         end
       end
@@ -91,8 +91,8 @@ module Padrino
       def number_to_percentage(number, options = {})
         options = Utils.symbolize_keys(options)
 
-        defaults   = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
-        percentage = I18n.translate(:'number.percentage.format', :locale => options[:locale], :raise => true) rescue {}
+        defaults   = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
+        percentage = I18n.translate(:'number.percentage.format', locale: options[:locale], raise: true) rescue {}
         defaults  = defaults.merge(percentage)
 
         precision = options[:precision] || defaults[:precision]
@@ -101,10 +101,10 @@ module Padrino
 
         begin
           number_with_precision(number,
-            :precision => precision,
-            :separator => separator,
-            :delimiter => delimiter) + "%"
-        rescue
+            precision: precision,
+            separator: separator,
+            delimiter: delimiter) + '%'
+        rescue StandardError
           number
         end
       end
@@ -136,16 +136,16 @@ module Padrino
       def number_with_delimiter(number, *args)
         options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
-        defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
+        defaults = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
 
-        delimiter ||= (options[:delimiter] || defaults[:delimiter])
-        separator ||= (options[:separator] || defaults[:separator])
+        delimiter ||= options[:delimiter] || defaults[:delimiter]
+        separator ||= options[:separator] || defaults[:separator]
 
         begin
           parts = number.to_s.split('.')
           parts[0].gsub!(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1#{delimiter}")
           parts.join(separator)
-        rescue
+        rescue StandardError
           number
         end
       end
@@ -179,21 +179,21 @@ module Padrino
       def number_with_precision(number, *args)
         options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
-        defaults           = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
-        precision_defaults = I18n.translate(:'number.precision.format', :locale => options[:locale],
-                                                                        :raise => true) rescue {}
+        defaults           = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
+        precision_defaults = I18n.translate(:'number.precision.format', locale: options[:locale],
+                                                                        raise: true) rescue {}
         defaults           = defaults.merge(precision_defaults)
 
-        precision ||= (options[:precision] || defaults[:precision])
-        separator ||= (options[:separator] || defaults[:separator])
-        delimiter ||= (options[:delimiter] || defaults[:delimiter])
+        precision ||= options[:precision] || defaults[:precision]
+        separator ||= options[:separator] || defaults[:separator]
+        delimiter ||= options[:delimiter] || defaults[:delimiter]
 
         begin
           rounded_number = (Float(number) * (10 ** precision)).round.to_f / 10 ** precision
           number_with_delimiter("%01.#{precision}f" % rounded_number,
-            :separator => separator,
-            :delimiter => delimiter)
-        rescue
+            separator: separator,
+            delimiter: delimiter)
+        rescue StandardError
           number
         end
       end
@@ -239,18 +239,18 @@ module Padrino
 
         options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
-        defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
-        human    = I18n.translate(:'number.human.format', :locale => options[:locale], :raise => true) rescue {}
+        defaults = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
+        human    = I18n.translate(:'number.human.format', locale: options[:locale], raise: true) rescue {}
         defaults = defaults.merge(human)
 
-        precision ||= (options[:precision] || defaults[:precision])
-        separator ||= (options[:separator] || defaults[:separator])
-        delimiter ||= (options[:delimiter] || defaults[:delimiter])
+        precision ||= options[:precision] || defaults[:precision]
+        separator ||= options[:separator] || defaults[:separator]
+        delimiter ||= options[:delimiter] || defaults[:delimiter]
 
-        storage_units_format = I18n.translate(:'number.human.storage_units.format', :locale => options[:locale], :raise => true)
+        storage_units_format = I18n.translate(:'number.human.storage_units.format', locale: options[:locale], raise: true)
 
         if number.to_i < 1024
-          unit = I18n.translate(:'number.human.storage_units.units.byte', :locale => options[:locale], :count => number.to_i, :raise => true)
+          unit = I18n.translate(:'number.human.storage_units.units.byte', locale: options[:locale], count: number.to_i, raise: true)
           storage_units_format.gsub(/%n/, number.to_i.to_s).gsub(/%u/, unit)
         else
           max_exp  = STORAGE_UNITS.size - 1
@@ -260,17 +260,17 @@ module Padrino
           number  /= 1024 ** exponent
 
           unit_key = STORAGE_UNITS[exponent]
-          unit = I18n.translate(:"number.human.storage_units.units.#{unit_key}", :locale => options[:locale], :count => number, :raise => true)
+          unit = I18n.translate(:"number.human.storage_units.units.#{unit_key}", locale: options[:locale], count: number, raise: true)
 
           begin
             escaped_separator = Regexp.escape(separator)
             formatted_number = number_with_precision(number,
-              :precision => precision,
-              :separator => separator,
-              :delimiter => delimiter
+              precision: precision,
+              separator: separator,
+              delimiter: delimiter
             ).sub(/(#{escaped_separator})(\d*[1-9])?0+\z/, '\1\2').sub(/#{escaped_separator}\z/, '')
             storage_units_format.gsub(/%n/, formatted_number).gsub(/%u/, unit)
-          rescue
+          rescue StandardError
             number
           end
         end

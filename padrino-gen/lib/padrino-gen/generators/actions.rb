@@ -7,7 +7,7 @@ module Padrino
     ##
     # Default helper name for use in tiny app skeleton generator.
     #
-    DEFAULT_HELPER_NAME = "Helper".freeze
+    DEFAULT_HELPER_NAME = 'Helper'.freeze
     ##
     # Common actions needed to support project and component generation.
     #
@@ -36,7 +36,7 @@ module Padrino
       #   execute_component_setup(:mock, 'rr')
       #
       def execute_component_setup(component, choice)
-        return true && say_status(:skipping, "#{component} component...") if choice.to_s == 'none'
+        return say_status(:skipping, "#{component} component...") if choice.to_s == 'none'
         say_status(:applying, "#{choice} (#{component})...")
         apply_component_for(choice, component)
         send("setup_#{component}") if respond_to?("setup_#{component}")
@@ -75,8 +75,8 @@ module Padrino
       #   include_component_module_for(:mock)
       #   include_component_module_for(:mock, 'rr')
       #
-      def include_component_module_for(component, choice=nil)
-        choice = fetch_component_choice(component) unless choice
+      def include_component_module_for(component, choice = nil)
+        choice ||= fetch_component_choice(component)
         return false if choice.to_s == 'none'
         apply_component_for(choice, component)
       end
@@ -113,7 +113,7 @@ module Padrino
         path        = destination_root('.components')
         config      = retrieve_component_config(path)
         config[key] = value
-        create_file(path, :force => true) { config.to_yaml }
+        create_file(path, force: true) { config.to_yaml }
         value
       end
 
@@ -149,7 +149,7 @@ module Padrino
         choice = options[component]
         until valid_choice?(component, choice)
           say("Option for --#{component} '#{choice}' is not available.", :red)
-          choice = ask("Please enter a valid option for #{component}:", :limited_to => choices)
+          choice = ask("Please enter a valid option for #{component}:", limited_to: choices)
         end
         choice
       end
@@ -184,9 +184,9 @@ module Padrino
       def store_component_config(destination, opts = {})
         components = @_components || options
         create_file(destination, opts) do
-          self.class.component_types.inject({}) { |result, comp|
-            result[comp] = components[comp].to_s; result
-          }.to_yaml
+          self.class.component_types.each_with_object({}) do |comp, result|
+            result[comp] = components[comp].to_s
+          end.to_yaml
         end
       end
 
@@ -217,7 +217,7 @@ module Padrino
       #
       def already_exists?(name, project_name = nil)
         project_name = project_name ? (Object.const_get(project_name) rescue nil) : nil
-        Object.const_defined?(name) || (project_name && project_name.const_defined?(name))
+        Object.const_defined?(name) || (project_name&.const_defined?(name))
       end
 
       ##
@@ -232,7 +232,7 @@ module Padrino
       #   invalid_fields ['foo:bar', 'hello:world']
       #
       def invalid_fields(fields)
-        results = fields.select { |field| field.split(":").first =~ /\W/ }
+        results = fields.select { |field| field.split(':').first =~ /\W/ }
         results.empty? ? nil : results
       end
 
@@ -258,20 +258,21 @@ module Padrino
       # @example
       #   fetch_project_name
       #
-      def fetch_project_name(app='app')
-        app_path = destination_root(app, 'app.rb')
+      def fetch_project_name(app = 'app')
+        _app_path = destination_root(app, 'app.rb')
         @project_name = fetch_component_choice(:namespace) if @project_name.empty?
         @project_name ||= begin
-          say "Autodetecting project namespace using folder name.", :red
-          say ""
           detected_namespace = File.basename(destination_root('.')).gsub(/\W/, '_').camelize
-          say(<<-WARNING, :red)
+
+          say 'Autodetecting project namespace using folder name.', :red
+          say ''
+          say <<-WARNING, :red
 From v0.11.0 on, applications should have a `namespace` setting
 in their .components file. Please include a line like the following
 in your .components file:
 WARNING
           say "\t:namespace: #{detected_namespace}", :yellow
-          say ""
+          say ''
 
           detected_namespace
         end
@@ -288,7 +289,7 @@ WARNING
       # @example
       #   fetch_app_name('subapp')
       #
-      def fetch_app_name(app='app')
+      def fetch_app_name(app = 'app')
         app_path = destination_root(app, 'app.rb')
         @app_name ||= File.read(app_path).scan(/class\s(.*?)\s</).flatten[0]
       end
@@ -324,14 +325,14 @@ WARNING
       #   insert_into_gemfile(name, :group => 'test', :require => 'foo')
       #   insert_into_gemfile(name, :group => 'test', :version => ">1.2.3")
       #
-      def insert_into_gemfile(name, options={})
+      def insert_into_gemfile(name, options = {})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
-        gem_options   = options.map { |k, v| k.to_s == 'require' && [true,false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(", ")
+        gem_options   = options.map { |k, v| k.to_s == 'require' && [true, false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(', ')
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"
         write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
-        inject_into_file('Gemfile', include_text, :after => after_pattern)
+        inject_into_file('Gemfile', include_text, after: after_pattern)
       end
 
       ##
@@ -346,7 +347,7 @@ WARNING
       #   insert_hook("DataMapper.finalize", :after_load)
       #
       def insert_hook(include_text, where)
-        inject_into_file('config/boot.rb', "  #{include_text}\n", :after => "Padrino.#{where} do\n")
+        inject_into_file('config/boot.rb', "  #{include_text}\n", after: "Padrino.#{where} do\n")
       end
 
       ##
@@ -358,9 +359,9 @@ WARNING
       # @example
       #   insert_middleware(ActiveRecord::ConnectionAdapters::ConnectionManagement)
       #
-      def insert_middleware(include_text, app=nil)
+      def insert_middleware(include_text, app = nil)
         name = app || (options[:name] ? @app_name.downcase : 'app')
-        inject_into_file("#{name}/app.rb", "    use #{include_text}\n", :after => "Padrino::Application\n")
+        inject_into_file("#{name}/app.rb", "    use #{include_text}\n", after: "Padrino::Application\n")
       end
 
       ##
@@ -375,11 +376,11 @@ WARNING
       #   initializer(:test, "some stuff here")
       #   #=> generates 'lib/test_init.rb'
       #
-      def initializer(name, data=nil)
+      def initializer(name, data = nil)
         @_init_name, @_init_data = name, data
         register = data ? "    register #{name.to_s.underscore.camelize}Initializer\n" : "    register #{name}\n"
-        inject_into_file destination_root("/app/app.rb"), register, :after => "Padrino::Application\n"
-        template "templates/initializer.rb.tt", destination_root("/config/initializers/#{name}.rb") if data
+        inject_into_file destination_root('/app/app.rb'), register, after: "Padrino::Application\n"
+        template 'templates/initializer.rb.tt', destination_root("/config/initializers/#{name}.rb") if data
       end
 
       ##
@@ -409,8 +410,8 @@ WARNING
       #
       def require_contrib(contrib)
         insert_into_gemfile 'padrino-contrib'
-        contrib = "require '" + File.join("padrino-contrib", contrib) + "'\n"
-        inject_into_file destination_root("/config/boot.rb"), contrib, :before => "\nPadrino.load!"
+        contrib = "require '" + File.join('padrino-contrib', contrib) + "'\n"
+        inject_into_file destination_root('/config/boot.rb'), contrib, before: "\nPadrino.load!"
       end
 
       ##
@@ -447,9 +448,9 @@ WARNING
       def check_app_existence(app)
         unless File.exist?(destination_root(app))
           say
-          say "================================================================="
+          say '================================================================='
           say "Unable to locate '#{app.underscore.camelize}' application        "
-          say "================================================================="
+          say '================================================================='
           say
           raise SystemExit
         end
@@ -467,7 +468,7 @@ WARNING
       #   app_skeleton 'some_app'
       #   app_skeleton 'sub_app', true
       #
-      def app_skeleton(app, tiny=false)
+      def app_skeleton(app, tiny = false)
         directory('app/', destination_root(app))
         if tiny
           template 'templates/controller.rb.tt', destination_root(app, 'controllers.rb')
@@ -557,10 +558,10 @@ WARNING
         #   component_option :test, "Testing framework", :aliases => '-t', :choices => [:bacon, :shoulda]
         #
         def component_option(name, caption, options = {})
-          (@component_types   ||= []) << name # TODO use ordered hash and combine with choices below
-          (@available_choices ||= Hash.new)[name] = options[:choices]
+          (@component_types   ||= []) << name # TODO: use ordered hash and combine with choices below
+          (@available_choices ||= {})[name] = options[:choices]
           description = "The #{caption} component (#{options[:choices].join(', ')}, none)"
-          class_option name, :default => options[:default] || options[:choices].first, :aliases => options[:aliases], :desc => description
+          class_option name, default: options[:default] || options[:choices].first, aliases: options[:aliases], desc: description
         end
 
         ##
@@ -568,15 +569,15 @@ WARNING
         #
         def defines_component_options(options = {})
           [
-            [ :orm,        'database engine',    { :aliases => '-d', :default => :none }],
-            [ :test,       'testing framework',  { :aliases => '-t', :default => :none }],
-            [ :mock,       'mocking library',    { :aliases => '-m', :default => :none }],
-            [ :script,     'javascript library', { :aliases => '-s', :default => :none }],
-            [ :renderer,   'template engine',    { :aliases => '-e', :default => :none }],
-            [ :stylesheet, 'stylesheet engine',  { :aliases => '-c', :default => :none }]
+            [ :orm,        'database engine',    { aliases: '-d', default: :none }],
+            [ :test,       'testing framework',  { aliases: '-t', default: :none }],
+            [ :mock,       'mocking library',    { aliases: '-m', default: :none }],
+            [ :script,     'javascript library', { aliases: '-s', default: :none }],
+            [ :renderer,   'template engine',    { aliases: '-e', default: :none }],
+            [ :stylesheet, 'stylesheet engine',  { aliases: '-c', default: :none }]
           ].each do |name, caption, opts|
             opts[:default] = '' if options[:default] == false
-            component_option name, caption, opts.merge(:choices => Dir["#{File.dirname(__FILE__)}/components/#{name.to_s.pluralize}/*.rb"].map{|lib| File.basename(lib, '.rb').to_sym})
+            component_option name, caption, opts.merge(choices: Dir["#{File.dirname(__FILE__)}/components/#{name.to_s.pluralize}/*.rb"].map {|lib| File.basename(lib, '.rb').to_sym})
           end
         end
 

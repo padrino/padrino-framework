@@ -45,6 +45,6 @@ module Padrino
     irregular('quiz', 'quizzes')
     irregular('testis', 'testes')
 
-    uncountable(%w(equipment information rice money species series fish sheep news))
+    uncountable(%w[equipment information rice money species series fish sheep news])
   end
 end

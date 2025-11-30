@@ -30,8 +30,8 @@ module Padrino
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
-      def partial(template, options={}, &block)
-        options = { :layout => false }.update(options)
+      def partial(template, options = {}, &block)
+        options = { layout: false }.update(options)
         explicit_engine = options.delete(:engine)
 
         path, _, name = template.to_s.rpartition(File::SEPARATOR)
@@ -45,7 +45,7 @@ module Padrino
         end
 
         locals = options.delete(:locals) || {}
-        items.each_with_object(SafeBuffer.new) do |item,html|
+        items.each_with_object(SafeBuffer.new) do |item, html|
           locals[item_name] = item if item
           locals["#{item_name}_counter".to_sym] = counter += 1 if counter
           content =
@@ -64,7 +64,7 @@ module Padrino
           base.class_eval do
             fail "gem 'tilt' is required" unless defined?(::Tilt)
 
-            def render(engine, file=nil, options={}, locals=nil, &block)
+            def render(engine, file = nil, options = {}, locals = nil, &block)
               options.delete(:layout)
               engine, file = file, engine if file.nil?
               template_engine = engine ? ::Tilt[engine] : ::Tilt.default_mapping[file]

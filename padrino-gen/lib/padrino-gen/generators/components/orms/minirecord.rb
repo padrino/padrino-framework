@@ -1,4 +1,4 @@
-MR = (<<-MR) unless defined?(MR)
+MR = <<-MR unless defined?(MR)
 ##
 # You can use other adapters like:
 #
@@ -58,7 +58,7 @@ ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations[Padrin
 ActiveRecord::Base.default_timezone = :utc
 MR
 
-MYSQL = (<<-MYSQL) unless defined?(MYSQL)
+MYSQL = <<-MYSQL unless defined?(MYSQL)
   :adapter   => 'mysql',
   :encoding  => 'utf8',
   :reconnect => true,
@@ -70,7 +70,7 @@ MYSQL = (<<-MYSQL) unless defined?(MYSQL)
   :socket    => '/tmp/mysql.sock'
 MYSQL
 
-MYSQL2 = (<<-MYSQL2) unless defined?(MYSQL2)
+MYSQL2 = <<-MYSQL2 unless defined?(MYSQL2)
   :adapter   => 'mysql2',
   :encoding  => 'utf8',
   :reconnect => true,
@@ -82,7 +82,7 @@ MYSQL2 = (<<-MYSQL2) unless defined?(MYSQL2)
   :socket    => '/tmp/mysql.sock'
 MYSQL2
 
-POSTGRES = (<<-POSTGRES) unless defined?(POSTGRES)
+POSTGRES = <<-POSTGRES unless defined?(POSTGRES)
   :adapter   => 'postgresql',
   :database  => !DB_NAME!,
   :username  => 'root',
@@ -91,7 +91,7 @@ POSTGRES = (<<-POSTGRES) unless defined?(POSTGRES)
   :port      => 5432
 POSTGRES
 
-SQLITE = (<<-SQLITE) unless defined?(SQLITE)
+SQLITE = <<-SQLITE unless defined?(SQLITE)
   :adapter => 'sqlite3',
   :database => !DB_NAME!
 SQLITE
@@ -115,31 +115,31 @@ def setup_orm
   begin
     case adapter ||= options[:adapter]
     when 'mysql-gem'
-      ar.gsub! /!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_development'")
-      ar.gsub! /!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_production'")
-      ar.gsub! /!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/,"'#{db}_test'")
-      require_dependencies 'mysql', :version => "~> 2.8.1"
+      ar.gsub!(/!DB_DEVELOPMENT!/, MYSQL.gsub(/!DB_NAME!/, "'#{db}_development'"))
+      ar.gsub!(/!DB_PRODUCTION!/, MYSQL.gsub(/!DB_NAME!/, "'#{db}_production'"))
+      ar.gsub!(/!DB_TEST!/, MYSQL.gsub(/!DB_NAME!/, "'#{db}_test'"))
+      require_dependencies 'mysql', version: '~> 2.8.1'
     when 'mysql', 'mysql2'
-      ar.gsub! /!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_development'")
-      ar.gsub! /!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_production'")
-      ar.gsub! /!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/,"'#{db}_test'")
+      ar.gsub!(/!DB_DEVELOPMENT!/, MYSQL2.gsub(/!DB_NAME!/, "'#{db}_development'"))
+      ar.gsub!(/!DB_PRODUCTION!/, MYSQL2.gsub(/!DB_NAME!/, "'#{db}_production'"))
+      ar.gsub!(/!DB_TEST!/, MYSQL2.gsub(/!DB_NAME!/, "'#{db}_test'"))
       require_dependencies 'mysql2'
     when 'postgres'
-      ar.gsub! /!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_development'")
-      ar.gsub! /!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_production'")
-      ar.gsub! /!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/,"'#{db}_test'")
+      ar.gsub!(/!DB_DEVELOPMENT!/, POSTGRES.gsub(/!DB_NAME!/, "'#{db}_development'"))
+      ar.gsub!(/!DB_PRODUCTION!/, POSTGRES.gsub(/!DB_NAME!/, "'#{db}_production'"))
+      ar.gsub!(/!DB_TEST!/, POSTGRES.gsub(/!DB_NAME!/, "'#{db}_test'"))
       require_dependencies 'pg'
     when 'sqlite'
-      ar.gsub! /!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_development.db')")
-      ar.gsub! /!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_production.db')")
-      ar.gsub! /!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/,"Padrino.root('db', '#{db}_test.db')")
+      ar.gsub!(/!DB_DEVELOPMENT!/, SQLITE.gsub(/!DB_NAME!/, "Padrino.root('db', '#{db}_development.db')"))
+      ar.gsub!(/!DB_PRODUCTION!/, SQLITE.gsub(/!DB_NAME!/, "Padrino.root('db', '#{db}_production.db')"))
+      ar.gsub!(/!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/, "Padrino.root('db', '#{db}_test.db')"))
       require_dependencies 'sqlite3'
     else
       say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
       fail ArgumentError
     end
   rescue ArgumentError
-    adapter = ask("Please, choose a proper adapter:", :limited_to => %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 mysql-gem postgres sqlite])
     retry
   end
 
@@ -149,7 +149,7 @@ def setup_orm
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
 
-MR_MODEL = (<<-MODEL) unless defined?(MR_MODEL)
+MR_MODEL = <<-MODEL unless defined?(MR_MODEL)
 class !NAME! < ActiveRecord::Base
   # Fields
   !FIELDS!
@@ -157,9 +157,9 @@ end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
-def create_model_file(name, options={})
+def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples = options[:fields].map { |value| value.split(':') }
   column_declarations = field_tuples.map { |field, kind| "field :#{field}, :as => :#{kind}" }.join("\n  ")
   model_contents = MR_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)

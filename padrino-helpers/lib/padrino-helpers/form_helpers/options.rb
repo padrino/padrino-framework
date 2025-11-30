@@ -28,11 +28,11 @@ module Padrino
           when nil, false
             nil
           when String
-            content_tag(:option, prompt,       :value => '')
+            content_tag(:option, prompt,       value: '')
           when Array
-            content_tag(:option, prompt.first, :value => prompt.last)
+            content_tag(:option, prompt.first, value: prompt.last)
           else
-            content_tag(:option, '',           :value => '')
+            content_tag(:option, '',           value: '')
           end
         end
 
@@ -57,7 +57,7 @@ module Padrino
         def options_for_select(option_items, state = {})
           return [] if option_items.count == 0
           option_items.map do |caption, value, attributes|
-            html_attributes = { :value => value || caption }.merge(attributes||{})
+            html_attributes = { value: value || caption }.merge(attributes||{})
             html_attributes[:selected] ||= option_is_selected?(html_attributes[:value], caption, state[:selected])
             html_attributes[:disabled] ||= option_is_selected?(html_attributes[:value], caption, state[:disabled])
             content_tag(:option, caption, html_attributes)
@@ -73,15 +73,15 @@ module Padrino
             attributes = item.last.kind_of?(Hash) ? item.pop : {}
             value = item.flatten(1)
             attributes = value.pop if value.last.kind_of?(Hash)
-            html_attributes = { :label => caption }.merge(attributes||{})
+            html_attributes = { label: caption }.merge(attributes||{})
             content_tag(:optgroup, options_for_select(value, state), html_attributes)
           end
         end
 
         def extract_option_state!(options)
           {
-            :selected => Array(options.delete(:value))|Array(options.delete(:selected))|Array(options.delete(:selected_options)),
-            :disabled => Array(options.delete(:disabled_options))
+            selected: Array(options.delete(:value))|Array(options.delete(:selected))|Array(options.delete(:selected_options)),
+            disabled: Array(options.delete(:disabled_options))
           }
         end
 
@@ -89,7 +89,7 @@ module Padrino
           if options[:collection]
             fields = options.delete(:fields)
             collection = options.delete(:collection)
-            collection.map{ |item| [ item.send(fields.first), item.send(fields.last) ] }
+            collection.map { |item| [ item.send(fields.first), item.send(fields.last) ] }
           else
             options.delete(:options) || []
           end

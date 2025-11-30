@@ -12,7 +12,7 @@ module Padrino
   #   Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}")
   #
   def self.bin_gen(*args)
-    @_padrino_gen_bin ||= [Padrino.ruby_command, File.expand_path("../../../bin/padrino-gen", __FILE__)]
-    system *@_padrino_gen_bin, *args
+    @_padrino_gen_bin ||= [Padrino.ruby_command, File.expand_path('../../bin/padrino-gen', __dir__)]
+    system(*@_padrino_gen_bin, *args)
   end
 end

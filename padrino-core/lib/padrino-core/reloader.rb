@@ -24,7 +24,7 @@ module Padrino
     # Default excluded directories at Padrino.root are: test, spec, features, tmp, config, db and public
     #
     def exclude
-      @_exclude ||= Set.new(%w[test spec tmp features config public db].map{ |path| Padrino.root(path) })
+      @_exclude ||= Set.new(%w[test spec tmp features config public db].map { |path| Padrino.root(path) })
     end
 
     ##
@@ -84,7 +84,7 @@ module Padrino
     ##
     # A safe Kernel::require which issues the necessary hooks depending on results
     #
-    def safe_load(file, options={})
+    def safe_load(file, options = {})
       began_at = Time.now
       file     = figure_path(file)
       return unless options[:force] || file_changed?(file)
@@ -93,7 +93,7 @@ module Padrino
       Storage.prepare(file) # might call #safe_load recursively
       logger.devel(file_new?(file) ? :loading : :reload, began_at, file)
       begin
-        with_silence{ require(file) }
+        with_silence { require(file) }
         Storage.commit(file)
         update_modification_time(file)
       rescue Exception => exception
@@ -116,6 +116,7 @@ module Padrino
       base.send :remove_const, object
       logger.devel "Removed constant #{const} from #{base}"
     rescue NameError
+      # no const to remove
     end
 
     ##
@@ -157,7 +158,7 @@ module Padrino
     # Reloads the file if it's special. For now it's only I18n locale files.
     #
     def reload_special(file)
-      return unless special_files.any?{ |special_file| File.identical?(special_file, file) }
+      return unless special_files.any? { |special_file| File.identical?(special_file, file) }
       if defined?(I18n)
         began_at = Time.now
         I18n.reload!
@@ -237,14 +238,14 @@ module Padrino
     # Tells if a feature should be excluded from Reloader tracking.
     #
     def feature_excluded?(file)
-      !file.start_with?(Padrino.root) || exclude.any?{ |excluded_path| file.start_with?(excluded_path) }
+      !file.start_with?(Padrino.root) || exclude.any? { |excluded_path| file.start_with?(excluded_path) }
     end
 
     ##
     # Tells if a constant should be excluded from Reloader routines.
     #
     def constant_excluded?(const)
-      external_constant?(const) || (exclude_constants - include_constants).any?{ |excluded_constant| constant_name(const).start_with?(excluded_constant) }
+      external_constant?(const) || (exclude_constants - include_constants).any? { |excluded_constant| constant_name(const).start_with?(excluded_constant) }
     end
 
     ##
@@ -256,7 +257,7 @@ module Padrino
       sources = object_sources(const)
       # consider methodless constants not external
       return false if sources.empty?
-      !sources.any?{ |source| source.start_with?(Padrino.root) }
+      sources.none? { |source| source.start_with?(Padrino.root) }
     end
 
     ##

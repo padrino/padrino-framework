@@ -24,5 +24,5 @@ COMPASS
 def setup_stylesheet
   require_dependencies 'compass-blueprint'
   initializer :compass, COMPASS_INIT.chomp
-  directory "components/stylesheets/compass/", destination_root('/app/stylesheets')
+  directory 'components/stylesheets/compass/', destination_root('/app/stylesheets')
 end

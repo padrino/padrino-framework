@@ -22,18 +22,18 @@ module Padrino
   # pluralization and singularization rules that is runs. This guarantees that your rules run before any of the rules that may
   # already have been loaded.
   module Inflections
-    CAMELIZE_CONVERT_REGEXP = /(^|_)(.)/.freeze
-    CAMELIZE_MODULE_REGEXP = /\/(.?)/.freeze
+    CAMELIZE_CONVERT_REGEXP = /(^|_)(.)/
+    CAMELIZE_MODULE_REGEXP = /\/(.?)/
     DASH = '-'.freeze
-    DEMODULIZE_CONVERT_REGEXP = /^.*::/.freeze
+    DEMODULIZE_CONVERT_REGEXP = /^.*::/
     EMPTY_STRING= ''.freeze
     SLASH = '/'.freeze
-    VALID_CONSTANT_NAME_REGEXP = /\A(?:::)?([A-Z]\w*(?:::[A-Z]\w*)*)\z/.freeze
+    VALID_CONSTANT_NAME_REGEXP = /\A(?:::)?([A-Z]\w*(?:::[A-Z]\w*)*)\z/
     UNDERSCORE = '_'.freeze
-    UNDERSCORE_CONVERT_REGEXP1 = /([A-Z]+)([A-Z][a-z])/.freeze
-    UNDERSCORE_CONVERT_REGEXP2 = /([a-z\d])([A-Z])/.freeze
+    UNDERSCORE_CONVERT_REGEXP1 = /([A-Z]+)([A-Z][a-z])/
+    UNDERSCORE_CONVERT_REGEXP2 = /([a-z\d])([A-Z])/
     UNDERSCORE_CONVERT_REPLACE = '\1_\2'.freeze
-    UNDERSCORE_MODULE_REGEXP = /::/.freeze
+    UNDERSCORE_MODULE_REGEXP = /::/
 
     @plurals, @singulars, @uncountables = [], [], []
 
@@ -70,8 +70,8 @@ module Padrino
     #   irregular 'octopus', 'octopi'
     #   irregular 'person', 'people'
     def self.irregular(singular, plural)
-      plural(Regexp.new("(#{singular[0,1]})#{singular[1..-1]}$", "i"), '\1' + plural[1..-1])
-      singular(Regexp.new("(#{plural[0,1]})#{plural[1..-1]}$", "i"), '\1' + singular[1..-1])
+      plural(Regexp.new("(#{singular[0, 1]})#{singular[1..-1]}$", 'i'), '\1' + plural[1..-1])
+      singular(Regexp.new("(#{plural[0, 1]})#{plural[1..-1]}$", 'i'), '\1' + singular[1..-1])
     end
 
     # Specifies a new pluralization rule and its replacement. The rule can either be a string or a regular expression.
@@ -104,14 +104,13 @@ module Padrino
 
     instance_eval(&DEFAULT_INFLECTIONS_PROC)
 
-    extend self
+    module_function
 
     # Convert the given string to CamelCase.  Will also convert '/' to '::' which is useful for converting paths to namespaces.
     def camelize(s)
       s = s.to_s
       return s.camelize if s.respond_to?(:camelize)
-      s = s.gsub(CAMELIZE_MODULE_REGEXP){|x| "::#{x[-1..-1].upcase unless x == SLASH}"}.gsub(CAMELIZE_CONVERT_REGEXP){|x| x[-1..-1].upcase}
-      s
+      s.gsub(CAMELIZE_MODULE_REGEXP) {|x| "::#{x[-1..-1].upcase unless x == SLASH}"}.gsub(CAMELIZE_CONVERT_REGEXP) {|x| x[-1..-1].upcase}
     end
 
     # Tries to find a declared constant with the name specified
@@ -136,7 +135,7 @@ module Padrino
       s = s.to_s
       return s.pluralize if s.respond_to?(:pluralize)
       result = s.dup
-      Inflections.plurals.each{|(rule, replacement)| break if result.gsub!(rule, replacement)} unless Inflections.uncountables.include?(s.downcase)
+      Inflections.plurals.each {|(rule, replacement)| break if result.gsub!(rule, replacement)} unless Inflections.uncountables.include?(s.downcase)
       result
     end
 
@@ -145,7 +144,7 @@ module Padrino
       s = s.to_s
       return s.singularize if s.respond_to?(:singularize)
       result = s.dup
-      Inflections.singulars.each{|(rule, replacement)| break if result.gsub!(rule, replacement)} unless Inflections.uncountables.include?(s.downcase)
+      Inflections.singulars.each {|(rule, replacement)| break if result.gsub!(rule, replacement)} unless Inflections.uncountables.include?(s.downcase)
       result
     end
 

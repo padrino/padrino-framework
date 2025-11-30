@@ -71,7 +71,7 @@ module Padrino
       #
       def match?(offset, path)
         @routes[offset..-1].find do |route|
-          route.regexp === path || (path.end_with?("/") && route.regexp === path[0..-2])
+          route.regexp === path || (path.end_with?('/') && route.regexp === path[0..-2])
         end
       end
 

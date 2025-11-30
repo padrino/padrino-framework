@@ -12,7 +12,7 @@ module Padrino
       class Orm
         attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm, :name_param
 
-        def initialize(name, orm, columns=nil, column_fields=nil)
+        def initialize(name, orm, columns = nil, column_fields = nil)
           name            = name.to_s
           @klass_name     = name.underscore.camelize
           @klass          = @klass_name.constantize rescue nil
@@ -53,10 +53,10 @@ module Padrino
             when :datamapper   then @klass.properties.map { |p| dm_column(p) }
             when :couchrest    then @klass.properties
             when :mongoid      then @klass.fields.values.reject { |col| %w[_id _type].include?(col.name) }
-            when :mongomapper  then @klass.keys.values.reject { |key| key.name == "_id" } # On MongoMapper keys are an hash
-            when :sequel       then @klass.db_schema.map { |k,v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
+            when :mongomapper  then @klass.keys.values.reject { |key| key.name == '_id' } # On MongoMapper keys are an hash
+            when :sequel       then @klass.db_schema.map { |k, v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
             when :ohm          then @klass.attributes.map { |a| Column.new(a.to_s, :string) } # ohm has strings
-            when :dynamoid     then @klass.attributes.map { |k,v| Column.new(k.to_s, v[:type]) }
+            when :dynamoid     then @klass.attributes.map { |k, v| Column.new(k.to_s, v[:type]) }
             else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
@@ -81,16 +81,11 @@ module Padrino
         end
 
         def column_fields
-          excluded_columns = %w[created_at updated_at]
-          case orm
-            when :mongoid then excluded_columns << '_id'
-            else excluded_columns << 'id'
-          end
-
+          excluded_columns = %w[created_at updated_at] << (orm == :mongoid ? '_id' : 'id')
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
-            { :name => column.name, :field_type => field_type(column.type) }
+            { name: column.name, field_type: field_type(column.type) }
           end
         end
 
@@ -98,7 +93,7 @@ module Padrino
           "#{klass_name}.all"
         end
 
-        def find(params=nil)
+        def find(params = nil)
           case orm
             when :activerecord, :minirecord, :mongomapper, :mongoid, :dynamoid then "#{klass_name}.find(#{params})"
             when :datamapper, :couchrest then "#{klass_name}.get(#{params})"
@@ -107,7 +102,7 @@ module Padrino
           end
         end
 
-        def build(params=nil)
+        def build(params = nil)
           if params
             "#{klass_name}.new(#{params})"
           else
@@ -122,7 +117,7 @@ module Padrino
           end
         end
 
-        def update_attributes(params=nil)
+        def update_attributes(params = nil)
           case orm
             when :mongomapper, :mongoid, :couchrest, :dynamoid then "@#{name_singular}.update_attributes(#{params})"
             when :activerecord, :minirecord, :datamapper, :ohm then "@#{name_singular}.update(#{params})"
@@ -138,7 +133,7 @@ module Padrino
           end
         end
 
-        def find_by_ids(params=nil)
+        def find_by_ids(params = nil)
           case orm
             when :ohm then "#{klass_name}.fetch(#{params})"
             when :datamapper then "#{klass_name}.all(:id => #{params})"
@@ -150,7 +145,7 @@ module Padrino
           end
         end
 
-        def multiple_destroy(params=nil)
+        def multiple_destroy(params = nil)
           case orm
             when :ohm then "#{params}.each(&:delete)"
             when :sequel then  "#{params}.destroy"

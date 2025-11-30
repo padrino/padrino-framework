@@ -1,13 +1,13 @@
 require File.expand_path(File.dirname(__FILE__) + '/../helper')
 
-describe "AccountModelGenerator" do
+describe 'AccountModelGenerator' do
   before do
     @apptmp = "#{Dir.tmpdir}/padrino-tests/#{SecureRandom.hex}"
-    %x[mkdir -p #{@apptmp}]
+    `mkdir -p #{@apptmp}`
   end
 
   after do
-    %[rm -rf #{@apptmp}]
+    %(rm -rf #{@apptmp})
   end
 
   describe 'activerecord' do

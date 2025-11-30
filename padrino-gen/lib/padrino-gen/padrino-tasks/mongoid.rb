@@ -17,11 +17,9 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         collection.db.collection(name)
       end
 
-      def enum_mongoid_documents(collection)
-        collection.find({}, :timeout => false, :sort => "_id") do |cursor|
-          cursor.each do |doc|
-            yield doc
-          end
+      def enum_mongoid_documents(collection, &block)
+        collection.find({}, timeout: false, sort: '_id') do |cursor|
+          cursor.each(&block)
         end
       end
 
@@ -42,26 +40,24 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         Mongoid.default_session[name]
       end
 
-      def enum_mongoid_documents(collection)
-        collection.find.sort(:_id => 1).each do |doc|
-          yield doc
-        end
+      def enum_mongoid_documents(collection, &block)
+        collection.find.sort(_id: 1).each(&block)
       end
 
       def rename_mongoid_collection(collection, new_name)
         db_name = collection.database.name
-        collection.database.session.with(:database => :admin) do |admin|
+        collection.database.session.with(database: :admin) do |admin|
           admin.command(
-            :renameCollection => "#{db_name}.#{collection.name}",
-            :to               => "#{db_name}.#{new_name}",
-            :dropTarget       => true)
+            renameCollection: "#{db_name}.#{collection.name}",
+            to: "#{db_name}.#{new_name}",
+            dropTarget: true)
         end
       end
     end
 
     desc 'Drops all the collections for the database for the current Padrino.env'
-    task :drop => :environment do
-      mongoid_collections.select {|c| c.name !~ /system/ }.each(&:drop)
+    task drop: :environment do
+      mongoid_collections.reject {|c| c.name =~ /system/ }.each(&:drop)
     end
 
     # Helper to retrieve a list of models.
@@ -75,7 +71,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
           if klass.ancestors.include?(Mongoid::Document) && !klass.embedded
             documents << klass
           end
-        rescue => e
+        rescue StandardError
           # Just for non-mongoid objects that don't have the embedded
           # attribute at the class level.
         end
@@ -85,7 +81,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     end
 
     desc 'Create the indexes defined on your mongoid models'
-    task :create_indexes => :environment do
+    task create_indexes: :environment do
       get_mongoid_models.each(&:create_indexes)
     end
 
@@ -106,11 +102,11 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
     end
 
     def collection_names
-      @collection_names ||= get_mongoid_models.map{ |d| d.collection.name }.uniq
+      @collection_names ||= get_mongoid_models.map { |d| d.collection.name }.uniq
     end
 
-    desc "Convert string objectids in mongo database to ObjectID type"
-    task :objectid_convert => :environment do
+    desc 'Convert string objectids in mongo database to ObjectID type'
+    task objectid_convert: :environment do
       collection_names.each do |collection_name|
         puts "Converting #{collection_name} to use ObjectIDs"
 
@@ -124,7 +120,7 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         # Convert collection documents.
         enum_mongoid_documents(collection) do |doc|
           new_doc = convert_ids(doc)
-          new_collection.insert(new_doc, :safe => true)
+          new_collection.insert(new_doc, safe: true)
         end
 
         puts "Done! Converted collection is in #{new_collection.name}\n\n"
@@ -157,20 +153,20 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
         end
       end
 
-      puts "DONE! Run `padrino rake mi:cleanup_old_collections` to remove old collections"
+      puts 'DONE! Run `padrino rake mi:cleanup_old_collections` to remove old collections'
     end
 
-    desc "Clean up old collections backed up by objectid_convert"
-    task :cleanup_old_collections => :environment do
+    desc 'Clean up old collections backed up by objectid_convert'
+    task cleanup_old_collections: :environment do
       collection_names.each do |collection_name|
         collection = mongoid_collection(collection_name)
         mongoid_new_collection(collection, "#{collection.name}_old").drop
       end
     end
 
-    desc "Generates .yml files for I18n translations"
-    task :translate => :environment do
-      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, ".rb") }
+    desc 'Generates .yml files for I18n translations'
+    task translate: :environment do
+      models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, '.rb') }
 
       models.each do |m|
         # Get the model class.
@@ -194,17 +190,17 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
             columns.each do |c|
               locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
             end
-            print "Lang #{lang.to_s.upcase} already exist ... "; $stdout.flush
           else
-            locale     = "#{lang}:" + "\n" +
-            "  models:" + "\n" +
-            "    #{m}:" + "\n" +
-            "      name: #{klass.name}" + "\n" +
-            "      attributes:" + "\n" +
+            locale     = "#{lang}:" + "\n" \
+            '  models:' + "\n" \
+            "    #{m}:" + "\n" \
+            "      name: #{klass.name}" + "\n" \
+            '      attributes:' + "\n" +
             columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
-            print "created a new for #{lang.to_s.upcase} Lang ... "; $stdout.flush
           end
-          File.open(filename, "w") { |f| f.puts locale }
+
+          $stdout.flush
+          File.open(filename, 'w') { |f| f.puts locale }
         end
         puts
       end

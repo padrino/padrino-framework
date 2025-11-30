@@ -16,7 +16,7 @@ module Mail # @private
         settings.views            = File.join(app.views, 'mailers')
         settings.reload_templates = app.reload_templates?
       else
-        settings.views = File.expand_path("./mailers")
+        settings.views = File.expand_path('./mailers')
         settings.reload_templates = true
       end
 
@@ -59,9 +59,9 @@ module Mail # @private
     #  text_part { render('multipart/basic.text') }
     #
     def text_part(value = nil, &block)
-      add_resolved_part(:variable     => :text_part,
-                        :value        => value,
-                        :content_type => 'text/plain',
+      add_resolved_part(variable: :text_part,
+                        value: value,
+                        content_type: 'text/plain',
                         &block)
     end
 
@@ -75,18 +75,18 @@ module Mail # @private
     #  html_part { render('multipart/basic.html') }
     #
     def html_part(value = nil, &block)
-      add_resolved_part(:variable     => :html_part,
-                        :value        => value,
-                        :content_type => 'text/html',
+      add_resolved_part(variable: :html_part,
+                        value: value,
+                        content_type: 'text/html',
                         &block)
     end
 
     def add_resolved_part(attributes = {}, &block)
       variable, value, content_type = attributes.values_at(:variable, :value, :content_type)
       if block_given? || value
-        instance_variable_set "@#{variable}", self.part(:content_type => content_type,
-                                                        :body => value,
-                                                        :part_block => block)
+        instance_variable_set "@#{variable}", self.part(content_type: content_type,
+                                                        body: value,
+                                                        part_block: block)
         add_multipart_alternate_header if self.send(variable)
       else
         instance_variable_get("@#{variable}") || find_first_mime_type(content_type)
@@ -117,7 +117,7 @@ module Mail # @private
 
     def do_delivery_with_logging
       logger.debug "Sending email to: #{destinations.join(" ")}"
-      encoded.each_line { |line| logger << ("  " + line.strip) } if logger.debug?
+      encoded.each_line { |line| logger << ('  ' + line.strip) } if logger.debug?
       do_delivery_without_logging
     end
     if Padrino.respond_to?(:logger)
@@ -136,7 +136,7 @@ module Mail # @private
     # Sinatra almost compatibility.
     #
     def self.set(name, value)
-      self.class.instance_eval{ define_method(name) { value } unless method_defined?(:erb) }
+      self.class.instance_eval { define_method(name) { value } unless method_defined?(:erb) }
     end
 
     ##
@@ -199,7 +199,7 @@ module Mail # @private
     # Return the default encoding.
     #
     def self.default_encoding
-      "utf-8"
+      'utf-8'
     end
 
     ##
@@ -241,8 +241,8 @@ module Mail # @private
     #
     # See Padrino::Mailer::Mime for more usage informations.
     #
-    def content_type_with_symbol(value=nil)
-      value = Padrino::Mailer::Mime::MIME_TYPES.find { |k,v| v == value }[0] rescue value if value.is_a?(Symbol)
+    def content_type_with_symbol(value = nil)
+      value = Padrino::Mailer::Mime::MIME_TYPES.find { |_k, v| v == value }[0] rescue value if value.is_a?(Symbol)
       mime = content_type_without_symbol(value)
       Padrino::Mailer::Mime.mime_type(mime)
     end
@@ -254,7 +254,7 @@ module Mail # @private
     ##
     # Defines the render for the mailer utilizing the padrino 'rendering' module
     #
-    def render(engine=nil, data=nil, options={}, locals={}, &block)
+    def render(engine = nil, data = nil, options = {}, locals = {}, &block)
       locals = @_locals || {} if !options[:locals] && locals.empty?
       @template_cache.clear if settings.reload_templates?
 
@@ -277,7 +277,7 @@ module Mail # @private
     end
 
     alias_method :original_partial, :partial if instance_methods.include?(:partial)
-    def partial(template, options={}, &block)
+    def partial(template, options = {}, &block)
       raise "gem 'padrino-helpers' is required to render partials" unless respond_to?(:original_partial)
       self.body = original_partial(template, options, &block)
     end

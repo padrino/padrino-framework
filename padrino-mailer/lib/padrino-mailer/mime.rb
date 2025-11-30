@@ -26,7 +26,7 @@ module Padrino
       #
       #   Padrino::Mailer::Mime::MIME_TYPES.fetch('text/plain', :plain)
       #
-      def self.mime_type(mime, fallback=:plain)
+      def self.mime_type(mime, fallback = :plain)
         MIME_TYPES.fetch(mime.to_s.split(';').first.to_s.downcase, fallback)
       end
 
@@ -39,9 +39,9 @@ module Padrino
       #   Padrino::Mailer::Mime::MIME_TYPES.merge!("text/xml" => :xml)
       #
       MIME_TYPES = {
-        "text/html"  => :html,
-        "text/plain" => :plain,
-        "text/xml"   => :xml
+        'text/html'  => :html,
+        'text/plain' => :plain,
+        'text/xml'   => :xml
       }
     end
   end

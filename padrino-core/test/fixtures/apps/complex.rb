@@ -8,22 +8,22 @@ end
 
 class Complex1Demo < Padrino::Application
   set :reload, true
-  get("/old"){ "Old Sinatra Way" }
+  get('/old') { 'Old Sinatra Way' }
 end
 
 class Complex2Demo < Padrino::Application
   set :reload, true
-  get("/old"){ "Old Sinatra Way" }
+  get('/old') { 'Old Sinatra Way' }
 
   controllers :var do
-    get(:destroy){ params.to_json }
+    get(:destroy) { params.to_json }
   end
 
-  get("/"){ "The magick number is: 12!" } # Change only the number!!!
+  get('/') { 'The magick number is: 12!' } # Change only the number!!!
 end
 
 Complex1Demo.controllers do
-  get("/"){ "Given random #{LibDemo.give_me_a_random}" }
+  get('/') { "Given random #{LibDemo.give_me_a_random}" }
 end
 
 Complex2Demo.controllers do

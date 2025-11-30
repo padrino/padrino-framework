@@ -15,25 +15,25 @@ module Padrino
         #   select_block(:color, :options => ['green', 'black'])
         #
         (self.field_types - [ :hidden_field, :radio_button ]).each do |field_type|
-          class_eval <<-EOF
-          def #{field_type}_block(field, options={}, label_options={})
-            if options[:caption]
-              options = options.dup
-              label_options = { :caption => options.delete(:caption) }.update(label_options)
+          class_eval <<~EOF, __FILE__, __LINE__ + 1
+            def #{field_type}_block(field, options={}, label_options={})
+              if options[:caption]
+                options = options.dup
+                label_options = { :caption => options.delete(:caption) }.update(label_options)
+              end
+              field_html = label(field, label_options)
+              field_html << #{field_type}(field, options)
+              @template.content_tag(:p, field_html)
             end
-            field_html = label(field, label_options)
-            field_html << #{field_type}(field, options)
-            @template.content_tag(:p, field_html)
-          end
           EOF
         end
 
-        def submit_block(caption, options={})
+        def submit_block(caption, options = {})
           submit_html = self.submit(caption, options)
           @template.content_tag(:p, submit_html)
         end
 
-        def image_submit_block(source, options={})
+        def image_submit_block(source, options = {})
           submit_html = self.image_submit(source, options)
           @template.content_tag(:p, submit_html)
         end

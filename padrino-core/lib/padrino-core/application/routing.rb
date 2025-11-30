@@ -14,9 +14,9 @@ module Padrino
   #
   module Routing
     # Defines common content-type alias mappings.
-    CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
+    CONTENT_TYPE_ALIASES = { htm: :html } unless defined?(CONTENT_TYPE_ALIASES)
     # Defines the available route priorities supporting route deferrals.
-    ROUTE_PRIORITY = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
+    ROUTE_PRIORITY = {high: 0, normal: 1, low: 2} unless defined?(ROUTE_PRIORITY)
 
     # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
@@ -36,7 +36,7 @@ module Padrino
 
       alias_method :optional?, :optional
 
-      def initialize(value, options={})
+      def initialize(value, options = {})
         super(value.to_s)
         @map      = options.delete(:map)
         @optional = options.delete(:optional)
@@ -219,7 +219,7 @@ module Padrino
       def construct_filter(*args, &block)
         options = args.last.is_a?(Hash) ? args.pop : {}
         if except = options.delete(:except)
-          fail "You cannot use :except with other options specified" unless args.empty? && options.empty?
+          fail 'You cannot use :except with other options specified' unless args.empty? && options.empty?
           except = Array(except)
           options = except.last.is_a?(Hash) ? except.pop : {}
         end
@@ -250,9 +250,9 @@ module Padrino
       #     end
       #   end
       #
-      def parent(name = nil, options={})
+      def parent(name = nil, options = {})
         return super() unless name
-        defaults = { :optional => false, :map => name.to_s }
+        defaults = { optional: false, map: name.to_s }
         options = defaults.merge(options)
         @_parent = Array(@_parent) unless @_parent.is_a?(Array)
         @_parent << Parent.new(name, options)
@@ -286,7 +286,7 @@ module Padrino
       end
 
       def deferred_routes
-        @deferred_routes ||= ROUTE_PRIORITY.map{[]}
+        @deferred_routes ||= ROUTE_PRIORITY.map {[]}
       end
 
       def reset_router!
@@ -393,7 +393,7 @@ module Padrino
           part
         end
 
-        [parent_prefix, path].flatten.join("")
+        [parent_prefix, path].flatten.join('')
       end
 
       private
@@ -405,10 +405,10 @@ module Padrino
       def with_new_options(*args)
         options = args.last.is_a?(Hash) ? args.pop : {}
 
-        CONTROLLER_OPTIONS.each{ |key| replace_instance_variable("@_#{key}", options.delete(key)) }
+        CONTROLLER_OPTIONS.each { |key| replace_instance_variable("@_#{key}", options.delete(key)) }
         replace_instance_variable(:@_controller, args)
         replace_instance_variable(:@_defaults, options)
-        replace_instance_variable(:@filters, :before => @filters[:before].dup, :after => @filters[:after].dup)
+        replace_instance_variable(:@filters, before: @filters[:before].dup, after: @filters[:after].dup)
         replace_instance_variable(:@layout, @layout)
 
         yield
@@ -427,8 +427,8 @@ module Padrino
 
       # Searches compiled router for a path responding to args and makes a path with params.
       def make_path_with_params(args, params)
-        names, params_array = args.partition{ |arg| arg.is_a?(Symbol) }
-        name = names[0, 2].join(" ").to_sym
+        names, params_array = args.partition { |arg| arg.is_a?(Symbol) }
+        name = names[0, 2].join(' ').to_sym
         compiled_router.path(name, *(params_array << params))
       rescue PathRouter::InvalidRouteException
         raise Padrino::Routing::UnrecognizedException, "Route mapping for url(#{name.inspect}) could not be found"
@@ -444,7 +444,8 @@ module Padrino
             next all if value.nil?
             all[key] = value_to_param(value)
           end
-        when nil
+        when NilClass
+          nil
         else
           object.respond_to?(:to_param) ? object.to_param : object
         end
@@ -480,13 +481,13 @@ module Padrino
       def route(verb, path, *args, &block)
         options = case args.size
           when 2
-            args.last.merge(:map => args.first)
+            args.last.merge(map: args.first)
           when 1
             map = args.shift if args.first.is_a?(String)
             if args.first.is_a?(Hash)
-              map ? args.first.merge(:map => map) : args.first
+              map ? args.first.merge(map: map) : args.first
             else
-              {:map => map || args.first}
+              {map: map || args.first}
             end
           when 0
             {}
@@ -515,14 +516,14 @@ module Padrino
 
         block_arity = block.arity
         block = if block_arity == 0
-                  proc{ |request, _| unbound_method.bind(request).call }
+                  proc { |request, _| unbound_method.bind(request).call }
                 else
-                  proc{ |request, block_params| unbound_method.bind(request).call(*block_params) }
+                  proc { |request, block_params| unbound_method.bind(request).call(*block_params) }
                 end
 
         invoke_hook(:route_added, verb, path, block)
 
-        path[0, 0] = "/" if path == "(.:format)?"
+        path[0, 0] = '/' if path == '(.:format)?'
         route = router.add(verb, path, route_options)
         route.name = name if name
         route.action = action
@@ -546,9 +547,9 @@ module Padrino
         end
 
         # Add Sinatra conditions.
-        options.each do |option, _args|
+        options.each do |option, args|
           option = :provides_format if option == :provides
-          route.respond_to?(option) ? route.send(option, *_args) : send(option, *_args)
+          route.respond_to?(option) ? route.send(option, *args) : send(option, *args)
         end
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
@@ -625,14 +626,14 @@ module Padrino
           unless controller.empty?
             # Now we need to add our controller path only if not mapped directly
             if !map && !absolute_map
-              controller_path = controller.join("/")
-              path.gsub!(%r{^\(/\)|/\?}, "")
+              controller_path = controller.join('/')
+              path.gsub!(%r{^\(/\)|/\?}, '')
               path = File.join(controller_path, path)  unless @_map
             end
           end
 
           # Now we need to parse our 'parent' params and parent scope.
-          if !absolute_map and parent_params = options.delete(:parent) || @_parent
+          if !absolute_map && (parent_params = options.delete(:parent) || @_parent)
             parent_params = (Array(@_parent) + Array(parent_params)).uniq
             path = process_path_for_parent_params(path, parent_params)
           end
@@ -643,8 +644,8 @@ module Padrino
           # Small reformats
           path.gsub!(%r{/\?$}, '(/)')                  # Remove index path
           path.gsub!(%r{//$}, '/')                     # Remove index path
-          path[0,0] = "/" if path !~ %r{^\(?/}         # Paths must start with a /
-          path.sub!(%r{/(\))?$}, '\\1') if path != "/" # Remove latest trailing delimiter
+          path[0, 0] = '/' if path !~ %r{^\(?/}         # Paths must start with a /
+          path.sub!(%r{/(\))?$}, '\\1') if path != '/' # Remove latest trailing delimiter
           path.gsub!(/\/(\(\.|$)/, '\\1')              # Remove trailing slashes
           path.squeeze!('/')
         when Regexp
@@ -654,7 +655,7 @@ module Padrino
         name = options.delete(:route_name) if name.nil? && options.key?(:route_name)
         name = options.delete(:name) if name.nil? && options.key?(:name)
         if name
-          controller_name = controller.join("_")
+          controller_name = controller.join('_')
           name = "#{controller_name} #{name}".to_sym unless controller_name.empty?
         end
 
@@ -670,7 +671,7 @@ module Padrino
       def process_path_for_with_params(path, with_params)
         File.join(path, Array(with_params).map do |step|
           step.kind_of?(String) ? step : step.inspect
-        end.join("/"))
+        end.join('/'))
       end
 
       ##
@@ -678,7 +679,7 @@ module Padrino
       # Used for calculating path in route method.
       #
       def process_path_for_provides(path)
-        path << "(.:format)?" unless path[-11, 11] == '(.:format)?'
+        path << '(.:format)?' unless path[-11, 11] == '(.:format)?'
       end
 
       ##
@@ -714,18 +715,18 @@ module Padrino
       end
 
       def provides_format(*types)
-        mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
+        mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           return provides_format?(types, params[:format].to_sym) if params[:format]
 
           accepts = request.accept.map(&:to_str)
           # Per rfc2616-sec14:
           # Assume */* if no ACCEPT header is given.
-          catch_all = accepts.delete("*/*")
+          catch_all = accepts.delete('*/*')
 
           return provides_any?(accepts) if types.include?(:any)
 
-          accepts = accepts.empty? ? mime_types.slice(0,1) : (accepts & mime_types)
+          accepts = accepts.empty? ? mime_types.slice(0, 1) : (accepts & mime_types)
 
           type = accepts.first && mime_symbol(accepts.first)
           type ||= catch_all && types.first
@@ -749,7 +750,7 @@ module Padrino
       #   # => GET /a CONTENT_TYPE application/xml => 406
       #
       def accepts(*types)
-        mime_types = types.map{ |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
+        mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           halt 406 unless mime_types.include?(request.media_type)
           content_type(mime_symbol(request.media_type))
@@ -893,7 +894,7 @@ module Padrino
       #     end
       #   end
       #
-      def content_type(type=nil, params={})
+      def content_type(type = nil, params = {})
         return @_content_type unless type
         super(type, params)
         @_content_type = type
@@ -919,10 +920,10 @@ module Padrino
       end
 
       def mime_symbol(media_type)
-        ::Rack::Mime::MIME_TYPES.key(media_type).sub(/\./,'').to_sym
+        ::Rack::Mime::MIME_TYPES.key(media_type).sub(/\./, '').to_sym
       end
 
-      def filter!(type, base=settings)
+      def filter!(type, base = settings)
         filter! type, base.superclass if base.superclass.respond_to?(:filters)
         base.filters[type].each { |block| instance_eval(&block) }
       end
@@ -950,7 +951,7 @@ module Padrino
         first_time = true
 
         routes = base.compiled_router.call(@request) do |route, params|
-          next if route.user_agent && !(route.user_agent =~ @request.user_agent)
+          next if route.user_agent && route.user_agent !~ @request.user_agent
           original_params, parent_layout = @params.dup, @layout
           returned_pass_block = invoke_route(route, params, first_time)
           pass_block = returned_pass_block if returned_pass_block
@@ -960,9 +961,9 @@ module Padrino
 
         unless routes.empty?
           verb = request.request_method
-          candidacies, allows = routes.partition{|route| route.verb == verb }
+          candidacies, allows = routes.partition {|route| route.verb == verb }
           if candidacies.empty?
-            response["Allows"] = allows.map(&:verb).join(", ")
+            response['Allows'] = allows.map(&:verb).join(', ')
             halt 405
           end
         end
@@ -993,7 +994,7 @@ module Padrino
 
         catch(:pass) do
           
-              (route.before_filters - settings.filters[:before]).each{|block| instance_eval(&block) }
+              (route.before_filters - settings.filters[:before]).each {|block| instance_eval(&block) }
               @layout = route.use_layout if route.use_layout
               route.custom_conditions.each {|block| pass if block.bind(self).call == false }
               route_response = route.block[self, captured_params]

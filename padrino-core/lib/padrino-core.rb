@@ -16,12 +16,12 @@ require 'padrino-core/server'
 require 'padrino-core/tasks'
 require 'padrino-core/module'
 
-if ENV["PADRINO_ENV"] || defined?(PADRINO_ENV)
+if ENV['PADRINO_ENV'] || defined?(PADRINO_ENV)
   warn 'Environment variable PADRINO_ENV is deprecated. Please, use RACK_ENV.'
-  ENV["RACK_ENV"] ||= ENV["PADRINO_ENV"] ||= PADRINO_ENV
+  ENV['RACK_ENV'] ||= ENV['PADRINO_ENV'] ||= PADRINO_ENV
 end
-RACK_ENV = ENV["RACK_ENV"] ||= "development"  unless defined?(RACK_ENV)
-PADRINO_ROOT = ENV["PADRINO_ROOT"] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
+RACK_ENV = ENV['RACK_ENV'] ||= 'development'  unless defined?(RACK_ENV)
+PADRINO_ROOT = ENV['PADRINO_ROOT'] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
   class ApplicationLoadError < RuntimeError # @private
@@ -122,7 +122,7 @@ module Padrino
     #
     def add_middleware(router)
       builder = Rack::Builder.new
-      middleware.each{ |mw,args,block| builder.use(mw, *args, &block) }
+      middleware.each { |mw, args, block| builder.use(mw, *args, &block) }
       builder.run(router)
       builder.to_app
     end
@@ -178,7 +178,7 @@ module Padrino
     #
     # @returns The root path of the loaded gem
     def gem(name, main_module)
-      _, spec = Gem.loaded_specs.find{|spec_pair| spec_pair[0] == name }
+      _, spec = Gem.loaded_specs.find {|spec_pair| spec_pair[0] == name }
       gems << spec
       modules << main_module
       spec.full_gem_path

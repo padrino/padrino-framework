@@ -7,7 +7,7 @@ module Padrino
     # during which no further action will be taken.
     #
     class Rack
-      def initialize(app, cooldown=1)
+      def initialize(app, cooldown = 1)
         @app = app
         @cooldown = cooldown
         @last = (Time.now - cooldown)

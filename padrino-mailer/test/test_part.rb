@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Part" do
-  describe "the part" do
+describe 'Part' do
+  describe 'the part' do
     it 'should use correctly parts' do
       message = Mail::Message.new do
         views   File.dirname(__FILE__) + '/fixtures/views/mailers'
@@ -90,7 +90,7 @@ describe "Part" do
         render  'multipart/basic'
       end
 
-      assert_match /^multipart\/alternative/, message['content-type'].value
+      assert_match(/^multipart\/alternative/, message['content-type'].value)
       assert_equal 2, message.parts.length
       assert_equal :plain, message.parts[0].content_type
       assert_equal 'plain text', message.parts[0].body.decoded.chomp

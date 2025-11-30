@@ -42,7 +42,7 @@ module Padrino
         #
         def add_project_module(controller)
           permission = "      role.project_module :#{controller}, '/#{controller}'\n"
-          inject_into_file destination_root(@admin_path+'/app.rb'),  permission, :after => "access_control.roles_for :admin do |role|\n"
+          inject_into_file destination_root(@admin_path+'/app.rb'),  permission, after: "access_control.roles_for :admin do |role|\n"
         end
 
         ##
@@ -68,7 +68,7 @@ module Padrino
         #   fetch_app_name('subapp')
         #
         # @api public
-        def fetch_app_name(app='app')
+        def fetch_app_name(app = 'app')
           app_path = destination_root(app, 'app.rb')
           @app_name ||= File.read(app_path).scan(/module\s(.*?)\n/).flatten[0]
         end

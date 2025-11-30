@@ -1,4 +1,4 @@
-MONGOID = (<<-MONGO) unless defined?(MONGOID)
+MONGOID = <<-MONGO unless defined?(MONGOID)
 # Connection.new takes host and port.
 
 host = 'localhost'
@@ -55,11 +55,11 @@ end
 MONGO
 
 def setup_orm
-  require_dependencies 'mongoid', :version => '>= 3.0.0'
+  require_dependencies 'mongoid', version: '>= 3.0.0'
   create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @project_name.underscore))
 end
 
-MONGOID_MODEL = (<<-MODEL) unless defined?(MONGOID_MODEL)
+MONGOID_MODEL = <<-MODEL unless defined?(MONGOID_MODEL)
 class !NAME!
   include Mongoid::Document
   include Mongoid::Timestamps # adds created_at and updated_at fields
@@ -76,9 +76,9 @@ end
 MODEL
 
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
-def create_model_file(name, options={})
+def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples = options[:fields].map { |value| value.split(':') }
   column_declarations = field_tuples.map { |field, kind| "field :#{field}, :type => #{kind.underscore.camelize}" }.join("\n  ")
   model_contents = MONGOID_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)

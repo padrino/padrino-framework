@@ -1,4 +1,4 @@
-RIPPLE_DB = (<<-RIAK) unless defined?(RIPPLE_DB)
+RIPPLE_DB = <<-RIAK unless defined?(RIPPLE_DB)
 development:
   http_port: 8098
   pb_port: 8087
@@ -23,7 +23,7 @@ production:
   pb_port: 8087
   host: localhost
 RIAK
-RIPPLE_CFG = (<<RIAK) unless defined?(RIPPLE_CFG)
+RIPPLE_CFG = <<RIAK unless defined?(RIPPLE_CFG)
 # encoding: utf-8
 
 require 'ripple'
@@ -35,11 +35,11 @@ RIAK
 
 def setup_orm
   require_dependencies 'ripple'
-  create_file("config/riak.yml", RIPPLE_DB.gsub(/!NAME!/, @project_name.underscore))
-  create_file("config/database.rb", RIPPLE_CFG)
+  create_file('config/riak.yml', RIPPLE_DB.gsub(/!NAME!/, @project_name.underscore))
+  create_file('config/database.rb', RIPPLE_CFG)
 end
 
-RIPPLE_MODEL = (<<-MODEL) unless defined?(RIPPLE_MODEL)
+RIPPLE_MODEL = <<-MODEL unless defined?(RIPPLE_MODEL)
 # encoding: utf-8
 
 class !NAME!
@@ -57,9 +57,9 @@ end
 
 MODEL
 # options => { :fields => ["title:string", "body:string"], :app => 'app' }
-def create_model_file(name, options={})
+def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
-  field_tuples = options[:fields].map { |value| value.split(":") }
+  field_tuples = options[:fields].map { |value| value.split(':') }
   column_declarations = field_tuples.map { |field, kind| "property :#{field}, #{kind.underscore.camelize}" }.join("\n  ")
   model_contents = RIPPLE_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)

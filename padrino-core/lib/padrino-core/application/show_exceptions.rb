@@ -8,13 +8,13 @@ module Padrino
 
     def frame_class(frame)
       if frame.filename =~ /lib\/sinatra.*\.rb|lib\/padrino.*\.rb/
-        "framework"
+        'framework'
       elsif (defined?(Gem) && frame.filename.include?(Gem.dir)) ||
             frame.filename =~ /\/bin\/(\w+)$/ ||
             frame.filename =~ /Ruby\/Gems/
-        "system"
+        'system'
       else
-        "app"
+        'app'
       end
     end
   end

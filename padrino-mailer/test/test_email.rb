@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/helper')
 
-describe "Email" do
+describe 'Email' do
   describe 'the mailer in an app' do
     it 'should send a basic inline email' do
       mock_app do
         register Padrino::Mailer
-        get "/" do
+        get '/' do
           email do
             from    'padrino@me.com'
             to      'padrino@you.com'
@@ -15,7 +15,7 @@ describe "Email" do
           end
         end
       end
-      get "/"
+      get '/'
       assert ok?
       email = pop_last_delivery
       assert_equal ['padrino@me.com'],    email.from
@@ -27,17 +27,17 @@ describe "Email" do
     it 'should send a basic inline from hash' do
       mock_app do
         register Padrino::Mailer
-        get "/" do
+        get '/' do
           email({
-            :from    => 'padrino@me.com',
-            :to      => 'padrino@you.com',
-            :subject => 'Hello there Padrino',
-            :body    => 'Body',
-            :via     => :test
+            from: 'padrino@me.com',
+            to: 'padrino@you.com',
+            subject: 'Hello there Padrino',
+            body: 'Body',
+            via: :test
           })
         end
       end
-      get "/"
+      get '/'
       assert ok?
       email = pop_last_delivery
       assert_equal ['padrino@me.com'],    email.from
@@ -49,7 +49,7 @@ describe "Email" do
     it 'should send an basic email with body template' do
       mock_app do
         register Padrino::Mailer
-        get "/" do
+        get '/' do
           email do
             views   File.dirname(__FILE__) + '/fixtures'
             from    'padrino@me.com'
@@ -60,7 +60,7 @@ describe "Email" do
           end
         end
       end
-      get "/"
+      get '/'
       assert ok?
       email = pop_last_delivery
       assert_equal ['padrino@me.com'],    email.from
@@ -75,7 +75,7 @@ describe "Email" do
         set :views, File.dirname(__FILE__) + '/fixtures/views'
         set :delivery_method, :test
         mailer :alternate do
-          defaults :from => 'padrino@from.com', :to => 'padrino@to.com'
+          defaults from: 'padrino@from.com', to: 'padrino@to.com'
           email :foo do
             to 'padrino@different.com'
             subject 'Hello there again Padrino'
@@ -83,13 +83,13 @@ describe "Email" do
             render  'alternate/foo'
           end
         end
-        get("/") { deliver(:alternate, :foo) }
+        get('/') { deliver(:alternate, :foo) }
       end
-      get "/"
+      get '/'
       assert ok?
       email = pop_last_delivery
-      assert_equal ['padrino@from.com'],    email.from, "should have used default value"
-      assert_equal ['padrino@different.com'],   email.to, "should have overwritten default value"
+      assert_equal ['padrino@from.com'],    email.from, 'should have used default value'
+      assert_equal ['padrino@different.com'],   email.to, 'should have overwritten default value'
       assert_equal 'Hello there again Padrino', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
@@ -99,7 +99,7 @@ describe "Email" do
         register Padrino::Mailer
         set :delivery_method, :test
         set :views, File.dirname(__FILE__) + '/fixtures/views'
-        set :mailer_defaults, :from => 'padrino@from.com', :to => 'padrino@to.com', :subject => "This is a test"
+        set :mailer_defaults, from: 'padrino@from.com', to: 'padrino@to.com', subject: 'This is a test'
         mailer :alternate do
           email :foo do
             to 'padrino@different.com'
@@ -107,13 +107,13 @@ describe "Email" do
             render  'alternate/foo'
           end
         end
-        get("/") { deliver(:alternate, :foo) }
+        get('/') { deliver(:alternate, :foo) }
       end
-      get "/"
+      get '/'
       assert ok?
       email = pop_last_delivery
-      assert_equal ['padrino@from.com'],    email.from, "should have used default value"
-      assert_equal ['padrino@different.com'],   email.to, "should have overwritten default value"
+      assert_equal ['padrino@from.com'],    email.from, 'should have used default value'
+      assert_equal ['padrino@different.com'],   email.to, 'should have overwritten default value'
       assert_equal 'This is a test', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
@@ -132,16 +132,16 @@ describe "Email" do
             render  'alternate/foo'
           end
         end
-        get("/") { deliver(:alternate, :foo) }
+        get('/') { deliver(:alternate, :foo) }
       end
-      get "/"
+      get '/'
       assert ok?
       email = pop_last_delivery
       assert_equal ['padrino@me.com'],    email.from
       assert_equal ['padrino@you.com'],   email.to
       assert_equal 'Hello there Padrino', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
-      assert_match /TestMailer/, email.delivery_method.to_s
+      assert_match(/TestMailer/, email.delivery_method.to_s)
     end
 
     it 'should raise an error if there are two messages with the same name' do

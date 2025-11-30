@@ -27,10 +27,10 @@ module Padrino
     # @option options [Symbol] :app_root (Directory of :app_file)
     # @option options [Symbol] :gem The gem to load the app from (Detected from name)
     #
-    def initialize(name, options={})
+    def initialize(name, options = {})
       @name      = name.to_s
       @app_class = options[:app_class] || Inflections.camelize(@name)
-      @gem       = options[:gem]       || Inflections.underscore(@app_class.split("::").first)
+      @gem       = options[:gem]       || Inflections.underscore(@app_class.split('::').first)
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
       ensure_app_file! || ensure_app_object!
@@ -39,8 +39,8 @@ module Padrino
         @app_obj.mounter_options = options
       end
       @app_root  = options[:app_root]  || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
-      @uri_root  = "/"
-      @cascade   = options[:cascade] ? true == options[:cascade] ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
+      @uri_root  = '/'
+      @cascade   = options[:cascade] ? options[:cascade] == true ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
       Padrino::Reloader.exclude_constants << @app_class
     end
 
@@ -113,7 +113,7 @@ module Padrino
         app_obj.public_folder = Padrino.root('public', uri_root) unless public_folder_exists
       end
       app_obj.setup_application! # Initializes the app here with above settings.
-      router.map(:to => app_obj, :path => uri_root, :host => app_data.app_host)
+      router.map(to: app_obj, path: uri_root, host: app_data.app_host)
     end
 
     ###
@@ -138,14 +138,14 @@ module Padrino
         route_name = route.name.to_s
         route_name =
           if route.controller
-            route_name.split(" ", 2).map{|name| ":#{name}" }.join(", ")
+            route_name.split(' ', 2).map {|name| ":#{name}" }.join(', ')
           else
             ":#{route_name}"
           end
         name_array = "(#{route_name})"
         original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
         full_path = File.join(uri_root, original_path)
-        OpenStruct.new(:verb => request_method, :identifier => route.name, :name => name_array, :path => full_path)
+        OpenStruct.new(verb: request_method, identifier: route.name, name: name_array, path: full_path)
       }.compact
     end
 
@@ -164,7 +164,7 @@ module Padrino
     #
     def app_constant
       klass = Object
-      for piece in app_class.split("::")
+      app_class.split('::').each do |piece|
         piece = piece.to_sym
         if klass.const_defined?(piece, false)
           klass = klass.const_get(piece)
@@ -196,15 +196,15 @@ module Padrino
       candidates  = []
       candidates << app_const.app_file if app_const.respond_to?(:app_file)
       candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
-      candidates << Padrino.mounted_root(name.downcase, "app.rb")
-      simple_name = name.split("::").last.downcase
-      mod_name = name.split("::")[0..-2].join("::")
+      candidates << Padrino.mounted_root(name.downcase, 'app.rb')
+      simple_name = name.split('::').last.downcase
+      mod_name = name.split('::')[0..-2].join('::')
       Padrino.modules.each do |mod|
         if mod.name == mod_name
-          candidates << mod.root(simple_name, "app.rb")
+          candidates << mod.root(simple_name, 'app.rb')
         end
       end
-      candidates << Padrino.root("app", "app.rb")
+      candidates << Padrino.root('app', 'app.rb')
       candidates.find { |candidate| File.exist?(candidate) }
     end
 
@@ -235,7 +235,7 @@ module Padrino
     #   the root to the mounted apps base directory.
     #
     def mounted_root(*args)
-      Padrino.root(@mounted_root ||= "", *args)
+      Padrino.root(@mounted_root ||= '', *args)
     end
 
     ##
@@ -263,7 +263,7 @@ module Padrino
     # @example
     #   Padrino.mount("blog_app").to("/blog")
     #
-    def mount(name, options={})
+    def mount(name, options = {})
       Mounter.new(name, options)
     end
   end

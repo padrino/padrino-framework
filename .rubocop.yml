@@ -2,93 +2,123 @@ require:
   - rubocop-minitest
 
 AllCops:
-  NewCops: disable
+  TargetRubyVersion: 2.7
+#   DisabledByDefault: true
 
-Metrics:
+# Style/HashSyntax:
+#   Enabled: true
+
+## Custom settings according to the current codebase
+Lint/MissingSuper:
+  AllowedParentClasses:
+    - Rackup::Server
+
+
+## Won't change without breaking changes or major refactoring
+Style/OptionalBooleanParameter:
   Enabled: false
-Naming:
+
+Style/RescueModifier:
   Enabled: false
-Layout:
+
+Style/StderrPuts:
   Enabled: false
-Lint/AssignmentInCondition:
-  Enabled: false
-Lint/UnusedMethodArgument:
-  Enabled: false
-Style/AccessorGrouping:
-  Enabled: false
-Style/Alias:
-  Enabled: false
-Style/ArrayJoin:
-  Enabled: false
-Style/BlockDelimiters:
-  Enabled: false
-Style/CharacterLiteral:
-  Enabled: false
-Style/ClassAndModuleChildren:
-  Enabled: false
-Style/ClassCheck:
-  Enabled: false
-Style/ClassVars:
-  Enabled: false
-Style/CommentedKeyword:
-  Enabled: false
-Style/Documentation:
-  Enabled: false
-Style/EmptyCaseCondition:
-  Enabled: false
-Style/FormatString:
-  Enabled: false
-Style/FormatStringToken:
-  Enabled: false
-Style/FrozenStringLiteralComment:
-  Enabled: false
-Style/GuardClause:
-  Enabled: false
-Style/HashSyntax:
-  Enabled: false
-Style/IfInsideElse:
-  Enabled: false
-Style/IfUnlessModifier:
-  Enabled: false
-Style/IfUnlessModifierOfIfUnless:
-  Enabled: false
-Style/MultilineIfModifier:
-  Enabled: false
-Style/MultilineTernaryOperator:
-  Enabled: false
-Style/NestedTernaryOperator:
-  Enabled: false
-Style/MutableConstant:
-  Enabled: false
-Style/NumericPredicate:
-  Enabled: false
-Style/ParallelAssignment:
-  Enabled: false
-Style/PreferredHashMethods:
-  Enabled: false
-Style/RedundantSelf:
-  Enabled: false
-Style/RegexpLiteral:
-  Enabled: false
-Style/Semicolon:
-  Enabled: false
-Style/SignalException:
-  Enabled: false
-Style/SingleLineMethods:
-  Enabled: false
-Style/SoleNestedConditional:
-  Enabled: false
-Style/StringConcatenation:
-  Enabled: false
-Style/StringLiterals:
-  Enabled: false
-Style/StringLiteralsInInterpolation:
-  Enabled: false
-Style/SymbolArray:
-  Enabled: false
-Style/TrailingCommaInHashLiteral:
-  Enabled: false
-Style/WordArray:
-  Enabled: false
-Style/ZeroLengthPredicate:
-  Enabled: false
+
+
+## It's not really necessary to address about these
+Style/ModuleFunction:
+  Severity: warning
+
+Style/MultipleComparison:
+  Severity: warning
+
+Style/RescueStandardError:
+  Severity: warning
+
+Style/SpecialGlobalVars:
+  Severity: warning
+
+
+## We should address these eventually
+Style/CaseEquality:
+  Exclude:
+    - padrino-core/lib/padrino-core/filter.rb
+    - padrino-core/lib/padrino-core/path_router/compiler.rb
+
+Style/CombinableLoops:
+  Exclude:
+    - padrino-gen/lib/padrino-gen/padrino-tasks/mongoid.rb
+
+Style/Encoding:
+  Exclude:
+    - padrino-admin/padrino-admin.gemspec
+    - padrino-cache/padrino-cache.gemspec
+    - padrino-gen/lib/padrino-gen/generators/project/config.ru
+    - padrino-gen/padrino-gen.gemspec
+    - padrino-helpers/padrino-helpers.gemspec
+    - padrino-mailer/padrino-mailer.gemspec
+    - padrino-performance/padrino-performance.gemspec
+    - padrino-support/padrino-support.gemspec
+    - padrino/padrino.gemspec
+
+Style/EvalWithLocation:
+  Exclude:
+    - padrino-core/lib/padrino-core/cli/base.rb
+
+Lint/SendWithMixinArgument:
+  Exclude:
+    - padrino-performance/lib/suites/json.rb
+
+Lint/ScriptPermission:
+  Exclude:
+    - padrino-admin/padrino-admin.gemspec
+    - padrino-cache/padrino-cache.gemspec
+    - padrino-gen/lib/padrino-gen/generators/project/config.ru
+    - padrino-gen/padrino-gen.gemspec
+    - padrino-helpers/padrino-helpers.gemspec
+    - padrino-mailer/padrino-mailer.gemspec
+    - padrino-performance/padrino-performance.gemspec
+    - padrino-support/padrino-support.gemspec
+    - padrino/padrino.gemspec
+
+Lint/RescueException:
+  Exclude:
+    - padrino-core/lib/padrino-core/application/routing.rb
+    - padrino-core/lib/padrino-core/loader.rb
+    - padrino-core/lib/padrino-core/reloader.rb
+
+Lint/IneffectiveAccessModifier:
+  Exclude:
+    - padrino-core/lib/padrino-core/cli/base.rb
+    - padrino-core/lib/padrino-core/cli/launcher.rb
+    - padrino-helpers/lib/padrino-helpers/form_builder/abstract_form_builder.rb
+
+Lint/ShadowedException:
+  Exclude:
+    - padrino-core/lib/padrino-core/cli/binstub.rb
+
+Lint/UselessMethodDefinition:
+  Exclude:
+    - padrino-core/test/fixtures/apps/mountable_apps/rack_apps.rb
+
+
+## Tests exclusions
+Naming/FileName:
+  Exclude:
+    - '**/test/**/*'
+
+Style/GlobalVars:
+  Exclude:
+    - '**/test/**/*'
+
+Lint/RaiseException:
+  Exclude:
+    - '**/test/**/*'
+
+Lint/EmptyFile:
+  Exclude:
+    - '**/test/**/*'
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - '**/test/**/*'

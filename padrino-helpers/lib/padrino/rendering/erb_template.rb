@@ -3,9 +3,9 @@ module Padrino
     class SafeERB < ::ERB
       class Compiler < ::ERB::Compiler
         def add_insert_cmd(out, content)
-          out.push("@__in_ruby_literal = true")
+          out.push('@__in_ruby_literal = true')
           super
-          out.push("@__in_ruby_literal = false")
+          out.push('@__in_ruby_literal = false')
         end
       end
 
@@ -33,14 +33,14 @@ module Padrino
       if ERB.instance_method(:initialize).parameters.assoc(:key) # Ruby 2.6+
         def prepare
           @outvar = options[:outvar] || self.class.default_output_variable
-          options[:trim] = '<>' if !(options[:trim] == false) && (options[:trim].nil? || options[:trim] == true)
+          options[:trim] = '<>' if options[:trim] != false && (options[:trim].nil? || options[:trim] == true)
 
           @engine = SafeERB.new(data, trim_mode: options[:trim], eoutvar: @outvar)
         end
       else
         def prepare
           @outvar = options[:outvar] || self.class.default_output_variable
-          options[:trim] = '<>' if !(options[:trim] == false) && (options[:trim].nil? || options[:trim] == true)
+          options[:trim] = '<>' if options[:trim] != false && (options[:trim].nil? || options[:trim] == true)
 
           @engine = SafeERB.new(data, options[:safe], options[:trim], @outvar)
         end
@@ -58,6 +58,6 @@ end
 Tilt.prefer(Padrino::Rendering::ERBTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
-  :safe_buffer => true,
-  :outvar => '@_out_buf',
+  safe_buffer: true,
+  outvar: '@_out_buf',
 }

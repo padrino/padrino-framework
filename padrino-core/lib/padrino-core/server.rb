@@ -7,7 +7,7 @@ module Padrino
   #   Padrino.run! # with these defaults => host: "127.0.0.1", port: "3000", adapter: the first found
   #   Padrino.run!("0.0.0.0", "4000", "mongrel") # use => host: "0.0.0.0", port: "4000", adapter: "mongrel"
   #
-  def self.run!(options={})
+  def self.run!(options = {})
     Padrino.load!
     Server.start(*detect_application(options))
   end
@@ -31,13 +31,13 @@ module Padrino
   # This module builds a Padrino server to run the project based on available handlers.
   #
   class Server < Rackup::Server
-    DEFAULT_ADDRESS = { :Host => '127.0.0.1', :Port => 3000 }
+    DEFAULT_ADDRESS = { Host: '127.0.0.1', Port: 3000 }
 
     # Server Handlers
     Handlers = [:thin, :puma, :'spider-gazelle', :mongrel, :trinidad, :webrick]
 
     # Starts the application on the available server with specified options.
-    def self.start(app, options={})
+    def self.start(app, options = {})
       options = Utils.symbolize_keys(options.to_hash)
       options.update(parse_server_options(options.delete(:options)))
       options.update(detect_address(options))
@@ -60,7 +60,7 @@ module Padrino
         server.threaded = true if server.respond_to?(:threaded=)
       end
     ensure
-      puts "<= Padrino leaves the gun, takes the cannoli" unless options[:daemonize]
+      puts '<= Padrino leaves the gun, takes the cannoli' unless options[:daemonize]
     end
 
     # The application the server will run.
@@ -95,14 +95,14 @@ module Padrino
     # Parses an array of server options.
     #
     def self.parse_server_options(options)
-      parsed_server_options = Array(options).flat_map{ |option| option.split('=', 2) }
+      parsed_server_options = Array(options).flat_map { |option| option.split('=', 2) }
       Utils.symbolize_keys(Hash[*parsed_server_options])
     end
 
     # Detects Host and Port for Rack server.
     #
     def self.detect_address(options)
-      address = DEFAULT_ADDRESS.merge(options.select{ |key| [:Host, :Port].include?(key) })
+      address = DEFAULT_ADDRESS.merge(options.select { |key| [:Host, :Port].include?(key) })
       address[:Host] = options[:host] if options[:host]
       address[:Port] = options[:port] if options[:port]
       address

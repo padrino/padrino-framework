@@ -17,11 +17,11 @@ module Padrino
       # @example
       #   project :test => :shoulda, :orm => :activerecord, :renderer => "haml"
       #
-      def project(options={})
-        components = options.sort_by { |k, v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
+      def project(options = {})
+        components = options.sort_by { |k, _v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
         params = [name, *components].push("-r=#{destination_root("../")}")
         say "=> Executing: padrino-gen project #{params.join(" ")}", :magenta
-        Padrino.bin_gen(*params.unshift("project"))
+        Padrino.bin_gen(*params.unshift('project'))
       end
 
       ##
@@ -37,8 +37,8 @@ module Padrino
       #   generate :controller, "posts get:index get:new post:new"
       #   generate :migration, "AddEmailToUser email:string"
       #
-      def generate(type, arguments="")
-        params = arguments.split(" ").push("-r=#{destination_root}")
+      def generate(type, arguments = '')
+        params = arguments.split(' ').push("-r=#{destination_root}")
         params.push("--app=#{@_app_name}") if @_app_name
         say "=> Executing: padrino-gen #{type} #{params.join(" ")}", :magenta
         Padrino.bin_gen(*params.unshift(type))
@@ -54,7 +54,7 @@ module Padrino
       #   rake "custom task1 task2"
       #
       def rake(command)
-        Padrino.bin("rake", command, "-c=#{destination_root}")
+        Padrino.bin('rake', command, "-c=#{destination_root}")
       end
 
       ##
@@ -96,7 +96,7 @@ module Padrino
       #
       def git(*args)
         FileUtils.cd(destination_root) do
-          cmd = "git %s" % args.join(' ')
+          cmd = 'git %s' % args.join(' ')
           say cmd, :green
           system cmd
         end
@@ -126,7 +126,7 @@ module Padrino
           when template_file =~ %r{^https?://} && template_file !~ /gist/
             template_file
           when template_file =~ /gist/ && template_file !~ /raw/
-            raw_link, _ = *URI.open(template_file) { |io| io.read.scan(/<a\s+href\s?\=\"(.*?)\"\>raw/) }
+            raw_link, = *URI.open(template_file) { |io| io.read.scan(/<a\s+href\s?="(.*?)">raw/) }
             raw_link ? "https://gist.github.com#{raw_link[0]}" : template_file
           when File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
             "https://raw.github.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
@@ -135,7 +135,7 @@ module Padrino
           end
         begin
           self.apply(template_path)
-        rescue => error
+        rescue StandardError => error
           say("The template at #{template_path} could not be loaded: #{error.message}", :red)
         end
       end

@@ -18,8 +18,8 @@ module Kernel
   def load_fixture(file)
     Object.send(:remove_const, :Account)  if defined?(Account)
     Object.send(:remove_const, :Category) if defined?(Category)
-    file += ".rb" if file !~ /.rb$/
-    capture_io { load File.join(File.dirname(__FILE__), "fixtures", file) }
+    file += '.rb' if file !~ /.rb$/
+    capture_io { load File.join(File.dirname(__FILE__), 'fixtures', file) }
   end
 end
 
@@ -29,10 +29,10 @@ class Minitest::Spec
   # Sets up a Sinatra::Base subclass defined with the block
   # given. Used in setup or individual spec methods to establish
   # the application.
-  def mock_app(base=Padrino::Application, &block)
-    @app = Sinatra.new base do
+  def mock_app(base = Padrino::Application, &block)
+    @app = Sinatra.new(base) do
       register Padrino::Helpers
-      instance_eval &block
+      instance_eval(&block)
     end
   end
 

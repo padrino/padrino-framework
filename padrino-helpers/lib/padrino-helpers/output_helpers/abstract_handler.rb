@@ -16,6 +16,7 @@ module Padrino
         #   @handler.engine_matches?(block) => true
         #
         def engine_matches?(block)
+          false
         end
 
         ##
@@ -29,11 +30,12 @@ module Padrino
         #   @handler.capture_from_template(&block) => "...html..."
         #
         def capture_from_template(*args, &block)
-          self.output_buffer, _buf_was = SafeBuffer.new, self.output_buffer
+          self.output_buffer, buf_was = SafeBuffer.new, self.output_buffer
           raw = yield(*args)
           captured = template.instance_variable_get(:@_out_buf)
-          self.output_buffer = _buf_was
           engine_matches?(block) && !captured.empty? ? captured : raw.to_s
+        ensure
+          self.output_buffer = buf_was
         end
 
         ##
@@ -46,7 +48,7 @@ module Padrino
         # @example
         #   @handler.concat_to_template("This will be output to the template buffer")
         #
-        def concat_to_template(text="", context=nil)
+        def concat_to_template(text = '', context = nil)
           text
         end
 

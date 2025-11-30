@@ -2,7 +2,7 @@ require 'cgi'
 
 module Padrino
   module Utils
-    extend self
+    module_function
 
     ##
     # Builds an URI query from a Hash or any Object.
@@ -18,7 +18,7 @@ module Padrino
       case object
       when Hash
         object.map do |key, value|
-          next if value == {} || value == []
+          next if [{}, []].include?(value)
           build_uri_query(value, namespace ? "#{namespace}[#{key}]" : key)
         end.compact.join('&')
       when Array
@@ -38,7 +38,7 @@ module Padrino
     def deep_dup(object)
       case object
       when Array
-        object.map{ |value| deep_dup(value) }
+        object.map { |value| deep_dup(value) }
       when Hash
         object.each_with_object(object.dup.clear) do |(key, value), new_hash|
           new_hash[deep_dup(key)] = deep_dup(value)

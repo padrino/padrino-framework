@@ -1,3 +1,4 @@
+require 'English'
 module Padrino
   class << self
     def before_load(&block)
@@ -14,11 +15,11 @@ module Padrino
 
     def perf_memusage_command
       if Performance::OS.mac?
-        "vmmap #{$$} | tail -5"
+        "vmmap #{$PROCESS_ID} | tail -5"
       elsif Performance::OS.linux?
-        "pmap #{$$} | tail -1"
+        "pmap #{$PROCESS_ID} | tail -1"
       elsif Performance::OS.windows?
-        "tasklist /FI \"PID eq #{$$}\""
+        "tasklist /FI \"PID eq #{$PROCESS_ID}\""
       end
     end
   end

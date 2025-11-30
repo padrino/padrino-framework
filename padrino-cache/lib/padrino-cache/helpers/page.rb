@@ -88,7 +88,7 @@ module Padrino
         #   end
         #
         def cache_key(name = nil, &block)
-          fail "Can not provide both cache_key and a block" if name && block
+          fail 'Can not provide both cache_key and a block' if name && block
           @route.cache_key = name || block
         end
 
@@ -117,7 +117,7 @@ module Padrino
           route_cache_key = resolve_cache_key || env['PATH_INFO']
 
           value = settings.cache[route_cache_key]
-          logger.debug "GET Cache", began_at, route_cache_key if defined?(logger) && value
+          logger.debug 'GET Cache', began_at, route_cache_key if defined?(logger) && value
 
           value
         end
@@ -129,13 +129,13 @@ module Padrino
           route_cache_key = resolve_cache_key || env['PATH_INFO']
 
           content = {
-            :body         => @_response_buffer,
-            :content_type => response.content_type
+            body: @_response_buffer,
+            content_type: response.content_type
           }
 
-          settings.cache.store(route_cache_key, content, :expires => cache_expires)
+          settings.cache.store(route_cache_key, content, expires: cache_expires)
 
-          logger.debug "SET Cache", began_at, route_cache_key if defined?(logger)
+          logger.debug 'SET Cache', began_at, route_cache_key if defined?(logger)
         end
 
         ##

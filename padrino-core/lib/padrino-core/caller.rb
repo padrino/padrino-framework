@@ -45,8 +45,8 @@ module Padrino
   #
   def self.caller_files
     caller(1).
-      map    { |line| line.split(/:(?=\d|in )/)[0,2] }.
-      reject { |file,_line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }.
-      map    { |file,_line| file }
+      map    { |line| line.split(/:(?=\d|in )/)[0, 2] }.
+      reject { |file, _line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }.
+      map    { |file, _line| file }
   end
 end

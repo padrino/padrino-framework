@@ -6,6 +6,7 @@ module Padrino
     begin
       return if Bundler.definition.missing_specs.empty?
     rescue NameError, NoMethodError, Bundler::GemfileNotFound
+      # Move forward
     end
 
     project_root = Dir.pwd
