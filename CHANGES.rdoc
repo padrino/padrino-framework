@@ -1,5 +1,9 @@
 = CHANGES
 
+== 0.16.0.pre5 (2025-12-01)
+
+- NEW Code modernization. Codebase is now passing Rubocop (11 offenses only) and generator's templates are using modern syntax
+
 == 0.16.0.pre4 (2025-11-19)
 
 - FIX Specs are now passing for Ruby 3.4 (@crashtech)
