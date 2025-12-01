@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require_relative 'helper'
+require_relative 'fixtures/markup_app/app'
 
 describe 'FormHelpers' do
   include Padrino::Helpers::FormHelpers
@@ -32,30 +32,30 @@ describe 'FormHelpers' do
     end
 
     it 'should display correct form with remote and method is put' do
-      actual_html = form_tag('/update', "accept-charset": 'UTF-8', method: 'put', remote: true) { 'Demo' }
-      assert_html_has_tag(actual_html, :form, 'data-remote' => 'true', :"accept-charset" => 'UTF-8')
+      actual_html = form_tag('/update', 'accept-charset' => 'UTF-8', method: 'put', remote: true) { 'Demo' }
+      assert_html_has_tag(actual_html, :form, 'data-remote' => 'true', 'accept-charset' => 'UTF-8')
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', value: 'put')
     end
 
     it 'should display correct form with method :put' do
-      actual_html = form_tag('/update', "accept-charset": 'UTF-8', class: 'put-form', method: 'put') { 'Demo' }
-      assert_html_has_tag(actual_html, :form, class: 'put-form', "accept-charset": 'UTF-8', method: 'post')
+      actual_html = form_tag('/update', 'accept-charset' => 'UTF-8', class: 'put-form', method: 'put') { 'Demo' }
+      assert_html_has_tag(actual_html, :form, class: 'put-form', 'accept-charset' => 'UTF-8', method: 'post')
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', value: 'put')
     end
 
     it 'should display correct form with method :delete and charset' do
-      actual_html = form_tag('/remove', "accept-charset": 'UTF-8', class: 'delete-form', method: 'delete') { 'Demo' }
-      assert_html_has_tag(actual_html, :form, class: 'delete-form', "accept-charset": 'UTF-8', method: 'post')
+      actual_html = form_tag('/remove', 'accept-charset' => 'UTF-8', class: 'delete-form', method: 'delete') { 'Demo' }
+      assert_html_has_tag(actual_html, :form, class: 'delete-form', 'accept-charset' => 'UTF-8', method: 'post')
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', value: 'delete')
     end
 
     it 'should display correct form with charset' do
-      actual_html = form_tag('/charset', "accept-charset": 'UTF-8', class: 'charset-form') { 'Demo' }
-      assert_html_has_tag(actual_html, :form, class: 'charset-form', "accept-charset": 'UTF-8', method: 'post')
+      actual_html = form_tag('/charset', 'accept-charset' => 'UTF-8', class: 'charset-form') { 'Demo' }
+      assert_html_has_tag(actual_html, :form, class: 'charset-form', 'accept-charset' => 'UTF-8', method: 'post')
     end
 
     it 'should display correct form with multipart encoding' do
-      actual_html = form_tag('/remove', "accept-charset": 'UTF-8', multipart: true) { 'Demo' }
+      actual_html = form_tag('/remove', 'accept-charset' => 'UTF-8', multipart: true) { 'Demo' }
       assert_html_has_tag(actual_html, :form, enctype: 'multipart/form-data')
     end
 
@@ -263,17 +263,17 @@ describe 'FormHelpers' do
       assert_response_has_tag 'form.simple-form label', count: 9
       assert_response_has_tag 'form.simple-form label', content: 'Username', for: 'username'
       assert_response_has_tag 'form.simple-form label', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.simple-form label', content: 'Gender', for: 'gender'
+      assert_response_has_tag 'form.simple-form label', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in erb for advanced form' do
       get '/erb/form_tag'
       assert_response_has_tag 'form.advanced-form label', count: 11
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Nickname', for: 'username'
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.advanced-form label.about', content: 'About Me', for: 'about'
-      assert_response_has_tag 'form.advanced-form label.photo', content: 'Photo'   , for: 'photo'
-      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender'   , for: 'gender'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Nickname', for: 'username'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Password', for: 'password'
+      assert_response_has_tag 'form.advanced-form label.about',  content: 'About Me', for: 'about'
+      assert_response_has_tag 'form.advanced-form label.photo',  content: 'Photo',    for: 'photo'
+      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in haml for simple form' do
@@ -281,17 +281,17 @@ describe 'FormHelpers' do
       assert_response_has_tag 'form.simple-form label', count: 9
       assert_response_has_tag 'form.simple-form label', content: 'Username', for: 'username'
       assert_response_has_tag 'form.simple-form label', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.simple-form label', content: 'Gender', for: 'gender'
+      assert_response_has_tag 'form.simple-form label', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in haml for advanced form' do
       get '/haml/form_tag'
       assert_response_has_tag 'form.advanced-form label', count: 11
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Nickname', for: 'username'
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.advanced-form label.about', content: 'About Me', for: 'about'
-      assert_response_has_tag 'form.advanced-form label.photo', content: 'Photo'   , for: 'photo'
-      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender'   , for: 'gender'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Nickname', for: 'username'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Password', for: 'password'
+      assert_response_has_tag 'form.advanced-form label.about',  content: 'About Me', for: 'about'
+      assert_response_has_tag 'form.advanced-form label.photo',  content: 'Photo',    for: 'photo'
+      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in slim for simple form' do
@@ -299,17 +299,17 @@ describe 'FormHelpers' do
       assert_response_has_tag 'form.simple-form label', count: 9
       assert_response_has_tag 'form.simple-form label', content: 'Username', for: 'username'
       assert_response_has_tag 'form.simple-form label', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.simple-form label', content: 'Gender', for: 'gender'
+      assert_response_has_tag 'form.simple-form label', content: 'Gender',   for: 'gender'
     end
 
     it 'should display label tag in slim for advanced form' do
       get '/slim/form_tag'
       assert_response_has_tag 'form.advanced-form label', count: 11
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Nickname', for: 'username'
-      assert_response_has_tag 'form.advanced-form label.first', content: 'Password', for: 'password'
-      assert_response_has_tag 'form.advanced-form label.about', content: 'About Me', for: 'about'
-      assert_response_has_tag 'form.advanced-form label.photo', content: 'Photo'   , for: 'photo'
-      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender'   , for: 'gender'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Nickname', for: 'username'
+      assert_response_has_tag 'form.advanced-form label.first',  content: 'Password', for: 'password'
+      assert_response_has_tag 'form.advanced-form label.about',  content: 'About Me', for: 'about'
+      assert_response_has_tag 'form.advanced-form label.photo',  content: 'Photo',    for: 'photo'
+      assert_response_has_tag 'form.advanced-form label.gender', content: 'Gender',   for: 'gender'
     end
   end
 
@@ -642,7 +642,7 @@ describe 'FormHelpers' do
 
   describe 'for #select_tag method' do
     it 'should display select tag in ruby' do
-      actual_html = select_tag(:favorite_color, options: ['green', 'blue', 'black'], include_blank: true)
+      actual_html = select_tag(:favorite_color, options: %w[green blue black], include_blank: true)
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')
       assert_html_has_tag(actual_html, 'select option:first-child', content: '')
       assert_html_has_tag(actual_html, 'select option', content: 'green', value: 'green')
@@ -651,7 +651,7 @@ describe 'FormHelpers' do
     end
 
     it 'should display select tag in ruby with extended attributes' do
-      actual_html = select_tag(:favorite_color, disabled: true, options: ['only', 'option'])
+      actual_html = select_tag(:favorite_color, disabled: true, options: %w[only option])
       assert_html_has_tag(actual_html, :select, disabled: 'disabled')
     end
 
@@ -664,14 +664,14 @@ describe 'FormHelpers' do
     end
 
     it 'should include blank for grouped options' do
-      opts = { 'Red'  => ['Rose', 'Fire'], 'Blue' => ['Sky', 'Sea'] }
-      actual_html = select_tag( 'color', grouped_options: opts, include_blank: true )
+      opts = { 'Red' => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
+      actual_html = select_tag('color', grouped_options: opts, include_blank: true)
       assert_html_has_tag(actual_html, 'select option:first-child', value: '', content: '')
     end
 
     it 'should include blank as caption' do
-      opts = { 'Red'  => ['Rose', 'Fire'], 'Blue' => ['Sky', 'Sea'] }
-      actual_html = select_tag( 'color', grouped_options: opts, include_blank: 'Choose your destiny' )
+      opts = { 'Red' => %w[Rose Fire], 'Blue' => %w[Sky Sea] }
+      actual_html = select_tag('color', grouped_options: opts, include_blank: 'Choose your destiny')
       assert_html_has_tag(actual_html, 'select option:first-child', value: '', content: 'Choose your destiny')
       assert_html_has_no_tag(actual_html, 'select[include_blank]')
     end
@@ -681,11 +681,11 @@ describe 'FormHelpers' do
         ['Friends', ['Yoda', ['Obiwan', 2]]],
         ['Enemies', ['Palpatine', ['Darth Vader', 3]]]
       ]
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :optgroup, label: 'Friends')
       assert_html_has_tag(actual_html, :option,   value: 'Yoda', content: 'Yoda')
-      assert_html_has_tag(actual_html, :option,   value: '2',  content: 'Obiwan')
+      assert_html_has_tag(actual_html, :option,   value: '2', content: 'Obiwan')
       assert_html_has_tag(actual_html, :optgroup, label: 'Enemies')
       assert_html_has_tag(actual_html, :option,   value: 'Palpatine', content: 'Palpatine')
       assert_html_has_tag(actual_html, :option,   value: '3', content: 'Darth Vader')
@@ -694,9 +694,9 @@ describe 'FormHelpers' do
     it 'should display select tag with grouped options for a nested array and accept disabled groups' do
       opts = [
         ['Friends', ['Yoda', ['Obiwan', 2]]],
-        ['Enemies', ['Palpatine', ['Darth Vader', 3]], {disabled: true}]
+        ['Enemies', ['Palpatine', ['Darth Vader', 3]], { disabled: true }]
       ]
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :option,   disabled: 'disabled', count: 0)
       assert_html_has_tag(actual_html, :optgroup, disabled: 'disabled', count: 1)
@@ -705,10 +705,10 @@ describe 'FormHelpers' do
 
     it 'should display select tag with grouped options for a nested array and accept disabled groups and/or with disabled options' do
       opts = [
-        ['Friends', ['Yoda', ['Obiwan', 2, {disabled: true}]]],
-        ['Enemies', [['Palpatine', 'Palpatine', {disabled: true}], ['Darth Vader', 3]], {disabled: true}]
+        ['Friends', ['Yoda', ['Obiwan', 2, { disabled: true }]]],
+        ['Enemies', [['Palpatine', 'Palpatine', { disabled: true }], ['Darth Vader', 3]], { disabled: true }]
       ]
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :option,   disabled: 'disabled', count: 2)
       assert_html_has_tag(actual_html, :optgroup, disabled: 'disabled', count: 1)
@@ -722,7 +722,7 @@ describe 'FormHelpers' do
         'Friends' => ['Yoda', ['Obiwan', 2]],
         'Enemies' => ['Palpatine', ['Darth Vader', 3]]
       }
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :optgroup, label: 'Friends')
       assert_html_has_tag(actual_html, :option,   value: 'Yoda', content: 'Yoda')
@@ -734,10 +734,10 @@ describe 'FormHelpers' do
 
     it 'should display select tag with grouped options for a hash and accept disabled groups and/or with disabled options' do
       opts = {
-        'Friends' => ['Yoda', ['Obiwan', 2, {disabled: true}]],
-        'Enemies' => [['Palpatine', 'Palpatine', {disabled: true}], ['Darth Vader', 3], {disabled: true}]
+        'Friends' => ['Yoda', ['Obiwan', 2, { disabled: true }]],
+        'Enemies' => [['Palpatine', 'Palpatine', { disabled: true }], ['Darth Vader', 3], { disabled: true }]
       }
-      actual_html = select_tag( 'name', grouped_options: opts )
+      actual_html = select_tag('name', grouped_options: opts)
       assert_html_has_tag(actual_html, :select,   name: 'name')
       assert_html_has_tag(actual_html, :option,   disabled: 'disabled', count: 2)
       assert_html_has_tag(actual_html, :optgroup, disabled: 'disabled', count: 1)
@@ -748,10 +748,10 @@ describe 'FormHelpers' do
 
     it 'should display select tag with grouped options for a rails-style attribute hash' do
       opts = {
-        'Friends' => ['Yoda', ['Obiwan', 2, {magister: 'no'}], {lame: 'yes'}],
-        'Enemies' => [['Palpatine', 'Palpatine', {scary: 'yes', old: 'yes'}], ['Darth Vader', 3, {disabled: true}]]
+        'Friends' => ['Yoda', ['Obiwan', 2, { magister: 'no' }], { lame: 'yes' }],
+        'Enemies' => [['Palpatine', 'Palpatine', { scary: 'yes', old: 'yes' }], ['Darth Vader', 3, { disabled: true }]]
       }
-      actual_html = select_tag( 'name', grouped_options: opts, disabled_options: [2], selected: ['Yoda'] )
+      actual_html = select_tag('name', grouped_options: opts, disabled_options: [2], selected: ['Yoda'])
       assert_html_has_tag(actual_html, :optgroup, label: 'Friends', lame: 'yes')
       assert_html_has_tag(actual_html, :option,   value: 'Palpatine', content: 'Palpatine', scary: 'yes', old: 'yes')
       assert_html_has_tag(actual_html, :option,   content: 'Darth Vader', disabled: 'disabled')
@@ -760,12 +760,12 @@ describe 'FormHelpers' do
     end
 
     it 'should display select tag in ruby with multiple attribute' do
-      actual_html = select_tag(:favorite_color, multiple: true, options: ['only', 'option'])
+      actual_html = select_tag(:favorite_color, multiple: true, options: %w[only option])
       assert_html_has_tag(actual_html, :select, multiple: 'multiple', name: 'favorite_color[]')
     end
 
     it 'should display options with values and single selected' do
-      options = [['Green', 'green1'], ['Blue', 'blue1'], ['Black', 'black1']]
+      options = [%w[Green green1], %w[Blue blue1], %w[Black black1]]
       actual_html = select_tag(:favorite_color, options: options, selected: 'green1')
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
@@ -775,21 +775,21 @@ describe 'FormHelpers' do
     end
 
     it 'should display selected options first based on values not content' do
-      options = [['First', 'one'], ['one', 'two'], ['three', 'three']]
+      options = [%w[First one], %w[one two], %w[three three]]
       actual_html = select_tag(:number, options: options, selected: 'one')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', content: 'First', value: 'one', selected: 'selected')
     end
 
     it 'should display selected options falling back to checking content' do
-      options = [['one', nil, {value: nil}], ['two', nil, {value: nil}], ['three', 'three']]
+      options = [['one', nil, { value: nil }], ['two', nil, { value: nil }], %w[three three]]
       actual_html = select_tag(:number, options: options, selected: 'one')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', content: 'one', selected: 'selected')
     end
 
     it 'should display options with values and accept disabled options' do
-      options = [['Green', 'green1', {disabled: true}], ['Blue', 'blue1'], ['Black', 'black1']]
+      options = [['Green', 'green1', { disabled: true }], %w[Blue blue1], %w[Black black1]]
       actual_html = select_tag(:favorite_color, options: options)
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')
       assert_html_has_tag(actual_html, 'select option', disabled: 'disabled', count: 1)
@@ -799,8 +799,8 @@ describe 'FormHelpers' do
     end
 
     it 'should display option with values and multiple selected' do
-      options = [['Green', 'green1'], ['Blue', 'blue1'], ['Black', 'black1']]
-      actual_html = select_tag(:favorite_color, options: options, selected: ['green1', 'black1'])
+      options = [%w[Green green1], %w[Blue blue1], %w[Black black1]]
+      actual_html = select_tag(:favorite_color, options: options, selected: %w[green1 black1])
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 2)
       assert_html_has_tag(actual_html, 'select option', content: 'Green', value: 'green1', selected: 'selected')
@@ -809,7 +809,7 @@ describe 'FormHelpers' do
     end
 
     it 'should not misselect options with default value' do
-      options = ['Green', 'Blue']
+      options = %w[Green Blue]
       actual_html = select_tag(:favorite_color, options: options, selected: ['Green', ''])
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', content: 'Green', value: 'Green', selected: 'selected')

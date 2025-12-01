@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/sinatra_app/app')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/padrino_app/app')
+require_relative 'helper'
+require_relative 'fixtures/sinatra_app/app'
+require_relative 'fixtures/padrino_app/app'
 
 describe 'PadrinoMailer' do
   describe 'for mail delivery in sample Sinatra application' do
@@ -102,7 +102,7 @@ describe 'PadrinoMailer' do
     end
 
     it 'should be able to deliver a basic email using Padrino::Helpers' do
-      skip #FIXME
+      skip # FIXME
       post '/deliver/helper'
       assert_equal 'mail delivered', body
       assert_email_sent(to: 'jim@fake.com', from: 'noreply@custom.com',

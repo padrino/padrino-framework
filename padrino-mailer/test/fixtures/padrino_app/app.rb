@@ -1,5 +1,5 @@
 ENV['RACK_ENV'] = 'test'
-PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+PADRINO_ROOT = __dir__ unless defined? PADRINO_ROOT
 
 class PadrinoApp < Padrino::Application
   register Padrino::Helpers
@@ -12,26 +12,26 @@ class PadrinoApp < Padrino::Application
       subject 'Happy Birthday!'
       to      'john@fake.com'
       from    'noreply@birthday.com'
-      locals  :name => name, :age => age
+      locals  name: name, age: age
       via     :test
       render  'sample/birthday'
     end
 
     email :anniversary do |names, years_married|
-      subject 'Happy anniversary!'
-      to   'julie@fake.com'
-      from 'noreply@anniversary.com'
+      subject      'Happy anniversary!'
+      to           'julie@fake.com'
+      from         'noreply@anniversary.com'
       content_type :html
-      via     :test
-      locals  :names => names, :years_married => years_married
-      render  'sample/anniversary'
+      via          :test
+      locals       names: names, years_married: years_married
+      render       'sample/anniversary'
     end
 
     message :welcome do |name|
       subject 'Welcome Message!'
       to      'john@fake.com'
       from    'noreply@custom.com'
-      locals  :name => name
+      locals  name: name
       via     :test
       render  'sample/foo_message'
     end
@@ -40,7 +40,7 @@ class PadrinoApp < Padrino::Application
       subject 'Welcome Helper!'
       to      'jim@fake.com'
       from    'noreply@custom.com'
-      locals  :name => name
+      locals  name: name
       via     :test
       render  'sample/helper_message'
     end
@@ -49,7 +49,7 @@ class PadrinoApp < Padrino::Application
       subject 'Welcome Helper!'
       to      'jim@fake.com'
       from    'noreply@custom.com'
-      locals  :name => name
+      locals  name: name
       via     :test
       render  'default_mailer_name'
     end
@@ -58,7 +58,7 @@ class PadrinoApp < Padrino::Application
       subject 'Welcome Helper!'
       to      'jim@fake.com'
       from    'noreply@custom.com'
-      locals  :name => name
+      locals  name: name
       via     :test
       render
     end
@@ -67,7 +67,7 @@ class PadrinoApp < Padrino::Application
       subject 'Welcome Message!'
       to      'john@fake.com'
       from    'noreply@custom.com'
-      locals  :name => name
+      locals  name: name
       via     :test
       render  'demo/sample_mail'
     end
@@ -77,7 +77,7 @@ class PadrinoApp < Padrino::Application
   end
 
   post '/deliver/inline' do
-    result = email(:to => 'john@apple.com', :from => 'joe@smith.com', :subject => 'Test Email', :body => 'Test Body', :via => :test)
+    result = email(to: 'john@apple.com', from: 'joe@smith.com', subject: 'Test Email', body: 'Test Body', via: :test)
     result ? 'mail delivered' : 'mail not delivered'
   end
 

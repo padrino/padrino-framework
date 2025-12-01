@@ -31,9 +31,11 @@ module Padrino
     # @example
     #   Padrino::Rendering::IGNORE_FILE_PATTERN << /~$/
     #
-    IGNORE_FILE_PATTERN = [
-      /~$/ # This is for Gedit
-    ] unless defined?(IGNORE_FILE_PATTERN)
+    unless defined?(IGNORE_FILE_PATTERN)
+      IGNORE_FILE_PATTERN = [
+        /~$/ # This is for Gedit
+      ]
+    end
 
     ##
     # Defines common content-type alias mappings.
@@ -58,7 +60,7 @@ module Padrino
       def registered(app)
         if defined?(Padrino::Application) && app == Padrino::Application
           # this fail can be removed later when jRuby is not bugged and MRI19 is dropped
-          fail 'Please, do not use `register` on Padrino::Application object, use `.dup` or subclassing'
+          raise 'Please, do not use `register` on Padrino::Application object, use `.dup` or subclassing'
         end
         included(app)
         engine_configurations.each do |engine, configs|
@@ -120,7 +122,7 @@ module Padrino
 
       def cache_layout_path(name)
         @_cached_layout ||= {}
-        if !reload_templates? && path = @_cached_layout[name]
+        if !reload_templates? && (path = @_cached_layout[name])
           path
         else
           @_cached_layout[name] = yield(name)
@@ -131,7 +133,7 @@ module Padrino
         began_at = Time.now
         @_cached_templates ||= {}
         logging = defined?(settings) && settings.logging? && defined?(logger)
-        if !reload_templates? && path = @_cached_templates[options]
+        if !reload_templates? && (path = @_cached_templates[options])
           logger.debug :cached, began_at, path[0] if logging
         else
           path = @_cached_templates[options] = yield(name)
@@ -230,16 +232,16 @@ module Padrino
       # * Use render 'path/to/my/template'   (without symbols)
       # * Use render 'path/to/my/template'   (with engine lookup)
       # * Use render 'path/to/template.haml' (with explicit engine lookup)
-      # * Use render 'path/to/template', :layout => false
-      # * Use render 'path/to/template', :layout => false, :engine => 'haml'
+      # * Use render 'path/to/template', layout: false
+      # * Use render 'path/to/template', layout: false, engine: 'haml'
       #
       def render(engine, data = nil, options = {}, locals = {}, &block)
         # If engine is nil, ignore engine parameter and shift up all arguments
-        # render nil, "index", { :layout => true }, { :localvar => "foo" }
+        # render nil, 'index', { layout: true }, { localvar: "foo" }
         engine, data, options = data, options, locals if engine.nil? && data
 
         # Data is a hash of options when no engine isn't explicit
-        # render "index", { :layout => true }, { :localvar => "foo" }
+        # render 'index', { layout: true }, { localvar: "foo" }
         # Data is options, and options is locals in this case
         data, options, locals = nil, data, options if data.is_a?(Hash)
 
@@ -251,7 +253,7 @@ module Padrino
 
         # Cleanup the template.
         @current_engine, engine_was = engine, @current_engine
-        @_out_buf,  buf_was = SafeBuffer.new, @_out_buf
+        @_out_buf, buf_was = SafeBuffer.new, @_out_buf
 
         # Pass arguments to Sinatra render method.
         render_like_sinatra(engine, data, with_layout(options), locals, &block)
@@ -283,7 +285,7 @@ module Padrino
       #   The template could not be found.
       #
       # @example
-      #   get "/foo", :provides => [:html, :js] do; render 'path/to/foo'; end
+      #   get "/foo", provides: [:html, :js] do; render 'path/to/foo'; end
       #   # If you request "/foo.js" with I18n.locale == :ru => [:"/path/to/foo.ru.js", :erb]
       #   # If you request "/foo" with I18n.locale == :de => [:"/path/to/foo.de.haml", :haml]
       #
@@ -300,7 +302,7 @@ module Padrino
           selected_template = select_template(template_candidates, *rendering_options)
           selected_template ||= template_candidates.first unless options[:strict_format]
 
-          fail TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'"  if !selected_template && options[:raise_exceptions]
+          raise TemplateNotFound, "Template '#{template_path}' not found in '#{view_path}'" if !selected_template && options[:raise_exceptions]
           selected_template
         end
       end
@@ -321,7 +323,7 @@ module Padrino
           template_candidates = glob_templates(layouts_path, template_path)
           selected_template = select_template(template_candidates, *rendering_options)
 
-          fail TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout
+          raise TemplateNotFound, "Layout '#{template_path}' not found in '#{layouts_path}'" if !selected_template && layout
           selected_template
         end
       end
@@ -332,9 +334,9 @@ module Padrino
         return options if layout == false
 
         layout = @layout if !layout || layout == true
-        return options if settings.templates.has_key?(:layout) && !layout
+        return options if settings.templates.key?(:layout) && !layout
 
-        if layout.kind_of?(String) && Pathname.new(layout).absolute?
+        if layout.is_a?(String) && Pathname.new(layout).absolute?
           layout_path, _, layout = layout.rpartition('/')
           options[:layout_options] ||= {}
           options[:layout_options][:views] ||= layout_path
@@ -349,7 +351,7 @@ module Padrino
         if respond_to?(:request) && request.respond_to?(:controller) && request.controller && Pathname.new(template_path).relative?
           parts << "{,#{request.controller}}"
         end
-        parts << template_path.chomp(File.extname(template_path)) + '.*'
+        parts << "#{template_path.chomp(File.extname(template_path))}.*"
         Dir.glob(File.join(parts)).inject([]) do |all, file|
           next all if IGNORE_FILE_PATTERN.any? { |pattern| file.to_s =~ pattern }
           all << path_and_engine(file, views_path)
@@ -358,19 +360,20 @@ module Padrino
 
       def select_template(templates, template_path, content_type, _locale)
         symbol = content_type_symbol(content_type)
-        simple_content_type = [:html, :plain].include?(symbol)
+        simple_content_type = %i[html plain].include?(symbol)
         target_path, target_engine = path_and_engine(template_path)
 
+        # FIXME: We can probable iterate just 1 time over the templates
         templates.find { |file, _| file.to_s == "#{target_path}.#{locale}.#{symbol}" } ||
-        templates.find { |file, _| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
-        templates.find { |file, engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
-        templates.find { |file, _| file.to_s == "#{target_path}.#{symbol}" } ||
-        templates.find { |file, _| file.to_s == target_path.to_s && simple_content_type }
+          templates.find { |file, _| file.to_s == "#{target_path}.#{locale}" && simple_content_type } ||
+          templates.find { |file, engine| engine == target_engine || File.extname(file.to_s) == ".#{target_engine}" } ||
+          templates.find { |file, _| file.to_s == "#{target_path}.#{symbol}" } ||
+          templates.find { |file, _| file.to_s == target_path.to_s && simple_content_type }
       end
 
       def path_and_engine(path, relative = nil)
         extname = File.extname(path)
-        engine = (extname[1..-1]||'none').to_sym
+        engine = (extname[1..] || 'none').to_sym
         path = path.chomp(extname)
         path.insert(0, '/') unless Pathname.new(path).absolute?
         path = path.squeeze('/').sub(relative, '') if relative
@@ -389,7 +392,7 @@ module Padrino
       end
 
       def content_type_symbol(type)
-        if defined?(::Rack::Mime::MIME_TYPES) && type.kind_of?(String) &&
+        if defined?(::Rack::Mime::MIME_TYPES) && type.is_a?(String) &&
            ::Rack::Mime::MIME_TYPES.key(type)
           type = ::Rack::Mime::MIME_TYPES.key(type).sub(/\./, '').to_sym
         end

@@ -11,11 +11,12 @@ end
 
 module PadrinoTasks
   def self.init(init = false)
-    Padrino::Tasks.files.flatten.uniq.each { |rakefile| begin
-                                                          Rake.application.add_import(rakefile)
-                                                        rescue StandardError
-                                                          puts "<= Failed load #{ext}"
-                                                        end }
+    Padrino::Tasks.files.flatten.uniq.each do |rakefile|
+      Rake.application.add_import(rakefile)
+    rescue StandardError
+      puts "<= Failed load #{ext}"
+    end
+
     load(File.expand_path('rake_tasks.rb', __dir__))
     Rake.application.load_imports
   end
@@ -30,18 +31,18 @@ module PadrinoTasks
 
   def self.load?(task, constant_present)
     if constant_present && !PadrinoTasks.tasks.include?(task)
-      warn <<-WARNING
-Loading #{task} tasks automatically.
-This functionality will be disabled in future versions. Please put
+      warn <<~WARNING
+        Loading #{task} tasks automatically.
+        This functionality will be disabled in future versions. Please put
 
-  PadrinoTasks.use(#{task.inspect})
-  PadrinoTasks.init
+          PadrinoTasks.use(#{task.inspect})
+          PadrinoTasks.init
 
-and remove
+        and remove
 
-  require File.expand_path('../config/boot.rb', __FILE__)
+          require File.expand_path('../config/boot.rb', __FILE__)
 
-in you Rakefile instead.
+        in you Rakefile instead.
       WARNING
     end
 

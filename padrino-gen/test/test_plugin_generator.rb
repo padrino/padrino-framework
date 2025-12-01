@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'PluginGenerator' do
   def setup
@@ -44,14 +44,13 @@ describe 'PluginGenerator' do
       expects_initializer :test, '# Example', root: "#{@apptmp}/sample_project"
       expects_generated :app, "testapp -r=#{@apptmp}/sample_project"
       expects_generated :controller, "users get:index -r=#{@apptmp}/sample_project --app=testapp"
-      example_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'example_template.rb')
+      example_template_path = File.join(__dir__, 'fixtures', 'example_template.rb')
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
       File.unstub(:exist?)
     end
   end
 
   describe 'with resolving urls' do
-
     it 'should resolve generic url properly' do
       template_file = 'http://www.example.com/test.rb'
       stub_request :get, template_file
@@ -89,17 +88,17 @@ describe 'PluginGenerator' do
       template_file = 'hoptoad'
       resolved_path = 'https://raw.github.com/padrino/padrino-recipes/master/plugins/hoptoad_plugin.rb'
       stub_request(:get, resolved_path).to_return(body: template_file)
-      plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"], {})
+      plugin_gen = Padrino::Generators::Plugin.new([template_file], ["-r=#{@apptmp}/sample_project"], {})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:apply).with(resolved_path).returns(true).once
       capture_io { plugin_gen.invoke_all }
     end
 
     it 'should print a warning if template cannot be found' do
-      template_file  = 'hwat'
+      template_file = 'hwat'
       resolved_path = 'https://raw.github.com/padrino/padrino-recipes/master/plugins/hwat_plugin.rb'
       stub_request(:get, resolved_path).to_return(status: 404)
-      plugin_gen = Padrino::Generators::Plugin.new([ template_file], ["-r=#{@apptmp}/sample_project"], {})
+      plugin_gen = Padrino::Generators::Plugin.new([template_file], ["-r=#{@apptmp}/sample_project"], {})
       plugin_gen.expects(:in_app_root?).returns(true).once
       # Use regex to ignore trailing whitespace in message
       plugin_gen.expects(:say).with { |message, color| (message =~ /The template at #{resolved_path} could not be loaded:.*404.*/) && (color == :red) }.returns(true).once
@@ -128,7 +127,7 @@ describe 'PluginGenerator' do
       expects_git :init, root: "#{@apptmp}/sample_git"
       expects_git :add, arguments: '.', root: "#{@apptmp}/sample_git"
       expects_git :commit, arguments: 'hello', root: "#{@apptmp}/sample_git"
-      git_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'git_template.rb')
+      git_template_path = File.join(__dir__, 'fixtures', 'git_template.rb')
       capture_io { generate(:project, 'sample_git', "-p=#{git_template_path}", "-r=#{@apptmp}", '2>&1 /dev/null') }
     end
   end
@@ -137,7 +136,7 @@ describe 'PluginGenerator' do
     it 'should Run rake task and list tasks' do
       expects_generated_project test: :shoulda, orm: :activerecord, name: 'sample_rake', root: @apptmp.to_s
       expects_rake 'custom', root: "#{@apptmp}/sample_rake"
-      rake_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'rake_template.rb')
+      rake_template_path = File.join(__dir__, 'fixtures', 'rake_template.rb')
       capture_io { generate(:project, 'sample_rake', "-p=#{rake_template_path}", "-r=#{@apptmp}", '> /dev/null') }
     end
   end
@@ -150,7 +149,7 @@ describe 'PluginGenerator' do
       expects_generated :admin, "-r=#{@apptmp}/sample_admin"
       expects_rake 'ar:migrate', root: "#{@apptmp}/sample_admin"
       expects_generated :admin_page, "post -r=#{@apptmp}/sample_admin"
-      admin_template_path = File.join(File.dirname(__FILE__), 'fixtures', 'admin_template.rb')
+      admin_template_path = File.join(__dir__, 'fixtures', 'admin_template.rb')
       capture_io { generate(:project, 'sample_admin', "-p=#{admin_template_path}", "-r=#{@apptmp}", '> /dev/null') }
     end
   end

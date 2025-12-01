@@ -20,7 +20,7 @@ if ENV['PADRINO_ENV'] || defined?(PADRINO_ENV)
   warn 'Environment variable PADRINO_ENV is deprecated. Please, use RACK_ENV.'
   ENV['RACK_ENV'] ||= ENV['PADRINO_ENV'] ||= PADRINO_ENV
 end
-RACK_ENV = ENV['RACK_ENV'] ||= 'development'  unless defined?(RACK_ENV)
+RACK_ENV = ENV['RACK_ENV'] ||= 'development' unless defined?(RACK_ENV)
 PADRINO_ROOT = ENV['PADRINO_ROOT'] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
 
 module Padrino
@@ -89,8 +89,7 @@ module Padrino
     #   end
     #
     def configure_apps(&block)
-      return  unless block_given?
-      global_configurations << block
+      global_configurations << block if block_given?
     end
 
     ##
@@ -160,8 +159,8 @@ module Padrino
     # @yield []
     #   The given block will be passed to the initialized middleware.
     #
-    def use(mw, *args, &block)
-      middleware << [mw, args, block]
+    def use(middleware_class, *args, &block)
+      middleware << [middleware_class, args, block]
     end
 
     ##
@@ -178,7 +177,7 @@ module Padrino
     #
     # @returns The root path of the loaded gem
     def gem(name, main_module)
-      _, spec = Gem.loaded_specs.find {|spec_pair| spec_pair[0] == name }
+      _, spec = Gem.loaded_specs.find { |spec_pair| spec_pair[0] == name }
       gems << spec
       modules << main_module
       spec.full_gem_path

@@ -1,4 +1,4 @@
-PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+PADRINO_ROOT = __dir__ unless defined? PADRINO_ROOT
 # Remove this comment if you want do some like this: ruby RACK_ENV=test app.rb
 #
 # require 'padrino-core'
@@ -17,7 +17,7 @@ SimpleDemo.controllers do
   end
 
   get '/rand' do
-    rand(2 ** 256).to_s
+    rand(2**256).to_s
   end
 end
 

@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'Mounter' do
   class ::TestApp < Padrino::Application; end
@@ -28,7 +28,7 @@ describe 'Mounter' do
     end
 
     it 'should use app.root if available' do
-      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/kiq')
+      require File.expand_path("#{__dir__}/fixtures/apps/kiq")
       mounter = Padrino::Mounter.new('kiq', app_class: 'Kiq')
       mounter.to('/test_app')
       assert_equal '/weird', mounter.app_root
@@ -115,12 +115,12 @@ describe 'Mounter' do
       assert_equal OneApp, Padrino.mounted_apps[0].app_obj
       assert_equal TwoApp, Padrino.mounted_apps[1].app_obj
       assert_equal 2, Padrino.mounted_apps.size, 'should not mount duplicate apps'
-      assert_equal ['one_app', 'two_app'], Padrino.mounted_apps.map(&:name)
+      assert_equal %w[one_app two_app], Padrino.mounted_apps.map(&:name)
     end
 
     it 'should mount app with the same name as the module' do
-      Padrino.mount('Demo::App',  app_file: File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_app.rb')).to('/app')
-      Padrino.mount('Demo::Demo', app_file: File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_demo.rb')).to('/')
+      Padrino.mount('Demo::App',  app_file: File.expand_path("#{__dir__}/fixtures/apps/demo_app.rb")).to('/app')
+      Padrino.mount('Demo::Demo', app_file: File.expand_path("#{__dir__}/fixtures/apps/demo_demo.rb")).to('/')
 
       Padrino.mounted_apps.each do |app|
         assert_equal app.app_obj.setup_application!, true
@@ -139,16 +139,18 @@ describe 'Mounter' do
     it 'should be able to access routes data for mounted apps' do
       class ::OneApp < Padrino::Application
         get('/test') { 'test' }
-        get(:index, provides: [:js, :json]) { 'index' }
+        get(:index, provides: %i[js json]) { 'index' }
         get(%r{/foo|/baz}) { 'regexp' }
+
         controllers :posts do
           get(:index) { 'index' }
           get(:new, provides: :js) { 'new' }
-          get(:show, provides: [:js, :html], with: :id) { 'show' }
+          get(:show, provides: %i[js html], with: :id) { 'show' }
           post(:create, provides: :js, with: :id) { 'create' }
           get(:regexp, map: %r{/foo|/baz}) { 'regexp' }
         end
       end
+
       class ::TwoApp < Padrino::Application
         controllers :users do
           get(:index) { 'users' }
@@ -157,6 +159,7 @@ describe 'Mounter' do
           put(:update) { 'users update' }
           delete(:destroy) { 'users delete' }
         end
+
         controllers :foo_bar do
           get(:index) { 'foo bar index' }
           get(:new) { 'foo bar new' }
@@ -164,6 +167,7 @@ describe 'Mounter' do
           put(:update) { 'foo bar update' }
           delete(:destroy) { 'foo bar delete' }
         end
+
         controllers :test, :nested do
           get(:test1) { 'test1' }
         end
@@ -196,17 +200,20 @@ describe 'Mounter' do
       nested_route = Padrino.mounted_apps[1].named_routes[10]
       assert_equal '(:test_nested, :test1)', nested_route.name
     end
-    
+
     it 'should configure cascade apps' do
       class ::App1 < Padrino::Application
         get(:index) { halt 404, 'index1' }
       end
+
       class ::App2 < Padrino::Application
         get(:index) { halt 404, 'index2' }
       end
+
       class ::App3 < Padrino::Application
         get(:index) { halt 404, 'index3' }
       end
+
       Padrino.mount('app1', cascade: true).to('/foo')
       Padrino.mount('app2').to('/foo')
       Padrino.mount('app3').to('/foo')
@@ -255,7 +262,7 @@ describe 'Mounter' do
     end
 
     it 'should support the Rack Application' do
-      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/mountable_apps/rack_apps')
+      path = File.expand_path("#{__dir__}/fixtures/apps/mountable_apps/rack_apps")
       require path
       Padrino.mount('rack_app', app_class: 'RackApp', app_file: path).to('/rack_app')
       Padrino.mount('rack_app2', app_class: 'RackApp2', app_file: path).to('/rack_app2')
@@ -273,7 +280,7 @@ describe 'Mounter' do
     end
 
     it 'should support the Rack Application with cascading style' do
-      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/mountable_apps/rack_apps')
+      path = File.expand_path("#{__dir__}/fixtures/apps/mountable_apps/rack_apps")
       require path
       Padrino.mount('rack_app', app_class: 'RackApp', app_file: path, cascade: false).to('/rack_app')
       Padrino.mount('sinatra_app', app_class: 'SinatraApp', app_file: path).to('/')
@@ -283,8 +290,8 @@ describe 'Mounter' do
     end
 
     it 'should support the Rack Application inside padrino project' do
-      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/app')
-      api_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/api/app')
+      path = File.expand_path("#{__dir__}/fixtures/apps/demo_project/app")
+      api_path = File.expand_path("#{__dir__}/fixtures/apps/demo_project/api/app")
       require path
       require api_path
       Padrino.mount('api_app', app_class: 'DemoProject::API', app_file: api_path).to('/api')
@@ -298,16 +305,19 @@ describe 'Mounter' do
     end
 
     it "should not load dependency files if app's root isn't started with Padrino.root" do
-      path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project/app')
-      fake_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/external_apps/fake_root')
+      path = File.expand_path("#{__dir__}/fixtures/apps/demo_project/app")
+      fake_path = File.expand_path("#{__dir__}/fixtures/apps/external_apps/fake_root")
+
       require path
       require fake_path
+
       Padrino.mount('fake_root', app_class: 'FakeRoot').to('/fake_root')
       Padrino.mount('main_app', app_class: 'DemoProject::App').to('/')
-      Padrino.stub(:root, File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/demo_project')) do
+      Padrino.stub(:root, File.expand_path("#{__dir__}/fixtures/apps/demo_project")) do
         Padrino.application
       end
-      assert !defined?(FakeLib)
+
+      refute defined?(FakeLib)
     end
   end
 end

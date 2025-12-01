@@ -1,4 +1,4 @@
 class MyKlass
-    class MySubKlass
-    end
+  class MySubKlass
+  end
 end

@@ -3,6 +3,7 @@
 #
 module FileSet
   module_function
+
   ##
   # Iterates over every file in the glob pattern and yields to a block
   # Returns the list of files matching the glob pattern

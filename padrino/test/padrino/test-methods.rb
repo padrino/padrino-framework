@@ -27,14 +27,14 @@ module Padrino
       if count_requirement
         assert_equal count_requirement, matched_count, "count of tags #{message}"
       else
-        assert matched_count > 0, "expected a tag #{message}"
+        assert matched_count.positive?, "expected a tag #{message}"
       end
     end
 
     def assert_has_no_selector(html, selector, attributes)
       message = "'#{selector}' with attributes #{attributes} in html\n#{html}"
       matched_count = html_matched_tags(html, selector.to_s, attributes)
-      assert matched_count == 0, "expected no tags #{message}"
+      assert matched_count.zero?, "expected no tags #{message}"
     end
 
     private
@@ -42,13 +42,10 @@ module Padrino
     def html_matched_tags(html, selector, attributes)
       @dom ||= Oga.parse_html(html)
       content_requirement = attributes.delete(:content)
-      attributes.each do |name, value|
-        selector += %([#{name}="#{value}"])
-      end
+
+      attributes.each { |name, value| selector += %([#{name}="#{value}"]) }
       tags = @dom.css(selector.to_s.gsub(/\[([^"']*?)=([^'"]*?)\]/, '[\1="\2"]'))
-      if content_requirement
-        tags = tags.select { |tag| (tag.get('content') || tag.text).index(content_requirement) }
-      end
+      tags = tags.select { |tag| (tag.get('content') || tag.text).index(content_requirement) } if content_requirement
       tags.count
     end
   end

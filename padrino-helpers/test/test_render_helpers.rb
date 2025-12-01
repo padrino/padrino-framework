@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/render_app/app')
+require_relative 'helper'
+require_relative 'fixtures/render_app/app'
 
 describe 'RenderHelpers' do
   def app
@@ -147,20 +147,20 @@ describe 'RenderHelpers' do
   describe 'for #current_engine method' do
     it 'should detect correctly current engine for a padrino application' do
       get '/current_engine'
-      assert_response_has_tag 'p.start', content: 'haml'
-      assert_response_has_tag 'p.haml span',  content: 'haml'
-      assert_response_has_tag 'p.erb span',   content: 'erb'
-      assert_response_has_tag 'p.slim span',  content: 'slim'
-      assert_response_has_tag 'p.end',   content: 'haml'
+      assert_response_has_tag 'p.start',     content: 'haml'
+      assert_response_has_tag 'p.haml span', content: 'haml'
+      assert_response_has_tag 'p.erb span',  content: 'erb'
+      assert_response_has_tag 'p.slim span', content: 'slim'
+      assert_response_has_tag 'p.end',       content: 'haml'
     end
 
     it 'should detect correctly current engine for explicit engine on partials' do
       get '/explicit_engine'
-      assert_response_has_tag 'p.start', content: 'haml'
-      assert_response_has_tag 'p.haml span',  content: 'haml'
-      assert_response_has_tag 'p.erb span',   content: 'erb'
-      assert_response_has_tag 'p.slim span',  content: 'slim'
-      assert_response_has_tag 'p.end',   content: 'haml'
+      assert_response_has_tag 'p.start',     content: 'haml'
+      assert_response_has_tag 'p.haml span', content: 'haml'
+      assert_response_has_tag 'p.erb span',  content: 'erb'
+      assert_response_has_tag 'p.slim span', content: 'slim'
+      assert_response_has_tag 'p.end',       content: 'haml'
     end
 
     it 'should capture slim template once and only once' do
@@ -206,7 +206,7 @@ describe 'RenderHelpers' do
       get '/ruby_block_capture_haml'
       assert_response_has_tag 'b', content: 'c'
     end
-    
+
     it 'should support weird ruby blocks in slim' do
       get '/ruby_block_capture_slim'
       assert_response_has_tag 'b', content: 'c'
@@ -219,7 +219,7 @@ describe 'RenderHelpers' do
         include Padrino::Helpers::RenderHelpers
       end
       locals = { user: OpenStruct.new(name: 'Joe') }
-      result = Standalone.new.partial(File.join(File.dirname(__FILE__), 'fixtures/render_app/views/template/user'), engine: :haml, locals: locals)
+      result = Standalone.new.partial(File.join(__dir__, 'fixtures/render_app/views/template/user'), engine: :haml, locals: locals)
       assert_equal '<h1>User name is Joe</h1>', result.chomp
     end
 
@@ -231,7 +231,7 @@ describe 'RenderHelpers' do
         end
       end
 
-      result = Standalone1.new.partial(File.join(File.dirname(__FILE__), 'fixtures/render_app/views/template/user.haml'))
+      result = Standalone1.new.partial(File.join(__dir__, 'fixtures/render_app/views/template/user.haml'))
       assert_equal '<h1>User name is Jane</h1>', result.chomp
     end
 

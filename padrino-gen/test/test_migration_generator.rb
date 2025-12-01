@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'MigrationGenerator' do
   def setup
@@ -84,7 +84,7 @@ describe 'MigrationGenerator' do
         migration_file_path3 = "#{@apptmp}/sample_project/db/migrate/003_add_location_tofoo.rb"
         assert_match_in_file(/change_table :users/, migration_file_path1)
         assert_match_in_file(/change_table :tokyo/, migration_file_path2)
-        assert_match_in_file(/change_table :foos/,   migration_file_path3)
+        assert_match_in_file(/change_table :foos/, migration_file_path3)
       end
     end
   end

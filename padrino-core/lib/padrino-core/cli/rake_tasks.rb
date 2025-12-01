@@ -26,12 +26,12 @@ def list_app_routes(app, args)
   app_routes.map! { |r| [r.verb, r.name, r.path] }
   return if app_routes.empty?
   shell.say "\nApplication: #{app.app_class}", :yellow
-  app_routes.unshift(['REQUEST', 'URL', 'PATH'])
-  max_col_1 = app_routes.max { |a, b| a[0].size <=> b[0].size }[0].size
-  max_col_2 = app_routes.max { |a, b| a[1].size <=> b[1].size }[1].size
+  app_routes.unshift(%w[REQUEST URL PATH])
+  max_col1 = app_routes.max { |a, b| a[0].size <=> b[0].size }[0].size
+  max_col2 = app_routes.max { |a, b| a[1].size <=> b[1].size }[1].size
   app_routes.each_with_index do |row, i|
-    message = [row[1].ljust(max_col_2+2), row[0].center(max_col_1+2), row[2]]
-    shell.say('    ' + message.join(' '), i==0 ? :bold : nil)
+    message = [row[1].ljust(max_col2 + 2), row[0].center(max_col1 + 2), row[2]]
+    shell.say("    #{message.join(' ')}", i.zero? ? :bold : nil)
   end
 end
 
@@ -64,9 +64,7 @@ namespace :routes do
 end
 
 Dir['{lib/tasks/**,tasks/**,test,spec}/*.rake'].each do |file|
-  
-    load(File.expand_path(file))
-  rescue LoadError => e
-    warn "#{file}: #{e.message}"
-  
+  load(File.expand_path(file))
+rescue LoadError => e
+  warn "#{file}: #{e.message}"
 end

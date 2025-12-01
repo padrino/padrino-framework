@@ -10,7 +10,7 @@ module Padrino
       def rake(*args)
         prepare :rake
         args << '-T' if options[:list]
-        args << options[:list]  unless options[:list].nil? || options[:list].to_s == 'list'
+        args << options[:list] unless options[:list].nil? || options[:list].to_s == 'list'
         args << '--trace' if options[:trace]
         args << '--verbose' if options[:verbose]
         ARGV.clear
@@ -46,20 +46,18 @@ module Padrino
       end
 
       desc 'generate', "Executes the Padrino generator with given options (alternatively use 'gen' or 'g')."
-      map ['gen', 'g'] => :generate
+      map %w[gen g] => :generate
       def generate(*args)
-        
-          # We try to load the vendored padrino-gen if exist
-          padrino_gen_path = File.expand_path('../../../../padrino-gen/lib', __dir__)
-          $LOAD_PATH.unshift(padrino_gen_path) if File.directory?(padrino_gen_path) && !$LOAD_PATH.include?(padrino_gen_path)
-          require 'padrino-core/command'
-          require 'padrino-gen/command'
-          ARGV.shift
-          ARGV << 'help' if ARGV.empty?
-          Padrino.bin_gen(*ARGV)
-        rescue StandardError
-          puts '<= You need padrino-gen! Run: gem install padrino-gen'
-        
+        # We try to load the vendored padrino-gen if exist
+        padrino_gen_path = File.expand_path('../../../../padrino-gen/lib', __dir__)
+        $LOAD_PATH.unshift(padrino_gen_path) if File.directory?(padrino_gen_path) && !$LOAD_PATH.include?(padrino_gen_path)
+        require 'padrino-core/command'
+        require 'padrino-gen/command'
+        ARGV.shift
+        ARGV << 'help' if ARGV.empty?
+        Padrino.bin_gen(*ARGV)
+      rescue StandardError
+        puts '<= You need padrino-gen! Run: gem install padrino-gen'
       end
 
       desc 'version', 'Show current Padrino version.'
@@ -70,7 +68,7 @@ module Padrino
       end
 
       desc 'runner', "Run a piece of code in the Padrino application environment (alternatively use 'run' or 'r')."
-      map ['run', 'r'] => :runner
+      map %w[run r] => :runner
       def runner(*args)
         prepare :runner
 
@@ -104,7 +102,7 @@ module Padrino
 
         result
       end
-      alias :silence :capture
+      alias silence capture
     end
   end
 end

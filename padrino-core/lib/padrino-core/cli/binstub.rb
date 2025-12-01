@@ -15,14 +15,14 @@ module Padrino
       project_root = project_root.rpartition('/').first
     end
 
-    if %w[Gemfile .components].all? { |file| File.file?(File.join(project_root, file)) }
-      binstub = File.join(project_root, 'bin', executable)
-      if File.file?(binstub)
-        exec Gem.ruby, binstub, *ARGV
-      else
-        puts 'Please run `bundle install --binstubs` from your project root to generate bundle-specific executables'
-        exit!
-      end
+    return unless %w[Gemfile .components].all? { |file| File.file?(File.join(project_root, file)) }
+
+    binstub = File.join(project_root, 'bin', executable)
+    if File.file?(binstub)
+      exec Gem.ruby, binstub, *ARGV
+    else
+      puts 'Please run `bundle install --binstubs` from your project root to generate bundle-specific executables'
+      exit!
     end
   end
 end

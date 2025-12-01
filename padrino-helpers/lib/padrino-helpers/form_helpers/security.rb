@@ -32,10 +32,10 @@ module Padrino
         #   csrf_meta_tags
         #
         def csrf_meta_tags
-          if is_protected_from_csrf?
-            meta_tag(csrf_param, name: 'csrf-param') <<
+          return unless is_protected_from_csrf?
+
+          meta_tag(csrf_param, name: 'csrf-param') <<
             meta_tag(csrf_token, name: 'csrf-token')
-          end
         end
 
         protected

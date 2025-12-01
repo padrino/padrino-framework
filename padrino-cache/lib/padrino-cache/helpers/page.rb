@@ -6,7 +6,7 @@ module Padrino
     module Helpers
       ##
       # Page caching is easy to integrate into your application. To turn it on, simply provide the
-      # <tt>:cache => true</tt> option on either a controller or one of its routes.
+      # <tt>cache: true</tt> option on either a controller or one of its routes.
       # By default, cached content is persisted with a "file store" --that is, in a
       # subdirectory of your application root.
       #
@@ -15,7 +15,7 @@ module Padrino
       #   class CachedApp < Padrino::Application
       #     enable :caching          # turns on caching mechanism
       #
-      #     controller '/blog', :cache => true do
+      #     controller '/blog', cache: true do
       #       expires 15
       #
       #       get '/entries' do
@@ -50,7 +50,7 @@ module Padrino
         #   Time til expiration (seconds)
         #
         # @example
-        #   controller '/blog', :cache => true do
+        #   controller '/blog', cache: true do
         #     expires 15
         #
         #     get '/entries' do
@@ -72,7 +72,7 @@ module Padrino
         #   block to be evaluated to cache key
         #
         # @example
-        #   controller '/blog', :cache => true do
+        #   controller '/blog', cache: true do
         #
         #     get '/post/:id' do
         #       cache_key :my_name
@@ -81,14 +81,14 @@ module Padrino
         #   end
         #
         # @example
-        #     get '/foo', :cache => true do
+        #     get '/foo', cache: true do
         #       cache_key { param[:id] }
         #       "My id is #{param[:id}"
         #     end
         #   end
         #
         def cache_key(name = nil, &block)
-          fail 'Can not provide both cache_key and a block' if name && block
+          raise 'Can not provide both cache_key and a block' if name && block
           @route.cache_key = name || block
         end
 
@@ -99,7 +99,7 @@ module Padrino
 
           route.before_filters do
             next unless settings.caching?
-            if cached_response = load_cached_response
+            if (cached_response = load_cached_response)
               content_type cached_response[:content_type]
               halt 200, cached_response[:body]
             end
@@ -123,7 +123,7 @@ module Padrino
         end
 
         def save_cached_response(cache_expires)
-          return unless @_response_buffer.kind_of?(String)
+          return unless @_response_buffer.is_a?(String)
 
           began_at = Time.now
           route_cache_key = resolve_cache_key || env['PATH_INFO']

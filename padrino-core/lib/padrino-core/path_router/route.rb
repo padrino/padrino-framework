@@ -21,7 +21,7 @@ module Padrino
       #
       attr_accessor :action, :cache, :cache_key, :cache_expires,
                     :parent, :use_layout, :controller, :user_agent, :path_for_generation, :default_values
-  
+
       ##
       # Constructs an instance of PathRouter::Route.
       #
@@ -33,28 +33,28 @@ module Padrino
         @block   = block if block_given?
         merge_with_options!(options)
       end
-  
+
       ##
       # Calls the route block with arguments.
       #
       def call(app, *args)
         @block.call(app, *args)
       end
-  
+
       ##
       # Returns the route's verb as an array.
       #
       def request_methods
         [verb.to_s.upcase]
       end
-  
+
       ##
       # Returns the original path.
       #
       def original_path
         @path
       end
-  
+
       SIGNIFICANT_VARIABLES_REGEX = /(^|[^\\])[:*]([a-zA-Z0-9_]+)/
 
       ##
@@ -70,7 +70,7 @@ module Padrino
             []
           end
       end
-  
+
       ##
       # Returns an instance of PathRouter::Matcher that is associated with the route.
       #
@@ -84,7 +84,7 @@ module Padrino
       def match(pattern)
         matcher.match(pattern)
       end
-  
+
       ##
       # Associates a block with the route, and increments current order of the router.
       #
@@ -93,7 +93,7 @@ module Padrino
         @order = @router.current_order
         @router.increment_order
       end
-  
+
       ##
       # Expands the path by using parameters.
       # @see PathRouter::Matcher#expand
@@ -120,7 +120,7 @@ module Padrino
       def params_for(pattern, others = {})
         matcher.params_for(pattern, others)
       end
-  
+
       ##
       # Returns before_filters as an array.
       #
@@ -138,7 +138,7 @@ module Padrino
         @_after_filters << block if block_given?
         @_after_filters
       end
-  
+
       ##
       # Returns custom_conditions as an array.
       #
@@ -156,7 +156,7 @@ module Padrino
       end
 
       private
-  
+
       ##
       # Set value to accessor if option name has been defined as an accessora.
       #
@@ -166,7 +166,7 @@ module Padrino
           accessor?(key) ? __send__("#{key}=", value) : (@options[key] = value)
         end
       end
-  
+
       ##
       # Returns true if name has been defined as an accessor.
       #

@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require_relative 'helper'
+require_relative 'fixtures/markup_app/app'
 
 describe 'TagHelpers' do
   def app
@@ -24,12 +24,12 @@ describe 'TagHelpers' do
     end
 
     it 'should support data attributes' do
-      actual_html = tag(:a, data: { remote: true, method: 'post'})
+      actual_html = tag(:a, data: { remote: true, method: 'post' })
       assert_html_has_tag(actual_html, :a, 'data-remote' => 'true', 'data-method' => 'post')
     end
 
     it 'should support nested attributes' do
-      actual_html = tag(:div, data: {dojo: {type: 'dijit.form.TextBox', props: 'readOnly: true'}})
+      actual_html = tag(:div, data: { dojo: { type: 'dijit.form.TextBox', props: 'readOnly: true' } })
       assert_html_has_tag(actual_html, :div, 'data-dojo-type' => 'dijit.form.TextBox', 'data-dojo-props' => 'readOnly: true')
     end
 
@@ -44,13 +44,13 @@ describe 'TagHelpers' do
     end
 
     it 'should allow array as attributes' do
-        actual_html = tag(:p, class: [:foo, :bar])
-        assert_html_has_tag(actual_html, 'p.foo.bar')
+      actual_html = tag(:p, class: %i[foo bar])
+      assert_html_has_tag(actual_html, 'p.foo.bar')
     end
 
     it 'should allow array as nested attributes' do
-        actual_html = tag(:p, data: { foo: [:bar, :baz] })
-        assert_html_has_tag(actual_html, 'p', 'data-foo': 'bar baz')
+      actual_html = tag(:p, data: { foo: %i[bar baz] })
+      assert_html_has_tag(actual_html, 'p', 'data-foo': 'bar baz')
     end
   end
 

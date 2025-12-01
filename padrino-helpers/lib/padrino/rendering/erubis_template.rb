@@ -13,7 +13,7 @@ module Padrino
       def add_stmt(src, code)
         code = code.sub('end', 'nil;end') if code =~ /\A\s*end\s*\Z/
         src << code
-        src << ';' unless code[-1] == ?\n
+        src << ';' unless code[-1] == "\n"
       end
 
       def add_expr_escaped(src, code)
@@ -42,7 +42,7 @@ module Padrino
       def render(*args)
         app       = args.first
         app_class = app.class
-        @is_padrino_app = (defined?(Padrino::Application) && app.kind_of?(Padrino::Application)) || 
+        @is_padrino_app = (defined?(Padrino::Application) && app.is_a?(Padrino::Application)) ||
                           (app_class.respond_to?(:erb) && app_class.erb[:engine_class] == Padrino::Rendering::SafeEruby)
         super
       end
@@ -63,5 +63,5 @@ Tilt.prefer(Padrino::Rendering::ErubisTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
   engine_class: Padrino::Rendering::SafeEruby,
-  outvar: '@_out_buf',
+  outvar: '@_out_buf'
 }

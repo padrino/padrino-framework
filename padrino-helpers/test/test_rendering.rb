@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 require 'slim'
 require 'liquid'
 
@@ -14,7 +14,6 @@ describe 'Rendering' do
   end
 
   describe 'for application layout functionality' do
-
     it 'should get no layout' do
       mock_app do
         get('/') { 'no layout' }
@@ -80,7 +79,7 @@ describe 'Rendering' do
       create_view :foo, 'erb file'
       create_view :foo, 'js file', format: :js
       mock_app do
-        get('/layout_test', provides: [:html, :js]) { render :foo }
+        get('/layout_test', provides: %i[html js]) { render :foo }
       end
       get '/layout_test'
       assert_equal 'this is an erb file', body
@@ -114,7 +113,7 @@ describe 'Rendering' do
       create_view :foo, 'erb file'
       create_view :foo, 'xml file', format: :xml
       mock_app do
-        get('/layout_test', provides: [:html, :xml]) { render :foo }
+        get('/layout_test', provides: %i[html xml]) { render :foo }
       end
       get '/layout_test'
       assert_equal 'this is an erb file', body
@@ -126,7 +125,7 @@ describe 'Rendering' do
       create_layout :baz, 'html file', format: :html
 
       mock_app do
-        get('/content_type_test', provides: [:html, :xml]) { render :baz }
+        get('/content_type_test', provides: %i[html xml]) { render :baz }
       end
 
       get '/content_type_test'
@@ -154,10 +153,10 @@ describe 'Rendering' do
     it 'should work with set content type not contained in rack-types' do
       create_view 'index.md.erb', 'Hello'
       mock_app do
-        get('/') {
+        get('/') do
           content_type 'text/x-markdown; charset=UTF-8'
           render 'index.erb', { layout: nil }
-        }
+        end
       end
       get '/'
       assert_equal 'Hello', body
@@ -167,7 +166,7 @@ describe 'Rendering' do
       create_layout :foo, 'html file', format: :html
 
       mock_app do
-        get('/default_rendering_test', provides: [:html, :xml]) { render :foo }
+        get('/default_rendering_test', provides: %i[html xml]) { render :foo }
       end
 
       @save = Padrino::Rendering::DEFAULT_RENDERING_OPTIONS
@@ -203,7 +202,7 @@ describe 'Rendering' do
         end
         controller :none do
           get('/') { render :erb, 'none' }
-          get('/with_foo_layout')  { render :erb, 'none with layout', layout: :foo }
+          get('/with_foo_layout') { render :erb, 'none with layout', layout: :foo }
         end
       end
       get '/foo'
@@ -297,7 +296,7 @@ describe 'Rendering' do
     create_layout :application, 'erb template <%= yield %>', format: :erb
     create_view 'foo', 'xml.instruct!', format: :builder
     mock_app do
-      get('/layout_test.xml' ) { render :foo }
+      get('/layout_test.xml') { render :foo }
     end
     get '/layout_test.xml'
     refute_match(/erb template/, body)
@@ -305,7 +304,6 @@ describe 'Rendering' do
   end
 
   describe 'for application render functionality' do
-
     it 'should work properly with logging and missing layout' do
       create_view :index, '<%= foo %>'
       mock_app do
@@ -435,7 +433,7 @@ describe 'Rendering' do
       create_view :foo, 'Im Html'
       create_view :foo, 'xml.rss', format: :rss
       mock_app do
-        get(:index, map: '/', provides: [:html, :rss]) { render 'foo' }
+        get(:index, map: '/', provides: %i[html rss]) { render 'foo' }
       end
       get '/', {}, { 'HTTP_ACCEPT' => 'text/html;q=0.9' }
       assert_equal 'Im Html', body
@@ -471,14 +469,15 @@ describe 'Rendering' do
     end
 
     it 'should resolve template content_type and locale' do
-      create_view :foo, 'Im Js',          format: :js
       create_view :foo, 'Im Erb'
-      create_view :foo, 'Im English Erb', locale: :en
-      create_view :foo, 'Im Italian Erb', locale: :it
+      create_view :foo, 'Im English Erb',              locale: :en
+      create_view :foo, 'Im Italian Erb',              locale: :it
+      create_view :foo, 'Im Js',          format: :js
       create_view :foo, 'Im English Js',  format: :js, locale: :en
       create_view :foo, 'Im Italian Js',  format: :js, locale: :it
+
       mock_app do
-        get('/foo', provides: [:html, :js]) { render :foo }
+        get('/foo', provides: %i[html js]) { render :foo }
       end
 
       I18n.enforce_available_locales = false
@@ -507,7 +506,7 @@ describe 'Rendering' do
     end
 
     it 'should resolve layouts from specific application' do
-      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      require File.expand_path("#{__dir__}/fixtures/apps/render")
       @app = RenderDemo2
       get '/blog/override'
       assert_equal 'otay', body
@@ -515,7 +514,7 @@ describe 'Rendering' do
 
     it 'should resolve templates and layouts located in absolute paths' do
       mock_app do
-        get('/foo') { render 'apps/views/blog/post', layout: 'layout', views: File.dirname(__FILE__)+'/fixtures' }
+        get('/foo') { render 'apps/views/blog/post', layout: 'layout', views: "#{__dir__}/fixtures" }
       end
       get '/foo'
       assert_match(/okay absolute layout/, body)
@@ -528,16 +527,18 @@ describe 'Rendering' do
       create_layout :foo, 'Hello <%= yield %> in a Erb-En layout', locale: :en
       create_layout :foo, 'Hello <%= yield %> in a Erb-It layout', locale: :it
       create_layout :foo, 'Hello <%= yield %> in a Erb layout'
-      create_view   :bar, 'Im Js',          format: :js
+
       create_view   :bar, 'Im Erb'
-      create_view   :bar, 'Im English Erb', locale: :en
-      create_view   :bar, 'Im Italian Erb', locale: :it
+      create_view   :bar, 'Im English Erb',              locale: :en
+      create_view   :bar, 'Im Italian Erb',              locale: :it
+      create_view   :bar, 'Im Js',          format: :js
       create_view   :bar, 'Im English Js',  format: :js, locale: :en
       create_view   :bar, 'Im Italian Js',  format: :js, locale: :it
       create_view   :bar, 'Im a json',      format: :json
+
       mock_app do
         layout :foo
-        get('/bar', provides: [:html, :js, :json]) { render :bar }
+        get('/bar', provides: %i[html js json]) { render :bar }
       end
 
       I18n.enforce_available_locales = false
@@ -565,18 +566,17 @@ describe 'Rendering' do
       assert_equal 'Im a json', body
       get '/bar.pk'
       assert_equal 404, status
-
     end
 
     it 'should resolve template location relative to controller name' do
-      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      require File.expand_path("#{__dir__}/fixtures/apps/render")
       @app = RenderDemo2
       get '/blog'
       assert_equal 'okay', body
     end
 
     it 'should resolve nested template location relative to controller name' do
-      require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/render')
+      require File.expand_path("#{__dir__}/fixtures/apps/render")
       @app = RenderDemo2
       get '/article/comment'
       assert_equal 'okay comment', body
@@ -590,12 +590,15 @@ describe 'Rendering' do
             yield
             @_out_buf << 'SPARTA!'
           end
+
           def is; 'IS.'; end
         end
+
         get '/' do
           render :erb, '<% container do %> <%= is %> <% end %>'
         end
       end
+
       get '/'
       assert ok?
       assert_equal 'THIS. IS. SPARTA!', body
@@ -630,7 +633,7 @@ describe 'Rendering' do
         end
 
         get '/' do
-          render  :erb, '<%== "<script></script>" %>'
+          render :erb, '<%== "<script></script>" %>'
         end
       end
 
@@ -706,7 +709,7 @@ describe 'Rendering' do
       class Application < Sinatra::Base
         register Padrino::Rendering
         get '/' do
-          render :post, views: File.dirname(__FILE__)+'/fixtures/apps/views/blog'
+          render :post, views: "#{__dir__}/fixtures/apps/views/blog"
         end
       end
       @app = Application.new
@@ -719,7 +722,7 @@ describe 'Rendering' do
     it 'should locate controller templates' do
       mock_app do
         disable :reload_templates
-        set :views, File.dirname(__FILE__)+'/fixtures/apps/views'
+        set :views, "#{__dir__}/fixtures/apps/views"
         controller :test do
           get :index do
             render 'test/post'
@@ -732,7 +735,7 @@ describe 'Rendering' do
     it 'should properly cache template path' do
       mock_app do
         disable :reload_templates
-        set :views, File.dirname(__FILE__)+'/fixtures/apps/views'
+        set :views, "#{__dir__}/fixtures/apps/views"
         controller :blog do
           get :index do
             render :post

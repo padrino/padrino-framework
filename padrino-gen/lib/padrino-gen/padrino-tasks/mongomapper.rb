@@ -8,7 +8,7 @@ if defined?(MongoMapper)
   namespace :mm do
     desc 'Drops all the collections for the database for the current Padrino.env'
     task drop: :environment do
-      MongoMapper.database.collections.reject {|c| c.name =~ /system/ }.each(&:drop)
+      MongoMapper.database.collections.reject { |c| c.name =~ /system/ }.each(&:drop)
     end
 
     desc 'Generates .yml files for I18n translations'
@@ -35,12 +35,16 @@ if defined?(MongoMapper)
               locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
             end
           else
-            locale     = "#{lang}:" + "\n" \
-                         '  models:' + "\n" \
-                         "    #{m}:" + "\n" \
-                         "      name: #{klass.human_name}" + "\n" \
-                         '      attributes:' + "\n" +
-                         columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
+            locale = <<~YAML
+              #{lang}:
+                models:
+                  #{m}:
+                    name: #{klass.model_name.human}
+                    attributes:
+            YAML
+
+            columns.each { |c| locale += "        #{c}: #{c.humanize}\n" }
+            locale.chomp!
           end
 
           $stdout.flush

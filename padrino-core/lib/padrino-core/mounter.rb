@@ -6,8 +6,8 @@ module Padrino
   # Stores the name of the application (app folder name) and url mount path.
   #
   # @example
-  #   Mounter.new("blog_app", :app_class => "Blog").to("/blog")
-  #   Mounter.new("blog_app", :app_file => "/path/to/blog/app.rb").to("/blog")
+  #   Mounter.new('blog_app', app_class: 'Blog').to('/blog')
+  #   Mounter.new('blog_app', app_file: '/path/to/blog/app.rb').to('/blog')
   #
   class Mounter
     DEFAULT_CASCADE = [404, 405]
@@ -33,14 +33,18 @@ module Padrino
       @gem       = options[:gem]       || Inflections.underscore(@app_class.split('::').first)
       @app_file  = options[:app_file]  || locate_app_file
       @app_obj   = options[:app_obj]   || app_constant || locate_app_object
+
       ensure_app_file! || ensure_app_object!
       unless padrino_application?
         @app_obj.extend ApplicationExtension
         @app_obj.mounter_options = options
       end
-      @app_root  = options[:app_root]  || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
+
+      @app_root  = options[:app_root] || (@app_obj.respond_to?(:root) && @app_obj.root || File.dirname(@app_file))
       @uri_root  = '/'
-      @cascade   = options[:cascade] ? options[:cascade] == true ? DEFAULT_CASCADE.dup : Array(options[:cascade]) : []
+      @cascade   = DEFAULT_CASCADE.dup if options[:cascade] == true
+      @cascade ||= options[:cascade] ? Array(options[:cascade]) : []
+
       Padrino::Reloader.exclude_constants << @app_class
     end
 
@@ -60,7 +64,7 @@ module Padrino
     #   Mounter.new("blog_app").to("/blog")
     #
     def to(mount_url)
-      @uri_root  = mount_url
+      @uri_root = mount_url
       Padrino.insert_mounted_app(self)
       self
     end
@@ -132,13 +136,13 @@ module Padrino
     def named_routes
       return [] unless app_obj.respond_to?(:routes)
 
-      app_obj.routes.map { |route|
+      app_obj.routes.map do |route|
         request_method = route.request_methods.first
         next if !route.name || request_method == 'HEAD'
         route_name = route.name.to_s
         route_name =
           if route.controller
-            route_name.split(' ', 2).map {|name| ":#{name}" }.join(', ')
+            route_name.split(' ', 2).map { |name| ":#{name}" }.join(', ')
           else
             ":#{route_name}"
           end
@@ -146,7 +150,7 @@ module Padrino
         original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
         full_path = File.join(uri_root, original_path)
         OpenStruct.new(verb: request_method, identifier: route.name, name: name_array, path: full_path)
-      }.compact
+      end.compact
     end
 
     ##
@@ -163,19 +167,16 @@ module Padrino
     #  the class object for the app if defined, nil otherwise.
     #
     def app_constant
-      klass = Object
-      app_class.split('::').each do |piece|
+      app_class.split('::').inject(Object) do |klass, piece|
         piece = piece.to_sym
-        if klass.const_defined?(piece, false)
-          klass = klass.const_get(piece)
-        else
-          return
-        end
+        break unless klass.const_defined?(piece, false)
+
+        klass.const_get(piece)
       end
-      klass
     end
 
     protected
+
     ##
     # Locates and requires the file to load the app constant.
     #
@@ -197,13 +198,11 @@ module Padrino
       candidates << app_const.app_file if app_const.respond_to?(:app_file)
       candidates << Padrino.first_caller if File.identical?(Padrino.first_caller.to_s, Padrino.called_from.to_s)
       candidates << Padrino.mounted_root(name.downcase, 'app.rb')
+
       simple_name = name.split('::').last.downcase
       mod_name = name.split('::')[0..-2].join('::')
-      Padrino.modules.each do |mod|
-        if mod.name == mod_name
-          candidates << mod.root(simple_name, 'app.rb')
-        end
-      end
+
+      Padrino.modules.each { |mod| candidates << mod.root(simple_name, 'app.rb') if mod.name == mod_name }
       candidates << Padrino.root('app', 'app.rb')
       candidates.find { |candidate| File.exist?(candidate) }
     end
@@ -212,7 +211,7 @@ module Padrino
     # Raises an exception unless app_file is located properly.
     #
     def ensure_app_file!
-      message = "Unable to locate source file for app '#{app_class}', try with :app_file => '/path/app.rb'"
+      message = "Unable to locate source file for app '#{app_class}', try with app_file: '/path/app.rb'"
       raise MounterException, message unless @app_file
     end
 
@@ -220,7 +219,7 @@ module Padrino
     # Raises an exception unless app_obj is defined properly.
     #
     def ensure_app_object!
-      message = "Unable to locate app for '#{app_class}', try with :app_class => 'MyAppClass'"
+      message = "Unable to locate app for '#{app_class}', try with app_class: 'MyAppClass'"
       raise MounterException, message unless @app_obj
     end
   end

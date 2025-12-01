@@ -54,8 +54,8 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
       adapter = config[:adapter]
       user, password, host = config[:user], config[:password], config[:host]
 
-      database       = config[:database]  || config[:path]
-      database.sub!(/^\//, '') unless adapter.start_with?('sqlite')
+      database = config[:database] || config[:path]
+      database.sub!(%r{^/}, '') unless adapter.start_with?('sqlite')
 
       charset        = config[:charset]   || ENV['CHARSET']   || 'utf8'
       collation      = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
@@ -71,8 +71,8 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
       adapter = config[:adapter]
       user, password, host = config[:user], config[:password], config[:host]
 
-      database       = config[:database] || config[:path]
-      database.sub!(/^\//, '') unless adapter.start_with?('sqlite')
+      database = config[:database] || config[:path]
+      database.sub!(%r{^/}, '') unless adapter.start_with?('sqlite')
 
       puts "=> Dropping database '#{database}'"
       Padrino::Generators::SqlHelpers.drop_db(adapter, user, password, host, database)
@@ -80,17 +80,17 @@ if PadrinoTasks.load?(:datamapper, defined?(DataMapper))
     end
 
     desc 'Drop the database, migrate from scratch and initialize with the seed data'
-    task reset: [:drop, :setup]
+    task reset: %i[drop setup]
 
     desc 'Create the database migrate and initialize with the seed data'
-    task setup: [:create, :migrate, :seed]
+    task setup: %i[create migrate seed]
   end
 
   task 'db:migrate:down' => 'dm:migrate:down'
   task 'db:migrate:up' => 'dm:migrate:up'
   task 'db:migrate' => 'dm:migrate'
-  task 'db:create'  => 'dm:create'
-  task 'db:drop'    => 'dm:drop'
-  task 'db:reset'   => 'dm:reset'
-  task 'db:setup'   => 'dm:setup'
+  task 'db:create' => 'dm:create'
+  task 'db:drop' => 'dm:drop'
+  task 'db:reset' => 'dm:reset'
+  task 'db:setup' => 'dm:setup'
 end

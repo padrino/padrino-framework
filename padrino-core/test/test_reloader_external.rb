@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/reloadable_apps/main/app')
+require_relative 'helper'
+require_relative 'fixtures/reloadable_apps/main/app'
 
 describe 'ExternalReloader' do
   describe 'for external app' do
@@ -12,7 +12,7 @@ describe 'ExternalReloader' do
 
     it 'should avoid reloading the file if its path is not started with Padrino.root' do
       @app = Padrino.application
-      Padrino.stub(:root, File.expand_path(File.dirname(__FILE__) + '/fixtures/reloadable_apps/main')) do
+      Padrino.stub(:root, File.expand_path("#{__dir__}/fixtures/reloadable_apps/main")) do
         get '/reloadable/external/base'
       end
       assert_equal 'Hello External App', body

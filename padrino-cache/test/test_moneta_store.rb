@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'Padrino::Cache - Moneta store' do
   def setup
@@ -34,7 +34,7 @@ describe 'Padrino::Cache - Moneta store' do
   end
 
   it 'set a value that expires' do
-    init_time = ( Time.now - 20 )
+    init_time = Time.now - 20
     Time.stub(:now, init_time) { Padrino.cache.store(@test_key, 'test', expires: 1) }
     Time.stub(:now, init_time + 20) { assert_nil Padrino.cache[@test_key] }
   end

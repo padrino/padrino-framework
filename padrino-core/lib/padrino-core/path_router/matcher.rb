@@ -4,7 +4,7 @@ module Padrino
   module PathRouter
     class Matcher
       # To count group of regexp
-      GROUP_REGEXP = %r{\((?!\?:|\?!|\?<=|\?<!|\?=).+?\)}
+      GROUP_REGEXP = /\((?!\?:|\?!|\?<=|\?<!|\?=).+?\)/
 
       ##
       # Constructs an instance of PathRouter::Matcher.
@@ -19,7 +19,7 @@ module Padrino
       # Matches a pattern with the route matcher.
       #
       def match(pattern)
-        if match_data = handler.match(pattern)
+        if (match_data = handler.match(pattern))
           match_data
         elsif pattern != '/' && pattern.end_with?('/')
           handler.match(pattern[0..-2])
@@ -42,7 +42,7 @@ module Padrino
           parts[handler.names.include?(key.to_s) ? 0 : 1][key] = val
         end
         expanded_path = handler.expand(:append, params)
-        expanded_path += ?? + Padrino::Utils.build_uri_query(query) unless query.empty?
+        expanded_path += "?#{Padrino::Utils.build_uri_query(query)}" unless query.empty?
         expanded_path
       end
 

@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 class Minitest::Spec
   def assert_query_equal(expected, actual, namespace = nil)
@@ -16,45 +16,39 @@ describe 'Padrino::Utils.build_uri_query' do
   end
 
   it 'should expand nested hashes' do
-    assert_query_equal 'person%5Blogin%5D=seckar&person%5Bname%5D=Nicholas',
-      person: { login: 'seckar', name: 'Nicholas' }
+    assert_query_equal 'person%5Blogin%5D=seckar&person%5Bname%5D=Nicholas', person: {
+      login: 'seckar', name: 'Nicholas'
+    }
   end
 
   it 'should expand deeply nested hashes' do
-    assert_query_equal 'account%5Bperson%5D%5Bid%5D=20&person%5Bid%5D=10',
-      { account: { person: { id: 20 } }, person: {id: 10} }
+    assert_query_equal 'account%5Bperson%5D%5Bid%5D=20&person%5Bid%5D=10', {
+      account: { person: { id: 20 } },
+      person: { id: 10 }
+    }
   end
 
   it 'should accept arrays' do
-    assert_query_equal 'person%5Bid%5D%5B%5D=10&person%5Bid%5D%5B%5D=20',
-      person: {id: [10, 20]}
+    assert_query_equal 'person%5Bid%5D%5B%5D=10&person%5Bid%5D%5B%5D=20', person: { id: [10, 20] }
   end
 
   it 'should accept empty arrays' do
-    assert_query_equal 'person%5B%5D=',
-      [],
-      'person'
+    assert_query_equal 'person%5B%5D=', [], 'person'
   end
 
   it 'should expand nested hashes' do
-    assert_query_equal '',
-      {}
-    assert_query_equal 'a=1&b%5Bc%5D=3',
-      { a: 1, b: { c: 3, d: {} } }
-    assert_query_equal '',
-      { a: {b: {c: {}}} }
-    assert_query_equal 'b%5Bc%5D=false&b%5Be%5D=&b%5Bf%5D=&p=12',
-      { p: 12, b: { c: false, e: nil, f: '' } }
-    assert_query_equal 'b%5Bc%5D=3&b%5Bf%5D=',
-      { b: { c: 3, k: {}, f: '' } }
-    assert_query_equal 'b=3',
-      {a: [], b: 3}
+    assert_query_equal '', {}
+    assert_query_equal 'a=1&b%5Bc%5D=3', { a: 1, b: { c: 3, d: {} } }
+    assert_query_equal '', { a: { b: { c: {} } } }
+    assert_query_equal 'b%5Bc%5D=false&b%5Be%5D=&b%5Bf%5D=&p=12', { p: 12, b: { c: false, e: nil, f: '' } }
+    assert_query_equal 'b%5Bc%5D=3&b%5Bf%5D=', { b: { c: 3, k: {}, f: '' } }
+    assert_query_equal 'b=3', { a: [], b: 3 }
   end
 
   it 'should accept namespace for hashes' do
-    assert_query_equal 'user%5Bname%5D=Nakshay&user%5Bnationality%5D=Indian', 
-      { name: 'Nakshay', nationality: 'Indian' },
-      'user'
+    assert_query_equal 'user%5Bname%5D=Nakshay&user%5Bnationality%5D=Indian', {
+      name: 'Nakshay', nationality: 'Indian'
+    }, 'user'
   end
 end
 
@@ -76,7 +70,7 @@ describe 'Padrino::Utils.deep_dup' do
   end
 
   it 'should recursively dup array with hash' do
-    array = [1, { a: 2, b: 3 } ]
+    array = [1, { a: 2, b: 3 }]
     dup = Padrino::Utils.deep_dup(array)
     dup[1][:c] = 4
     refute_includes array[1], :c
@@ -102,7 +96,7 @@ describe 'Padrino::Utils.deep_dup' do
     object = Object.new
     dup = Padrino::Utils.deep_dup(object)
     dup.instance_variable_set(:@a, 1)
-    assert !object.instance_variable_defined?(:@a)
+    refute object.instance_variable_defined?(:@a)
     assert dup.instance_variable_defined?(:@a)
   end
 

@@ -19,21 +19,21 @@ module Padrino
       # Implements filtering of url query params. Can prevent mass-assignment.
       #
       # @example
-      #   post :update, :params => [:name, :email]
-      #   post :update, :params => [:name, :id => Integer]
-      #   post :update, :params => [:name => proc{ |v| v.reverse }]
-      #   post :update, :params => [:name, :parent => [:name, :position]]
-      #   post :update, :params => false
-      #   post :update, :params => true
+      #   post :update, params: [:name, :email]
+      #   post :update, params: [:name, { id: Integer }]
+      #   post :update, params: [{ name: proc { |v| v.reverse } }]
+      #   post :update, params: [:name, { parent: [:name, :position] }]
+      #   post :update, params: false
+      #   post :update, params: true
       # @example
-      #   params :name, :email, :password => prox{ |v| v.reverse }
+      #   params :name, :email, password: proc { |v| v.reverse }
       #   post :update
       # @example
-      #   App.controller :accounts, :params => [:name, :position] do
+      #   App.controller :accounts, params: [:name, :position] do
       #     post :create
-      #     post :update, :with => [ :id ], :params => [:name, :position, :addition]
-      #     get :show, :with => :id, :params => false
-      #     get :search, :params => true
+      #     post :update, with: [:id], params: [:name, :position, :addition]
+      #     get :show, with: :id, params: false
+      #     get :search, params: true
       #   end
       #
       def params(*allowed_params)
@@ -49,10 +49,9 @@ module Padrino
       def prepare_allowed_params(allowed_params)
         param_filter = {}
         allowed_params.each do |key, value|
-          case
-          when key.kind_of?(Hash) && !value
+          if key.is_a?(Hash) && !value
             param_filter.update(prepare_allowed_params(key))
-          when value.kind_of?(Hash) || value.kind_of?(Array)
+          elsif value.is_a?(Hash) || value.is_a?(Array)
             param_filter[key.to_s] = prepare_allowed_params(value)
           else
             param_filter[key.to_s] = value == false ? false : (value || true)
@@ -75,37 +74,36 @@ module Padrino
       #   scalar classes are: Integer (empty string is cast to nil).
       #
       # @example
-      #   filter_params!( { "a" => "1", "b" => "abc", "d" => "drop" },
-      #                   { "a" => Integer, "b" => true } )
-      #   # => { "a" => 1, "b" => "abc" }
-      #   filter_params!( { "id" => "", "child" => { "name" => "manny" } },
-      #                   { "id" => Integer, "child" => { "name" => proc{ |v| v.camelize } } } )
-      #   # => { "id" => nil, "child" => { "name" => "Manny" } }
-      #   filter_params!( { "a" => ["1", "2", "3"] },
-      #                   { "a" => true } )
-      #   # => { "a" => ["1", "2", "3"] }
-      #   filter_params!( { "persons" => {"p-1" => { "name" => "manny", "age" => "50" }, "p-2" => { "name" => "richard", "age" => "50" } } },
-      #                   { "persons" => { "name" => true } } )
-      #   # => { "persons" => {"p-1" => { "name" => "manny" }, "p-2" => { "name" => "richard" } } }
+      #   filter_params!( { 'a' => '1', 'b' => 'abc', 'd' => 'drop' },
+      #                   { 'a' => Integer, 'b' => true } )
+      #   # => { 'a' => 1, 'b' => 'abc' }
+      #   filter_params!( { 'id' => '', 'child' => { 'name' => 'manny' } },
+      #                   { 'id' => Integer, 'child' => { 'name' => proc{ |v| v.camelize } } } )
+      #   # => { 'id' => nil, 'child' => { 'name' => 'Manny' } }
+      #   filter_params!( { 'a' => ['1', '2', '3'] },
+      #                   { 'a' => true } )
+      #   # => { 'a' => ['1', '2', '3'] }
+      #   filter_params!( { 'persons' => { 'p-1' => { 'name' => 'manny', 'age' => '50' }, 'p-2' => { 'name' => 'richard', 'age' => '50' } } },
+      #                   { 'persons' => { 'name' => true } } )
+      #   # => { 'persons' => { 'p-1' => { 'name' => 'manny' }, 'p-2' => { 'name' => 'richard' } } }
       #
       def filter_params!(params, allowed_params)
         params.each do |key, value|
           type = allowed_params[key]
-          next if value.kind_of?(Array) && type
-          case
-          when type.kind_of?(Hash) && value.kind_of?(Hash)
-            if key == Inflections.pluralize(key) && value.values.first.kind_of?(Hash)
+          next if value.is_a?(Array) && type
+          if type.is_a?(Hash) && value.is_a?(Hash)
+            if key == Inflections.pluralize(key) && value.values.first.is_a?(Hash)
               value.each do |array_index, array_value|
                 value[array_index] = filter_params!(array_value, type)
               end
             else
               params[key] = filter_params!(value, type)
             end
-          when type == Integer
+          elsif type == Integer
             params[key] = value.empty? ? nil : value.to_i
-          when type.kind_of?(Proc)
+          elsif type.is_a?(Proc)
             params[key] = type.call(value)
-          when type != true
+          elsif type != true
             params.delete(key)
           end
         end

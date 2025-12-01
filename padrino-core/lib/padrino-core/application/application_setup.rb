@@ -122,7 +122,7 @@ module Padrino
         configure :development do
           get '*__sinatra__/:image.png' do
             content_type :png
-            send_file(File.dirname(__FILE__) + "/../images/#{params[:image]}.png")
+            send_file("#{__dir__}/../images/#{params[:image]}.png")
           end
         end
       end
@@ -132,15 +132,18 @@ module Padrino
       #
       def default_errors
         configure :production do
+          return if errors.key?(::Exception)
+
           error ::Exception do
             logger.exception env['sinatra.error']
             halt(500, { 'content-type' => 'text/html' }, ['<h1>Internal Server Error</h1>'])
-          end unless errors.has_key?(::Exception)
+          end
         end
       end
 
       def setup_locale
         return unless defined? I18n
+
         Reloader.special_files += locale_path
         I18n.load_path << locale_path
         I18n.reload!
@@ -148,7 +151,7 @@ module Padrino
 
       # allow custome session management
       def setup_sessions(builder)
-        if sessions.kind_of?(Hash) && sessions[:use]
+        if sessions.is_a?(Hash) && sessions[:use]
           builder.use sessions[:use], sessions[:config] || {}
         else
           super
@@ -158,12 +161,11 @@ module Padrino
       # sets up csrf protection for the app
       def setup_csrf_protection(builder)
         check_csrf_protection_dependency
+        return unless protect_from_csrf?
 
-        if protect_from_csrf?
-          options = options_for_csrf_protection_setup
-          options.merge!(protect_from_csrf) if protect_from_csrf.kind_of?(Hash)
-          builder.use(options[:except] ? Padrino::AuthenticityToken : Rack::Protection::AuthenticityToken, options)
-        end
+        options = options_for_csrf_protection_setup
+        options.merge!(protect_from_csrf) if protect_from_csrf.is_a?(Hash)
+        builder.use(options[:except] ? Padrino::AuthenticityToken : Rack::Protection::AuthenticityToken, options)
       end
 
       # returns the options used in the builder for csrf protection setup
@@ -180,23 +182,23 @@ module Padrino
 
       # warn if the protect_from_csrf is active but sessions are not
       def check_csrf_protection_dependency
-        if protect_from_csrf? && !sessions? && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
-          warn(<<-ERROR)
-  `protect_from_csrf` is activated, but `sessions` seem to be off. To enable csrf
-  protection, use:
+        return unless protect_from_csrf? && !sessions? && !defined?(Padrino::IGNORE_CSRF_SETUP_WARNING)
 
-      enable :sessions
+        warn(<<~ERROR)
+          `protect_from_csrf` is activated, but `sessions` seem to be off. To enable csrf
+          protection, use:
 
-  or deactivate protect_from_csrf:
+              enable :sessions
 
-      disable :protect_from_csrf
+          or deactivate protect_from_csrf:
 
-  If you use a different session store, ignore this warning using:
+              disable :protect_from_csrf
 
-      # in boot.rb:
-      Padrino::IGNORE_CSRF_SETUP_WARNING = true
-          ERROR
-        end
+          If you use a different session store, ignore this warning using:
+
+              # in boot.rb:
+              Padrino::IGNORE_CSRF_SETUP_WARNING = true
+        ERROR
       end
     end
   end

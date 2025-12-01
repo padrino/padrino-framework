@@ -4,7 +4,6 @@ module Padrino
     # Responsible for the generating mailers and message definitions.
     #
     class Mailer < Thor::Group
-
       Padrino::Generators.add_generator(:mailer, self)
 
       def self.source_root; __dir__; end
@@ -17,11 +16,11 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen mailer generates a new Padrino mailer"
 
       argument     :name,      desc: 'The name of your padrino mailer'
-      argument     :actions,   desc: 'The delivery actions to add to your mailer',                                   type: :array, default: []
-      class_option :root,      desc: 'The root destination',                   aliases: '-r', default: '.',    type: :string
-      class_option :app,       desc: 'The application destination path',       aliases: '-a', default: '/app', type: :string
-      class_option :destroy,                                                      aliases: '-d', default: false,  type: :boolean
-      class_option :namespace, desc: 'The name space of your padrino project', aliases: '-n', default: '',     type: :string
+      argument     :actions,   desc: 'The delivery actions to add to your mailer',                default: [],     type: :array
+      class_option :root,      desc: 'The root destination',                       aliases: '-r', default: '.',    type: :string
+      class_option :app,       desc: 'The application destination path',           aliases: '-a', default: '/app', type: :string
+      class_option :destroy,                                                       aliases: '-d', default: false,  type: :boolean
+      class_option :namespace, desc: 'The name space of your padrino project',     aliases: '-n', default: '',     type: :string
 
       # Show help if no ARGV given.
       require_arguments!

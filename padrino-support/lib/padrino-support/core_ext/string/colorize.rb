@@ -44,7 +44,7 @@ class String
         define_method(color) do |target, mode_name = :default|
           mode = modes[mode_name] || modes[:default]
           "\e[#{mode};#{value}m" << target << "\e[0m"
-         end
+        end
       end
     end
   end

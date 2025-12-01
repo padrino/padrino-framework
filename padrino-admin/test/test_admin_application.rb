@@ -1,7 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'AdminApplication' do
-
   def setup
     load_fixture 'sequel'
   end
@@ -32,17 +31,16 @@ describe 'AdminApplication' do
 
       # Do a simple mapping
       access_control.roles_for :any do |role|
-        role.protect  '/foo'
+        role.protect '/foo'
       end
 
-      get '/foo', provides: [:html, :js] do
+      get '/foo', provides: %i[html js] do
         'foo'
       end
 
       get '/unauthenticated' do
         'unauthenticated'
       end
-
     end
 
     get '/foo'
@@ -110,7 +108,7 @@ describe 'AdminApplication' do
       # Prepare a basic page
       get '/login(/:role)?' do
         set_current_account(Account.send(params[:role])) if params[:role]
-        "logged as #{params[:role] || "any"}"
+        "logged as #{params[:role] || 'any'}"
       end
 
       get '/any'      do; 'any';      end
@@ -121,11 +119,11 @@ describe 'AdminApplication' do
     assert @app.access_control.allowed?(Account.admin, '/login')
     assert @app.access_control.allowed?(Account.admin, '/any')
     assert @app.access_control.allowed?(Account.admin, '/settings')
-    assert ! @app.access_control.allowed?(Account.admin, '/posts')
+    refute @app.access_control.allowed?(Account.admin, '/posts')
 
     assert @app.access_control.allowed?(Account.editor, '/login')
     assert @app.access_control.allowed?(Account.editor, '/any')
-    assert ! @app.access_control.allowed?(Account.editor, '/settings')
+    refute @app.access_control.allowed?(Account.editor, '/settings')
     assert @app.access_control.allowed?(Account.editor, '/posts')
 
     get '/login'
@@ -248,7 +246,7 @@ describe 'AdminApplication' do
       end
 
       get '/modules-prefixed' do
-        project_modules.map { |pm| "#{pm.name} => #{pm.path("/admin")}" }.join(', ')
+        project_modules.map { |pm| "#{pm.name} => #{pm.path('/admin')}" }.join(', ')
       end
     end
 

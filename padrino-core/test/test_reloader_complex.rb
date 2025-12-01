@@ -1,8 +1,7 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/complex')
+require_relative 'helper'
+require_relative 'fixtures/apps/complex'
 
 describe 'ComplexReloader' do
-
   describe 'for complex reload functionality' do
     before do
       Padrino.clear!
@@ -12,7 +11,7 @@ describe 'ComplexReloader' do
 
     it 'should correctly instantiate Complex(1-2)Demo fixture' do
       assert_equal ['/complex_1_demo', '/complex_2_demo'], Padrino.mounted_apps.map(&:uri_root)
-      assert_equal ['complex_1_demo', 'complex_2_demo'], Padrino.mounted_apps.map(&:name)
+      assert_equal %w[complex_1_demo complex_2_demo], Padrino.mounted_apps.map(&:name)
       assert Complex1Demo.reload?
       assert Complex2Demo.reload?
       assert_match %r{fixtures/apps/complex.rb}, Complex1Demo.app_file
@@ -44,7 +43,8 @@ describe 'ComplexReloader' do
       new_phrase = "The magick number is: #{rand(2**255)}!"
       buffer     = File.read(Complex1Demo.app_file)
       new_buffer = buffer.sub(/The magick number is: \d+!/, new_phrase)
-      new_buffer.sub!(/get\(:destroy\)/, 'get(:destroy, :with => :id)')
+      new_buffer.sub!(/get\(:destroy\)/, 'get(:destroy, with: :id)')
+
       begin
         File.open(Complex1Demo.app_file, 'w') { |f| f.write(new_buffer) }
         Time.stub(:now, Time.now + 2) { get '/complex_2_demo' }

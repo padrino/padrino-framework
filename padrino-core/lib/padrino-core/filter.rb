@@ -46,7 +46,7 @@ module Padrino
 
     def match_with_options?(request)
       user_agent = request.user_agent
-      @options.any? {|name, value| value === (name == :agent ? user_agent : request.send(name)) }
+      @options.any? { |name, value| value === (name == :agent ? user_agent : request.send(name)) }
     end
   end
 end

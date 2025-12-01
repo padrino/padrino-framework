@@ -24,8 +24,8 @@ module Mail # @private
 
       initialize_without_app(*args, &block)
     end
-    alias_method :initialize_without_app, :initialize
-    alias_method :initialize, :initialize_with_app
+    alias initialize_without_app initialize
+    alias initialize initialize_with_app
 
     ##
     # Setup like in Sinatra/Padrino apps content_type and template lookup.
@@ -98,9 +98,9 @@ module Mail # @private
     #
     # @example
     #  mail = Mail.new do
-    #    part :content_type => "multipart/alternative", :content_disposition => "inline" do |p|
-    #      p.part :content_type => "text/plain", :body => "test text\nline #2"
-    #      p.part :content_type => "text/html", :body => "<b>test</b> HTML<br/>\nline #2"
+    #    part content_type: 'multipart/alternative', content_disposition: 'inline' do |p|
+    #      p.part content_type: 'text/plain', body: "test text\nline #2"
+    #      p.part content_type: 'text/html', body: "<b>test</b> HTML<br/>\nline #2"
     #    end
     #  end
     #
@@ -116,13 +116,14 @@ module Mail # @private
     end
 
     def do_delivery_with_logging
-      logger.debug "Sending email to: #{destinations.join(" ")}"
-      encoded.each_line { |line| logger << ('  ' + line.strip) } if logger.debug?
+      logger.debug "Sending email to: #{destinations.join(' ')}"
+      encoded.each_line { |line| logger << "  #{line.strip}" } if logger.debug?
       do_delivery_without_logging
     end
+
     if Padrino.respond_to?(:logger)
-      alias_method :do_delivery_without_logging, :do_delivery
-      alias_method :do_delivery, :do_delivery_with_logging
+      alias do_delivery_without_logging do_delivery
+      alias do_delivery do_delivery_with_logging
     end
 
     ##
@@ -192,7 +193,7 @@ module Mail # @private
     # Return the path of this file, only for compatibility with Sinatra rendering methods.
     #
     def self.caller_locations
-      [[File.dirname(__FILE__), 1]]
+      [[__dir__, 1]]
     end
 
     ##
@@ -246,8 +247,8 @@ module Mail # @private
       mime = content_type_without_symbol(value)
       Padrino::Mailer::Mime.mime_type(mime)
     end
-    alias_method :content_type_without_symbol, :content_type
-    alias_method :content_type, :content_type_with_symbol
+    alias content_type_without_symbol content_type
+    alias content_type content_type_with_symbol
 
     private
 
@@ -276,7 +277,7 @@ module Mail # @private
       self.body = super(engine, data, options, locals, &block) if provides.empty?
     end
 
-    alias_method :original_partial, :partial if instance_methods.include?(:partial)
+    alias original_partial partial if instance_methods.include?(:partial)
     def partial(template, options = {}, &block)
       raise "gem 'padrino-helpers' is required to render partials" unless respond_to?(:original_partial)
       self.body = original_partial(template, options, &block)

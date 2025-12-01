@@ -1,87 +1,87 @@
-MINITEST_SETUP = <<-TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
-RACK_ENV = 'test' unless defined?(RACK_ENV)
-require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+MINITEST_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
+  RACK_ENV = 'test' unless defined?(RACK_ENV)
+  require_relative '../config/boot'
+  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
 
-class Minitest::Spec
-  include Rack::Test::Methods
+  class Minitest::Spec
+    include Rack::Test::Methods
 
-  # You can use this method to custom specify a Rack app
-  # you want rack-test to invoke:
-  #
-  #   app CLASS_NAME
-  #   app CLASS_NAME.tap { |a| }
-  #   app(CLASS_NAME) do
-  #     set :foo, :bar
-  #   end
-  #
-  def app(app = nil, &blk)
-    @app ||= block_given? ? app.instance_eval(&blk) : app
-    @app ||= Padrino.application
+    # You can use this method to custom specify a Rack app
+    # you want rack-test to invoke:
+    #
+    #   app CLASS_NAME
+    #   app CLASS_NAME.tap { |a| }
+    #   app(CLASS_NAME) do
+    #     set :foo, :bar
+    #   end
+    #
+    def app(app = nil, &blk)
+      @app ||= block_given? ? app.instance_eval(&blk) : app
+      @app ||= Padrino.application
+    end
   end
-end
 TEST
 
-MINITEST_RAKE = <<-TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_RAKE)
-require 'rake/testtask'
+MINITEST_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_RAKE)
+  require 'rake/testtask'
 
-test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
+  test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
 
-test_tasks.each do |folder|
-  Rake::TestTask.new("test:\#{folder}") do |test|
-    test.pattern = "test/\#{folder}/**/*_test.rb"
-    test.verbose = true
+  test_tasks.each do |folder|
+    Rake::TestTask.new("test:\#{folder}") do |test|
+      test.pattern = "test/\#{folder}/**/*_test.rb"
+      test.verbose = true
+    end
   end
-end
 
-desc "Run application test suite"
-task 'test' => test_tasks.map { |f| "test:\#{f}" }
+  desc "Run application test suite"
+  task 'test' => test_tasks.map { |f| "test:\#{f}" }
 
-task :default => :test
+  task default: :test
 TEST
 
-MINITEST_CONTROLLER_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_CONTROLLER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+MINITEST_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_CONTROLLER_TEST)
+  require File.expand_path("\#{__dir__}/../../test_config.rb")
 
-describe "!PATH!" do
-  before do
-    get "!EXPANDED_PATH!"
-  end
+  describe "!PATH!" do
+    before do
+      get "!EXPANDED_PATH!"
+    end
 
-  it "should return hello world text" do
-    assert_equal "Hello World", last_response.body
+    it "should return hello world text" do
+      assert_equal "Hello World", last_response.body
+    end
   end
-end
 TEST
 
-MINITEST_MODEL_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+MINITEST_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_MODEL_TEST)
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
-describe "!NAME! Model" do
-  it 'can construct a new instance' do
-    @!DNAME! = !NAME!.new
-    refute_nil @!DNAME!
+  describe "!NAME! Model" do
+    it 'can construct a new instance' do
+      @!DNAME! = !NAME!.new
+      refute_nil @!DNAME!
+    end
   end
-end
 TEST
 
-MINITEST_HELPER_TEST = <<-TEST unless defined?(MINITEST_HELPER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+MINITEST_HELPER_TEST = <<~TEST unless defined?(MINITEST_HELPER_TEST)
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
-describe "!NAME!" do
-  before do
-    @helpers = Class.new
-    @helpers.extend !NAME!
-  end
+  describe "!NAME!" do
+    before do
+      @helpers = Class.new
+      @helpers.extend !NAME!
+    end
 
-  def helpers
-    @helpers
-  end
+    def helpers
+      @helpers
+    end
 
-  it "should return nil" do
-    assert_nil helpers.foo
+    it "should return nil" do
+      assert_nil helpers.foo
+    end
   end
-end
 TEST
 
 def setup_test

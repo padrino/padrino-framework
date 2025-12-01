@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require_relative 'helper'
+require_relative 'fixtures/markup_app/app'
 
 describe 'FormatHelpers' do
   include Padrino::Helpers::FormatHelpers
@@ -15,7 +15,7 @@ describe 'FormatHelpers' do
   describe 'for #simple_format method' do
     it 'should format simple text into html format' do
       actual_text = simple_format("Here is some basic text...\n...with a line break.")
-      assert_equal true, actual_text.html_safe?
+      assert actual_text.html_safe?
       assert_equal "<p>Here is some basic text...\n<br />...with a line break.</p>", actual_text
     end
 
@@ -68,9 +68,9 @@ describe 'FormatHelpers' do
     end
     it 'should return proper formatting for default width' do
       actual_text = word_wrap((1..50).to_a.join(' '))
-      assert_equal (1..30).to_a.join(' ') + "\n" + (31..50).to_a.join(' '), actual_text
+      assert_equal "#{(1..30).to_a.join(' ')}\n#{(31..50).to_a.join(' ')}", actual_text
       actual_text = word_wrap((1..50).to_a.join(' '), 80)
-      assert_equal (1..30).to_a.join(' ') + "\n" + (31..50).to_a.join(' '), actual_text
+      assert_equal "#{(1..30).to_a.join(' ')}\n#{(31..50).to_a.join(' ')}", actual_text
     end
   end
 
@@ -103,7 +103,10 @@ describe 'FormatHelpers' do
 
   describe 'for #truncate_words method' do
     it 'should support default truncation' do
-      actual_text = truncate_words('Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about interesting people, but most of them were about the ways of fairies and giants.')
+      actual_text = truncate_words(<<~TEXT.chomp)
+        Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about interesting people,
+        but most of them were about the ways of fairies and giants.
+      TEXT
       assert_equal 'Long before books were made, people told stories. They told them to one another and to the children as they sat before the fire. Many of these stories were about...', actual_text
     end
     it 'should support specifying length' do
@@ -132,29 +135,29 @@ describe 'FormatHelpers' do
       assert_equal '&lt;h1&gt;hello&lt;/h1&gt;', h!('<h1>hello</h1>')
     end
     it 'should mark escaped text as safe' do
-      assert_equal false, '<h1>hello</h1>'.html_safe?
-      assert_equal true, h('<h1>hello</h1>').html_safe?
-      assert_equal true, h!('', 'default').html_safe?
+      refute '<h1>hello</h1>'.html_safe?
+      assert h('<h1>hello</h1>').html_safe?
+      assert h!('', 'default').html_safe?
     end
   end
 
   describe 'for #time_ago_in_words method' do
-    A_DAY = 24*60*60
+    A_DAY = 24 * 60 * 60
 
     it 'should less than 5 seconds' do
       assert_equal 'less than 5 seconds', time_ago_in_words(Time.now, true)
     end
     it 'should less than 10 seconds' do
-      assert_equal 'less than 10 seconds', time_ago_in_words(Time.now-5, true)
+      assert_equal 'less than 10 seconds', time_ago_in_words(Time.now - 5, true)
     end
     it 'should less than 20 seconds' do
-      assert_equal 'less than 20 seconds', time_ago_in_words(Time.now-10, true)
+      assert_equal 'less than 20 seconds', time_ago_in_words(Time.now - 10, true)
     end
     it 'should less than a minute' do
-      assert_equal 'less than a minute', time_ago_in_words(Time.now-40, true)
+      assert_equal 'less than a minute', time_ago_in_words(Time.now - 40, true)
     end
     it 'should 2 minutes' do
-      assert_equal '2 minutes', time_ago_in_words(Time.now-120, true)
+      assert_equal '2 minutes', time_ago_in_words(Time.now - 120, true)
     end
     it 'should display today' do
       assert_equal 'less than a minute', time_ago_in_words(Time.now)
@@ -166,43 +169,43 @@ describe 'FormatHelpers' do
       assert_equal '1 day', time_ago_in_words(Time.now + A_DAY)
     end
     it 'should return future number of days' do
-      assert_equal '4 days', time_ago_in_words(Time.now + 4*A_DAY)
+      assert_equal '4 days', time_ago_in_words(Time.now + 4 * A_DAY)
     end
     it 'should return past days ago' do
-      assert_equal '4 days', time_ago_in_words(Time.now - 4*A_DAY)
+      assert_equal '4 days', time_ago_in_words(Time.now - 4 * A_DAY)
     end
     it 'should return formatted archived date' do
-      assert_equal '3 months', time_ago_in_words(Time.now - 100*A_DAY)
+      assert_equal '3 months', time_ago_in_words(Time.now - 100 * A_DAY)
     end
     it 'should return formatted archived year date' do
-      assert_equal 'over 1 year', time_ago_in_words(Time.now - 500*A_DAY)
+      assert_equal 'over 1 year', time_ago_in_words(Time.now - 500 * A_DAY)
     end
     it 'should display now as a minute ago' do
       assert_equal '1 minute', time_ago_in_words(Time.now - 60)
     end
     it 'should display a few minutes ago' do
-      assert_equal '4 minutes', time_ago_in_words(Time.now - 4*60)
+      assert_equal '4 minutes', time_ago_in_words(Time.now - 4 * 60)
     end
     it 'should display an hour ago' do
-      assert_equal 'about 1 hour', time_ago_in_words(Time.now - 60*60 + 5)
+      assert_equal 'about 1 hour', time_ago_in_words(Time.now - 60 * 60 + 5)
     end
     it 'should display a few hours ago' do
-      assert_equal 'about 3 hours', time_ago_in_words(Time.now - 3*60*60 + 5*60)
+      assert_equal 'about 3 hours', time_ago_in_words(Time.now - 3 * 60 * 60 + 5 * 60)
     end
     it 'should display a few days ago' do
-      assert_equal '5 days', time_ago_in_words(Time.now - 5*A_DAY - 5*60)
+      assert_equal '5 days', time_ago_in_words(Time.now - 5 * A_DAY - 5 * 60)
     end
     it 'should display a month ago' do
-      assert_equal 'about 1 month', time_ago_in_words(Time.now - 32*A_DAY + 5*60)
+      assert_equal 'about 1 month', time_ago_in_words(Time.now - 32 * A_DAY + 5 * 60)
     end
     it 'should display a few months ago' do
-      assert_equal '6 months', time_ago_in_words(Time.now - 180*A_DAY - 5*60)
+      assert_equal '6 months', time_ago_in_words(Time.now - 180 * A_DAY - 5 * 60)
     end
     it 'should display a year ago' do
-      assert_equal 'about 1 year', time_ago_in_words(Time.now - 365*A_DAY - 5*60)
+      assert_equal 'about 1 year', time_ago_in_words(Time.now - 365 * A_DAY - 5 * 60)
     end
     it 'should display a few years ago' do
-      assert_equal 'over 7 years', time_ago_in_words(Time.now - 2800*A_DAY - 5*60)
+      assert_equal 'over 7 years', time_ago_in_words(Time.now - 2800 * A_DAY - 5 * 60)
     end
   end
 
@@ -224,8 +227,8 @@ describe 'FormatHelpers' do
       assert_equal '<data-confirm=\"are you sure\">', js_escape_html(SafeBuffer.new('<data-confirm="are you sure">'))
     end
     it 'should keep html_safe content html_safe' do
-      assert_equal false, js_escape_html('"hello"').html_safe?
-      assert_equal true, js_escape_html(SafeBuffer.new('"hello"')).html_safe?
+      refute js_escape_html('"hello"').html_safe?
+      assert js_escape_html(SafeBuffer.new('"hello"')).html_safe?
     end
   end
 end

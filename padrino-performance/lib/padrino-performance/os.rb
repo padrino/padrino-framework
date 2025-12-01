@@ -8,7 +8,7 @@ module Padrino
       end
 
       def self.mac?
-       (/darwin/ =~ RbConfig::CONFIG['target_os']) != nil
+        (/darwin/ =~ RbConfig::CONFIG['target_os']) != nil
       end
 
       def self.unix?

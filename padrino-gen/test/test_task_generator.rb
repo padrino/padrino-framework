@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'TaskGenerator' do
   def setup
@@ -33,7 +33,7 @@ describe 'TaskGenerator' do
       capture_io { generate(:task, 'foo', '--description=This is a sample', "-r=#{@apptmp}/sample_project") }
       file_path = "#{@apptmp}/sample_project/tasks/foo.rake"
       assert_no_match_in_file(/namespace/, file_path)
-      assert_match_in_file(/desc "This is a sample"/, file_path)
+      assert_match_in_file(/desc 'This is a sample'/, file_path)
       assert_match_in_file(/task :foo => :environment do/, file_path)
     end
 
@@ -51,7 +51,7 @@ describe 'TaskGenerator' do
       capture_io { generate(:task, 'DemoTask', '--namespace=Sample', '--description=This is a sample', "-r=#{@apptmp}/sample_project") }
       file_path = "#{@apptmp}/sample_project/tasks/sample_demo_task.rake"
       assert_match_in_file(/namespace :sample do/, file_path)
-      assert_match_in_file(/desc "This is a sample"/, file_path)
+      assert_match_in_file(/desc 'This is a sample'/, file_path)
       assert_match_in_file(/task :demo_task => :environment do/, file_path)
     end
 
@@ -59,7 +59,7 @@ describe 'TaskGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       Padrino.bin_gen('task', 'DemoTask', '--namespace=Sample', '--description=This is a sample', "-r=#{@apptmp}/sample_project", out: File::NULL)
       file_path = "#{@apptmp}/sample_project/tasks/sample_demo_task.rake"
-      assert_match_in_file(/desc "This is a sample"/, file_path)
+      assert_match_in_file(/desc 'This is a sample'/, file_path)
     end
   end
 end

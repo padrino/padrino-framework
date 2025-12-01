@@ -46,11 +46,9 @@ module Padrino
           app._padrino_mailer = Mail
         }
         app.helpers Padrino::Mailer::Helpers
-        unless app.respond_to?(:mailer)
-          app.send(:extend, Padrino::Mailer::Helpers::ClassMethods)
-        end
+        app.send(:extend, Padrino::Mailer::Helpers::ClassMethods) unless app.respond_to?(:mailer)
       end
-      alias :included :registered
+      alias included registered
     end
   end
 end

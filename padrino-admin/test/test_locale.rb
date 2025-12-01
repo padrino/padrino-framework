@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'Filters' do
   Dir[File.expand_path('../lib/padrino-admin/locale/admin/*.yml', __dir__)].each do |file|

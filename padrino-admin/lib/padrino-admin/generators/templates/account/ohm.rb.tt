@@ -36,7 +36,7 @@ class Account < Ohm::Model
   #
   def self.authenticate(email, password)
     account = with(:email, email) if email.present?
-    account && account.has_password?(password) ? account : nil
+    account if account&.has_password?(password)
   end
 
   ##
@@ -50,7 +50,7 @@ class Account < Ohm::Model
   # This method is used by Admin Sessions Controller for login bypass.
   #
   def self.first
-    first_id = key[:all].sort(:order => "asc", :limit => [0,1]).first
+    first_id = key[:all].sort(order: "asc", limit: [0, 1]).first
     self[first_id] if first_id
   end
 

@@ -3,11 +3,13 @@ require 'pathname'
 module Padrino
   module Generators
     # Raised when an application does not have a resolved root path.
-    class  AppRootNotFound < RuntimeError; end
+    class AppRootNotFound < RuntimeError; end
+
     ##
     # Default helper name for use in tiny app skeleton generator.
     #
     DEFAULT_HELPER_NAME = 'Helper'.freeze
+
     ##
     # Common actions needed to support project and component generation.
     #
@@ -15,6 +17,7 @@ module Padrino
       def self.included(base)
         base.extend(ClassMethods)
       end
+
       ##
       # Avoids editing destination file if it does not exist.
       #
@@ -54,8 +57,8 @@ module Padrino
       #   apply_component_for('rr', :mock)
       #
       def apply_component_for(choice, component)
-        # I need to override Thor#apply because for unknow reason :verbose => false break tasks.
-        path = File.expand_path(File.dirname(__FILE__) + "/components/#{component.to_s.pluralize}/#{choice}.rb")
+        # I need to override Thor#apply because for unknown reason verbose: false break tasks.
+        path = File.expand_path(__dir__ + "/components/#{component.to_s.pluralize}/#{choice}.rb")
         say_status :apply, "#{component.to_s.pluralize}/#{choice}"
         shell.padding += 1
         instance_eval(File.read(path))
@@ -127,7 +130,7 @@ module Padrino
       #
       # @example
       #   retrieve_component_config(...)
-      #   # => { :mock => 'rr', :test => 'rspec', ... }
+      #   # => { mock: 'rr', test: 'rspec', ... }
       #
       def retrieve_component_config(target)
         YAML.load_file(target)
@@ -217,7 +220,7 @@ module Padrino
       #
       def already_exists?(name, project_name = nil)
         project_name = project_name ? (Object.const_get(project_name) rescue nil) : nil
-        Object.const_defined?(name) || (project_name&.const_defined?(name))
+        Object.const_defined?(name) || project_name&.const_defined?(name)
       end
 
       ##
@@ -266,11 +269,11 @@ module Padrino
 
           say 'Autodetecting project namespace using folder name.', :red
           say ''
-          say <<-WARNING, :red
-From v0.11.0 on, applications should have a `namespace` setting
-in their .components file. Please include a line like the following
-in your .components file:
-WARNING
+          say <<~WARNING, :red
+            From v0.11.0 on, applications should have a `namespace` setting
+            in their .components file. Please include a line like the following
+            in your .components file:
+          WARNING
           say "\t:namespace: #{detected_namespace}", :yellow
           say ''
 
@@ -304,8 +307,8 @@ WARNING
       #
       # @example
       #   require_dependencies('active_record')
-      #   require_dependencies('mocha', 'bacon', :group => 'test')
-      #   require_dependencies('json', :version => ">=1.2.3")
+      #   require_dependencies('mocha', 'bacon', group: 'test')
+      #   require_dependencies('json', version: ">=1.2.3")
       #
       def require_dependencies(*gem_names)
         options = gem_names.last.is_a?(Hash) ? gem_names.pop : {}
@@ -322,13 +325,13 @@ WARNING
       #
       # @example
       #   insert_into_gemfile(name)
-      #   insert_into_gemfile(name, :group => 'test', :require => 'foo')
-      #   insert_into_gemfile(name, :group => 'test', :version => ">1.2.3")
+      #   insert_into_gemfile(name, group: 'test', require: 'foo')
+      #   insert_into_gemfile(name, group: 'test', version: ">1.2.3")
       #
       def insert_into_gemfile(name, options = {})
         after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
         version       = options.delete(:version)
-        gem_options   = options.map { |k, v| k.to_s == 'require' && [true, false].include?(v) ? ":#{k} => #{v}" : ":#{k} => '#{v}'" }.join(', ')
+        gem_options   = options.map { |k, v| k.to_s == 'require' && [true, false].include?(v) ? "#{k}: #{v}" : "#{k}: '#{v}'" }.join(', ')
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"
         write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"
@@ -410,7 +413,7 @@ WARNING
       #
       def require_contrib(contrib)
         insert_into_gemfile 'padrino-contrib'
-        contrib = "require '" + File.join('padrino-contrib', contrib) + "'\n"
+        contrib = "require '#{File.join('padrino-contrib', contrib)}'\n"
         inject_into_file destination_root('/config/boot.rb'), contrib, before: "\nPadrino.load!"
       end
 
@@ -446,14 +449,14 @@ WARNING
       #   check_app_existence 'app'
       #
       def check_app_existence(app)
-        unless File.exist?(destination_root(app))
-          say
-          say '================================================================='
-          say "Unable to locate '#{app.underscore.camelize}' application        "
-          say '================================================================='
-          say
-          raise SystemExit
-        end
+        return if File.exist?(destination_root(app))
+
+        say
+        say '================================================================='
+        say "Unable to locate '#{app.underscore.camelize}' application        "
+        say '================================================================='
+        say
+        raise SystemExit
       end
 
       ##
@@ -498,9 +501,9 @@ WARNING
       #
       def valid_constant?(name)
         if name =~ /^\d/
-          fail ::NameError, "Constant name #{name} cannot start with numbers"
+          raise ::NameError, "Constant name #{name} cannot start with numbers"
         elsif name =~ /^\W/
-          fail ::NameError, "Constant name #{name} cannot start with non-word character"
+          raise ::NameError, "Constant name #{name} cannot start with non-word character"
         end
       end
 
@@ -516,7 +519,7 @@ WARNING
       #
       def validate_namespace(name)
         valid_constant? name
-        name.match(/^[[:alnum:]_]+$/) || fail(::NameError, "Namespace '#{name}' must consist only of alphanumeric characters or '_'")
+        name.match(/^[[:alnum:]_]+$/) || raise(::NameError, "Namespace '#{name}' must consist only of alphanumeric characters or '_'")
       end
 
       ##
@@ -555,7 +558,7 @@ WARNING
         #   Additional parameters for component choice.
         #
         # @example
-        #   component_option :test, "Testing framework", :aliases => '-t', :choices => [:bacon, :shoulda]
+        #   component_option :test, 'Testing framework', aliases: '-t', choices: [:bacon, :shoulda]
         #
         def component_option(name, caption, options = {})
           (@component_types   ||= []) << name # TODO: use ordered hash and combine with choices below
@@ -569,15 +572,15 @@ WARNING
         #
         def defines_component_options(options = {})
           [
-            [ :orm,        'database engine',    { aliases: '-d', default: :none }],
-            [ :test,       'testing framework',  { aliases: '-t', default: :none }],
-            [ :mock,       'mocking library',    { aliases: '-m', default: :none }],
-            [ :script,     'javascript library', { aliases: '-s', default: :none }],
-            [ :renderer,   'template engine',    { aliases: '-e', default: :none }],
-            [ :stylesheet, 'stylesheet engine',  { aliases: '-c', default: :none }]
+            [:orm,        'database engine',    { aliases: '-d', default: :none }],
+            [:test,       'testing framework',  { aliases: '-t', default: :none }],
+            [:mock,       'mocking library',    { aliases: '-m', default: :none }],
+            [:script,     'javascript library', { aliases: '-s', default: :none }],
+            [:renderer,   'template engine',    { aliases: '-e', default: :none }],
+            [:stylesheet, 'stylesheet engine',  { aliases: '-c', default: :none }]
           ].each do |name, caption, opts|
             opts[:default] = '' if options[:default] == false
-            component_option name, caption, opts.merge(choices: Dir["#{File.dirname(__FILE__)}/components/#{name.to_s.pluralize}/*.rb"].map {|lib| File.basename(lib, '.rb').to_sym})
+            component_option name, caption, opts.merge(choices: Dir["#{__dir__}/components/#{name.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb').to_sym })
           end
         end
 

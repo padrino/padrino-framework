@@ -2,7 +2,6 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
   require 'mongoid'
 
   namespace :mi do
-
     if Mongoid::VERSION =~ /^[012]\./
       # Mongoid 2 API
       def mongoid_collections
@@ -50,27 +49,26 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
           admin.command(
             renameCollection: "#{db_name}.#{collection.name}",
             to: "#{db_name}.#{new_name}",
-            dropTarget: true)
+            dropTarget: true
+          )
         end
       end
     end
 
     desc 'Drops all the collections for the database for the current Padrino.env'
     task drop: :environment do
-      mongoid_collections.reject {|c| c.name =~ /system/ }.each(&:drop)
+      mongoid_collections.reject { |c| c.name =~ /system/ }.each(&:drop)
     end
 
     # Helper to retrieve a list of models.
     def get_mongoid_models
       documents = []
       Dir['{app,.}/models/**/*.rb'].sort.each do |file|
-        model_path = file[0..-4].split('/')[2..-1]
+        model_path = file[0..-4].split('/')[2..]
 
         begin
           klass = model_path.map(&:classify).join('::').constantize
-          if klass.ancestors.include?(Mongoid::Document) && !klass.embedded
-            documents << klass
-          end
+          documents << klass if klass.ancestors.include?(Mongoid::Document) && !klass.embedded
         rescue StandardError
           # Just for non-mongoid objects that don't have the embedded
           # attribute at the class level.
@@ -191,12 +189,16 @@ if PadrinoTasks.load?(:mongoid, defined?(Mongoid))
               locale += "\n        #{c}: #{c.humanize}" unless locale.include?("#{c}:")
             end
           else
-            locale     = "#{lang}:" + "\n" \
-            '  models:' + "\n" \
-            "    #{m}:" + "\n" \
-            "      name: #{klass.name}" + "\n" \
-            '      attributes:' + "\n" +
-            columns.map { |c| "        #{c}: #{c.humanize}" }.join("\n")
+            locale = <<~YAML
+              #{lang}:
+                models:
+                  #{m}:
+                    name: #{klass.model_name.human}
+                    attributes:
+            YAML
+
+            columns.each { |c| locale += "        #{c}: #{c.humanize}\n" }
+            locale.chomp!
           end
 
           $stdout.flush

@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../helper')
+require_relative '../helper'
 
 describe 'AdminAppGenerator' do
   before do
@@ -53,10 +53,10 @@ describe 'AdminAppGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
-      assert_match_in_file 'Padrino.mount("SampleProject::Admin", :app_file => Padrino.root(\'admin/app.rb\')).to("/admin")', "#{@apptmp}/sample_project/config/apps.rb"
+      assert_match_in_file %(Padrino.mount('SampleProject::Admin', app_file: Padrino.root('admin/app.rb')).to('/admin')), "#{@apptmp}/sample_project/config/apps.rb"
       assert_match_in_file 'module SampleProject', "#{@apptmp}/sample_project/admin/app.rb"
       assert_match_in_file 'class Admin < Padrino::Application', "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file 'role.project_module :accounts, \'/accounts\'', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file "role.project_module :accounts, '/accounts'", "#{@apptmp}/sample_project/admin/app.rb"
     end
 
     it 'should generate the master app' do
@@ -143,7 +143,7 @@ describe 'AdminAppGenerator' do
       assert_match_in_file(/User/, "#{@apptmp}/sample_project/models/user.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
       assert_no_match_in_file(/[^_]account/i, "#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
-      assert_match_in_file 'role.project_module :users, \'/users\'', "#{@apptmp}/sample_project/admin/app.rb"
+      assert_match_in_file "role.project_module :users, '/users'", "#{@apptmp}/sample_project/admin/app.rb"
     end
 
     it 'should correctly generate a new padrino admin application with model in non-default application path' do
@@ -217,13 +217,13 @@ describe 'AdminAppGenerator' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
 
       # Add seeds file
-      FileUtils.mkdir_p @apptmp + '/sample_project/db' unless File.exist?(@apptmp + '/sample_project/db')
-      File.open(@apptmp + '/sample_project/db/seeds.rb', 'w+') do |seeds_rb|
+      FileUtils.mkdir_p "#{@apptmp}/sample_project/db" unless File.exist?("#{@apptmp}/sample_project/db")
+      File.open("#{@apptmp}/sample_project/db/seeds.rb", 'w+') do |seeds_rb|
         seeds_rb.puts '# Old Seeds Content'
       end
 
       out, = capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      refute_match(/Overwrite\s.*?\/db\/seeds.rb/, out)
+      refute_match(%r{Overwrite\s.*?/db/seeds.rb}, out)
 
       assert_file_exists "#{@apptmp}/sample_project/db/seeds.old"
       assert_match_in_file 'Account.new(', "#{@apptmp}/sample_project/db/seeds.rb"

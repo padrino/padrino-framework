@@ -13,7 +13,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       task :to, [:version] => :skeleton do |_t, args|
         version = (args[:version] || env_migration_version).to_s.strip
         ::Sequel.extension :migration
-        fail 'No MIGRATION_VERSION was provided' if version.empty?
+        raise 'No MIGRATION_VERSION was provided' if version.empty?
         ::Sequel::Migrator.apply(Sequel::Model.db, 'db/migrate', version.to_i)
         puts "<= sq:migrate:to[#{version}] executed"
       end
@@ -41,7 +41,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       config = Sequel::Model.db.opts
       user, password, host = config[:user], config[:password], config[:host]
       database = config[:database]
-      charset = config[:charset] || ENV['CHARSET']   || 'utf8'
+      charset = config[:charset] || ENV['CHARSET'] || 'utf8'
       collation = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
 
       puts "=> Creating database '#{database}'"
@@ -71,7 +71,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
     end
 
     desc 'Drop the database, migrate from scratch and initialize with the seed data'
-    task reset: ['drop', 'create', 'migrate', 'seed']
+    task reset: %w[drop create migrate seed]
 
     task seed: :environment do
       missing_model_features = Padrino.send(:default_dependency_paths) - Padrino.send(:dependency_paths)

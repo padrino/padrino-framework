@@ -14,7 +14,7 @@ module Padrino
         def orm
           fetch_component_choice(:orm).to_sym rescue :activerecord
         end
-        alias :adapter :orm
+        alias adapter orm
 
         ##
         # Tell us which rendering engine you are using.
@@ -27,14 +27,14 @@ module Padrino
         # Tell us for now which orm we support
         #
         def supported_orm
-          [:minirecord, :datamapper, :activerecord, :mongomapper, :mongoid, :couchrest, :sequel, :ohm, :dynamoid]
+          %i[minirecord datamapper activerecord mongomapper mongoid couchrest sequel ohm dynamoid]
         end
 
         ##
         # Tell us for now which rendering engine we support.
         #
         def supported_ext
-          [:haml, :slim, :erb]
+          %i[haml slim erb]
         end
 
         ##
@@ -42,17 +42,17 @@ module Padrino
         #
         def add_project_module(controller)
           permission = "      role.project_module :#{controller}, '/#{controller}'\n"
-          inject_into_file destination_root(@admin_path+'/app.rb'),  permission, after: "access_control.roles_for :admin do |role|\n"
+          inject_into_file destination_root("#{@admin_path}/app.rb"), permission, after: "access_control.roles_for :admin do |role|\n"
         end
 
         ##
         # Remove from access_control permissions.
         #
         def remove_project_module(controller)
-          path = destination_root(@admin_path+'/app.rb')
-          say_status :replace, @admin_path+'/app.rb', :red
+          path = destination_root("#{@admin_path}/app.rb")
+          say_status :replace, "#{@admin_path}/app.rb", :red
           content = File.binread(path)
-          content.gsub!(/^\s+role\.project_module :#{controller}, '\/#{controller}'\n/, '')
+          content.gsub!(%r{^\s+role\.project_module :#{controller}, '/#{controller}'\n}, '')
           File.open(path, 'wb') { |f| f.write content }
         end
 

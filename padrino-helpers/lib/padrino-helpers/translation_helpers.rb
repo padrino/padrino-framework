@@ -17,7 +17,7 @@ module Padrino
         options = args.last.is_a?(Hash) ? args.pop : {}
         I18n.translate(*args, **options)
       end
-      alias :t :translate
+      alias t translate
 
       ##
       # Delegates to I18n.localize with no additional functionality.
@@ -31,7 +31,7 @@ module Padrino
       def localize(*args)
         I18n.localize(*args)
       end
-      alias :l :localize
+      alias l localize
     end
   end
 end

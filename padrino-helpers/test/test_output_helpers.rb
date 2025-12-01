@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require_relative 'helper'
+require_relative 'fixtures/markup_app/app'
 
 describe 'OutputHelpers' do
   def app
@@ -141,17 +141,17 @@ describe 'OutputHelpers' do
   describe 'for #partial method in simple sinatra application' do
     it 'should properly output in erb' do
       get '/erb/simple_partial'
-      assert_response_has_tag 'p.erb',  content: 'erb'
+      assert_response_has_tag 'p.erb', content: 'erb'
     end
 
     it 'should properly output in haml' do
       get '/haml/simple_partial'
-      assert_response_has_tag 'p.haml',  content: 'haml'
+      assert_response_has_tag 'p.haml', content: 'haml'
     end
 
     it 'should properly output in slim' do
       get '/slim/simple_partial'
-      assert_response_has_tag 'p.slim',  content: 'slim'
+      assert_response_has_tag 'p.slim', content: 'slim'
     end
   end
 end

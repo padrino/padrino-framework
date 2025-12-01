@@ -6,7 +6,7 @@ class Minitest::Spec
 
   # Assert_no_file_exists('/tmp/app')
   def assert_no_file_exists(file_path)
-    assert !File.exist?(file_path), "File should not exist at path '#{file_path}' but was found!"
+    refute File.exist?(file_path), "File should not exist at path '#{file_path}' but was found!"
   end
 
   # assert_dir_exists('/tmp/app')
@@ -16,7 +16,7 @@ class Minitest::Spec
 
   # assert_no_dir_exists('/tmp/app')
   def assert_no_dir_exists(file_path)
-    assert !File.exist?(file_path), "Folder should not exist at path '#{file_path}' but was found"
+    refute File.exist?(file_path), "Folder should not exist at path '#{file_path}' but was found"
   end
 
   # Asserts that a file matches the pattern

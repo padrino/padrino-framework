@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require_relative 'helper'
+require_relative 'fixtures/markup_app/app'
 
 describe 'NumberHelpers' do
   include Padrino::Helpers::NumberHelpers
@@ -28,11 +28,11 @@ describe 'NumberHelpers' do
     it 'should display number_to_currency' do
       assert_equal '$1,234,567,890.50',        number_to_currency(1_234_567_890.50)
       assert_equal '$1,234,567,890.51',        number_to_currency(1_234_567_890.506)
-      assert_equal '$1,234,567,892',           number_to_currency(1_234_567_891.60, {precision: 0})
-      assert_equal '$1,234,567,890.5',         number_to_currency(1_234_567_890.50, {precision: 1})
-      assert_equal '&pound;1234567890,50',     number_to_currency(1_234_567_890.50, {unit: '&pound;', separator: ',', delimiter: ''})
+      assert_equal '$1,234,567,892',           number_to_currency(1_234_567_891.60, { precision: 0 })
+      assert_equal '$1,234,567,890.5',         number_to_currency(1_234_567_890.50, { precision: 1 })
+      assert_equal '&pound;1234567890,50',     number_to_currency(1_234_567_890.50, { unit: '&pound;', separator: ',', delimiter: '' })
       assert_equal '$1,234,567,890.50',        number_to_currency('1234567890.50')
-      assert_equal '1,234,567,890.50 K&#269;', number_to_currency('1234567890.50', {unit: 'K&#269;', format: '%n %u'})
+      assert_equal '1,234,567,890.50 K&#269;', number_to_currency('1234567890.50', { unit: 'K&#269;', format: '%n %u' })
       assert_equal '$x',                       number_to_currency('x')
 
       assert_nil number_to_currency(nil)
@@ -40,8 +40,8 @@ describe 'NumberHelpers' do
 
     it 'should display  number_to_percentage' do
       assert_equal '100.000%',   number_to_percentage(100)
-      assert_equal '100%',       number_to_percentage(100, {precision: 0})
-      assert_equal '302.06%',    number_to_percentage(302.0574, {precision: 2})
+      assert_equal '100%',       number_to_percentage(100, { precision: 0 })
+      assert_equal '302.06%',    number_to_percentage(302.0574, { precision: 2 })
       assert_equal '100.000%',   number_to_percentage('100')
       assert_equal '1000.000%',  number_to_percentage('1000')
       assert_equal 'x%',         number_to_percentage('x')

@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'AppGenerator' do
   def setup
@@ -28,7 +28,7 @@ describe 'AppGenerator' do
       assert_dir_exists("#{@apptmp}/sample_project/demo/views")
       assert_dir_exists("#{@apptmp}/sample_project/demo/views/layouts")
       assert_dir_exists("#{@apptmp}/sample_project/public/demo")
-      assert_match_in_file("Padrino.mount('SampleProject::Demo', :app_file => Padrino.root('demo/app.rb')).to('/demo')", "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file("Padrino.mount('SampleProject::Demo', app_file: Padrino.root('demo/app.rb')).to('/demo')", "#{@apptmp}/sample_project/config/apps.rb")
       assert_match_in_file('module SampleProject', "#{@apptmp}/sample_project/demo/app.rb")
       assert_match_in_file('class Demo < Padrino::Application', "#{@apptmp}/sample_project/demo/app.rb")
       assert_match_in_file(/Padrino.configure_apps do/, "#{@apptmp}/sample_project/config/apps.rb")
@@ -46,7 +46,7 @@ describe 'AppGenerator' do
       assert_dir_exists("#{@apptmp}/sample_project/demo_app/views")
       assert_dir_exists("#{@apptmp}/sample_project/demo_app/views/layouts")
       assert_dir_exists("#{@apptmp}/sample_project/public/demo_app")
-      assert_match_in_file("Padrino.mount('SampleProject::DemoApp', :app_file => Padrino.root('demo_app/app.rb')).to('/demo_app')", "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file("Padrino.mount('SampleProject::DemoApp', app_file: Padrino.root('demo_app/app.rb')).to('/demo_app')", "#{@apptmp}/sample_project/config/apps.rb")
       assert_match_in_file('module SampleProject', "#{@apptmp}/sample_project/demo_app/app.rb")
       assert_match_in_file('class DemoApp < Padrino::Application', "#{@apptmp}/sample_project/demo_app/app.rb")
       assert_match_in_file(/Padrino.configure_apps do/, "#{@apptmp}/sample_project/config/apps.rb")
@@ -96,7 +96,7 @@ describe 'AppGenerator' do
       assert_no_dir_exists("#{@apptmp}/sample_project/demo/controllers")
       assert_no_dir_exists("#{@apptmp}/sample_project/demo/helpers")
       assert_no_dir_exists("#{@apptmp}/sample_project/demo/views")
-      assert_no_match_in_file(/Padrino\.mount\("Demo"\).to\("\/demo"\)/, "#{@apptmp}/sample_project/config/apps.rb")
+      assert_no_match_in_file(%r{Padrino\.mount\("Demo"\).to\("/demo"\)}, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     it 'should abort if app name already exists' do

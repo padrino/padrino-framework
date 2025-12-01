@@ -226,10 +226,10 @@ describe 'PadrinoCache' do
       register Padrino::Cache
       enable :caching
       controller cache: true do
-        get('/foo') {
+        get('/foo') do
           expires 1
           called ? 'test again' : (called = 'test')
-        }
+        end
       end
     end
     get '/foo'
@@ -249,12 +249,12 @@ describe 'PadrinoCache' do
       register Padrino::Cache
       enable :caching
       controller do
-        get('/foo') {
+        get('/foo') do
           expires 1
           cache(:test, expires: 2) do
             called ? 'test again' : (called = 'test')
           end
-        }
+        end
       end
     end
     get '/foo'
@@ -288,10 +288,10 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get( '/404', cache: true ) { not_found }
-      get( '/503', cache: true ) { error 503 }
+      get('/404', cache: true) { not_found }
+      get('/503', cache: true) { error 503 }
       not_found { 'fancy 404' }
-      error( 503 ) { 'fancy 503' }
+      error(503) { 'fancy 503' }
     end
     get '/404'
     assert_equal 'fancy 404', body

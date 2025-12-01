@@ -7,7 +7,7 @@ module Padrino
           JSON.loaded_lib!(lib) if JSON.registered_libs.include? lib
           super
         end
-      end # InfectedRequire
+      end
 
       def self.registered_libs
         @registered_libs ||= []
@@ -23,20 +23,20 @@ module Padrino
 
       def self.loaded_lib!(lib)
         loaded_libs[lib] = caller
+        return unless loaded_libs.size >= 2
 
-        if loaded_libs.size >= 2
-          warn <<-WARN
-Concurring json libraries have been loaded. This incurs an
-unneccessary memory overhead at should be avoided. Consult the
-following call stacks to see who loaded the offending libraries
-and contact the authors if necessary:"
-WARN
-          loaded_libs.each_key do |name|
-            $stderr.puts '=================='
-            $stderr.puts 'libname: ' + name
-            $stderr.puts '=================='
-            $stderr.puts caller
-          end
+        warn <<~WARN
+          Concurring json libraries have been loaded. This incurs an
+          unnecessary memory overhead at should be avoided. Consult the
+          following call stacks to see who loaded the offending libraries
+          and contact the authors if necessary:"
+        WARN
+
+        loaded_libs.each_key do |name|
+          $stderr.puts '=================='
+          $stderr.puts "libname: #{name}"
+          $stderr.puts '=================='
+          $stderr.puts caller
         end
       end
 
@@ -46,8 +46,6 @@ WARN
 
       infect_require!
       setup_captures!('json', 'json_pure', 'yajl-ruby', 'oj', 'crack')
-    end # JSON
-  # Performance
+    end
   end
-  # Padrino
 end

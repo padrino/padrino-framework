@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require_relative 'helper'
+require_relative 'fixtures/markup_app/app'
 
 describe 'AssetTagHelpers' do
   include Padrino::Helpers::AssetTagHelpers
@@ -47,17 +47,17 @@ describe 'AssetTagHelpers' do
 
     it 'should display link element with remote option' do
       actual_link = link_to('Sign up', '/register', remote: true)
-      assert_html_has_tag(actual_link, 'a', :content => 'Sign up', :href => '/register', 'data-remote' => 'true')
+      assert_html_has_tag(actual_link, 'a', content: 'Sign up', href: '/register', 'data-remote' => 'true')
     end
 
     it 'should display link element with method option' do
       actual_link = link_to('Sign up', '/register', method: :delete)
-      assert_html_has_tag(actual_link, 'a', :content => 'Sign up', :href => '/register', 'data-method' => 'delete', :rel => 'nofollow')
+      assert_html_has_tag(actual_link, 'a', content: 'Sign up', href: '/register', 'data-method' => 'delete', rel: 'nofollow')
     end
 
     it 'should display link element with confirm option' do
       actual_link = link_to('Sign up', '/register', confirm: 'Are you sure?')
-      assert_html_has_tag(actual_link, 'a', :content => 'Sign up', :href => '/register', 'data-confirm' => 'Are you sure?')
+      assert_html_has_tag(actual_link, 'a', content: 'Sign up', href: '/register', 'data-confirm' => 'Are you sure?')
     end
 
     it 'should display link element with ruby block' do
@@ -117,8 +117,8 @@ describe 'AssetTagHelpers' do
     it 'should not double-escape' do
       actual_link = link_to('test escape', '?a=1&b=2')
       assert_html_has_tag(actual_link, 'a', href: '?a=1&b=2')
-      assert_match %r{&amp;}, actual_link
-      refute_match %r{&amp;amp;}, actual_link
+      assert_match(/&amp;/, actual_link)
+      refute_match(/&amp;amp;/, actual_link)
     end
 
     it 'should escape scary things' do
@@ -141,9 +141,9 @@ describe 'AssetTagHelpers' do
     it 'should display link element for mail to with caption and mail options' do
       actual_html = mail_to('test@demo.com', 'My Email', subject: 'demo test', class: 'demo', cc: 'foo@test.com')
       assert_html_has_tag(actual_html, :a, class: 'demo')
-      assert_match %r{mailto:test@demo.com\?}, actual_html
-      assert_match %r{cc=foo@test\.com}, actual_html
-      assert_match %r{subject=demo%20test}, actual_html
+      assert_match(/mailto:test@demo.com\?/, actual_html)
+      assert_match(/cc=foo@test\.com/, actual_html)
+      assert_match(/subject=demo%20test/, actual_html)
     end
 
     it 'should escape & with encoded string and &amp; in HTML' do
@@ -155,8 +155,8 @@ describe 'AssetTagHelpers' do
     it 'should not double-escape ampersands in query' do
       actual_html = mail_to('to@demo.com', 'Email', bcc: 'bcc@test.com', subject: 'Hi there')
       assert_html_has_tag(actual_html, :a, href: 'mailto:to@demo.com?bcc=bcc@test.com&subject=Hi%20there', content: 'Email')
-      assert_match %r{&amp;}, actual_html
-      refute_match %r{&amp;amp;}, actual_html
+      assert_match(/&amp;/, actual_html)
+      refute_match(/&amp;amp;/, actual_html)
     end
 
     it 'should display mail link element in haml' do
@@ -398,17 +398,17 @@ describe 'AssetTagHelpers' do
 
   describe 'for #asset_path method' do
     it 'should generate proper paths for js and css' do
-      assert_match(/\/javascripts\/app.js\?\d+/, asset_path(:js, 'app'))
-      assert_match(/\/stylesheets\/app.css\?\d+/, asset_path(:css, 'app'))
+      assert_match(%r{/javascripts/app.js\?\d+}, asset_path(:js, 'app'))
+      assert_match(%r{/stylesheets/app.css\?\d+}, asset_path(:css, 'app'))
     end
 
     it 'should generate proper paths for images and other files' do
-      assert_match(/\/images\/app.png\?\d+/, asset_path(:images, 'app.png'))
-      assert_match(/\/documents\/app.pdf\?\d+/, asset_path(:documents, 'app.pdf'))
+      assert_match(%r{/images/app.png\?\d+}, asset_path(:images, 'app.png'))
+      assert_match(%r{/documents/app.pdf\?\d+}, asset_path(:documents, 'app.pdf'))
     end
 
     it 'should generate proper paths for public folder' do
-      assert_match(/\/files\/file.ext\?\d+/, asset_path('files/file.ext'))
+      assert_match(%r{/files/file.ext\?\d+}, asset_path('files/file.ext'))
     end
   end
 end

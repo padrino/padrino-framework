@@ -1,5 +1,4 @@
 module Padrino
-
   unless defined?(PADRINO_IGNORE_CALLERS)
     # List of callers in a Padrino application that should be ignored as part of a stack trace.
     PADRINO_IGNORE_CALLERS = [
@@ -15,8 +14,8 @@ module Padrino
       %r{shoulda/context\.rb$},
       %r{mocha/integration},
       %r{test/unit},
-      %r{rake_test_loader\.rb},
-      %r{custom_require\.rb$},
+      /rake_test_loader\.rb/,
+      /custom_require\.rb$/,
       %r{/thor}
     ]
 
@@ -44,9 +43,9 @@ module Padrino
   #   The files of the calling methods.
   #
   def self.caller_files
-    caller(1).
-      map    { |line| line.split(/:(?=\d|in )/)[0, 2] }.
-      reject { |file, _line| PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern } }.
-      map    { |file, _line| file }
+    caller(1).each_with_object([]) do |line, result|
+      file, = line.split(/:(?=\d|in )/)[0, 2]
+      result << file unless PADRINO_IGNORE_CALLERS.any? { |pattern| file =~ pattern }
+    end
   end
 end

@@ -1,10 +1,11 @@
-PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+PADRINO_ROOT = __dir__ unless defined? PADRINO_ROOT
 RACK_ENV = 'test' unless defined? RACK_ENV
 
 require 'padrino-core'
 
 class RenderUser
   attr_accessor :name
+
   def initialize(name); @name = name; end
 end
 
@@ -41,27 +42,27 @@ class RenderDemo < Padrino::Application
 
   # partial with object
   get '/partial/object' do
-    partial 'template/user', :object => RenderUser.new('John'), :locals => { :extra => 'bar' }
+    partial 'template/user', object: RenderUser.new('John'), locals: { extra: 'bar' }
   end
 
   # partial with collection
   get '/partial/collection' do
-    partial 'template/user', :collection => [RenderUser.new('John'), RenderUser.new('Billy')], :locals => { :extra => 'bar' }
+    partial 'template/user', collection: [RenderUser.new('John'), RenderUser.new('Billy')], locals: { extra: 'bar' }
   end
 
   # partial with collection and ext
   get '/partial/collection.ext' do
-    partial 'template/user.haml', :collection => [RenderUser.new('John'), RenderUser.new('Billy')], :locals => { :extra => 'bar' }
+    partial 'template/user.haml', collection: [RenderUser.new('John'), RenderUser.new('Billy')], locals: { extra: 'bar' }
   end
 
   # partial with locals
   get '/partial/locals' do
-    partial 'template/user', :locals => { :user => RenderUser.new('John'), :extra => 'bar' }
+    partial 'template/user', locals: { user: RenderUser.new('John'), extra: 'bar' }
   end
 
   # partial starting with forward slash
   get '/partial/foward_slash' do
-    partial '/template/user', :object => RenderUser.new('John'), :locals => { :extra => 'bar' }
+    partial '/template/user', object: RenderUser.new('John'), locals: { extra: 'bar' }
   end
 
   # partial with unsafe engine
@@ -72,12 +73,12 @@ class RenderDemo < Padrino::Application
 
   get '/partial/unsafe_one' do
     block = params[:block] ? proc { params[:block] } : nil
-    partial 'unsafe_object', :object => 'Mary', &block
+    partial 'unsafe_object', object: 'Mary', &block
   end
 
   get '/partial/unsafe_many' do
     block = params[:block] ? proc { params[:block] } : nil
-    partial 'unsafe_object', :collection => ['John', 'Mary'], &block
+    partial 'unsafe_object', collection: %w[John Mary], &block
   end
 
   get '/render_block_:ext' do
@@ -99,7 +100,7 @@ class RenderDemo < Padrino::Application
         render "dive_inner_#{ext}"
       end
       # @current_engine = save
-      content_tag('div', form_result, :class => 'wrapper')
+      content_tag('div', form_result, class: 'wrapper')
     end
   end
 

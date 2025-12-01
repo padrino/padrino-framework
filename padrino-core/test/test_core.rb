@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'Core' do
   def setup
@@ -19,7 +19,7 @@ describe 'Core' do
 
     it 'should validate global helpers' do
       assert_equal :test, Padrino.env
-      assert_match(/\/test/, Padrino.root)
+      assert_match(%r{/test}, Padrino.root)
       assert Padrino.version
     end
 
@@ -38,7 +38,7 @@ describe 'Core' do
     end
 
     it 'should add middlewares in front if specified' do
-      test = Class.new {
+      test = Class.new do
         def initialize(app)
           @app = app
         end
@@ -48,7 +48,7 @@ describe 'Core' do
           headers['Middleware-Called'] = 'yes'
           [status, headers, body]
         end
-      }
+      end
 
       class Foo < Padrino::Application; end
 

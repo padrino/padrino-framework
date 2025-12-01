@@ -59,13 +59,13 @@ module Padrino
       #   # => "<foo>"
       #
       def capture_html(*args, &block)
-        if handler = find_proper_handler
+        if (handler = find_proper_handler)
           handler.capture_from_template(*args, &block)
         else
           yield(*args)
         end
       end
-      alias :capture :capture_html
+      alias capture capture_html
 
       ##
       # Outputs the given text to the templates buffer directly.
@@ -79,13 +79,13 @@ module Padrino
       #   concat_content("This will be output to the template buffer")
       #
       def concat_content(text = '')
-        if handler = find_proper_handler
+        if (handler = find_proper_handler)
           handler.concat_to_template(text, binding)
         else
           text
         end
       end
-      alias :concat :concat_content
+      alias concat concat_content
 
       ##
       # Outputs the given text to the templates buffer directly,
@@ -137,7 +137,7 @@ module Padrino
       #   content_for(:name) { ...content... }
       #   content_for(:name) { |name| ...content... }
       #   content_for(:name, "I'm Jeff")
-      #   content_for(:name, :flush => true) { ...new content... }
+      #   content_for(:name, flush: true) { ...new content... }
       #
       def content_for(key, content = nil, options = {}, &block)
         options = content if content.is_a?(Hash)
@@ -154,7 +154,7 @@ module Padrino
       # @return [TrueClass,FalseClass] Result html for the given +key+
       #
       # @example
-      #   content_for? :header => true
+      #   content_for?(:header) => true
       #
       def content_for?(key)
         !content_blocks[key.to_sym].empty?
@@ -184,6 +184,7 @@ module Padrino
       end
 
       protected
+
       ##
       # Retrieves content_blocks stored by content_for or within yield_content.
       #
@@ -214,7 +215,7 @@ module Padrino
       # @return [SafeBuffer, Array<SafeBuffer>]
       def mark_safe(value)
         if value.respond_to? :map!
-          value.map! {|v| v&.html_safe }
+          value.map! { |v| v&.html_safe }
         else
           value&.html_safe
         end

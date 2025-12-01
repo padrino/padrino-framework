@@ -19,9 +19,9 @@ module Padrino
       # @example
       #   email do
       #     to      @user.email
-      #     from    "awesomeness@example.com"
-      #     subject "Welcome to Awesomeness!"
-      #     locals  :a => a, :b => b
+      #     from    'awesomeness@example.com'
+      #     subject 'Welcome to Awesomeness!'
+      #     locals  a: a, b: b
       #     render  'path/to/my/template'
       #   end
       #
@@ -41,8 +41,8 @@ module Padrino
       #   The parameters to pass to the mailer.
       #
       # @example
-      #   deliver(:sample, :birthday, "Joey", 21)
-      #   deliver(:example, :message, "John")
+      #   deliver(:sample, :birthday, 'Joey', 21)
+      #   deliver(:example, :message, 'John')
       #
       # @see ClassMethods#deliver
       def deliver(mailer_name, message_name, *attributes)
@@ -78,7 +78,7 @@ module Padrino
         #       subject 'Happy Birthday!'
         #       to      'john@fake.com'
         #       from    'noreply@birthday.com'
-        #       locals  :name => name, :age => age
+        #       locals  name: name, age: age
         #       render  'sample/birthday'
         #     end
         #   end
@@ -89,7 +89,7 @@ module Padrino
           registered_mailers[name] = mailer
           mailer
         end
-        alias :mailers :mailer
+        alias mailers mailer
 
         ##
         # Delivers a mailer message email with the given attributes.
@@ -102,12 +102,12 @@ module Padrino
         #   The parameters to pass to the mailer.
         #
         # @example
-        #   deliver(:sample, :birthday, "Joey", 21)
-        #   deliver(:example, :message, "John")
+        #   deliver(:sample, :birthday, 'Joey', 21)
+        #   deliver(:example, :message, 'John')
         #
         def deliver(mailer_name, message_name, *attributes)
-          mailer = registered_mailers[mailer_name] or fail "mailer '#{mailer_name}' is not registered"
-          message = mailer.messages[message_name] or fail "mailer '#{mailer_name}' has no message '#{message_name}'"
+          mailer = registered_mailers[mailer_name] or raise "mailer '#{mailer_name}' is not registered"
+          message = mailer.messages[message_name] or raise "mailer '#{mailer_name}' has no message '#{message_name}'"
           message = message.call(*attributes)
           message.delivery_method(*delivery_settings)
           message.deliver
@@ -122,15 +122,15 @@ module Padrino
         #   The block mail attributes for this message.
         #
         # @example
-        #   MyApp.email(:to => 'to@ma.il', :from => 'from@ma.il', :subject => 'Welcome!', :body => 'Welcome Here!')
+        #   MyApp.email(to: 'to@ma.il', from: 'from@ma.il', subject: 'Welcome!', body: 'Welcome Here!')
         #
         #   # or if you prefer blocks
         #
         #   MyApp.email do
-        #     to @user.email
-        #     from "awesomeness@example.com"
-        #     subject "Welcome to Awesomeness!"
-        #     body 'path/to/my/template', :locals => { :a => a, :b => b }
+        #     to      @user.email
+        #     from    'awesomeness@example.com'
+        #     subject 'Welcome to Awesomeness!'
+        #     body    'path/to/my/template', locals: { a: a, b: b }
         #   end
         #
         def email(mail_attributes = {}, &block)
@@ -143,6 +143,7 @@ module Padrino
         end
 
         private
+
         ##
         # Returns the parsed delivery method options.
         #

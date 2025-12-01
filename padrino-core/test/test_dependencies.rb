@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'Dependencies' do
   describe 'when we require a dependency that have another dependency' do
@@ -37,7 +37,7 @@ describe 'Dependencies' do
           Padrino.root('fixtures/dependencies/c.rb')
         )
       end
-      assert_equal ['B', 'C'], A_result
+      assert_equal %w[B C], A_result
       assert_equal 'C', B_result
       assert_equal '', @io.string
     end
@@ -76,7 +76,6 @@ describe 'Dependencies' do
       end
       assert_equal 'hello', M.hello
     end
-
 
     describe 'change log level for :devel' do
       before do

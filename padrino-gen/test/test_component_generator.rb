@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 require 'rb-readline'
 
 describe 'ComponentGenerator' do
@@ -24,7 +24,7 @@ describe 'ComponentGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       out, = capture_io { generate(:component, '--orm=activerecord', "-r=#{@apptmp}/sample_project") }
       assert_match(/applying.*?activerecord.*?orm/, out)
-      assert_match_in_file(/gem 'activerecord', '>= 3.1', :require => 'active_record'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/gem 'activerecord', '>= 3.1', require: 'active_record'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/sample_project/Gemfile")
       refute_match(/Switch renderer to/, out)
       database_template_path = File.join(__dir__, 'fixtures', 'database_template.rb')

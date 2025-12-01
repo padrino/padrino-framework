@@ -26,7 +26,7 @@ module Padrino
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
         def set_current_account(account = nil)
-          session[settings.session_id] = account ? account.id : nil
+          session[settings.session_id] = account&.id
           @current_account = account
         end
 
@@ -53,10 +53,10 @@ module Padrino
         # By default this method is used in Admin Apps.
         #
         def login_required
-          unless allowed?
-            store_location! if store_location
-            access_denied
-          end
+          return if allowed?
+
+          store_location! if store_location
+          access_denied
         end
 
         ##

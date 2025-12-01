@@ -8,14 +8,14 @@ module Padrino
 
         def initialize(template, object, options = {})
           @template = template
-          fail 'FormBuilder template must be initialized' unless template
-          @object = object.kind_of?(Symbol) ? build_object(object) : object
-          fail "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
+          raise 'FormBuilder template must be initialized' unless template
+          @object = object.is_a?(Symbol) ? build_object(object) : object
+          raise "FormBuilder object must be present. If there's no object, use a symbol instead (i.e. :user)" unless object
           @options = options
           @namespace = options[:namespace]
           @model_name = options[:as] || Inflections.underscore(@object.class).tr('/', '_')
           nested = options[:nested]
-          if @is_nested = nested && (nested_parent = nested[:parent]) && nested_parent.respond_to?(:object)
+          if (@is_nested = nested && (nested_parent = nested[:parent]) && nested_parent.respond_to?(:object))
             @parent_form = nested_parent
             @nested_index = nested[:index]
             @attributes_name = "#{nested[:association]}_attributes"
@@ -49,7 +49,7 @@ module Padrino
         def telephone_field(field, options = {})
           @template.telephone_field_tag field_name(field), default_options(field, options)
         end
-        alias_method :phone_field, :telephone_field
+        alias phone_field telephone_field
 
         def email_field(field, options = {})
           @template.email_field_tag field_name(field), default_options(field, options)
@@ -77,7 +77,7 @@ module Padrino
 
         def check_box_group(field, options = {})
           labeled_group(field, options) do |attributes|
-            @template.check_box_tag(field_name(field)+'[]', attributes)
+            @template.check_box_tag("#{field_name(field)}[]", attributes)
           end
         end
 
@@ -159,7 +159,7 @@ module Padrino
           nested_options = { parent: self, association: child_association }
           Array(collection).each_with_index.inject(SafeBuffer.new) do |all, (child_instance, index)|
             nested_options[:index] = options[:index] || (include_index ? index : nil)
-            all << @template.fields_for(child_instance,  { nested: nested_options, builder: self.class }, &block) << "\n"
+            all << @template.fields_for(child_instance, { nested: nested_options, builder: self.class }, &block) << "\n"
           end
         end
 
@@ -171,9 +171,10 @@ module Padrino
 
         # Returns the known field types for a Formbuilder.
         def self.field_types
-          [:hidden_field, :text_field, :text_area, :password_field, :file_field, :radio_button, :check_box, :select,
-            :number_field, :telephone_field, :email_field, :search_field, :url_field,
-            :datetime_field, :datetime_local_field, :date_field, :month_field, :week_field, :time_field, :color_field
+          %i[
+            hidden_field text_field text_area password_field file_field radio_button check_box select
+            number_field telephone_field email_field search_field url_field
+            datetime_field datetime_local_field date_field month_field week_field time_field color_field
           ]
         end
 
@@ -188,7 +189,7 @@ module Padrino
         # Returns the object's models name.
         #
         def object_model_name(explicit_object = object)
-          explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub(/\//, '_')
+          explicit_object.is_a?(Symbol) ? explicit_object : explicit_object.class.to_s.underscore.gsub('/', '_')
         end
 
         ##
@@ -255,13 +256,13 @@ module Padrino
         private
 
         def is_checked?(field, options)
-          !options.has_key?(:checked) && [options[:value].to_s, 'true'].include?(field_value(field).to_s)
+          !options.key?(:checked) && [options[:value].to_s, 'true'].include?(field_value(field).to_s)
         end
 
         def variants_for_group(options)
-          if variants = options[:options]
-            variants.map { |caption, value| [caption.to_s, (value||caption).to_s] }
-          elsif collection = options[:collection]
+          if (variants = options[:options])
+            variants.map { |caption, value| [caption.to_s, (value || caption).to_s] }
+          elsif (collection = options[:collection])
             collection.map { |variant| field_values(variant, options) }
           else
             []
@@ -281,7 +282,7 @@ module Padrino
         end
 
         def field_methods(options)
-          options[:fields] || [:name, :id]
+          options[:fields] || %i[name id]
         end
 
         def field_values(object, options)
@@ -314,9 +315,10 @@ module Padrino
         end
 
         def default_options(field, options, defaults = {})
-          { value: field_value(field),
-            id: field_id(field)
-          }.update(defaults).update(options).update(error_class(field)) { |_, *values| values.compact.join(' ') }
+          { value: field_value(field), id: field_id(field) }
+            .update(defaults)
+            .update(options)
+            .update(error_class(field)) { |_, *values| values.compact.join(' ') }
         end
       end
     end

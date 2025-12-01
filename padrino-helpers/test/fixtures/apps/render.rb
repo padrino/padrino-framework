@@ -1,4 +1,4 @@
-PADRINO_ROOT = File.dirname(__FILE__) unless defined? PADRINO_ROOT
+PADRINO_ROOT = __dir__ unless defined? PADRINO_ROOT
 
 class RenderDemo2 < Padrino::Application
   register Padrino::Rendering
@@ -12,7 +12,7 @@ RenderDemo2.controllers :blog do
   end
 
   get '/override' do
-    render 'post', layout: RenderDemo2.layout_path('specific') 
+    render 'post', layout: RenderDemo2.layout_path('specific')
   end
 end
 

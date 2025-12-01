@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'Email' do
   describe 'the mailer in an app' do
@@ -28,13 +28,13 @@ describe 'Email' do
       mock_app do
         register Padrino::Mailer
         get '/' do
-          email({
+          email(
             from: 'padrino@me.com',
             to: 'padrino@you.com',
             subject: 'Hello there Padrino',
             body: 'Body',
             via: :test
-          })
+          )
         end
       end
       get '/'
@@ -51,7 +51,7 @@ describe 'Email' do
         register Padrino::Mailer
         get '/' do
           email do
-            views   File.dirname(__FILE__) + '/fixtures'
+            views   "#{__dir__}/fixtures"
             from    'padrino@me.com'
             to      'padrino@you.com'
             subject 'Hello there Padrino'
@@ -72,7 +72,7 @@ describe 'Email' do
     it 'should send emails with scoped mailer defaults' do
       mock_app do
         register Padrino::Mailer
-        set :views, File.dirname(__FILE__) + '/fixtures/views'
+        set :views, "#{__dir__}/fixtures/views"
         set :delivery_method, :test
         mailer :alternate do
           defaults from: 'padrino@from.com', to: 'padrino@to.com'
@@ -85,11 +85,12 @@ describe 'Email' do
         end
         get('/') { deliver(:alternate, :foo) }
       end
+
       get '/'
       assert ok?
       email = pop_last_delivery
-      assert_equal ['padrino@from.com'],    email.from, 'should have used default value'
-      assert_equal ['padrino@different.com'],   email.to, 'should have overwritten default value'
+      assert_equal ['padrino@from.com'], email.from, 'should have used default value'
+      assert_equal ['padrino@different.com'], email.to, 'should have overwritten default value'
       assert_equal 'Hello there again Padrino', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
@@ -98,7 +99,7 @@ describe 'Email' do
       mock_app do
         register Padrino::Mailer
         set :delivery_method, :test
-        set :views, File.dirname(__FILE__) + '/fixtures/views'
+        set :views, "#{__dir__}/fixtures/views"
         set :mailer_defaults, from: 'padrino@from.com', to: 'padrino@to.com', subject: 'This is a test'
         mailer :alternate do
           email :foo do
@@ -109,11 +110,12 @@ describe 'Email' do
         end
         get('/') { deliver(:alternate, :foo) }
       end
+
       get '/'
       assert ok?
       email = pop_last_delivery
-      assert_equal ['padrino@from.com'],    email.from, 'should have used default value'
-      assert_equal ['padrino@different.com'],   email.to, 'should have overwritten default value'
+      assert_equal ['padrino@from.com'], email.from, 'should have used default value'
+      assert_equal ['padrino@different.com'], email.to, 'should have overwritten default value'
       assert_equal 'This is a test', email.subject
       assert_equal 'This is a foo message in mailers/alternate dir', email.body.to_s.chomp
     end
@@ -121,7 +123,7 @@ describe 'Email' do
     it 'should send emails without layout' do
       mock_app do
         register Padrino::Mailer
-        set :views, File.dirname(__FILE__) + '/fixtures/views'
+        set :views, "#{__dir__}/fixtures/views"
         set :delivery_method, :test
         mailer :alternate do
           email :foo do

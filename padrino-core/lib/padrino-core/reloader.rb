@@ -74,8 +74,7 @@ module Padrino
     #
     def lock!
       klasses = Storage.send(:object_classes) do |klass|
-        original_klass_name = constant_name(klass)
-        original_klass_name.split('::').first if original_klass_name
+        constant_name(klass)&.split('::')&.first
       end
       klasses |= Padrino.mounted_apps.map(&:app_class)
       exclude_constants.merge(klasses)
@@ -96,9 +95,9 @@ module Padrino
         with_silence { require(file) }
         Storage.commit(file)
         update_modification_time(file)
-      rescue Exception => exception
+      rescue Exception => e
         unless options[:cyclic]
-          logger.exception exception, :short
+          logger.exception e, :short
           logger.error "Failed to load #{file}; removing partially defined constants"
         end
         Storage.rollback(file)
@@ -268,18 +267,17 @@ module Padrino
     def object_sources(target)
       sources = Set.new
       target.methods.each do |method_name|
-        next unless method_name.kind_of?(Symbol)
+        next unless method_name.is_a?(Symbol)
+
         method_object = target.method(method_name)
-        if method_object.owner == target.singleton_class
-          sources << method_object.source_location.first
-        end
+        sources << method_object.source_location.first if method_object.owner == target.singleton_class
       end
+
       target.instance_methods.each do |method_name|
-        next unless method_name.kind_of?(Symbol)
+        next unless method_name.is_a?(Symbol)
+
         method_object = target.instance_method(method_name)
-        if method_object.owner == target
-          sources << method_object.source_location.first
-        end
+        sources << method_object.source_location.first if method_object.owner == target
       end
       sources
     end

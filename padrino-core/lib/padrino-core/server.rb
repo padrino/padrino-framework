@@ -4,27 +4,24 @@ module Padrino
   # thin, mongrel, or WEBrick in that order.
   #
   # @example
-  #   Padrino.run! # with these defaults => host: "127.0.0.1", port: "3000", adapter: the first found
-  #   Padrino.run!("0.0.0.0", "4000", "mongrel") # use => host: "0.0.0.0", port: "4000", adapter: "mongrel"
+  #   Padrino.run! # with these defaults => host: '127.0.0.1', port: '3000', adapter: the first found
+  #   Padrino.run!('0.0.0.0', '4000', 'mongrel') # use => host: '0.0.0.0', port: '4000', adapter: 'mongrel'
   #
   def self.run!(options = {})
     Padrino.load!
     Server.start(*detect_application(options))
   end
 
-
-  #
-  #
   def self.detect_application(options)
     default_config_file = 'config.ru'
-    if (config_file = options.delete(:config)) || File.file?(default_config_file)
-      config_file ||= default_config_file
-      fail "Rack config file `#{config_file}` must have `.ru` extension" unless config_file =~ /\.ru$/
-      rack_app, rack_options = Rack::Builder.parse_file(config_file)
-      [rack_app, (rack_options || {}).merge(options)]
-    else
-      [Padrino.application, options]
-    end
+
+    config_file = options.delete(:config)
+    config_file ||= default_config_file if File.file?(default_config_file)
+    return [Padrino.application, options] unless config_file
+
+    raise "Rack config file `#{config_file}` must have `.ru` extension" unless config_file =~ /\.ru$/
+    rack_app, rack_options = Rack::Builder.parse_file(config_file)
+    [rack_app, (rack_options || {}).merge(options)]
   end
 
   ##
@@ -34,7 +31,7 @@ module Padrino
     DEFAULT_ADDRESS = { Host: '127.0.0.1', Port: 3000 }
 
     # Server Handlers
-    Handlers = [:thin, :puma, :'spider-gazelle', :mongrel, :trinidad, :webrick]
+    Handlers = %i[thin puma spider-gazelle mongrel trinidad webrick]
 
     # Starts the application on the available server with specified options.
     def self.start(app, options = {})
@@ -55,7 +52,7 @@ module Padrino
     # Starts the application on the available server with specified options.
     def start
       puts "=> Padrino/#{Padrino.version} has taken the stage #{Padrino.env} at http://#{options[:Host]}:#{options[:Port]}"
-      [:INT, :TERM].each { |sig| trap(sig) { exit } }
+      %i[INT TERM].each { |sig| trap(sig) { exit } }
       super do |server|
         server.threaded = true if server.respond_to?(:threaded=)
       end
@@ -65,10 +62,9 @@ module Padrino
 
     # The application the server will run.
     attr_reader :app
-    alias :wrapped_app :app
+    alias wrapped_app app
 
     attr_reader :options
-
 
     # Detects the supported handler to use.
     #
@@ -81,7 +77,7 @@ module Padrino
       rescue LoadError, NameError
         # Ignored
       end
-      fail "Server handler (#{Handlers.join(', ')}) not found."
+      raise "Server handler (#{Handlers.join(', ')}) not found."
     end
 
     # Prepares a directory for pid file.
@@ -102,7 +98,7 @@ module Padrino
     # Detects Host and Port for Rack server.
     #
     def self.detect_address(options)
-      address = DEFAULT_ADDRESS.merge(options.select { |key| [:Host, :Port].include?(key) })
+      address = DEFAULT_ADDRESS.merge(options.select { |key| %i[Host Port].include?(key) })
       address[:Host] = options[:host] if options[:host]
       address[:Port] = options[:port] if options[:port]
       address

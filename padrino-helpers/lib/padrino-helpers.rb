@@ -6,7 +6,7 @@ require 'i18n'
 require 'padrino/rendering'
 
 FileSet.glob_require('padrino-helpers/**/*.rb', __FILE__)
-I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-helpers/locale/*.yml"]
+I18n.load_path += Dir["#{__dir__}/padrino-helpers/locale/*.yml"]
 I18n.enforce_available_locales = true
 
 module Padrino

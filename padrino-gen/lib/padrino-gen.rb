@@ -20,7 +20,7 @@ module Padrino
   #
   module Generators
     # Defines the absolute path to the padrino source folder.
-    DEV_PATH = File.expand_path('../../', File.dirname(__FILE__))
+    DEV_PATH = File.expand_path('../../', __dir__)
 
     class << self
       ##
@@ -61,14 +61,14 @@ module Padrino
         require 'padrino-gen/generators/actions'
         require 'padrino-gen/generators/components/actions'
         require 'padrino-gen/generators/runner'
-        load_paths.flatten.each { |file| require file  }
+        load_paths.flatten.each { |file| require file }
       end
     end
   end
 end
 
 # Add our generators to Padrino::Generators.
-Padrino::Generators.load_paths << Dir[File.dirname(__FILE__) + '/padrino-gen/generators/{project,app,mailer,controller,helper,model,migration,plugin,component,task}.rb']
+Padrino::Generators.load_paths << Dir["#{__dir__}/padrino-gen/generators/{project,app,mailer,controller,helper,model,migration,plugin,component,task}.rb"]
 
 # Add our tasks to padrino-core.
-Padrino::Tasks.files << Dir[File.dirname(__FILE__) + '/padrino-gen/padrino-tasks/**/*.rb']
+Padrino::Tasks.files << Dir["#{__dir__}/padrino-gen/padrino-tasks/**/*.rb"]

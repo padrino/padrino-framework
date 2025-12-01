@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'Rendering Extensions' do
   describe 'for haml' do
@@ -6,7 +6,7 @@ describe 'Rendering Extensions' do
       skip unless Padrino::Helpers::OutputHelpers.handlers[:haml].to_s == 'Padrino::Helpers::OutputHelpers::HamlHandler'
 
       mock_app do
-        get('/') { render :haml, '-haml_tag :div'}
+        get('/') { render :haml, '-haml_tag :div' }
       end
 
       get '/'

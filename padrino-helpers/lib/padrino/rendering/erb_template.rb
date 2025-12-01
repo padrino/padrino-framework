@@ -25,7 +25,7 @@ module Padrino
       def render(*args)
         app       = args.first
         app_class = app.class
-        @is_padrino_app = (defined?(Padrino::Application) && app.kind_of?(Padrino::Application)) || 
+        @is_padrino_app = (defined?(Padrino::Application) && app.is_a?(Padrino::Application)) ||
                           (app_class.respond_to?(:erb) && app_class.erb[:safe_buffer])
         super
       end
@@ -59,5 +59,5 @@ Tilt.prefer(Padrino::Rendering::ERBTemplate, :erb)
 
 Padrino::Rendering.engine_configurations[:erb] = {
   safe_buffer: true,
-  outvar: '@_out_buf',
+  outvar: '@_out_buf'
 }

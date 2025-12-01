@@ -16,11 +16,11 @@ module Padrino
       desc "Description:\n\n\tpadrino-gen model generates a new model and migration files"
 
       argument :name,               desc: 'The name of your padrino model'
-      argument :fields,             desc: 'The fields for the model',                                     default: [],    type: :array
+      argument :fields,             desc: 'The fields for the model',                                  default: [],    type: :array
       class_option :root,           desc: 'The root destination',                       aliases: '-r', default: '.',   type: :string
       class_option :app,            desc: 'The application destination path',           aliases: '-a', default: '.',   type: :string
-      class_option :destroy,                                                               aliases: '-d', default: false, type: :boolean
-      class_option :skip_migration,                                                        aliases: '-s', default: false, type: :boolean
+      class_option :destroy,                                                            aliases: '-d', default: false, type: :boolean
+      class_option :skip_migration,                                                     aliases: '-s', default: false, type: :boolean
       class_option :force,          desc: 'Generate model files if app already exists', aliases: '-f', default: false, type: :boolean
 
       # Show help if no ARGV given.
@@ -51,16 +51,15 @@ module Padrino
         return false unless correct_path?
 
         check_app_existence(app)
-
-        if options[:destroy]
-          self.behavior = :revoke
-        else
-          unless options[:force]
+        if model_name_already_exists?
+          if options[:destroy]
+            self.behavior = :revoke
+          elsif !options[:force]
             say "#{@camel_name} already exists."
             say 'Please, change the name.'
             return false
           end
-        end if model_name_already_exists?
+        end
 
         return false if has_invalid_fields?
 
@@ -103,9 +102,9 @@ module Padrino
       # Check if the fields are valid
       #
       def has_invalid_fields?
-        if invalids = invalid_fields(fields)
+        if (invalids = invalid_fields(fields))
           say 'Invalid field name:', :red
-          say " #{invalids.join(", ")}"
+          say " #{invalids.join(', ')}"
         end
       end
     end

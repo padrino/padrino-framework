@@ -1,87 +1,87 @@
-TESTUNIT_SETUP = <<-TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_SETUP)
-RACK_ENV = 'test' unless defined?(RACK_ENV)
-require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-Dir[File.expand_path(File.dirname(__FILE__) + "/../app/helpers/**/*.rb")].each(&method(:require))
+TESTUNIT_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_SETUP)
+  RACK_ENV = 'test' unless defined?(RACK_ENV)
+  require_relative '../config/boot'
+  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
 
-class Test::Unit::TestCase
-  include Rack::Test::Methods
+  class Test::Unit::TestCase
+    include Rack::Test::Methods
 
-  # You can use this method to custom specify a Rack app
-  # you want rack-test to invoke:
-  #
-  #   app CLASS_NAME
-  #   app CLASS_NAME.tap { |a| }
-  #   app(CLASS_NAME) do
-  #     set :foo, :bar
-  #   end
-  #
-  def app(app = nil, &blk)
-    @app ||= block_given? ? app.instance_eval(&blk) : app
-    @app ||= Padrino.application
+    # You can use this method to custom specify a Rack app
+    # you want rack-test to invoke:
+    #
+    #   app CLASS_NAME
+    #   app CLASS_NAME.tap { |a| }
+    #   app(CLASS_NAME) do
+    #     set :foo, :bar
+    #   end
+    #
+    def app(app = nil, &blk)
+      @app ||= block_given? ? app.instance_eval(&blk) : app
+      @app ||= Padrino.application
+    end
   end
-end
 TEST
 
-TESTUNIT_RAKE = <<-TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_RAKE)
-require 'rake/testtask'
+TESTUNIT_RAKE = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_RAKE)
+  require 'rake/testtask'
 
-test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
+  test_tasks = Dir['test/*/'].map { |d| File.basename(d) }
 
-test_tasks.each do |folder|
-  Rake::TestTask.new("test:\#{folder}") do |test|
-    test.pattern = "test/\#{folder}/**/*_test.rb"
-    test.verbose = true
+  test_tasks.each do |folder|
+    Rake::TestTask.new("test:\#{folder}") do |test|
+      test.pattern = "test/\#{folder}/**/*_test.rb"
+      test.verbose = true
+    end
   end
-end
 
-desc "Run application test suite"
-task 'test' => test_tasks.map { |f| "test:\#{f}" }
+  desc "Run application test suite"
+  task 'test' => test_tasks.map { |f| "test:\#{f}" }
 
-task :default => :test
+  task default: :test
 TEST
 
-TESTUNIT_CONTROLLER_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_CONTROLLER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '/../../test_config.rb')
+TESTUNIT_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_CONTROLLER_TEST)
+  require File.expand_path("\#{__dir__}/../../test_config.rb")
 
-class !NAME!ControllerTest < Test::Unit::TestCase
-  def setup
-    get "/"
-  end
+  class !NAME!ControllerTest < Test::Unit::TestCase
+    def setup
+      get "/"
+    end
 
-  def test_returns_hello_world_text
-    assert_equal "Hello World", last_response.body
+    def test_returns_hello_world_text
+      assert_equal "Hello World", last_response.body
+    end
   end
-end
 TEST
 
-TESTUNIT_MODEL_TEST = <<-TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_MODEL_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+TESTUNIT_MODEL_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_MODEL_TEST)
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
-class !NAME!Test < Test::Unit::TestCase
-  def test_constructs_a_new_instance
-    @!DNAME! = !NAME!.new
-    refute_nil @!DNAME!
+  class !NAME!Test < Test::Unit::TestCase
+    def test_constructs_a_new_instance
+      @!DNAME! = !NAME!.new
+      refute_nil @!DNAME!
+    end
   end
-end
 TEST
 
-TESTUNIT_HELPER_TEST = <<-TEST unless defined?(TESTUNIT_HELPER_TEST)
-require File.expand_path(File.dirname(__FILE__) + '!PATH!/test_config.rb')
+TESTUNIT_HELPER_TEST = <<~TEST unless defined?(TESTUNIT_HELPER_TEST)
+  require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
-class !NAME!Test < Test::Unit::TestCase
-  def self.setup
-    @helpers = Class.new
-    @helpers.extend !CONSTANT_NAME!
-  end
+  class !NAME!Test < Test::Unit::TestCase
+    def self.setup
+      @helpers = Class.new
+      @helpers.extend !CONSTANT_NAME!
+    end
 
-  def helpers
-    @helpers
-  end
+    def helpers
+      @helpers
+    end
 
-  def test_foo_helper
-    assert_equal nil, helpers.foo
+    def test_foo_helper
+      assert_equal nil, helpers.foo
+    end
   end
-end
 TEST
 
 def setup_test

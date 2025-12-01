@@ -15,7 +15,7 @@ module MockBenchmark
     end
 
     def run(*)
-      puts 'Running ' + self.name
+      puts "Running #{self.name}"
       super
     end
   end
@@ -163,7 +163,7 @@ class Padrino::HugeRouterBenchmark < Minitest::Benchmark
     @pathss = {}
     @requests = {}
     self.class.bench_range.each do |n|
-      @pathss[n] = paths = (1..n/20).map { rand(36**8).to_s(36) }
+      @pathss[n] = paths = (1..n / 20).map { rand(36**8).to_s(36) }
       @apps[n] = Sinatra.new Padrino::Application do
         paths.each do |p|
           get("/#{p}") { p.to_s }

@@ -8,19 +8,18 @@ module Padrino
     # common actions for modifying a project or application.
     #
     module Runner
-
       # Generates project scaffold based on a given template file.
       #
       # @param [Hash] options
       #   Options to use to generate the project.
       #
       # @example
-      #   project :test => :shoulda, :orm => :activerecord, :renderer => "haml"
+      #   project test: :shoulda, orm: :activerecord, renderer: "haml"
       #
       def project(options = {})
         components = options.sort_by { |k, _v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
-        params = [name, *components].push("-r=#{destination_root("../")}")
-        say "=> Executing: padrino-gen project #{params.join(" ")}", :magenta
+        params = [name, *components].push("-r=#{destination_root('../')}")
+        say "=> Executing: padrino-gen project #{params.join(' ')}", :magenta
         Padrino.bin_gen(*params.unshift('project'))
       end
 
@@ -40,7 +39,7 @@ module Padrino
       def generate(type, arguments = '')
         params = arguments.split(' ').push("-r=#{destination_root}")
         params.push("--app=#{@_app_name}") if @_app_name
-        say "=> Executing: padrino-gen #{type} #{params.join(" ")}", :magenta
+        say "=> Executing: padrino-gen #{type} #{params.join(' ')}", :magenta
         Padrino.bin_gen(*params.unshift(type))
       end
 
@@ -74,11 +73,12 @@ module Padrino
       def app(name)
         say "=> Executing: padrino-gen app #{name} -r=#{destination_root}", :magenta
         Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}")
-        if block_given?
-          @_app_name = name
-          yield
-          @_app_name = nil
-        end
+        return unless block_given?
+
+        @_app_name = name
+        yield
+      ensure
+        @_app_name = nil
       end
 
       ##
@@ -96,7 +96,7 @@ module Padrino
       #
       def git(*args)
         FileUtils.cd(destination_root) do
-          cmd = 'git %s' % args.join(' ')
+          cmd = format('git %s', args.join(' '))
           say cmd, :green
           system cmd
         end
@@ -122,21 +122,22 @@ module Padrino
       def execute_runner(kind, template_file)
         # Determine resolved template path
         template_file = template_file.to_s
-        template_path = case
-          when template_file =~ %r{^https?://} && template_file !~ /gist/
+        template_path =
+          if template_file =~ %r{^https?://} && template_file !~ /gist/
             template_file
-          when template_file =~ /gist/ && template_file !~ /raw/
+          elsif template_file =~ /gist/ && template_file !~ /raw/
             raw_link, = *URI.open(template_file) { |io| io.read.scan(/<a\s+href\s?="(.*?)">raw/) }
             raw_link ? "https://gist.github.com#{raw_link[0]}" : template_file
-          when File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
+          elsif File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
             "https://raw.github.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
           else # local file on system
             File.expand_path(template_file)
           end
+
         begin
           self.apply(template_path)
-        rescue StandardError => error
-          say("The template at #{template_path} could not be loaded: #{error.message}", :red)
+        rescue StandardError => e
+          say("The template at #{template_path} could not be loaded: #{e.message}", :red)
         end
       end
     end

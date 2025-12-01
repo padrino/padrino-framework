@@ -16,12 +16,12 @@ html lang='en'
     div class='navbar navbar-fixed-top'
       div class='navbar-inner'
         div class='container'
-          = link_to 'Padrino', url(:base, :index), :class => 'navbar-brand', :title => 'Padrino Admin'
+          = link_to 'Padrino', url(:base, :index), class: 'navbar-brand', title: 'Padrino Admin'
 
           ul class='nav navbar-nav pull-right'
-            li class='navbar-edit-account' = link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, :id => current_account.id), :title => pat(:profile), :class => 'navbar-nav-link'
+            li class='navbar-edit-account' = link_to tag_icon(:user), url(:<%= @model_plural %>, :edit, id: current_account.id), title: pat(:profile), class: 'navbar-nav-link'
             li class='navbar-logout'
-              = button_to pat(:logout), url(:sessions, :destroy), :method => :delete, :class => 'navbar-nav-form', :submit_options => { :type => :submit, :title => pat(:logout), :class => 'navbar-nav-form-link' } do
+              = button_to pat(:logout), url(:sessions, :destroy), method: :delete, class: 'navbar-nav-form', submit_options: { type: :submit, title: pat(:logout), class: 'navbar-nav-form-link' } do
                 = tag_icon(:'power-off')
 
           ul class='nav navbar-nav pull-left'
@@ -31,7 +31,7 @@ html lang='en'
 
     div class='container main'
       div class='main-wrapper'
-        =  {:error => 'danger', :warning => 'warning', :success => 'success', :notice => 'info'}.map { |type, class_name| flash_tag(type, :class => "alert alert-#{class_name} fade in", :bootstrap => true) }.join.html_safe
+        = { error: 'danger', warning: 'warning', success: 'success', notice: 'info' }.map { |type, class_name| flash_tag(type, class: "alert alert-#{class_name} fade in", bootstrap: true) }.join.html_safe
         div class='row' = yield
         div class='main-wrapper-push'
 
@@ -41,9 +41,9 @@ html lang='en'
           ' Copyright &copy; #{Time.now.year} Your Site -
           b Powered by Padrino v.#{Padrino.version}
         ul class='pull-right footer-links'
-          li = link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', :target => :_blank, :class => 'footer-links-link'
-          li = link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', :target => :_blank, :class => 'footer-links-link'
-          li = link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', :target => :_blank, :class => 'footer-links-link'
-          li = link_to tag_icon(:twitter, 'twitter'), 'http://twitter.com/padrinorb', :target => :_blank, :class => 'footer-links-link'
+          li = link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', target: :_blank, class: 'footer-links-link'
+          li = link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', target: :_blank, class: 'footer-links-link'
+          li = link_to tag_icon(:github, 'code'), 'https://github.com/padrino/padrino-framework', target: :_blank, class: 'footer-links-link'
+          li = link_to tag_icon(:twitter, 'twitter'), 'http://twitter.com/padrinorb', target: :_blank, class: 'footer-links-link'
 
-    =javascript_include_tag 'jquery-1.11.0.min', (Padrino.env == :production ? 'bootstrap/bootstrap.min' : %w[bootstrap/affix bootstrap/alert bootstrap/button bootstrap/carousel bootstrap/collapse bootstrap/dropdown  bootstrap/tooltip bootstrap/transition  bootstrap/modal bootstrap/popover bootstrap/scrollspy bootstrap/tab]), :application
+    = javascript_include_tag 'jquery-1.11.0.min', (Padrino.env == :production ? 'bootstrap/bootstrap.min' : %w[bootstrap/affix bootstrap/alert bootstrap/button bootstrap/carousel bootstrap/collapse bootstrap/dropdown  bootstrap/tooltip bootstrap/transition  bootstrap/modal bootstrap/popover bootstrap/scrollspy bootstrap/tab]), :application

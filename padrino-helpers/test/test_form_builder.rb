@@ -1,5 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
-require File.expand_path(File.dirname(__FILE__) + '/fixtures/markup_app/app')
+require_relative 'helper'
+require_relative 'fixtures/markup_app/app'
 
 describe 'FormBuilder' do
   include Padrino::Helpers::FormHelpers
@@ -16,10 +16,14 @@ describe 'FormBuilder' do
   end
 
   def setup
-    role_types = [mock_model('Role', name: 'Admin', id: 1),
-      mock_model('Role', name: 'Moderate', id: 2),  mock_model('Role', name: 'Limited', id: 3)]
+    role_types = [
+      mock_model('Role', name: 'Admin', id: 1),
+      mock_model('Role', name: 'Moderate', id: 2),
+      mock_model('Role', name: 'Limited', id: 3)
+    ]
+
     @user = mock_model('User', first_name: 'Joe', email: '', session_id: 54)
-    @user.stubs(errors: {a: 'must be present', b: 'must be valid', email: 'Must be valid', first_name: []})
+    @user.stubs(errors: { a: 'must be present', b: 'must be valid', email: 'Must be valid', first_name: [] })
     @user.stubs(role_types: role_types, role: '1', roles: [1, 3])
     @user_none = mock_model('User')
   end
@@ -56,8 +60,8 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct form html with remote option' do
-      actual_html = form_for(@user, '/update', "accept-charset": 'UTF-8', remote: true) { 'Demo' }
-      assert_html_has_tag(actual_html, 'form', :"accept-charset" => 'UTF-8', :action => '/update', :method => 'post', 'data-remote' => 'true')
+      actual_html = form_for(@user, '/update', 'accept-charset' => 'UTF-8', remote: true) { 'Demo' }
+      assert_html_has_tag(actual_html, 'form', 'accept-charset' => 'UTF-8', action: '/update', method: 'post', 'data-remote' => 'true')
     end
 
     it 'should display correct form html with namespace option' do
@@ -81,8 +85,8 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct form html with remote option and method put' do
-      actual_html = form_for(@user, '/update', "accept-charset": 'UTF-8', remote: true, method: 'put') { 'Demo' }
-      assert_html_has_tag(actual_html, 'form', :"accept-charset" => 'UTF-8', :method => 'post', 'data-remote' => 'true')
+      actual_html = form_for(@user, '/update', 'accept-charset' => 'UTF-8', remote: true, method: 'put') { 'Demo' }
+      assert_html_has_tag(actual_html, 'form', 'accept-charset' => 'UTF-8', method: 'post', 'data-remote' => 'true')
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', value: 'put')
     end
 
@@ -142,12 +146,12 @@ describe 'FormBuilder' do
     end
 
     it 'should have a class of "invalid" for fields with errors' do
-      actual_html = form_for(@user, '/register') {|f| f.text_field(:email) }
+      actual_html = form_for(@user, '/register') { |f| f.text_field(:email) }
       assert_html_has_tag(actual_html, :input, type: 'text', name: 'user[email]', id: 'user_email', class: 'invalid')
     end
 
     it 'should not have a class of "invalid" for fields with no errors' do
-      actual_html = form_for(@user, '/register') {|f| f.text_field(:first_name) }
+      actual_html = form_for(@user, '/register') { |f| f.text_field(:first_name) }
       assert_html_has_no_tag(actual_html, :input, type: 'text', name: 'user[first_name]', id: 'user_first_name', class: 'invalid')
     end
   end
@@ -533,7 +537,7 @@ describe 'FormBuilder' do
 
   describe 'for #check_box_group and #radio_button_group methods' do
     it 'should display checkbox group html' do
-      checkboxes = standard_builder.check_box_group(:role, collection: @user.role_types, fields: [:name, :id], selected: [2, 3])
+      checkboxes = standard_builder.check_box_group(:role, collection: @user.role_types, fields: %i[name id], selected: [2, 3])
       assert_html_has_tag(checkboxes, 'input[type=checkbox]', value: '1')
       assert_html_has_no_tag(checkboxes, 'input[type=checkbox][checked]', value: '1')
       assert_html_has_tag(checkboxes, 'input[type=checkbox]', checked: 'checked', value: '2')
@@ -541,7 +545,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display checkbox group html and extract selected values from the object' do
-      checkboxes = standard_builder.check_box_group(:roles, collection: @user.role_types, fields: [:name, :id])
+      checkboxes = standard_builder.check_box_group(:roles, collection: @user.role_types, fields: %i[name id])
       assert_html_has_tag(checkboxes, 'input[type=checkbox][name="user[roles][]"][value="1"][checked]')
       assert_html_has_tag(checkboxes, 'input[type=checkbox][name="user[roles][]"][value="3"][checked]')
       assert_html_has_no_tag(checkboxes, 'input[type=checkbox][name="user[roles][]"][value="2"][checked]')
@@ -695,12 +699,11 @@ describe 'FormBuilder' do
       actual_html = form_for(@user, '/register', "accept-charset": 'UTF-8', multipart: false) { |f| f.file_field :photo }
       assert_html_has_no_tag(actual_html, 'form', "accept-charset": 'UTF-8', action: '/register', enctype: 'multipart/form-data')
     end
-
   end
 
   describe 'for #select method' do
     it 'should display correct select html' do
-      actual_html = standard_builder.select(:state, options: ['California', 'Texas', 'Wyoming'], class: 'selecty')
+      actual_html = standard_builder.select(:state, options: %w[California Texas Wyoming], class: 'selecty')
       assert_html_has_tag(actual_html, 'select.selecty', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select.selecty option', count: 3)
       assert_html_has_tag(actual_html, 'select.selecty option', value: 'California', content: 'California')
@@ -710,7 +713,7 @@ describe 'FormBuilder' do
 
     it 'should display correct select html with selected item if it matches value' do
       @user.stubs(state: 'California')
-      actual_html = standard_builder.select(:state, options: ['California', 'Texas', 'Wyoming'])
+      actual_html = standard_builder.select(:state, options: %w[California Texas Wyoming])
       assert_html_has_tag(actual_html, 'select', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', value: 'California', selected: 'selected')
@@ -718,7 +721,7 @@ describe 'FormBuilder' do
 
     it 'should display correct select html with selected item if it matches full value' do
       @user.stubs(state: 'Cali')
-      actual_html = standard_builder.select(:state, options: ['Cali', 'California', 'Texas', 'Wyoming'])
+      actual_html = standard_builder.select(:state, options: %w[Cali California Texas Wyoming])
       assert_html_has_tag(actual_html, 'select', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select option', selected: 'selected', count: 1)
       assert_html_has_tag(actual_html, 'select option', value: 'Cali', selected: 'selected')
@@ -726,9 +729,9 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct select html with multiple selected items' do
-      @user.stubs(pickles: ['foo', 'bar'])
+      @user.stubs(pickles: %w[foo bar])
       actual_html = standard_builder.select(
-        :pickles, options: [ ['Foo', 'foo'], ['Bar', 'bar'], ['Baz', 'baz'], ['Bar Buz', 'bar buz'] ]
+        :pickles, options: [['Foo', 'foo'], ['Bar', 'bar'], ['Baz', 'baz'], ['Bar Buz', 'bar buz']]
       )
       assert_html_has_tag(actual_html, 'option', value: 'foo', content: 'Foo', selected: 'selected')
       assert_html_has_tag(actual_html, 'option', value: 'bar', content: 'Bar', selected: 'selected')
@@ -737,7 +740,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct select html with include_blank true' do
-      actual_html = standard_builder.select(:state, options: ['California', 'Texas', 'Wyoming'], include_blank: true)
+      actual_html = standard_builder.select(:state, options: %w[California Texas Wyoming], include_blank: true)
       assert_html_has_tag(actual_html, 'select', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select option', count: 4)
       assert_html_has_tag(actual_html, 'select option:first-child', content: '')
@@ -745,7 +748,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct select html with include_blank string' do
-      actual_html = standard_builder.select(:state, options: ['California', 'Texas', 'Wyoming'], include_blank: 'Select')
+      actual_html = standard_builder.select(:state, options: %w[California Texas Wyoming], include_blank: 'Select')
       assert_html_has_tag(actual_html, 'select', id: 'user_state', name: 'user[state]')
       assert_html_has_tag(actual_html, 'select option', count: 4)
       assert_html_has_tag(actual_html, 'select option:first-child', content: 'Select')
@@ -753,7 +756,7 @@ describe 'FormBuilder' do
     end
 
     it 'should display correct select html with collection passed in' do
-      actual_html = standard_builder.select(:role, collection: @user.role_types, fields: [:name, :id])
+      actual_html = standard_builder.select(:role, collection: @user.role_types, fields: %i[name id])
       assert_html_has_tag(actual_html, 'select', id: 'user_role', name: 'user[role]')
       assert_html_has_tag(actual_html, 'select option', count: 3)
       assert_html_has_tag(actual_html, 'select option', value: '1', content: 'Admin', selected: 'selected')
@@ -785,7 +788,6 @@ describe 'FormBuilder' do
       actual_html = standard_builder.submit
       assert_html_has_tag(actual_html, 'input[type=submit]', value: 'Submit')
     end
-
 
     it 'should display correct submit button html with no caption' do
       actual_html = standard_builder.submit(class: 'btn')
@@ -860,19 +862,18 @@ describe 'FormBuilder' do
     before do
       @telephone = mock_model('Telephone', number: '4568769876')
       @user.stubs(:telephone).returns(@telephone)
-      @businesses = [ mock_model('Business', name: 'Silver', new_record?: false, id: 20) ]
-      @businesses <<  mock_model('Business', name: 'Gold', new_record?: true)
-      @addresses = [ mock_model('Address', name: 'Foo', new_record?: false, id: 20, businesses: @businesses) ]
-      @addresses <<  mock_model('Address', name: 'Bar', new_record?: true, businesses: @businesses)
+      @businesses = [mock_model('Business', name: 'Silver', new_record?: false, id: 20)]
+      @businesses << mock_model('Business', name: 'Gold', new_record?: true)
+      @addresses = [mock_model('Address', name: 'Foo', new_record?: false, id: 20, businesses: @businesses)]
+      @addresses << mock_model('Address', name: 'Bar', new_record?: true, businesses: @businesses)
       @user.stubs(:addresses).returns(@addresses)
     end
 
     it 'should display nested children fields one-to-one within form' do
       actual_html = standard_builder.fields_for :telephone do |child_form|
-        child_form.label(:number) +
-        child_form.text_field(:number) +
-        child_form.check_box('_destroy')
+        child_form.label(:number) + child_form.text_field(:number) + child_form.check_box('_destroy')
       end
+
       assert_html_has_tag(actual_html, 'label', for: 'user_telephone_attributes_number')
       assert_html_has_tag(actual_html, 'input', type: 'text', id: 'user_telephone_attributes_number', name: 'user[telephone_attributes][number]', value: '4568769876')
       assert_html_has_tag(actual_html, 'input', type: 'hidden', name: 'user[telephone_attributes][_destroy]', value: '0')
@@ -913,10 +914,9 @@ describe 'FormBuilder' do
     it 'should display fields for collection object' do
       addresses = @addresses + [mock_model('Address', name: 'Walter', new_record?: false, id: 50)]
       actual_html = standard_builder.fields_for(:addresses, addresses) do |child_form|
-        child_form.label(:name) +
-        child_form.text_field(:name) +
-        child_form.check_box('_destroy')
+        child_form.label(:name) + child_form.text_field(:name) + child_form.check_box('_destroy')
       end
+
       # Address 1
       assert_html_has_tag(actual_html, 'input', type: 'hidden', id: 'user_addresses_attributes_0_id', name: 'user[addresses_attributes][0][id]', value: '20')
       assert_html_has_tag(actual_html, 'label', for: 'user_addresses_attributes_0_name', content: 'Name')
@@ -933,10 +933,11 @@ describe 'FormBuilder' do
       actual_html = standard_builder.fields_for :addresses do |child_form|
         child_form.fields_for(:businesses) do |second_child_form|
           second_child_form.label(:name) +
-          second_child_form.text_field(:name) +
-          second_child_form.check_box('_destroy')
+            second_child_form.text_field(:name) +
+            second_child_form.check_box('_destroy')
         end
       end
+
       assert_html_has_tag(actual_html, 'label', for: 'user_addresses_attributes_1_businesses_attributes_0_name', content: 'Name')
       assert_html_has_tag(actual_html, 'input', type: 'text', id: 'user_addresses_attributes_1_businesses_attributes_0_name', name: 'user[addresses_attributes][1][businesses_attributes][0][name]')
     end
@@ -947,8 +948,8 @@ describe 'FormBuilder' do
         child_form.object.businesses.each_with_index do |business, i|
           html += child_form.fields_for(:businesses, business, index: ('a'..'z').to_a[i]) do |second_child_form|
             second_child_form.label(:name) +
-            second_child_form.text_field(:name) +
-            second_child_form.check_box('_destroy')
+              second_child_form.text_field(:name) +
+              second_child_form.check_box('_destroy')
           end
         end
         html
@@ -1146,7 +1147,7 @@ describe 'FormBuilder' do
 
   describe 'for #select_block method' do
     it 'should display correct select_block block html' do
-      actual_html = standard_builder.select_block(:country, options: ['USA', 'Canada'], class: 'large', caption: 'Your country')
+      actual_html = standard_builder.select_block(:country, options: %w[USA Canada], class: 'large', caption: 'Your country')
       assert_html_has_tag(actual_html, 'p label', for: 'user_country', content: 'Your country')
       assert_html_has_tag(actual_html, 'p select', id: 'user_country', name: 'user[country]')
       assert_html_has_tag(actual_html, 'p select option', content: 'USA')

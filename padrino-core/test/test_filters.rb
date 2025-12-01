@@ -1,9 +1,9 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'Filters' do
   it 'should filters by accept header' do
     mock_app do
-      get '/foo', provides: [:xml, :js] do
+      get '/foo', provides: %i[xml js] do
         request.env['HTTP_ACCEPT']
       end
     end
@@ -105,7 +105,7 @@ describe 'Filters' do
 
   it 'should be able to access params normally when a before filter is specified' do
     mock_app do
-      before { }
+      before {}
       get :index do
         params.to_json
       end
@@ -116,7 +116,7 @@ describe 'Filters' do
 
   it 'should be able to filter based on a path' do
     mock_app do
-      before('/') { @test = "#{@test}before"}
+      before('/') { @test = "#{@test}before" }
       get :index do
         @test
       end
@@ -132,7 +132,7 @@ describe 'Filters' do
 
   it 'should be able to filter based on a symbol' do
     mock_app do
-      before(:index) { @test = 'before'}
+      before(:index) { @test = 'before' }
       get :index do
         @test
       end
@@ -149,27 +149,26 @@ describe 'Filters' do
   it 'should be able to filter based on a symbol for a controller' do
     mock_app do
       controller :foo do
-        before(:test) { @test = 'foo'}
-        get :test do
-          @test.to_s + ' response'
-        end
+        before(:test) { @test = 'foo' }
+        get(:test) { "#{@test} response" }
       end
+
       controller :bar do
-        before(:test) { @test = 'bar'}
-        get :test do
-          @test.to_s + ' response'
-        end
+        before(:test) { @test = 'bar' }
+        get(:test) { "#{@test} response" }
       end
     end
+
     get '/foo/test'
     assert_equal 'foo response', body
+
     get '/bar/test'
     assert_equal 'bar response', body
   end
 
   it 'should be able to filter based on a symbol or path' do
     mock_app do
-      before(:index, '/main') { @test = 'before'}
+      before(:index, '/main') { @test = 'before' }
       get :index do
         @test
       end
@@ -185,7 +184,7 @@ describe 'Filters' do
 
   it 'should be able to filter based on a symbol or regexp' do
     mock_app do
-      before(:index, /main/) { @test = 'before'}
+      before(:index, /main/) { @test = 'before' }
       get :index do
         @test
       end
@@ -206,7 +205,7 @@ describe 'Filters' do
 
   it 'should be able to filter excluding based on a symbol' do
     mock_app do
-      before(except: :index) { @test = 'before'}
+      before(except: :index) { @test = 'before' }
       get :index do
         @test
       end
@@ -223,8 +222,8 @@ describe 'Filters' do
   it 'should be able to filter excluding based on a symbol when specify the multiple routes and use nested controller' do
     mock_app do
       controller :test, :nested do
-        before(except: [:test1, :test2]) { @long = 'long'}
-        before(except: [:test1]) { @short = 'short'}
+        before(except: %i[test1 test2]) { @long = 'long' }
+        before(except: [:test1]) { @short = 'short' }
         get :test1 do
           "#{@long} #{@short} normal"
         end
@@ -246,14 +245,14 @@ describe 'Filters' do
 
   it 'should be able to filter based on a request param' do
     mock_app do
-      before(agent: /IE/) { @test = 'before'}
+      before(agent: /IE/) { @test = 'before' }
       get :index do
         @test
       end
     end
     get '/'
     assert_equal '', body
-    get '/', {}, {'HTTP_USER_AGENT' => 'This is IE'}
+    get '/', {}, { 'HTTP_USER_AGENT' => 'This is IE' }
     assert_equal 'before', body
   end
 

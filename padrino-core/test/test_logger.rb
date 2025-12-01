@@ -1,5 +1,5 @@
-#coding:utf-8
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+# coding:utf-8
+require_relative 'helper'
 require 'logger'
 require 'tempfile'
 
@@ -183,10 +183,12 @@ end
 describe 'alternate logger' do
   class FancyLogger
     attr_accessor :level, :log
+
     def initialize(buf)
       self.log = buf
       self.level = 0
     end
+
     def add(level, text)
       self.log << text
     end
@@ -238,7 +240,7 @@ describe 'binary logger' do
   end
 
   it 'should not convert parameters to strings before formatting' do
-    logger.info({a: 2})
+    logger.info({ a: 2 })
     assert_equal '1', @log.string
   end
 end
@@ -337,8 +339,8 @@ describe 'options :source_location' do
 
   it 'should output source_location if file path is relative' do
     stub_message = "test/test_logger.rb:269:in `test'"
-    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root { Padrino.logger.debug('hello relative path') }}
-    assert_match(/\[test\/test_logger\.rb:269\] hello relative path/, Padrino.logger.log.string)
+    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root { Padrino.logger.debug('hello relative path') } }
+    assert_match(%r{\[test/test_logger\.rb:269\] hello relative path}, Padrino.logger.log.string)
   end
 
   it 'should not output source_location if :source_location is set to false' do
@@ -356,8 +358,8 @@ describe 'options :source_location' do
   end
 
   it 'should not output source_location if source file path is started with Padrino.root + vendor' do
-    base_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/')
-    stub_message = File.expand_path(File.dirname(__FILE__) + '/fixtures/vendor/logger.rb') + ":291:in `test'"
+    base_path = File.expand_path("#{__dir__}/fixtures/")
+    stub_message = "#{File.expand_path("#{__dir__}/fixtures/vendor/logger.rb")}:291:in `test'"
     Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root(base_path) { Padrino.logger.debug('hello vendor') } }
     assert_match(/hello vendor/, Padrino.logger.log.string)
     refute_match(/\[.+?\] hello vendor/, Padrino.logger.log.string)

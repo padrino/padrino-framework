@@ -42,9 +42,10 @@ module Padrino
       def rollback(name)
         new_classes(@old_entries[name][:constants]).each do |klass|
           loaded_in_name = files.each do |file, data|
-                             next if file == name
-                             break if data[:constants].include?(klass)
-                           end
+            next if file == name
+            break if data[:constants].include?(klass)
+          end
+
           Reloader.remove_constant(klass) if loaded_in_name
         end
         @old_entries.delete(name)
@@ -64,7 +65,7 @@ module Padrino
 
         ObjectSpace.each_object(::Class).each do |klass|
           if block_given?
-            if filtered_class = yield(klass)
+            if (filtered_class = yield(klass))
               klasses << filtered_class
             end
           else

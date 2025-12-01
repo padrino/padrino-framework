@@ -7,7 +7,7 @@ class MarkupDemo < Sinatra::Base
     set :logging, false
     set :padrino_logging, false
     set :environment, :test
-    set :root, File.dirname(__FILE__)
+    set :root, __dir__
     set :sessions, true
     set :protect_from_csrf, true
   end
@@ -57,7 +57,7 @@ class MarkupDemo < Sinatra::Base
 end
 
 class MarkupUser
-  def errors; { :fake => 'must be valid', :second => 'must be present', :third  => 'must be a number', :email => 'must be an email'}; end
+  def errors; { fake: 'must be valid', second: 'must be present', third: 'must be a number', email: 'must be an email' }; end
   def session_id; 45; end
   def gender; 'male'; end
   def remember_me; '1'; end
@@ -72,6 +72,7 @@ end
 
 class Address
   attr_accessor :name
+
   def initialize(name, existing); @name, @existing = name, existing; end
   def new_record?; !@existing; end
   def id; @existing ? 25 : nil; end

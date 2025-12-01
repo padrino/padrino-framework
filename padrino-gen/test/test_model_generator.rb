@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 describe 'ModelGenerator' do
   def setup
@@ -82,11 +82,11 @@ describe 'ModelGenerator' do
       capture_io { generate(:model, 'friend', 'name', 'age:integer', 'email', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_friends.rb"
       assert_match_in_file(/class CreateFriends < ActiveRecord::Migration/m, migration_file_path)
-      assert_match_in_file(/    create_table :friends/m, migration_file_path)
-      assert_match_in_file(/      t.string :name/m,   migration_file_path)
-      assert_match_in_file(/      t.integer :age/m,   migration_file_path)
-      assert_match_in_file(/      t.string :email/m,  migration_file_path)
-      assert_match_in_file(/    drop_table :friends/m, migration_file_path)
+      assert_match_in_file(/    create_table :friends/m,                     migration_file_path)
+      assert_match_in_file(/      t.string :name/m,                          migration_file_path)
+      assert_match_in_file(/      t.integer :age/m,                          migration_file_path)
+      assert_match_in_file(/      t.string :email/m,                         migration_file_path)
+      assert_match_in_file(/    drop_table :friends/m,                       migration_file_path)
     end
 
     it 'should abort if model name already exists' do
@@ -180,9 +180,9 @@ describe 'ModelGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=minirecord') }
       capture_io { generate(:model, 'user', 'name:string', 'surname:string', 'age:integer', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :name, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :surname, :as => :string/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :age, :as => :integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :name, as: :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :surname, as: :string/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :age, as: :integer/m, "#{@apptmp}/sample_project/models/user.rb")
     end
 
     it 'should generate model file with camelized name' do
@@ -285,12 +285,12 @@ describe 'ModelGenerator' do
       capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'created:datetime', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_friends.rb"
       assert_match_in_file(/class Friend < Sequel::Model/m, "#{@apptmp}/sample_project/models/friend.rb")
-      assert_match_in_file(/Sequel\.migration do/m, migration_file_path)
+      assert_match_in_file(/Sequel\.migration do/m,  migration_file_path)
       assert_match_in_file(/create_table :friends/m, migration_file_path)
-      assert_match_in_file(/String :name/m,   migration_file_path)
-      assert_match_in_file(/Integer :age/m,   migration_file_path)
-      assert_match_in_file(/DateTime :created/m,  migration_file_path)
-      assert_match_in_file(/drop_table :friends/m, migration_file_path)
+      assert_match_in_file(/String :name/m,          migration_file_path)
+      assert_match_in_file(/Integer :age/m,          migration_file_path)
+      assert_match_in_file(/DateTime :created/m,     migration_file_path)
+      assert_match_in_file(/drop_table :friends/m,   migration_file_path)
     end
   end
 
@@ -320,16 +320,16 @@ describe 'ModelGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
       capture_io { generate(:model, 'person', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class Person\n\s+include Mongoid::Document/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/# field <name>, :type => <type>, :default => <value>/m, "#{@apptmp}/sample_project/models/person.rb")
+      assert_match_in_file(/# field <name>, type: <type>, default: <value>/m, "#{@apptmp}/sample_project/models/person.rb")
     end
 
     it 'should generate model file with given fields' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
       capture_io { generate(:model, 'user', 'name:string', 'age:integer', 'email:string', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User\n\s+include Mongoid::Document/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :name, :type => String/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :age, :type => Integer/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :email, :type => String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :name, type: String/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :age, type: Integer/m, "#{@apptmp}/sample_project/models/user.rb")
+      assert_match_in_file(/field :email, type: String/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 
@@ -422,7 +422,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
       assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
       assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/'(\/\.\.){1}\/test/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){1}/test}m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
     end
 
     it 'should generate test file for bacon in specified app' do
@@ -432,7 +432,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
       assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
       assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){2}/test}m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
     # MINITEST
@@ -480,7 +480,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
       assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(/'(\/\.\.){1}\/test/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
+      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){1}/test}m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
     end
 
     it 'should generate test file for shoulda in specified app' do
@@ -491,7 +491,7 @@ describe 'ModelGenerator' do
       assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
       assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
       assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
-      assert_match_in_file(/'(\/\.\.){2}\/test/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
+      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){2}/test}m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
     end
   end
 

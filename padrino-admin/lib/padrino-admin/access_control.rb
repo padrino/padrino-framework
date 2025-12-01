@@ -2,6 +2,7 @@ module Padrino
   module Admin
     class AccessControlError < StandardError
     end
+
     ##
     # This module enables access control functionality within a Padrino application.
     #
@@ -28,7 +29,7 @@ module Padrino
 
           app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
         end
-        alias :included :registered
+        alias included registered
       end
 
       ##
@@ -43,7 +44,7 @@ module Padrino
         # We map project modules for a given role or roles.
         #
         def roles_for(*roles, &block)
-          raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.kind_of?(Symbol) } || roles.empty?
+          raise Padrino::Admin::AccessControlError, "Role #{role} must be present and must be a symbol!" if roles.any? { |r| !r.is_a?(Symbol) } || roles.empty?
           raise Padrino::Admin::AccessControlError, "You can't merge :any with other roles" if roles.size > 1 && roles.any? { |r| r == :any }
 
           @roles += roles
@@ -99,7 +100,7 @@ module Padrino
         #  # NOTE The un-mounted path is used ('/accounts' instead of '/admin/accounts')
         #  - if access_control.allowed?(current_account, '/accounts')
         #    # Admins see the "Profile" link, but Workers do not
-        #    = link_to 'Profile', url(:accounts, :edit, :id => current_account.id)
+        #    = link_to 'Profile', url(:accounts, :edit, id: current_account.id)
         #
         def allowed?(account = nil, path = nil)
           path = '/' if path.nil? || path.empty?
@@ -174,7 +175,7 @@ module Padrino
         # Returns the name of the project module humanize them for you.
         #
         def human_name
-           @name.to_s.humanize
+          @name.to_s.humanize
         end
 
         ##

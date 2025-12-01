@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/helper')
+require_relative 'helper'
 
 class PadrinoPristine < Padrino::Application; end
 class PadrinoTestApp  < Padrino::Application; end
@@ -8,28 +8,27 @@ describe 'Application' do
   before { Padrino.clear! }
 
   describe 'for application functionality' do
-
     it 'should check default options' do
       assert File.identical?(__FILE__, PadrinoPristine.app_file)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal :test, PadrinoPristine.environment
       assert_equal Padrino.root('views'), PadrinoPristine.views
-      assert  PadrinoPristine.raise_errors
-      assert !PadrinoPristine.logging
-      assert !PadrinoPristine.sessions
-      assert !PadrinoPristine.dump_errors
-      assert !PadrinoPristine.show_exceptions
-      assert  PadrinoPristine.raise_errors
-      assert !Padrino.configure_apps
+      assert PadrinoPristine.raise_errors
+      refute PadrinoPristine.logging
+      refute PadrinoPristine.sessions
+      refute PadrinoPristine.dump_errors
+      refute PadrinoPristine.show_exceptions
+      assert PadrinoPristine.raise_errors
+      refute Padrino.configure_apps
     end
 
     it 'should check padrino specific options' do
-      assert !PadrinoPristine.instance_variable_get(:@_configured)
+      refute PadrinoPristine.instance_variable_get(:@_configured)
       PadrinoPristine.send(:setup_application!)
       assert_equal :padrino_pristine, PadrinoPristine.app_name
       assert_equal 'StandardFormBuilder', PadrinoPristine.default_builder
-      assert  PadrinoPristine.instance_variable_get(:@_configured)
-      assert !PadrinoPristine.reload?
+      assert PadrinoPristine.instance_variable_get(:@_configured)
+      refute PadrinoPristine.reload?
     end
 
     it 'should set global project settings' do
@@ -88,9 +87,11 @@ describe 'Application' do
       class PadrinoTestApp4 < Padrino::Application
         enable :sessions
       end
+
       class PadrinoTestApp5 < Padrino::Application
         set :sessions, use: Rack::Session::Pool
       end
+
       Padrino.mount('PadrinoTestApp4').to('/write')
       Padrino.mount('PadrinoTestApp5').to('/read')
       PadrinoTestApp4.get('/') { session[:foo] = 'cookie' }
@@ -120,8 +121,8 @@ describe 'Application' do
     end
 
     it 'should resolve views and layouts paths' do
-      assert_equal Padrino.root('views')+'/users/index', PadrinoPristine.view_path('users/index')
-      assert_equal Padrino.root('views')+'/layouts/app', PadrinoPristine.layout_path(:app)
+      assert_equal "#{Padrino.root('views')}/users/index", PadrinoPristine.view_path('users/index')
+      assert_equal "#{Padrino.root('views')}/layouts/app", PadrinoPristine.layout_path(:app)
     end
 
     describe 'errors' do
@@ -148,29 +149,27 @@ describe 'Application' do
         assert_equal 'custom error', body
       end
 
+      # see naming collision in issue #1814
       it 'should pass Routing#parent to Module#parent' do
-        # see naming collision in issue #1814
-        
-          ConstTest = Class.new(Padrino::Application)
-          class Module
-            def parent
-              :dirty
-            end
+        ConstTest = Class.new(Padrino::Application)
+        class Module
+          def parent
+            :dirty
           end
-          assert_equal :dirty, ConstTest.parent
-        ensure
-          Module.instance_eval { undef :parent }
-        
+        end
+        assert_equal :dirty, ConstTest.parent
+      ensure
+        Module.instance_eval { undef :parent }
       end
     end
 
     describe 'pre-compile routes' do
       it 'should compile routes before first request if enabled the :precompile_routes option' do
-        require File.expand_path(File.dirname(__FILE__) + '/fixtures/apps/precompiled_app')
+        require File.expand_path("#{__dir__}/fixtures/apps/precompiled_app")
         assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::App.compiled_router.engine
         assert_instance_of Padrino::PathRouter::Compiler, PrecompiledApp::SubApp.compiled_router.engine
-        assert_equal true, PrecompiledApp::App.compiled_router.engine.compiled?
-        assert_equal true, PrecompiledApp::SubApp.compiled_router.engine.compiled?
+        assert PrecompiledApp::App.compiled_router.engine.compiled?
+        assert PrecompiledApp::SubApp.compiled_router.engine.compiled?
         assert_equal 20, PrecompiledApp::App.compiled_router.engine.routes.length
         assert_equal 20, PrecompiledApp::SubApp.compiled_router.engine.routes.length
       end

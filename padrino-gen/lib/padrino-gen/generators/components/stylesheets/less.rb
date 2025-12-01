@@ -10,10 +10,10 @@ LESS_INIT = <<-LESS unless defined?(LESS_INIT)
       # other configs ...
     end
     app.use Rack::Less,
-      :root      => Padrino.root,
-      :source    => 'app/stylesheets',
-      :public    => 'public',
-      :hosted_at => 'stylesheets'
+      root:      Padrino.root,
+      source:    'app/stylesheets',
+      public:    'public',
+      hosted_at: 'stylesheets'
 LESS
 
 def setup_stylesheet

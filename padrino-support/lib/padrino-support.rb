@@ -27,7 +27,7 @@ end
 #
 if defined?(I18n) && !defined?(PADRINO_I18N_LOCALE)
   PADRINO_I18N_LOCALE = true
-  I18n.load_path += Dir["#{File.dirname(__FILE__)}/padrino-support/locale/*.yml"]
+  I18n.load_path += Dir["#{__dir__}/padrino-support/locale/*.yml"]
 end
 
 ##
@@ -35,5 +35,5 @@ end
 # In reloader for accessing class_name Foo._orig_klass_name
 #
 class Module
-  alias :_orig_klass_name :name
+  alias _orig_klass_name name
 end

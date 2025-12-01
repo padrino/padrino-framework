@@ -1,25 +1,25 @@
-COUCHREST = <<-COUCHREST unless defined?(COUCHREST)
-case Padrino.env
-  when :development then db_name = '!NAME!_development'
-  when :production  then db_name = '!NAME!_production'
-  when :test        then db_name = '!NAME!_test'
-end
+COUCHREST = <<~COUCHREST unless defined?(COUCHREST)
+  case Padrino.env
+    when :development then db_name = '!NAME!_development'
+    when :production  then db_name = '!NAME!_production'
+    when :test        then db_name = '!NAME!_test'
+  end
 
-CouchRest::Model::Base.configure do |conf|
-  conf.model_type_key = 'type' # compatibility with CouchModel 1.1
-  conf.database = CouchRest.database!(db_name)
-  conf.environment = Padrino.env
-  # conf.connection = {
-  #   :protocol => 'http',
-  #   :host     => 'localhost',
-  #   :port     => '5984',
-  #   :prefix   => 'padrino',
-  #   :suffix   => nil,
-  #   :join     => '_',
-  #   :username => nil,
-  #   :password => nil
-  # }
-end
+  CouchRest::Model::Base.configure do |conf|
+    conf.model_type_key = 'type' # compatibility with CouchModel 1.1
+    conf.database = CouchRest.database!(db_name)
+    conf.environment = Padrino.env
+    # conf.connection = {
+    #   protocol: 'http',
+    #   host:     'localhost',
+    #   port:     '5984',
+    #   prefix:   'padrino',
+    #   suffix:   nil,
+    #   join:     '_',
+    #   username: nil,
+    #   password: nil
+    # }
+  end
 COUCHREST
 
 def setup_orm
@@ -28,15 +28,15 @@ def setup_orm
   create_file('config/database.rb', COUCHREST.gsub(/!NAME!/, @project_name.underscore))
 end
 
-CR_MODEL = <<-MODEL unless defined?(CR_MODEL)
-class !NAME! < CouchRest::Model::Base
-  unique_id :id
-  # property <name>
-  !FIELDS!
-end
+CR_MODEL = <<~MODEL unless defined?(CR_MODEL)
+  class !NAME! < CouchRest::Model::Base
+    unique_id :id
+    # property <name>
+    !FIELDS!
+  end
 MODEL
 
-# options => { :fields => ["title:string", "body:string"], :app => 'app' }
+# options => { fields: ['title:string', 'body:string'], app: 'app' }
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(':') }

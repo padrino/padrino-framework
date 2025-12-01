@@ -23,10 +23,10 @@ module Padrino
       # @return [String] The html generated from this partial.
       #
       # @example
-      #   partial 'photo/item', :object => @photo
-      #   partial 'photo/item', :collection => @photos
-      #   partial 'photo/item', :locals => { :foo => :bar }
-      #   partial 'photo/item', :engine => :erb
+      #   partial 'photo/item', object: @photo
+      #   partial 'photo/item', collection: @photos
+      #   partial 'photo/item', locals: { foo: :bar }
+      #   partial 'photo/item', engine: :erb
       #
       # @note If using this from Sinatra, pass explicit +:engine+ option
       #
@@ -38,11 +38,12 @@ module Padrino
         template_path = path.empty? ? :"_#{name}" : :"#{path}#{File::SEPARATOR}_#{name}"
         item_name = name.partition('.').first.to_sym
 
-        items, counter = if options[:collection].respond_to?(:inject)
-          [options.delete(:collection), 0]
-        else
-          [[options.delete(:object)], nil]
-        end
+        items, counter =
+          if options[:collection].respond_to?(:inject)
+            [options.delete(:collection), 0]
+          else
+            [[options.delete(:object)], nil]
+          end
 
         locals = options.delete(:locals) || {}
         items.each_with_object(SafeBuffer.new) do |item, html|
@@ -57,25 +58,25 @@ module Padrino
           html.safe_concat content if content
         end
       end
-      alias :render_partial :partial
+      alias render_partial partial
 
       def self.included(base)
-        unless base.instance_methods.include?(:render) || base.private_instance_methods.include?(:render)
-          base.class_eval do
-            fail "gem 'tilt' is required" unless defined?(::Tilt)
+        return if base.instance_methods.include?(:render) || base.private_instance_methods.include?(:render)
 
-            def render(engine, file = nil, options = {}, locals = nil, &block)
-              options.delete(:layout)
-              engine, file = file, engine if file.nil?
-              template_engine = engine ? ::Tilt[engine] : ::Tilt.default_mapping[file]
-              fail "Engine #{engine.inspect} is not registered with Tilt" unless template_engine
-              unless File.file?(file.to_s)
-                engine_extensions = ::Tilt.default_mapping.extensions_for(template_engine)
-                file = Dir.glob("#{file}.{#{engine_extensions.join(',')}}").first || fail("Template '#{file}' not found")
-              end
-              template = template_engine.new(file.to_s, options)
-              template.render(options[:scope] || self, locals, &block)
+        base.class_eval do
+          raise "gem 'tilt' is required" unless defined?(::Tilt)
+
+          def render(engine, file = nil, options = {}, locals = nil, &block)
+            options.delete(:layout)
+            engine, file = file, engine if file.nil?
+            template_engine = engine ? ::Tilt[engine] : ::Tilt.default_mapping[file]
+            raise "Engine #{engine.inspect} is not registered with Tilt" unless template_engine
+            unless File.file?(file.to_s)
+              engine_extensions = ::Tilt.default_mapping.extensions_for(template_engine)
+              file = Dir.glob("#{file}.{#{engine_extensions.join(',')}}").first || raise("Template '#{file}' not found")
             end
+            template = template_engine.new(file.to_s, options)
+            template.render(options[:scope] || self, locals, &block)
           end
         end
       end

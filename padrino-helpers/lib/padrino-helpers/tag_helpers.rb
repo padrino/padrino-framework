@@ -20,25 +20,25 @@ module Padrino
       #
       ESCAPE_REGEXP = Regexp.union(*ESCAPE_VALUES.keys).freeze
 
-      BOOLEAN_ATTRIBUTES = [
-        :autoplay,
-        :autofocus,
-        :formnovalidate,
-        :checked,
-        :disabled,
-        :hidden,
-        :loop,
-        :multiple,
-        :muted,
-        :readonly,
-        :required,
-        :selected,
-        :declare,
-        :defer,
-        :ismap,
-        :itemscope,
-        :noresize,
-        :novalidate
+      BOOLEAN_ATTRIBUTES = %i[
+        autoplay
+        autofocus
+        formnovalidate
+        checked
+        disabled
+        hidden
+        loop
+        multiple
+        muted
+        readonly
+        required
+        selected
+        declare
+        defer
+        ismap
+        itemscope
+        noresize
+        novalidate
       ].freeze
 
       ##
@@ -46,14 +46,10 @@ module Padrino
       # feel free to update with yours:
       #
       #   Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
-      #   text_field :foo, :dialog => true
+      #   text_field :foo, dialog: true
       #   # Generates: <input type="text" data-dialog="true" name="foo" />
       #
-      DATA_ATTRIBUTES = [
-        :method,
-        :remote,
-        :confirm
-      ]
+      DATA_ATTRIBUTES = %i[method remote confirm]
 
       ##
       # A html_safe newline string to avoid allocating a new on each
@@ -102,13 +98,13 @@ module Padrino
       #   Generated HTML with specified +options+.
       #
       # @example
-      #   content_tag(:p, 'Hello World', :class => 'light')
+      #   content_tag(:p, 'Hello World', class: 'light')
       #
       #   # => <p class="light">
       #   # =>   Hello World
       #   # => </p>
       #
-      #   content_tag(:p, :class => 'dark') do
+      #   content_tag(:p, class: 'dark') do
       #     link_to 'Padrino', 'http://www.padrinorb.com'
       #   end
       #
@@ -125,9 +121,13 @@ module Padrino
         options    = parse_data_options(name, options)
         attributes = tag_attributes(options)
         output = SafeBuffer.new
+
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
-          content.each { |item| output.concat item; output.safe_concat NEWLINE }
+          content.each do |item|
+            output.concat item
+            output.safe_concat NEWLINE
+          end
         else
           output.concat content.to_s
         end
@@ -187,17 +187,17 @@ module Padrino
       #   Generated HTML with specified +options+.
       #
       # @example
-      #   input_tag :text, :name => 'handle'
+      #   input_tag :text, name: 'handle'
       #   # => <input type="test" name="handle" />
       #
-      #   input_tag :password, :name => 'password', :size => 20
+      #   input_tag :password, name: 'password', size: 20
       #   # => <input type="password" name="password" size="20" />
       #
-      #   input_tag :text, :name => 'username', :required => true, :autofocus => true
+      #   input_tag :text, name: 'username', required: true, autofocus: true
       #   # => <input type="text" name="username" required autofocus />
       #
-      #   input_tag :number, :name => 'credit_card', :autocomplete => :off
-      #   # => <input type="number" name="credit_card" autocomplete="off" />  
+      #   input_tag :number, name: 'credit_card', autocomplete: :off
+      #   # => <input type="number" name="credit_card" autocomplete="off" />
       #
       def input_tag(type, options = {})
         tag(:input, { type: type }.update(options))
@@ -217,16 +217,16 @@ module Padrino
       #   Generated HTML with specified +options+.
       #
       # @example
-      #   tag :hr, :class => 'dotted'
+      #   tag :hr, class: 'dotted'
       #   # => <hr class="dotted" />
       #
-      #   tag :input, :name => 'username', :type => :text
+      #   tag :input, name: 'username', type: :text
       #   # => <input name="username" type="text" />
       #
-      #   tag :img, :src => 'images/pony.jpg', :alt => 'My Little Pony'
+      #   tag :img, src: 'images/pony.jpg', alt: 'My Little Pony'
       #   # => <img src="images/pony.jpg" alt="My Little Pony" />
       #
-      #   tag :img, :src => 'sinatra.jpg', :data => { :nsfw => false, :geo => [34.087, -118.407] }
+      #   tag :img, src: 'sinatra.jpg', data: { nsfw: false, geo: [34.087, -118.407] }
       #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407" />
       #
       def tag(name, options = nil, open = false)
@@ -255,16 +255,19 @@ module Padrino
       #
       def tag_attributes(options)
         return '' unless options
+
         options.inject('') do |all, (key, value)|
           next all unless value
+
           all << ' ' if all.empty?
-          all << if value.is_a?(Hash)
-            nested_values(key, value)
-          elsif BOOLEAN_ATTRIBUTES.include?(key)
-            %(#{key}="#{key}" )
-          else
-            %(#{key}="#{escape_value(value)}" )
-          end
+          all <<
+            if value.is_a?(Hash)
+              nested_values(key, value)
+            elsif BOOLEAN_ATTRIBUTES.include?(key)
+              %(#{key}="#{key}" )
+            else
+              %(#{key}="#{escape_value(value)}" )
+            end
         end.chomp!(' ')
       end
 
@@ -272,7 +275,7 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string =  string.collect(&:to_s).join(' ') if string.is_a?(Array)
+        string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
         string.to_s.gsub(ESCAPE_REGEXP, ESCAPE_VALUES)
       end
 
@@ -282,11 +285,12 @@ module Padrino
       def nested_values(attribute, hash)
         hash.inject('') do |all, (key, value)|
           attribute_with_name = "#{attribute}-#{key.to_s.tr('_', '-')}"
-          all << if value.is_a?(Hash)
-            nested_values(attribute_with_name, value)
-          else
-            %(#{attribute_with_name}="#{escape_value(value)}" )
-          end
+          all <<
+            if value.is_a?(Hash)
+              nested_values(attribute_with_name, value)
+            else
+              %(#{attribute_with_name}="#{escape_value(value)}" )
+            end
         end
       end
 

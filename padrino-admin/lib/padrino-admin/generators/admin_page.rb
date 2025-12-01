@@ -33,7 +33,7 @@ module Padrino
       class_option :skip_migration, aliases: '-s', default: false, type: :boolean
       class_option :root, desc: 'The root destination', aliases: '-r', type: :string
       class_option :destroy, aliases: '-d', default: false, type: :boolean
-      class_option :admin_name,  aliases: '-a', desc: 'The admin application name and path', default: 'admin', type: :string
+      class_option :admin_name, aliases: '-a', desc: 'The admin application name and path', default: 'admin', type: :string
       # Show help if no argv given.
       require_arguments!
 
@@ -48,13 +48,13 @@ module Padrino
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)
             self.behavior = :revoke if options[:destroy]
-            empty_directory destination_root(@admin_path+"/views/#{@orm.name_plural}")
+            empty_directory destination_root("#{@admin_path}/views/#{@orm.name_plural}")
 
-            template 'templates/page/controller.rb.tt',       destination_root(@admin_path+"/controllers/#{@orm.name_plural}.rb")
-            template "templates/#{ext}/page/_form.#{ext}.tt", destination_root(@admin_path+"/views/#{@orm.name_plural}/_form.#{ext}")
-            template "templates/#{ext}/page/edit.#{ext}.tt",  destination_root(@admin_path+"/views/#{@orm.name_plural}/edit.#{ext}")
-            template "templates/#{ext}/page/index.#{ext}.tt", destination_root(@admin_path+"/views/#{@orm.name_plural}/index.#{ext}")
-            template "templates/#{ext}/page/new.#{ext}.tt",   destination_root(@admin_path+"/views/#{@orm.name_plural}/new.#{ext}")
+            template 'templates/page/controller.rb.tt',       destination_root("#{@admin_path}/controllers/#{@orm.name_plural}.rb")
+            template "templates/#{ext}/page/_form.#{ext}.tt", destination_root("#{@admin_path}/views/#{@orm.name_plural}/_form.#{ext}")
+            template "templates/#{ext}/page/edit.#{ext}.tt",  destination_root("#{@admin_path}/views/#{@orm.name_plural}/edit.#{ext}")
+            template "templates/#{ext}/page/index.#{ext}.tt", destination_root("#{@admin_path}/views/#{@orm.name_plural}/index.#{ext}")
+            template "templates/#{ext}/page/new.#{ext}.tt",   destination_root("#{@admin_path}/views/#{@orm.name_plural}/new.#{ext}")
 
             options[:destroy] ? remove_project_module(@orm.name_plural) : add_project_module(@orm.name_plural)
           end

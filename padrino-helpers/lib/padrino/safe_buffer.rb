@@ -8,7 +8,7 @@ module Padrino
       slice squeeze strip sub succ swapcase tr tr_s upcase
     ]
 
-    alias_method :original_concat, :concat
+    alias original_concat concat
     private :original_concat
 
     class SafeConcatError < StandardError
@@ -20,14 +20,12 @@ module Padrino
     def [](*args)
       if args.size < 2
         super
+      elsif html_safe?
+        new_safe_buffer = super
+        new_safe_buffer&.instance_variable_set :@html_safe, true
+        new_safe_buffer
       else
-        if html_safe?
-          new_safe_buffer = super
-          new_safe_buffer&.instance_variable_set :@html_safe, true
-          new_safe_buffer
-        else
-          to_str[*args]
-        end
+        to_str[*args]
       end
     end
 
@@ -63,13 +61,13 @@ module Padrino
       dup.concat(other)
     end
 
-    def %(args)
+    def %(other)
       escaped_args =
-        case args
+        case other
         when Hash
-          args.transform_values { |arg| html_escape_interpolated_argument(arg) }
+          other.transform_values { |arg| html_escape_interpolated_argument(arg) }
         else
-          Array(args).map { |arg| html_escape_interpolated_argument(arg) }
+          Array(other).map { |arg| html_escape_interpolated_argument(arg) }
         end
 
       self.class.new(super(escaped_args))
@@ -94,7 +92,7 @@ module Padrino
     UNSAFE_STRING_METHODS.each do |unsafe_method|
       next unless unsafe_method.respond_to?(unsafe_method)
 
-      class_eval <<~EOT, __FILE__, __LINE__ + 1
+      class_eval <<~RUBY, __FILE__, __LINE__ + 1
         def #{unsafe_method}(*args, &block)       # def capitalize(*args, &block)
           to_str.#{unsafe_method}(*args, &block)  #   to_str.capitalize(*args, &block)
         end                                       # end
@@ -103,7 +101,7 @@ module Padrino
           @html_safe = false                      #   @html_safe = false
           super                                   #   super
         end                                       # end
-      EOT
+      RUBY
     end
 
     private

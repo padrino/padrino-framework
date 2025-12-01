@@ -14,13 +14,13 @@ module Padrino
   # @example
   #
   #   routes = Padrino::Router.new do
-  #     map(:path => "/", :to => PadrinoWeb, :host => "padrino.local")
-  #     map(:path => "/", :to => Admin, :host => "admin.padrino.local")
+  #     map(path: '/', to: PadrinoWeb, host: 'padrino.local')
+  #     map(path: '/', to: Admin, host: 'admin.padrino.local')
   #   end
   #   run routes
   #
   #   routes = Padrino::Router.new do
-  #     map(:path => "/", :to => PadrinoWeb, :host => /*.padrino.local/)
+  #     map(path: '/', to: PadrinoWeb, host: /*.padrino.local/)
   #   end
   #   run routes
   #
@@ -45,7 +45,7 @@ module Padrino
     #  The host to map the specified application.
     #
     # @example
-    #  map(:path => "/", :to => PadrinoWeb, :host => "padrino.local")
+    #  map(path: '/', to: PadrinoWeb, host: 'padrino.local')
     #
     # @return [Array] The sorted route mappings.
     # @api semipublic
@@ -54,7 +54,7 @@ module Padrino
       host = options[:host]
       app  = options[:to]
 
-      raise ArgumentError, 'paths need to start with /' if path[0] != ?/
+      raise ArgumentError, 'paths need to start with /' if path[0] != '/'
       raise ArgumentError, 'app is required' if app.nil?
 
       path  = path.chomp('/')
@@ -74,8 +74,8 @@ module Padrino
 
       @mapping.each do |host, path, match, app|
         next unless host.nil? || http_host =~ host
-        next unless path_info =~ match && rest = ::Regexp.last_match(1)
-        next unless rest.empty? || rest[0] == ?/
+        next unless path_info =~ match && (rest = ::Regexp.last_match(1))
+        next unless rest.empty? || rest[0] == '/'
 
         rest = '/' if rest.empty?
 
@@ -91,7 +91,7 @@ module Padrino
         env['SCRIPT_NAME'] = script_name
         env['PATH_INFO'] = path_info
         Padrino::Logger::Rack.new(nil, '/').send(:log, env, 404, {}, began_at) if logger.debug?
-        [404, {'content-type' => 'text/plain', 'x-cascade' => 'pass'}, ["Not Found: #{path_info}"]]
+        [404, { 'content-type' => 'text/plain', 'x-cascade' => 'pass' }, ["Not Found: #{path_info}"]]
       end
     end
   end
