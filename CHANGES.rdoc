@@ -1,8 +1,8 @@
 = CHANGES
 
-== 0.16.0.pre5 (2025-12-01)
+== 0.16.0 (2025-12-02)
 
-- NEW Code modernization. Codebase is now passing Rubocop (11 offenses only) and generator's templates are using modern syntax
+- NEW Code modernization. Codebase is now passing Rubocop and generator's templates are using modern syntax (@crashtech)
 
 == 0.16.0.pre4 (2025-11-19)
 
