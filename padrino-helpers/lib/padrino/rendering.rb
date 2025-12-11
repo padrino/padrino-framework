@@ -405,8 +405,6 @@ end
 unless defined? Padrino::Rendering::HamlTemplate
   begin
     require 'haml'
-    require 'haml/helpers/xss_mods'
-    require 'haml/helpers/action_view_extensions'
   rescue LoadError
     # do nothing since haml is not available
   else
