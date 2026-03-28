@@ -9,7 +9,11 @@ end
 group :db do
   gem 'jdbc-sqlite3', '~> 3.7.2', platform: :jruby
   gem 'sequel'
-  gem 'sqlite3', platforms: [:mri]
+  if RUBY_VERSION < '3.1'
+    gem 'sqlite3', '~> 1.7', platforms: [:mri]
+  else
+    gem 'sqlite3', platforms: [:mri]
+  end
 end
 
 group :development do
@@ -42,10 +46,10 @@ group :development do
   end
 
   gem 'builder',          '>= 2.1.2'
-  gem 'minitest',         '>= 4.0'
-  gem 'minitest-mock',    '>= 1.0'
-  gem 'mocha',            '>= 2.0'
   gem 'logger',           '>= 1.6'
+  gem 'minitest',         '>= 4.0'
+  gem 'minitest-mock',    '>= 1.0' if RUBY_VERSION >= '3.2'
+  gem 'mocha',            '>= 2.0'
   gem 'nokogiri',         '>= 1.13'
   gem 'ostruct',          '>= 0.6'
   gem 'rack',             '~> 3'

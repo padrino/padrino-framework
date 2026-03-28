@@ -2,7 +2,11 @@ ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = __dir__ unless defined?(PADRINO_ROOT)
 
 require 'minitest/autorun'
-require 'minitest/mock'
+begin
+  require 'minitest/mock'
+rescue LoadError
+  # minitest/mock is built-in for older minitest versions
+end
 require 'minitest/pride'
 require 'rack/test'
 require 'padrino-cache'
