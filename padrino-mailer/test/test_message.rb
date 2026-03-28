@@ -169,22 +169,20 @@ describe 'Message' do
 
   describe 'Mail::Message.set' do
     it 'should define accessor methods for settings' do
-      custom_setting_predefined = Class.method_defined?(:custom_setting)
-      Mail::Message.set(:custom_setting, 'custom_value')
+      Mail::Message.set(:_test_custom_setting, 'custom_value')
       message = Mail::Message.new
-      assert_equal 'custom_value', message.settings.custom_setting
+      assert_equal 'custom_value', message.settings._test_custom_setting
     ensure
-      Class.remove_method(:custom_setting) if !custom_setting_predefined && Class.method_defined?(:custom_setting)
+      Class.send(:remove_method, :_test_custom_setting) if Class.method_defined?(:_test_custom_setting)
     end
 
     it 'should not redefine an already defined method' do
-      another_setting_predefined = Class.method_defined?(:another_setting)
-      Mail::Message.set(:another_setting, 'first')
-      Mail::Message.set(:another_setting, 'second')
+      Mail::Message.set(:_test_another_setting, 'first')
+      Mail::Message.set(:_test_another_setting, 'second')
       message = Mail::Message.new
-      assert_equal 'first', message.settings.another_setting
+      assert_equal 'first', message.settings._test_another_setting
     ensure
-      Class.remove_method(:another_setting) if !another_setting_predefined && Class.method_defined?(:another_setting)
+      Class.send(:remove_method, :_test_another_setting) if Class.method_defined?(:_test_another_setting)
     end
   end
 end
