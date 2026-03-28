@@ -48,7 +48,7 @@ group :development do
   gem 'builder',          '>= 2.1.2'
   gem 'logger',           '>= 1.6'
   gem 'minitest',         '>= 4.0'
-  gem 'minitest-mock',    '>= 1.0'
+  gem 'minitest-mock',    '>= 1.0' if RUBY_VERSION >= '3.1'
   gem 'mocha',            '>= 2.0'
   gem 'nokogiri',         '>= 1.13'
   gem 'rack',             '~> 3'
