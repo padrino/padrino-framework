@@ -173,7 +173,9 @@ describe 'Message' do
       message = Mail::Message.new
       assert_equal 'custom_value', message.settings._test_custom_setting
     ensure
-      Class.send(:remove_method, :_test_custom_setting) if Class.method_defined?(:_test_custom_setting)
+      if Mail::Message.singleton_class.method_defined?(:_test_custom_setting)
+        Mail::Message.singleton_class.send(:remove_method, :_test_custom_setting)
+      end
     end
 
     it 'should not redefine an already defined method' do
@@ -182,7 +184,9 @@ describe 'Message' do
       message = Mail::Message.new
       assert_equal 'first', message.settings._test_another_setting
     ensure
-      Class.send(:remove_method, :_test_another_setting) if Class.method_defined?(:_test_another_setting)
+      if Mail::Message.singleton_class.method_defined?(:_test_another_setting)
+        Mail::Message.singleton_class.send(:remove_method, :_test_another_setting)
+      end
     end
   end
 end
