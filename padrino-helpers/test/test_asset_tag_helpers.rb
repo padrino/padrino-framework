@@ -76,6 +76,47 @@ describe 'AssetTagHelpers' do
       assert_html_has_tag(actual_link, 'a', href: '/register%20new%20user')
     end
 
+    it 'should reject javascript: URIs' do
+      actual_link = link_to('click', 'javascript:alert(1)')
+      assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
+    end
+
+    it 'should reject javascript: URIs with mixed case and whitespace' do
+      actual_link = link_to('click', "JaVaScRiPt:\nalert(1)")
+      assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
+    end
+
+    it 'should reject data: URIs' do
+      actual_link = link_to('click', 'data:text/html,<script>alert(1)</script>')
+      assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
+    end
+
+    it 'should reject vbscript: URIs' do
+      actual_link = link_to('click', 'vbscript:MsgBox("xss")')
+      assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
+    end
+
+    it 'should reject unsafe schemes passed via options hash' do
+      actual_link = link_to('click', '/safe', href: 'javascript:alert(1)')
+      assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
+    end
+
+    it 'should allow http and https URIs' do
+      assert_match 'href="http://example.com"', link_to('click', 'http://example.com')
+      assert_match 'href="https://example.com"', link_to('click', 'https://example.com')
+    end
+
+    it 'should allow mailto and tel URIs' do
+      assert_match 'href="mailto:a@b.com"', link_to('email', 'mailto:a@b.com')
+      assert_match 'href="tel:+1234567890"', link_to('call', 'tel:+1234567890')
+    end
+
+    it 'should allow relative paths and anchors' do
+      assert_html_has_tag(link_to('click', '/path'), 'a', href: '/path')
+      assert_match 'href="#anchor"', link_to('click', '#anchor')
+      assert_match 'href="?query=1"', link_to('click', '?query=1')
+    end
+
     it 'should not escape image_tag' do
       actual_link = link_to(image_tag('/my/fancy/image.png'), class: 'first', id: 'binky')
       assert_html_has_tag(actual_link, 'img', src: '/my/fancy/image.png')

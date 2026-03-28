@@ -94,6 +94,7 @@ module Padrino
           protect_from_csrf: is_protected_from_csrf?,
           'accept-charset' => 'UTF-8'
         }.update(options)
+        options[:action] = escape_link(options[:action]) if options[:action]
         options[:enctype] = 'multipart/form-data' if options.delete(:multipart)
 
         if (desired_method = options[:method]) =~ /get/i

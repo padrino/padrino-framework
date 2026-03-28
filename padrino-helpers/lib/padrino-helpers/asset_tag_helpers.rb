@@ -86,6 +86,7 @@ module Padrino
         name = block_given? ? '' : args.shift
         href = args.first
         options = { href: href ? escape_link(href) : '#' }.update(options)
+        options[:href] = escape_link(options[:href]) if options[:href]
         return name unless parse_conditions(href, options)
         block_given? ? content_tag(:a, options, &block) : content_tag(:a, name, options)
       end

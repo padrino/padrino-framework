@@ -19,6 +19,11 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, 'form input', type: 'hidden', name: '_method', count: 0)
     end
 
+    it 'should reject unsafe action schemes passed via options hash' do
+      actual_html = form_tag('/safe', action: 'javascript:alert(1)') { 'Demo' }
+      assert_html_has_tag(actual_html, :form, action: '#')
+    end
+
     it 'should display correct text inputs within form_tag' do
       actual_html = form_tag('/register', "accept-charset": 'UTF-8', class: 'test') { text_field_tag(:username) }
       assert_html_has_tag(actual_html, 'form input', type: 'text', name: 'username')

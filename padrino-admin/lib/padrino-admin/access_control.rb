@@ -118,8 +118,8 @@ module Padrino
             denied_paths  += authorizations.map(&:allowed).flatten.uniq # remove paths explicitly allowed for other roles
             denied_paths  += authorizations.map(&:denied).flatten.uniq # remove paths explicitly denied to other roles
           end
-          return true  if allowed_paths.any? { |p| path =~ /^#{p}/ }
-          return false if denied_paths.any?  { |p| path =~ /^#{p}/ }
+          return true  if allowed_paths.any? { |p| path.start_with?(p) }
+          return false if denied_paths.any?  { |p| path.start_with?(p) }
           true
         end
       end
