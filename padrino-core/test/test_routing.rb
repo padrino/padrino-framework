@@ -749,6 +749,7 @@ describe 'Routing' do
     end
     get '/bar'
     assert_equal 405, status
+    assert_equal 'POST', response['Allow']
   end
 
   it 'should respond to' do
