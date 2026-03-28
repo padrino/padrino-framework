@@ -235,17 +235,37 @@ module Padrino
         "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
 
+      SAFE_URI_SCHEMES = %w[http https mailto tel ftp].freeze
+
       ##
       # Returns an escaped document link.
+      # Rejects unsafe URI schemes (javascript:, data:, vbscript:, etc.)
+      # to prevent XSS via link injection.
       #
       # @example
       #   escape_link('http://example.com/spaced link')
       #   # => 'http://example.com/spaced%20link'
-      #   escape_link('already%20partially escaped')
-      #   # => 'already%20partially%20escaped'
+      #   escape_link('javascript:alert(1)')
+      #   # => '#'
       #
       def escape_link(link)
-        link.gsub(' ', '%20')
+        return link.gsub(' ', '%20') unless unsafe_uri_scheme?(link)
+
+        '#'
+      end
+
+      ##
+      # Returns true if the URI uses an unsafe scheme.
+      #
+      def unsafe_uri_scheme?(uri)
+        return false unless uri
+
+        normalized = uri.to_s.strip.downcase.gsub(/[\t\n\r]/, '')
+        return false if normalized.start_with?('/', '#', '?')
+        return false unless normalized.include?(':')
+
+        scheme = normalized.split(':', 2).first
+        !SAFE_URI_SCHEMES.include?(scheme)
       end
 
       private
