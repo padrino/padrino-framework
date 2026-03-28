@@ -1,10 +1,22 @@
 module Padrino
   module Helpers
     module OutputHelpers
-      # Haml and Hamlit require different detection code
-      if defined?(Haml) && Tilt.template_for('.haml').to_s == 'Padrino::Rendering::HamlTemplate'
+      if defined?(Haml) && defined?(Haml::VERSION) && Gem::Version.new(Haml::VERSION) >= Gem::Version.new('6')
         ##
-        # Handler for Haml templates.
+        # Handler for Haml 6+ templates (uses Hamlit internally).
+        #
+        class HamlitHandler < AbstractHandler
+          ##
+          # Returns true if the block is for Hamlit.
+          #
+          def engine_matches?(block)
+            block.binding.eval('defined? __in_hamlit_template')
+          end
+        end
+        OutputHelpers.register(:haml, HamlitHandler)
+      elsif defined?(Haml) && Tilt.template_for('.haml').to_s == 'Padrino::Rendering::HamlTemplate'
+        ##
+        # Handler for Haml 5 templates.
         #
         class HamlHandler < AbstractHandler
           ##
@@ -24,7 +36,7 @@ module Padrino
         OutputHelpers.register(:haml, HamlHandler)
       else
         ##
-        # Handler for Haml templates.
+        # Handler for standalone Hamlit templates.
         #
         class HamlitHandler < AbstractHandler
           ##
