@@ -166,4 +166,27 @@ describe 'Message' do
       assert_equal "Object 1<br>\nObject 2<br>\nObject &lt;evil&gt;<br>\nObject <good><br>", message.body.to_s.chomp
     end
   end
+
+  describe 'Mail::Message.set' do
+    it 'should define accessor methods for settings' do
+      Mail::Message.set(:_test_custom_setting, 'custom_value')
+      message = Mail::Message.new
+      assert_equal 'custom_value', message.settings._test_custom_setting
+    ensure
+      if Mail::Message.singleton_class.method_defined?(:_test_custom_setting)
+        Mail::Message.singleton_class.send(:remove_method, :_test_custom_setting)
+      end
+    end
+
+    it 'should not redefine an already defined method' do
+      Mail::Message.set(:_test_another_setting, 'first')
+      Mail::Message.set(:_test_another_setting, 'second')
+      message = Mail::Message.new
+      assert_equal 'first', message.settings._test_another_setting
+    ensure
+      if Mail::Message.singleton_class.method_defined?(:_test_another_setting)
+        Mail::Message.singleton_class.send(:remove_method, :_test_another_setting)
+      end
+    end
+  end
 end
