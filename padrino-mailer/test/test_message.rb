@@ -166,4 +166,23 @@ describe 'Message' do
       assert_equal "Object 1<br>\nObject 2<br>\nObject &lt;evil&gt;<br>\nObject <good><br>", message.body.to_s.chomp
     end
   end
+
+  describe 'Mail::Message.set' do
+    it 'should define accessor methods for settings' do
+      Mail::Message.set(:custom_setting, 'custom_value')
+      message = Mail::Message.new
+      assert_equal 'custom_value', message.settings.custom_setting
+    ensure
+      Class.remove_method(:custom_setting) if Class.method_defined?(:custom_setting)
+    end
+
+    it 'should not redefine an already defined method' do
+      Mail::Message.set(:another_setting, 'first')
+      Mail::Message.set(:another_setting, 'second')
+      message = Mail::Message.new
+      assert_equal 'first', message.settings.another_setting
+    ensure
+      Class.remove_method(:another_setting) if Class.method_defined?(:another_setting)
+    end
+  end
 end
