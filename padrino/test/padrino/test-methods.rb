@@ -1,4 +1,4 @@
-require 'oga'
+require 'nokogiri'
 
 module Padrino
   module TestMethods
@@ -40,12 +40,12 @@ module Padrino
     private
 
     def html_matched_tags(html, selector, attributes)
-      @dom ||= Oga.parse_html(html)
+      @dom ||= Nokogiri::HTML(html)
       content_requirement = attributes.delete(:content)
 
       attributes.each { |name, value| selector += %([#{name}="#{value}"]) }
       tags = @dom.css(selector.to_s.gsub(/\[([^"']*?)=([^'"]*?)\]/, '[\1="\2"]'))
-      tags = tags.select { |tag| (tag.get('content') || tag.text).index(content_requirement) } if content_requirement
+      tags = tags.select { |tag| (tag['content'] || tag.text).index(content_requirement) } if content_requirement
       tags.count
     end
   end

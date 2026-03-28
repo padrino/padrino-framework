@@ -16,7 +16,7 @@ describe 'PadrinoLogger' do
   end
 
   def setup_logger(options = {})
-    @log    = StringIO.new
+    @log    = StringIO.new(String.new(encoding: 'UTF-8'))
     @logger = Padrino::Logger.new(options.merge(stream: @log))
   end
 
@@ -102,7 +102,7 @@ describe 'PadrinoLogger' do
       @logger.error binary_data
       @logger.error utf8_data
       @logger.flush
-      assert_match(/\.*фыв/m, @log.string.encode(Encoding.default_external))
+      assert_match(/\.*фыв/m, @log.string.encode('UTF-8'))
     end
 
     it 'should log an application' do

@@ -43,8 +43,11 @@ group :development do
 
   gem 'builder',          '>= 2.1.2'
   gem 'minitest',         '>= 4.0'
+  gem 'minitest-mock',    '>= 1.0'
   gem 'mocha',            '>= 2.0'
-  gem 'oga',              '>= 2.5', '< 3'
+  gem 'logger',           '>= 1.6'
+  gem 'nokogiri',         '>= 1.13'
+  gem 'ostruct',          '>= 0.6'
   gem 'rack',             '~> 3'
   gem 'rackup',           '~> 2.1'
   gem 'rack-test',        '~> 2.1'

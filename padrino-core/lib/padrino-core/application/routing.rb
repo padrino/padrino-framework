@@ -372,7 +372,7 @@ module Padrino
 
       def rebase_url(url)
         if url.start_with?('/')
-          new_url = ''
+          new_url = String.new
           new_url << conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
           new_url << conform_uri(uri_root) if defined?(uri_root)
           new_url << url
@@ -599,11 +599,13 @@ module Padrino
         # path i.e :index or :show
         if path.is_a?(Symbol)
           name = path
-          path = map&.dup || (path == :index ? '/' : path.to_s)
+          path = map&.dup || (path == :index ? '/' : path.to_s.dup)
         end
 
         # Build our controller
         controller = Array(@_controller).map(&:to_s)
+
+        path = path.dup if path.is_a?(String) && path.frozen?
 
         case path
         when String # path i.e "/index" or "/show"

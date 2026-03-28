@@ -2,6 +2,7 @@ ENV['RACK_ENV'] = 'test'
 PADRINO_ROOT = __dir__ unless defined?(PADRINO_ROOT)
 
 require 'minitest/autorun'
+require 'minitest/mock'
 require 'minitest/pride'
 require 'i18n'
 require 'json'
