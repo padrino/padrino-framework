@@ -446,7 +446,7 @@ module Padrino
           if @sanitize_encoding
             line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace)
           else
-            line.encode!('UTF-8', invalid: :replace, undef: :replace) unless line.encoding == Encoding::UTF_8
+            line.encode!(@log.external_encoding || Encoding::UTF_8, invalid: :replace, undef: :replace) unless line.encoding == Encoding::UTF_8
           end
           @log.write(line)
         end
