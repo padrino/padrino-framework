@@ -163,6 +163,23 @@ describe 'AdminApplication' do
     assert_equal 'posts', body
   end
 
+  it 'should match paths literally without regex metacharacter interpretation' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/accounts.json'
+      end
+    end
+
+    # Without authentication, /accounts.json should be allowed
+    assert @app.access_control.allowed?(nil, '/accounts.json')
+    # /accountsXjson must NOT match - the dot in .json is literal, not a regex wildcard
+    refute @app.access_control.allowed?(nil, '/accountsXjson')
+  end
+
   it 'should emulate an ecommerce app' do
     mock_app do
       register Padrino::Admin::AccessControl
