@@ -965,7 +965,7 @@ module Padrino
           verb = request.request_method
           candidacies, allows = routes.partition { |route| route.verb == verb }
           if candidacies.empty?
-            response['Allows'] = allows.map(&:verb).join(', ')
+            response['Allow'] = allows.map(&:verb).join(', ')
             halt 405
           end
         end
