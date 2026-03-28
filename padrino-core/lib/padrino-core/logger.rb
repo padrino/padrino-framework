@@ -443,7 +443,11 @@ module Padrino
       return unless @buffer.size.positive?
       self.class.mutex.synchronize do
         @buffer.each do |line|
-          line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace) if @sanitize_encoding
+          if @sanitize_encoding
+            line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace)
+          else
+            line.encode!(@log.external_encoding || Encoding::UTF_8, invalid: :replace, undef: :replace) unless line.encoding == Encoding::UTF_8
+          end
           @log.write(line)
         end
         @buffer.clear

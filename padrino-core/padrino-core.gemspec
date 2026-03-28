@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.rdoc_options  = ['--charset=UTF-8']
 
+  s.add_dependency('ostruct', '>= 0.6')
   s.add_dependency('padrino-support', Padrino.version)
   s.add_dependency('rackup', '~> 2.1')
   s.add_dependency('sinatra', '~> 4')
