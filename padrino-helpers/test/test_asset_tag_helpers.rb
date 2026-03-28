@@ -96,6 +96,11 @@ describe 'AssetTagHelpers' do
       assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
     end
 
+    it 'should reject unsafe schemes passed via options hash' do
+      actual_link = link_to('click', '/safe', href: 'javascript:alert(1)')
+      assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
+    end
+
     it 'should allow http and https URIs' do
       assert_match 'href="http://example.com"', link_to('click', 'http://example.com')
       assert_match 'href="https://example.com"', link_to('click', 'https://example.com')
