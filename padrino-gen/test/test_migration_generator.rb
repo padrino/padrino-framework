@@ -125,51 +125,6 @@ describe 'MigrationGenerator' do
     end
   end
 
-  describe 'the migration generator for datamapper' do
-    before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
-    end
-
-    it 'should generate migration for generic needs' do
-      capture_io { generate(:migration, 'ModifyUserFields', "-r=#{@apptmp}/sample_project") }
-      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_modify_user_fields.rb"
-      assert_match_in_file(/migration\s1.*?:modify_user_fields/m, migration_file_path)
-      assert_match_in_file(/up\sdo\s+end/m, migration_file_path)
-      assert_match_in_file(/down\sdo\s+end/m, migration_file_path)
-    end
-
-    it 'should generate migration for adding columns' do
-      migration_params = ['AddEmailToUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
-      capture_io { generate(:migration, *migration_params) }
-      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb"
-      assert_match_in_file(/migration\s1.*?:add_email_to_users/m, migration_file_path)
-      assert_match_in_file(/modify_table :users.*?add_column :email, String/m, migration_file_path)
-      assert_match_in_file(/add_column :age, Integer/m, migration_file_path)
-      assert_match_in_file(/modify_table :users.*?drop_column :email/m, migration_file_path)
-      assert_match_in_file(/drop_column :age/m, migration_file_path)
-    end
-
-    it 'should generate migration for removing columns' do
-      migration_params = ['RemoveEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
-      capture_io { generate(:migration, *migration_params) }
-      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_email_from_users.rb"
-      assert_match_in_file(/migration\s1.*?:remove_email_from_users/m, migration_file_path)
-      assert_match_in_file(/modify_table :users.*?drop_column :email/m, migration_file_path)
-      assert_match_in_file(/drop_column :age/m, migration_file_path)
-      assert_match_in_file(/modify_table :users.*?add_column :email, String/m, migration_file_path)
-      assert_match_in_file(/add_column :age, Integer/m, migration_file_path)
-    end
-
-    it 'should properly version migration files' do
-      capture_io { generate(:migration, 'ModifyUserFields', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:migration, 'ModifyUserFields2', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:migration, 'ModifyUserFields3', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/migration\s1.*?:modify_user_fields/m, "#{@apptmp}/sample_project/db/migrate/001_modify_user_fields.rb")
-      assert_match_in_file(/migration\s2.*?:modify_user_fields2/m, "#{@apptmp}/sample_project/db/migrate/002_modify_user_fields2.rb")
-      assert_match_in_file(/migration\s3.*?:modify_user_fields3/m, "#{@apptmp}/sample_project/db/migrate/003_modify_user_fields3.rb")
-    end
-  end
-
   describe 'the migration generator for sequel' do
     before do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }

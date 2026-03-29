@@ -18,13 +18,13 @@ describe 'ModelGenerator' do
     end
 
     it 'should generate filename properly' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
       capture_io { generate(:model, 'DemoItem', 'name:string', 'age', 'email:string', "-r=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project/models/demo_item.rb")
     end
 
     it 'should fail if field name is not acceptable' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
       out, = capture_io { generate(:model, 'DemoItem', 're@l$ly:string', 'display-name:string', 'age&year:datetime', 'email_two:string', "-r=#{@apptmp}/sample_project") }
       assert_match(/Invalid field name:/, out)
       assert_match(/display-name:string/, out)
@@ -48,13 +48,10 @@ describe 'ModelGenerator' do
     end
 
     it 'should generate model in specified app' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=datamapper', '--script=none', '-t=bacon') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'Post', 'body:string', '-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Post\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/subby/models/post.rb")
-      assert_match_in_file(/property :body, String/m, "#{@apptmp}/sample_project/subby/models/post.rb")
-      assert_match_in_file(/migration 1, :create_posts do/m, "#{@apptmp}/sample_project/db/migrate/001_create_posts.rb")
-      assert_match_in_file(/DataMapper.finalize/m, "#{@apptmp}/sample_project/config/boot.rb")
+      assert_match_in_file(/class Post < Sequel::Model/m, "#{@apptmp}/sample_project/subby/models/post.rb")
     end
 
     it 'should generate migration file versions properly' do
@@ -193,77 +190,6 @@ describe 'ModelGenerator' do
     end
   end
 
-  # COUCHREST
-  describe 'model generator using couchrest' do
-    it 'should generate model file with no properties' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
-      capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < CouchRest::Model::Base/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/# property <name>[\s\n]+?end/m, "#{@apptmp}/sample_project/models/user.rb")
-    end
-
-    it 'should generate model file with given fields' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=couchrest') }
-      capture_io { generate(:model, 'person', 'name:string', 'age', 'email:string', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person < CouchRest::Model::Base/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/property :name/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/property :age/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/property :email/m, "#{@apptmp}/sample_project/models/person.rb")
-    end
-  end
-
-  # DATAMAPPER
-  describe 'model generator using datamapper' do
-    it 'should add activerecord middleware' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
-      assert_match_in_file(/  use IdentityMap/m, "#{@apptmp}/sample_project/app/app.rb")
-      assert_file_exists("#{@apptmp}/sample_project/lib/identity_map_middleware.rb")
-    end
-
-    it 'should generate model file with camelized name' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=datamapper') }
-      capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class ChunkyBacon\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
-      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
-    end
-
-    it 'should generate model file with fields' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
-      capture_io { generate(:model, 'user', 'name:string', 'age:integer', 'created_at:datetime', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/property :name, String/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/property :age, Integer/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/property :created_at, DateTime/m, "#{@apptmp}/sample_project/models/user.rb")
-    end
-
-    it 'should properly generate version numbers' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
-      capture_io { generate(:model, 'user', 'name:string', 'age:integer', 'created_at:datetime', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'created_at:datetime', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'account', 'name:string', 'age:integer', 'created_at:datetime', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/migration 1, :create_users do/m, "#{@apptmp}/sample_project/db/migrate/001_create_users.rb")
-      assert_match_in_file(/class Friend\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/friend.rb")
-      assert_match_in_file(/migration 2, :create_friends do/m, "#{@apptmp}/sample_project/db/migrate/002_create_friends.rb")
-      assert_match_in_file(/class Account\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/account.rb")
-      assert_match_in_file(/migration 3, :create_accounts do/m, "#{@apptmp}/sample_project/db/migrate/003_create_accounts.rb")
-    end
-
-    it 'should generate migration with given fields' do
-      stop_time_for_test
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=datamapper') }
-      capture_io { generate(:model, 'friend', 'name:string', 'created_at:date_time', 'email:string', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Friend\n\s+include DataMapper::Resource/m, "#{@apptmp}/sample_project/models/friend.rb")
-      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_friends.rb"
-      assert_match_in_file(/migration 1, :create_friends do/m, migration_file_path)
-      assert_match_in_file(/create_table :friends do/m, migration_file_path)
-      assert_match_in_file(/column :name, DataMapper::Property::String/m, migration_file_path)
-      assert_match_in_file(/column :created_at, DataMapper::Property::DateTime/m, migration_file_path)
-      assert_match_in_file(/column :email, DataMapper::Property::String/m, migration_file_path)
-      assert_match_in_file(/drop_table :friends/m, migration_file_path)
-    end
-  end
-
   # SEQUEL
   describe 'model generator using sequel' do
     it 'should generate model file with given properties' do
@@ -291,27 +217,6 @@ describe 'ModelGenerator' do
       assert_match_in_file(/Integer :age/m,          migration_file_path)
       assert_match_in_file(/DateTime :created/m,     migration_file_path)
       assert_match_in_file(/drop_table :friends/m,   migration_file_path)
-    end
-  end
-
-  # MONGODB
-  describe 'model generator using mongomapper' do
-    it 'should generate model file with no properties' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongomapper') }
-      capture_io { generate(:model, 'person', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person\n\s+include MongoMapper::Document/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/# key <name>, <type>/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/timestamps![\n\s]+end/m, "#{@apptmp}/sample_project/models/person.rb")
-    end
-
-    it 'should generate model file with given fields' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongomapper') }
-      capture_io { generate(:model, 'user', 'name:string', 'age:integer', 'email:string', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include MongoMapper::Document/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/key :name, String/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/key :age, Integer/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/key :email, String/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/timestamps!/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 
@@ -371,27 +276,6 @@ describe 'ModelGenerator' do
       assert_match_in_file(/be_present self\['age'\]/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/be_present self\['email'\]/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/be_a_number self\['age'\]/m, "#{@apptmp}/sample_project/models/user.rb")
-    end
-  end
-
-  # RIPPLE
-  describe 'model generator using ripple' do
-    it 'should generate model file with no properties' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=ripple') }
-      capture_io { generate(:model, 'person', 'name:string', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person\n\s+include Ripple::Document/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/# property :name, String/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/# many :addresses/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/# one :account/m, "#{@apptmp}/sample_project/models/person.rb")
-    end
-
-    it 'should generate model file with given fields' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=ripple') }
-      capture_io { generate(:model, 'user', 'name:string', 'age:integer', 'email:string', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include Ripple::Document/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/property :name, String/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/property :age, Integer/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/property :email, String/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 

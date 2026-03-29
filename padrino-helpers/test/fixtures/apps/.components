@@ -1,6 +1,6 @@
 --- 
 :test: bacon
 :mock: mocha
-:orm: datamapper
+:orm: none
 :renderer: erb
 :script: jquery

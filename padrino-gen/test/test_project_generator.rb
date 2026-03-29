@@ -179,10 +179,10 @@ describe 'ProjectGenerator' do
     end
 
     it 'should create components file containing options chosen' do
-      component_options = ['--orm=datamapper', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=less']
+      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=less']
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *component_options) }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
-      assert_equal 'datamapper', components_chosen[:orm]
+      assert_equal 'sequel', components_chosen[:orm]
       assert_equal 'rspec',      components_chosen[:test]
       assert_equal 'mocha',      components_chosen[:mock]
       assert_equal 'prototype',  components_chosen[:script]
@@ -191,9 +191,9 @@ describe 'ProjectGenerator' do
     end
 
     it 'should output to log components being applied' do
-      component_options = ['--orm=datamapper', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=less']
+      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=less']
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *component_options) }
-      assert_match(/applying.*?datamapper.*?orm/, out)
+      assert_match(/applying.*?sequel.*?orm/, out)
       assert_match(/applying.*?rspec.*?test/, out)
       assert_match(/applying.*?mocha.*?mock/, out)
       assert_match(/applying.*?prototype.*?script/, out)
@@ -376,67 +376,11 @@ describe 'ProjectGenerator' do
       end
     end
 
-    describe 'for datamapper' do
-      it 'should properly generate default' do
-        out, = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=datamapper', '--script=none') }
-        assert_match(/applying.*?datamapper.*?orm/, out)
-        assert_match_in_file(/gem 'dm-core'/, "#{@apptmp}/project.com/Gemfile")
-        assert_match_in_file(/gem 'dm-sqlite-adapter'/, "#{@apptmp}/project.com/Gemfile")
-        assert_match_in_file(/DataMapper.setup/, "#{@apptmp}/project.com/config/database.rb")
-        assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
-      end
-
-      it 'should properly generate for mysql' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=datamapper', '--adapter=mysql') }
-        assert_match_in_file(/gem 'dm-mysql-adapter'/, "#{@apptmp}/sample_project/Gemfile")
-        assert_match_in_file(%r{"mysql://}, "#{@apptmp}/sample_project/config/database.rb")
-        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
-      end
-
-      # DataMapper has do_mysql that is the version of MySQL driver.
-      it 'should properly generate for mysql2' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=datamapper', '--adapter=mysql2') }
-        assert_match_in_file(/gem 'dm-mysql-adapter'/, "#{@apptmp}/sample_project/Gemfile")
-        assert_match_in_file(%r{"mysql://}, "#{@apptmp}/sample_project/config/database.rb")
-        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
-      end
-
-      it 'should properly generate for sqlite' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=datamapper', '--adapter=sqlite') }
-        assert_match_in_file(/gem 'dm-sqlite-adapter'/, "#{@apptmp}/sample_project/Gemfile")
-        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
-      end
-
-      it 'should properly generate for postgres' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=datamapper', '--adapter=postgres') }
-        assert_match_in_file(/gem 'dm-postgres-adapter'/, "#{@apptmp}/sample_project/Gemfile")
-        assert_match_in_file(%r{"postgres://}, "#{@apptmp}/sample_project/config/database.rb")
-        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
-      end
-    end
-
-    it 'should properly generate for mongomapper' do
-      out, = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=mongomapper', '--script=none') }
-      assert_match(/applying.*?mongomapper.*?orm/, out)
-      assert_match_in_file(/gem 'mongo_mapper'/, "#{@apptmp}/project.com/Gemfile")
-      assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/project.com/Gemfile")
-      assert_match_in_file(/MongoMapper.database/, "#{@apptmp}/project.com/config/database.rb")
-      assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
-    end
-
     it 'should properly generate for mongoid' do
       out, = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=mongoid', '--script=none') }
       assert_match(/applying.*?mongoid.*?orm/, out)
       assert_match_in_file(/gem 'mongoid'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/Mongoid::Config.sessions =/, "#{@apptmp}/project.com/config/database.rb")
-    end
-
-    it 'should properly generate for couchrest' do
-      out, = capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=couchrest', '--script=none') }
-      assert_match(/applying.*?couchrest.*?orm/, out)
-      assert_match_in_file(/gem 'couchrest_model'/, "#{@apptmp}/project.com/Gemfile")
-      assert_match_in_file(/CouchRest.database!/, "#{@apptmp}/project.com/config/database.rb")
-      assert_match_in_file(/project_com/, "#{@apptmp}/project.com/config/database.rb")
     end
 
     it 'should properly generate for ohm' do
@@ -452,14 +396,6 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'mongomatic'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Mongomatic.db = Mongo::Connection.new.db/, "#{@apptmp}/sample_project/config/database.rb")
-    end
-
-    it 'should properly generate for ripple' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=ripple', '--script=none') }
-      assert_match(/applying.*?ripple.*?orm/, out)
-      assert_match_in_file(/gem 'ripple'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/Ripple.load_configuration/, "#{@apptmp}/sample_project/config/database.rb")
-      assert_match_in_file(/http_port: 8098/, "#{@apptmp}/sample_project/config/riak.yml")
     end
 
     it 'should properly generate for dynamoid' do

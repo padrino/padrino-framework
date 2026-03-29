@@ -78,7 +78,6 @@ module Padrino
 
           unless options[:destroy]
             insert_middleware 'ConnectionPoolManagement', @admin_path if %i[minirecord activerecord].include?(orm)
-            insert_middleware 'IdentityMap', @admin_path if orm == :datamapper
           end
 
           params = [
@@ -147,7 +146,7 @@ module Padrino
 
           instructions = []
           instructions << "Run 'bundle'"
-          if %i[activerecord datamapper sequel].include?(orm)
+          if %i[activerecord sequel].include?(orm)
             instructions << "Run 'bundle exec rake db:create' if you have not created a database yet"
             instructions << "Run 'bundle exec rake db:migrate'"
           end
