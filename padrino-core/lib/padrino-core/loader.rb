@@ -31,7 +31,7 @@ module Padrino
     #
     # @example
     #   after_load do
-    #     DataMapper.finalize
+    #     SomeORM.finalize
     #   end
     #
     def after_load(&block)

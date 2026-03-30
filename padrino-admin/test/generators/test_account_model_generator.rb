@@ -34,18 +34,6 @@ describe 'AccountModelGenerator' do
     end
   end
 
-  describe 'datamapper' do
-    before do
-      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper') }
-      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      @model = "#{@apptmp}/sample_project/models/account.rb"
-    end
-
-    it 'should include the datamapper resource' do
-      assert_match_in_file(/include DataMapper::Resource/m, @model)
-    end
-  end
-
   describe 'mongoid' do
     before do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=mongoid') }
@@ -55,18 +43,6 @@ describe 'AccountModelGenerator' do
 
     it 'should include the mongoid document' do
       assert_match_in_file(/include Mongoid::Document/m, @model)
-    end
-  end
-
-  describe 'mongomapper' do
-    before do
-      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=mongomapper') }
-      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      @model = "#{@apptmp}/sample_project/models/account.rb"
-    end
-
-    it 'should include the mongomapper document' do
-      assert_match_in_file(/include MongoMapper::Document/m, @model)
     end
   end
 
@@ -94,15 +70,4 @@ describe 'AccountModelGenerator' do
     end
   end
 
-  describe 'couchrest' do
-    before do
-      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=couchrest') }
-      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      @model = "#{@apptmp}/sample_project/models/account.rb"
-    end
-
-    it 'should be a couchrest model instance' do
-      assert_match_in_file(/class Account < CouchRest::Model::Base/m, @model)
-    end
-  end
 end

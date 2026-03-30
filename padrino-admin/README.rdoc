@@ -4,7 +4,7 @@
 
 Padrino has a beautiful Admin management dashboard with these features:
 
-Orm Agnostic:: Data Adapters for Datamapper, Activerecord, Sequel, Mongomapper, Mongoid, Couchrest, Dynamoid
+Orm Agnostic:: Data Adapters for Activerecord, MiniRecord, Sequel, Mongoid, Ohm, Dynamoid
 Template Agnostic:: Erb, Erubis and Haml Renderer
 Authentication:: Support for Account authentication, Account Permission management
 Scaffold:: You can simply create a new "admin interface" by providing a Model
@@ -27,7 +27,7 @@ Create the admin subapplication:
 Next, follow the admin setup steps:
 
 * configure your <tt>config/database.rb</tt> to connect to the correct data.
-* run <tt>padrino rake dm:migrate</tt> # or ar:migrate if you use activerecord
+* run <tt>padrino rake ar:migrate</tt> # if you use activerecord
 * run <tt>padrino rake seed</tt>
 
 Your admin panel now is ready and you can start your server with <tt>padrino start</tt> and point your browser to <tt>/admin</tt>!
@@ -35,7 +35,7 @@ Your admin panel now is ready and you can start your server with <tt>padrino sta
 To create a new "scaffold" you need to provide only a Model name to the command:
 
   demo$ padrino-gen model post --skip-migration # edit your post.rb model and add some fields
-  demo$ padrino-gen rake dm:auto:migrate
+  demo$ padrino-gen rake ar:migrate
   demo$ padrino-gen admin_page post
   demo$ padrino start # and go to http://localhost:3000/admin
 

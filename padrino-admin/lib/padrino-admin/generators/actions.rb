@@ -27,7 +27,7 @@ module Padrino
         # Tell us for now which orm we support
         #
         def supported_orm
-          %i[minirecord datamapper activerecord mongomapper mongoid couchrest sequel ohm dynamoid]
+          %i[minirecord activerecord mongoid sequel ohm dynamoid]
         end
 
         ##

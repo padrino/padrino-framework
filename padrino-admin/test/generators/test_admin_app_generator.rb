@@ -12,8 +12,6 @@ describe 'AdminAppGenerator' do
 
   describe 'the admin app generator' do
     before do
-      # Account gets created by Datamapper's migration and then gets
-      # rejected by model generator as already defined
       Object.send(:remove_const, :Account) if defined?(Account)
     end
 
@@ -29,7 +27,7 @@ describe 'AdminAppGenerator' do
     end
 
     it 'should store and apply session_secret' do
-      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper', '-e=haml') }
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
       assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
@@ -192,25 +190,6 @@ describe 'AdminAppGenerator' do
         assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/admin/app.rb")
       end
 
-      it 'should not add it for #datamapper' do
-        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper', '-e=haml') }
-        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_no_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/admin/app.rb")
-      end
-    end
-
-    describe 'datamapper middleware' do
-      it 'should add it for #datamapper' do
-        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=datamapper', '-e=haml') }
-        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_match_in_file(/  use IdentityMap/m, "#{@apptmp}/sample_project/admin/app.rb")
-      end
-
-      it 'should not add it for #activerecord' do
-        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
-        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_no_match_in_file(/  use IdentityMap/m, "#{@apptmp}/sample_project/admin/app.rb")
-      end
     end
 
     it 'should not conflict with existing seeds file' do

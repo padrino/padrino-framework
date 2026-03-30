@@ -5,7 +5,7 @@
 
 .base-icons
   .btn-group
-    .btn.btn-primary{title: 'Adapters for datamapper, sequel, activerecord, minirecord, mongomapper, mongoid, couchrest'}
+    .btn.btn-primary{title: 'Adapters for activerecord, minirecord, sequel, mongoid, ohm, dynamoid'}
       = tag_icon('cogs fa-2x', 'Orm Agnostic')
     .btn.btn-success{title: 'User Authentication Support, User Authorization Management'}
       = tag_icon('group fa-2x', 'Authentication')

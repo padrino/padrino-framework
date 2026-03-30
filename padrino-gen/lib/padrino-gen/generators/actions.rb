@@ -347,7 +347,7 @@ module Padrino
       #   method hook to call from Padrino, i.e :after_load, :before_load.
       #
       # @example
-      #   insert_hook("DataMapper.finalize", :after_load)
+      #   insert_hook("SomeORM.finalize", :after_load)
       #
       def insert_hook(include_text, where)
         inject_into_file('config/boot.rb', "  #{include_text}\n", after: "Padrino.#{where} do\n")
