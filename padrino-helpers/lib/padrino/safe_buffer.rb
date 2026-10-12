@@ -1,3 +1,5 @@
+require 'cgi/escape'
+
 module Padrino
   ##
   # Padrino::SafeBuffer is based on ActiveSupport::SafeBuffer

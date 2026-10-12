@@ -1,4 +1,4 @@
-require 'cgi'
+require 'cgi/escape'
 
 module Padrino
   module Utils
