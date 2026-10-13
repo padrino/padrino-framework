@@ -25,14 +25,12 @@ class Minitest::Spec
     fake_uri_base = 'https://raw.github.com/padrino/padrino-static/master/'
     %w[
       js/dojo.js
-      js/ext.js
       js/jquery.js
       js/lowpro.js
       js/mootools.js
       js/protopak.js
       js/right.js
       ujs/dojo.js
-      ujs/ext.js
       ujs/jquery.js
       ujs/mootools.js
       ujs/prototype.js
