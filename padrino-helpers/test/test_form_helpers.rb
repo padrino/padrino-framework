@@ -24,6 +24,11 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, :form, action: '#')
     end
 
+    it 'should allow relative actions with colons in the query' do
+      actual_html = form_tag('search?q=a:b') { 'Demo' }
+      assert_html_has_tag(actual_html, :form, action: 'search?q=a:b')
+    end
+
     it 'should display correct text inputs within form_tag' do
       actual_html = form_tag('/register', "accept-charset": 'UTF-8', class: 'test') { text_field_tag(:username) }
       assert_html_has_tag(actual_html, 'form input', type: 'text', name: 'username')

@@ -117,6 +117,17 @@ describe 'AssetTagHelpers' do
       assert_match 'href="?query=1"', link_to('click', '?query=1')
     end
 
+    it 'should allow relative paths with colons in the query or fragment' do
+      assert_match 'href="search?q=a:b"', link_to('click', 'search?q=a:b')
+      assert_match 'href="users/1?at=10:30"', link_to('click', 'users/1?at=10:30')
+      assert_match 'href="page#x:y"', link_to('click', 'page#x:y')
+    end
+
+    it 'should reject unsafe URIs preceded by control characters' do
+      actual_link = link_to('click', "\u0001 javascript:alert(1)")
+      assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
+    end
+
     it 'should not escape image_tag' do
       actual_link = link_to(image_tag('/my/fancy/image.png'), class: 'first', id: 'binky')
       assert_html_has_tag(actual_link, 'img', src: '/my/fancy/image.png')
