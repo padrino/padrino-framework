@@ -469,8 +469,13 @@ describe 'AssetTagHelpers' do
     end
 
     it 'should keep colons in asset names' do
-      assert_match(%r{/images/a:b.png\?\d+}, asset_path(:images, 'a:b.png'))
-      assert_match(%r{/images/photos/10:30.png\?\d+}, asset_path(:images, 'photos/10:30.png'))
+      assert_match(%r{/images/a:b\.png\?\d+}, asset_path(:images, 'a:b.png'))
+      assert_match(%r{/images/photos/10:30\.png\?\d+}, asset_path(:images, 'photos/10:30.png'))
+    end
+
+    it 'should prefix sources whose later lines look absolute' do
+      assert_match(%r{\A/javascripts/data:}, asset_path(:js, "data:text/javascript,alert(1)//\n/x"))
+      assert_match(%r{\A/images/javascript:}, asset_path(:images, "javascript:alert(1)//\nhttp://x"))
     end
   end
 end
