@@ -1,8 +1,10 @@
 name: CI
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test:
+    # Pushes to this repo already run CI, so only run pull_request events for PRs from forks
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
       fail-fast: false
       matrix:

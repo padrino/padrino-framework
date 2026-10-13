@@ -1,5 +1,23 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #2326 `link_to` and `form_tag` no longer replace relative links that contain a colon (e.g. `search?q=a:b`) with `#`, and asset helpers (`image_tag`, `asset_path`, etc.) no longer apply the unsafe scheme check to asset names (@nesquena)
+- NEW #2325 Run CI on pull requests from forks (@nesquena)
+- REMOVE #2324 Compass stylesheet, ExtCore script and Mongomatic ORM generator components (@osbre)
+- WARN #2324 #2320 `padrino g model` and `padrino g migration` fail in existing projects whose `.components` file lists a removed ORM, and the DataMapper and MongoMapper rake tasks are gone
+- FIX #2323 Require `cgi/escape` instead of `cgi` to silence the Ruby 4.0 warning that the CGI library has been removed (@osbre)
+- WARN #2323 Padrino no longer loads the full CGI library. Apps on Ruby < 4.0 that use other parts of it (e.g. `CGI::Cookie`, `CGI.parse`) must `require 'cgi'` themselves
+- REMOVE #2320 DataMapper, MongoMapper, CouchRest and Ripple ORM generators and rake tasks (@achiurizo)
+- SEC #2319 `link_to` and `form_tag` replace URLs with unsafe schemes (`javascript:`, `data:`, etc.) with `#`, including URLs passed in through the options hash (@achiurizo)
+- SEC #2319 Admin access control matches allowed and denied paths as literal prefixes instead of regular expressions (@achiurizo)
+- WARN #2319 Links and form actions with any scheme other than http, https, mailto, tel or ftp (e.g. `sms:` or a custom app scheme) now render as `#`
+- WARN #2319 Admin access control paths that relied on regular expression syntax no longer match
+- FIX #2318 Send the `Allow` header (was `Allows`) in 405 responses (@achiurizo)
+- FIX #2318 `Mail::Message.set` checked for an `erb` method instead of the setting's own name, and defined the setting on every class instead of only the message (@achiurizo)
+- NEW #2317 HAML 6 and 7 compatibility (@achiurizo)
+- NEW #2316 Ruby 4.0 compatibility: fix frozen string mutations in routing, re-encode non-UTF-8 log lines, add `ostruct` dependency (@nesquena)
+
 == 0.16.1 (2026-03-27)
 
 - FIX #2312 Change HAML setup to support newer versions (@crashtech)
