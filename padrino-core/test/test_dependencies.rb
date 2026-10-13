@@ -142,6 +142,29 @@ describe 'Dependencies' do
       assert_includes PartialPoint.ancestors, PartialConcern
     end
 
+    it 'should load files required by a file that failed partway again on retry' do
+      capture_io do
+        Padrino.require_dependencies(
+          Padrino.root('fixtures/dependencies/parent/admin.rb'),
+          Padrino.root('fixtures/dependencies/parent/user.rb'),
+          Padrino.root('fixtures/dependencies/parent/trackable.rb')
+        )
+      end
+      assert_equal ParentUser, ParentAdmin.superclass
+      assert_includes ParentAdmin.ancestors, ParentTrackable
+    end
+
+    it 'should keep autoloads declared by a file that failed partway' do
+      capture_io do
+        Padrino.require_dependencies(
+          Padrino.root('fixtures/dependencies/autoload/a.rb'),
+          Padrino.root('fixtures/dependencies/autoload/b.rb')
+        )
+      end
+      assert_includes AutoloadUser.ancestors, AutoloadConcern
+      assert_kind_of Class, AutoloadLazy
+    end
+
     it 'should not re-run files on reload' do
       file = Padrino.root('fixtures/dependencies/reload/untracked.rb')
       Object.const_set(:UNTRACKED_LOADS, [])

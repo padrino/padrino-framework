@@ -100,8 +100,8 @@ module Padrino
     def safe_load(file, options = {})
       began_at = Time.now
       file     = figure_path(file)
-      return skip_untracked(file) if untracked_files.include?(file)
       return unless options[:force] || file_changed?(file)
+      return skip_untracked(file) if untracked_files.include?(file)
       return require(file) if feature_excluded?(file)
 
       Storage.prepare(file) # might call #safe_load recursively
@@ -128,14 +128,20 @@ module Padrino
     def untracked_load(file)
       file = figure_path(file)
       constants = Object.constants
+      features = $LOADED_FEATURES.dup
       begin
         with_silence { require(file) }
       rescue Exception
         # Like safe_load, remove classes a partially loaded file defined so it can be
         # required again, but keep those defined by files it loaded successfully.
         (Object.constants - constants - untracked_constants.to_a).each do |name|
+          next if Object.autoload?(name)
           klass = Object.const_get(name)
           remove_constant(klass) if klass.is_a?(Class)
+        end
+        # App files it required are loaded again on retry, since their classes are gone.
+        ($LOADED_FEATURES - features).each do |feature|
+          $LOADED_FEATURES.delete(feature) unless feature_excluded?(feature) || untracked_files.include?(feature)
         end
         raise
       end
@@ -309,7 +315,10 @@ module Padrino
     def constant_excluded?(const)
       return true if external_constant?(const)
       name = constant_name(const)
-      (exclude_constants - include_constants).any? { |excluded| name == excluded || name.start_with?("#{excluded}::") }
+      (exclude_constants - include_constants).any? do |excluded|
+        excluded = excluded.to_s
+        name == excluded || name.start_with?("#{excluded}::")
+      end
     end
 
     ##

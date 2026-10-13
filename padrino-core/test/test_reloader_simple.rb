@@ -124,5 +124,16 @@ describe 'SimpleReloader' do
       assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix::Inner)
       refute Padrino::Reloader.send(:constant_excluded?, ExcludedPrefixed)
     end
+
+    it 'should accept symbols and classes as excluded constants' do
+      Padrino::Reloader.exclude_constants.delete('ExcludedPrefix')
+      [:ExcludedPrefix, ExcludedPrefix].each do |excluded|
+        Padrino::Reloader.exclude_constants << excluded
+        assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix)
+        assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix::Inner)
+        refute Padrino::Reloader.send(:constant_excluded?, ExcludedPrefixed)
+        Padrino::Reloader.exclude_constants.delete(excluded)
+      end
+    end
   end
 end
