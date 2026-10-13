@@ -19,6 +19,7 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/module SampleProject/, "#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/class App < Padrino::Application/, "#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file("Padrino.mount('SampleProject::App', app_file: Padrino.root('app/app.rb')).to('/')", "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file('set :protect_from_csrf, Padrino.env != :test', "#{@apptmp}/sample_project/config/apps.rb")
       assert_file_exists("#{@apptmp}/sample_project/config/boot.rb")
       assert_file_exists("#{@apptmp}/sample_project/Rakefile")
       assert_file_exists("#{@apptmp}/sample_project/exe/sample_project")
