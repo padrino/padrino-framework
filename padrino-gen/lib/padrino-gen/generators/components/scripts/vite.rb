@@ -53,9 +53,9 @@ VITE_GITIGNORE = <<~GITIGNORE unless defined?(VITE_GITIGNORE)
 GITIGNORE
 
 VITE_GEMS = <<~RUBY unless defined?(VITE_GEMS)
-  gem 'vite_padrino'
-  # vite_padrino calls ActiveSupport's `try`, remove once https://github.com/ElMassimo/vite_ruby/pull/635 is released
-  gem 'activesupport', require: 'active_support/core_ext/object/try'
+  gem 'vite_padrino', '~> 3.0'
+  # vite_padrino 3.0.0 calls ActiveSupport's `try`, the fix in https://github.com/ElMassimo/vite_ruby/pull/635 is pending
+  gem 'activesupport', '>= 3.1', require: 'active_support/core_ext/object/try'
 RUBY
 
 def setup_script
@@ -63,11 +63,16 @@ def setup_script
   initializer :VitePadrino
   create_file destination_root('config/vite.json'), VITE_JSON
   create_file destination_root('vite.config.ts'), VITE_CONFIG
+  package_json_exists = File.exist?(destination_root('package.json'))
   create_file destination_root('package.json'), VITE_PACKAGE_JSON, skip: true
   create_file destination_root('app/frontend/entrypoints/application.js'), VITE_ENTRYPOINT
   create_file destination_root('Procfile.dev'), "web: bundle exec padrino start\nvite: bundle exec vite dev\n", skip: true
   append_file destination_root('Rakefile'), VITE_RAKE
   append_file destination_root('.gitignore'), VITE_GITIGNORE if File.exist?(destination_root('.gitignore'))
-  say 'Run `npm install` to install Vite, then add to the <head> of your layout:', :yellow
-  say "  <%= vite_client_tag %>\n  <%= vite_javascript_tag 'application' %>", :yellow
+  renderer = fetch_component_choice(:renderer).to_s
+  renderer = 'erb' unless %w[haml slim].include?(renderer)
+  tags = renderer == 'erb' ? ['<%= vite_client_tag %>', "<%= vite_javascript_tag 'application' %>"] : ['= vite_client_tag', "= vite_javascript_tag 'application'"]
+  install = package_json_exists ? 'npm install -D vite@^8.0.0 vite-plugin-ruby@^5.2.5' : 'npm install'
+  say "Run `#{install}` to install Vite, then add to the <head> of your layout (app/views/layouts/application.#{renderer}):", :yellow
+  say tags.map { |tag| "  #{tag}" }.join("\n"), :yellow
 end

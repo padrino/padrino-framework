@@ -510,8 +510,10 @@ describe 'ProjectGenerator' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=vite') }
       assert_match(/applying.*?vite.*?script/, out)
       assert_match(/vite_javascript_tag 'application'/, out)
-      assert_match_in_file(/gem 'vite_padrino'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(%r{gem 'activesupport', require: 'active_support/core_ext/object/try'}, "#{@apptmp}/sample_project/Gemfile")
+      assert_match(/Run `npm install`/, out)
+      assert_match(/<%= vite_client_tag %>/, out)
+      assert_match_in_file(/gem 'vite_padrino', '~> 3.0'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(%r{gem 'activesupport', '>= 3.1', require: 'active_support/core_ext/object/try'}, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/register VitePadrino/, "#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/"publicOutputDir": "vite-dev"/, "#{@apptmp}/sample_project/config/vite.json")
       assert_match_in_file(/RubyPlugin\(\)/, "#{@apptmp}/sample_project/vite.config.ts")

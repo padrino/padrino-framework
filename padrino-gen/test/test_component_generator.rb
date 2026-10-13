@@ -75,6 +75,27 @@ describe 'ComponentGenerator' do
     end
   end
 
+  describe 'vite script component' do
+    it 'should add vite to an existing project and keep its package.json' do
+      capture_io { generate(:project, 'sample_project', '--renderer=haml', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/package.json", "{}\n")
+      out, = capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_match(/applying.*?vite.*?script/, out)
+      assert_match(/npm install -D vite@\^8\.0\.0 vite-plugin-ruby@\^5\.2\.5/, out)
+      assert_match(/application\.haml/, out)
+      assert_match(/^\s+= vite_javascript_tag 'application'/, out)
+      assert_equal "{}\n", File.read("#{@apptmp}/sample_project/package.json")
+      assert_match_in_file(/gem 'vite_padrino', '~> 3.0'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/register VitePadrino/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/app/frontend/entrypoints/application.js")
+    end
+
+    it 'should declare activesupport like padrino-admin does' do
+      capture_io { generate(:project, 'sample_project', '--script=vite', "--root=#{@apptmp}") }
+      assert_match_in_file(/gem 'activesupport', '>= 3.1'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+  end
+
   describe 'specified of same the component' do
     it 'should does not change' do
       capture_io { generate(:project, 'sample_project', '--script=jquery', "--root=#{@apptmp}") }
