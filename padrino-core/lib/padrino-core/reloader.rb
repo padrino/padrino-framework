@@ -307,7 +307,9 @@ module Padrino
     # Tells if a constant should be excluded from Reloader routines.
     #
     def constant_excluded?(const)
-      external_constant?(const) || (exclude_constants - include_constants).any? { |excluded_constant| constant_name(const).start_with?(excluded_constant) }
+      return true if external_constant?(const)
+      name = constant_name(const)
+      (exclude_constants - include_constants).any? { |excluded| name == excluded || name.start_with?("#{excluded}::") }
     end
 
     ##

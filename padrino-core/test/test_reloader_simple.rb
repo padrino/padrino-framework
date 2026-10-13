@@ -104,4 +104,25 @@ describe 'SimpleReloader' do
       assert_equal 0, @app.templates.size
     end
   end
+
+  describe 'for excluded constants' do
+    before do
+      Object.const_set(:ExcludedPrefix, Class.new)
+      ExcludedPrefix.const_set(:Inner, Class.new)
+      Object.const_set(:ExcludedPrefixed, Class.new)
+      Padrino::Reloader.exclude_constants << 'ExcludedPrefix'
+    end
+
+    after do
+      Padrino::Reloader.exclude_constants.delete('ExcludedPrefix')
+      Object.send(:remove_const, :ExcludedPrefix)
+      Object.send(:remove_const, :ExcludedPrefixed)
+    end
+
+    it 'should exclude the constant and its namespace but not names sharing its prefix' do
+      assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix)
+      assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix::Inner)
+      refute Padrino::Reloader.send(:constant_excluded?, ExcludedPrefixed)
+    end
+  end
 end
