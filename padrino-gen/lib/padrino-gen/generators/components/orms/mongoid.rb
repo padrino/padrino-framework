@@ -56,7 +56,16 @@ MONGO
 
 def setup_orm
   require_dependencies 'mongoid', version: '>= 3.0.0'
-  create_file('config/database.rb', MONGOID.gsub(/!NAME!/, @project_name.underscore))
+  mongoid = MONGOID.gsub(/!NAME!/, @project_name.underscore)
+  if falcon_server?
+    mongoid = <<~FIBER + mongoid
+      # Falcon serves each request in a fiber, so keep Mongoid state per fiber
+      # (supported by Mongoid 9.1+ on Ruby 3.2+).
+      Mongoid::Config.isolation_level = :fiber if RUBY_VERSION >= '3.2' && Mongoid::Config.respond_to?(:isolation_level=)
+
+    FIBER
+  end
+  create_file('config/database.rb', mongoid)
 end
 
 MONGOID_MODEL = <<~MODEL unless defined?(MONGOID_MODEL)

@@ -42,6 +42,18 @@ describe 'ComponentGenerator' do
       assert_equal 'sequel', components_chosen[:orm]
     end
 
+    it 'should enable fiber concurrency when adding an orm to a falcon project' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon') }
+      capture_io { generate(:component, '--orm=sequel', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/^Sequel\.extension :fiber_concurrency$/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should not enable fiber concurrency when adding an orm to another project' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma') }
+      capture_io { generate(:component, '--orm=sequel', "-r=#{@apptmp}/sample_project") }
+      assert_no_match_in_file(/fiber_concurrency/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
     it 'should enable @app_name value' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate_with_parts(:component, '--test=cucumber', "-r=#{@apptmp}/sample_project", apps: 'app') }

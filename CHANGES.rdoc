@@ -2,6 +2,9 @@
 
 == Unreleased
 
+- NEW #2327 Falcon server support: `padrino g project --server=falcon`, and Falcon is auto-detected by `padrino start` (@osbre)
+- WARN #2327 When neither thin nor puma is installed, server auto-detection now picks falcon before spider-gazelle, mongrel, trinidad and webrick
+- NEW #2321 Use actions/checkout v7 in CI (@dependabot)
 - FIX #2326 `link_to` and `form_tag` no longer replace relative links that contain a colon (e.g. `search?q=a:b`) with `#`, and asset helpers (`image_tag`, `asset_path`, etc.) no longer apply the unsafe scheme check to asset names (@nesquena)
 - NEW #2325 Run CI on pull requests from forks (@nesquena)
 - REMOVE #2324 Compass stylesheet, ExtCore script and Mongomatic ORM generator components (@osbre)
