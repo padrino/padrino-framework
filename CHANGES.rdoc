@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2326 `link_to` and `form_tag` no longer replace relative links that contain a colon (e.g. `search?q=a:b`) with `#` (@nesquena)
 - NEW #2325 Run CI on pull requests from forks (@nesquena)
 - REMOVE #2324 Compass stylesheet, ExtCore script and Mongomatic ORM generator components (@osbre)
 - WARN #2324 #2320 `padrino g` commands fail in existing projects whose `.components` file still lists a removed component
