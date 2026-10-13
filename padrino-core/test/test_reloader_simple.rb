@@ -1,4 +1,7 @@
 require_relative 'helper'
+
+# Reloading outside development needs tracking enabled before the apps load.
+Padrino::Reloader.enabled = true
 require_relative 'fixtures/apps/simple'
 
 describe 'SimpleReloader' do
@@ -99,6 +102,38 @@ describe 'SimpleReloader' do
       assert_equal 4, @app.routes.size # GET+HEAD of "/" = 2
       assert_equal 4, @app.extensions.size # [Padrino::ApplicationSetup, Padrino::ParamsProtection, Padrino::Routing, Padrino::Flash]
       assert_equal 0, @app.templates.size
+    end
+  end
+
+  describe 'for excluded constants' do
+    before do
+      Object.const_set(:ExcludedPrefix, Class.new)
+      ExcludedPrefix.const_set(:Inner, Class.new)
+      Object.const_set(:ExcludedPrefixed, Class.new)
+      Padrino::Reloader.exclude_constants << 'ExcludedPrefix'
+    end
+
+    after do
+      Padrino::Reloader.exclude_constants.delete('ExcludedPrefix')
+      Object.send(:remove_const, :ExcludedPrefix)
+      Object.send(:remove_const, :ExcludedPrefixed)
+    end
+
+    it 'should exclude the constant and its namespace but not names sharing its prefix' do
+      assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix)
+      assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix::Inner)
+      refute Padrino::Reloader.send(:constant_excluded?, ExcludedPrefixed)
+    end
+
+    it 'should accept symbols and classes as excluded constants' do
+      Padrino::Reloader.exclude_constants.delete('ExcludedPrefix')
+      [:ExcludedPrefix, ExcludedPrefix].each do |excluded|
+        Padrino::Reloader.exclude_constants << excluded
+        assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix)
+        assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix::Inner)
+        refute Padrino::Reloader.send(:constant_excluded?, ExcludedPrefixed)
+        Padrino::Reloader.exclude_constants.delete(excluded)
+      end
     end
   end
 end

@@ -1,4 +1,7 @@
 require_relative 'helper'
+
+# Reloading outside development needs tracking enabled before the apps load.
+Padrino::Reloader.enabled = true
 require_relative 'fixtures/reloadable_apps/main/app'
 
 describe 'ExternalReloader' do

@@ -16,6 +16,13 @@ Bundler.require(:default, RACK_ENV)
 #
 # $LOAD_PATH.unshift Padrino.root('lib')
 #
+# ## Reload code outside development
+#
+# Files are only tracked for reloading in development, which keeps boot fast elsewhere.
+# To use `enable :reload` or `reload!` in another environment, enable tracking before Padrino.load!
+#
+# Padrino::Reloader.enabled = true
+#
 # ## Enable logging of source location
 #
 # Padrino::Logger::Config[:development][:source_location] = true
