@@ -70,7 +70,6 @@ module Padrino
     def clear!
       MTIMES.clear
       untracked_files.clear
-      untracked_constants.clear
       Storage.clear!
     end
 
@@ -127,25 +126,13 @@ module Padrino
     #
     def untracked_load(file)
       file = figure_path(file)
-      constants = Object.constants
       features = $LOADED_FEATURES.dup
       begin
         with_silence { require(file) }
       rescue Exception
-        # Like safe_load, remove classes a partially loaded file defined so it can be
-        # required again, but keep those defined by files it loaded successfully.
-        (Object.constants - constants - untracked_constants.to_a).each do |name|
-          next if Object.autoload?(name)
-          klass = Object.const_get(name)
-          remove_constant(klass) if klass.is_a?(Class)
-        end
-        # App files it required are loaded again on retry, since their classes are gone.
-        ($LOADED_FEATURES - features).each do |feature|
-          $LOADED_FEATURES.delete(feature) unless feature_excluded?(feature) || untracked_files.include?(feature)
-        end
+        rollback_untracked(file, $LOADED_FEATURES - features)
         raise
       end
-      untracked_constants.merge(Object.constants - constants)
       return if feature_excluded?(file) || !File.file?(file)
       update_modification_time(file)
       untracked_files << file
@@ -207,10 +194,20 @@ module Padrino
     end
 
     ##
-    # Top-level constants defined by files loaded while tracking was disabled.
+    # Like Storage.rollback, removes classes defined by a file that failed partway and by
+    # the app files it required, so they can be required again. Only the failure pays for
+    # walking Object.constants, which keeps boot as fast as a plain require.
     #
-    def untracked_constants
-      @untracked_constants ||= Set.new
+    def rollback_untracked(file, features)
+      features = features.reject { |feature| feature_excluded?(feature) || untracked_files.include?(feature) }
+      features.each { |feature| $LOADED_FEATURES.delete(feature) }
+      files = Set.new(features << file)
+      Object.constants.each do |name|
+        next if Object.autoload?(name)
+        next unless files.include?(Object.const_source_location(name)&.first)
+        klass = Object.const_get(name)
+        remove_constant(klass) if klass.is_a?(Class)
+      end
     end
 
     ##
