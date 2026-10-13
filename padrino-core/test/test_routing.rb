@@ -206,6 +206,21 @@ describe 'Routing' do
     assert_equal 'success!', body
   end
 
+  it 'should keep a plus sign in the path as is' do
+    mock_app do
+      get('/tags/c++') { 'cpp' }
+      get(:show, map: '/items/:id') { params[:id] }
+    end
+    get('/tags/c++')
+    assert_equal 'cpp', body
+    get('/items/a+b')
+    assert_equal 'a+b', body
+    get(@app.url(:show, id: 'a+b'))
+    assert_equal 'a+b', body
+    get('/items/a%20b')
+    assert_equal 'a b', body
+  end
+
   it 'should parse routes that include encoded slash' do
     mock_app do
       get('/:drive_alias/:path', path: /.*/) do

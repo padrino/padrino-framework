@@ -105,7 +105,7 @@ module Padrino
       # Decode uri escape sequences
       #
       def decode_uri(string)
-        string.split(/%2F|%2f/, -1).map { |part| Rack::Utils.unescape(part) }.join('%2F')
+        string.split(/%2F|%2f/, -1).map { |part| Rack::Utils.unescape_path(part) }.join('%2F')
       end
     end
   end
