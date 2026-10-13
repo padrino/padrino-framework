@@ -150,7 +150,7 @@ module Padrino
         error = fatal = loaded = nil
 
         files.dup.each do |file|
-          Reloader.safe_load(file, options)
+          Reloader.enabled? ? Reloader.safe_load(file, options) : require(file)
           files.delete(file)
           loaded = true
         rescue NameError, LoadError => error

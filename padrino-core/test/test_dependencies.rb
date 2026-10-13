@@ -105,4 +105,41 @@ describe 'Dependencies' do
       end
     end
   end
+
+  describe 'when reloading is disabled' do
+    before do
+      Padrino::Reloader.enabled = false
+    end
+
+    after do
+      Padrino::Reloader.enabled = true
+    end
+
+    it 'should resolve dependency problems without tracking files' do
+      Padrino::Reloader::Storage.stub(:prepare, ->(*) { flunk 'should not track files' }) do
+        Padrino.require_dependencies(
+          Padrino.root('fixtures/dependencies/untracked/a.rb'),
+          Padrino.root('fixtures/dependencies/untracked/b.rb')
+        )
+      end
+      assert_equal UntrackedBase, Untracked.superclass
+    end
+  end
+
+  describe 'Padrino::Reloader.enabled?' do
+    before do
+      Padrino::Reloader.enabled = nil
+    end
+
+    after do
+      Padrino::Reloader.enabled = true
+    end
+
+    it 'should be enabled only in development by default' do
+      Padrino.stub(:mounted_apps, []) do
+        refute Padrino::Reloader.enabled?
+        Padrino.stub(:env, :development) { assert Padrino::Reloader.enabled? }
+      end
+    end
+  end
 end

@@ -28,6 +28,16 @@ module Padrino
     end
 
     ##
+    # Tracking files for reloading slows down boot, so skip it unless reloading is used.
+    #
+    attr_writer :enabled
+
+    def enabled?
+      return @enabled unless @enabled.nil?
+      Padrino.env == :development || reloadable_apps.any?
+    end
+
+    ##
     # Specified constants can be excluded from the code unloading process.
     #
     def exclude_constants
