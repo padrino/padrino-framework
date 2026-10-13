@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2332 Keep a plus sign in the request path instead of decoding it as a space, so routes like `/tags/c++` match and `params[:id]` keeps `+` (@Shaisolaris)
 - FIX #2328 Falcon projects also get fiber settings for Mongoid and for ORMs added later with `padrino g component`, and the generated Gemfile requires falcon >= 0.43 (@nesquena)
 - NEW #2327 Falcon server support: `padrino g project --server=falcon`, and Falcon is auto-detected by `padrino start` (@osbre)
 - WARN #2327 When neither thin nor puma is installed, server auto-detection now picks falcon before spider-gazelle, mongrel, trinidad and webrick
