@@ -33,6 +33,14 @@ describe 'ComponentGenerator' do
       assert_equal 'activerecord', components_chosen[:orm]
     end
 
+    it 'should move existing public styles into the tailwind source' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "body { color: red; }\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/@import "tailwindcss";\n\nbody \{ color: red; \}/, "#{@apptmp}/sample_project/app/stylesheets/application.css")
+      refute File.exist?("#{@apptmp}/sample_project/public/stylesheets/application.css")
+    end
+
     it 'should properly generate with adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       out, = capture_io { generate(:component, '--orm=sequel', '--adapter=postgres', "-r=#{@apptmp}/sample_project") }

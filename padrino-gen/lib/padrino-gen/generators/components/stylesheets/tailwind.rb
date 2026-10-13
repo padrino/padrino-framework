@@ -1,0 +1,45 @@
+TAILWIND_CSS = <<~CSS unless defined?(TAILWIND_CSS)
+  @import "tailwindcss";
+CSS
+
+TAILWIND_RAKE = <<~RAKE unless defined?(TAILWIND_RAKE)
+  require 'tailwindcss/ruby'
+
+  TAILWIND_ARGS = %w[-i app/stylesheets/application.css -o public/stylesheets/application.css].freeze
+
+  namespace :tailwind do
+    desc 'Build public/stylesheets/application.css from app/stylesheets/application.css'
+    task :build do
+      sh Tailwindcss::Ruby.executable, *TAILWIND_ARGS, '--minify'
+    end
+
+    desc 'Rebuild public/stylesheets/application.css whenever the app changes'
+    task :watch do
+      sh Tailwindcss::Ruby.executable, *TAILWIND_ARGS, '--watch=always'
+    end
+  end
+RAKE
+
+def setup_stylesheet
+  require_dependencies 'tailwindcss-ruby'
+  # Tailwind writes its build to public/stylesheets/application.css, so carry
+  # any hand-written styles there over into the source file instead of losing them.
+  existing = destination_root('public/stylesheets/application.css')
+  if File.exist?(existing)
+    create_file destination_root('app/stylesheets/application.css'), "#{TAILWIND_CSS}\n#{File.read(existing)}"
+    remove_file existing
+  else
+    create_file destination_root('app/stylesheets/application.css'), TAILWIND_CSS
+  end
+  create_file destination_root('tasks/tailwind.rake'), TAILWIND_RAKE
+
+  procfile = destination_root('Procfile.dev')
+  if File.exist?(procfile)
+    append_file procfile, "css: bundle exec rake tailwind:watch\n"
+  else
+    create_file procfile, "web: bundle exec padrino start\ncss: bundle exec rake tailwind:watch\n"
+  end
+
+  gitignore = destination_root('.gitignore')
+  append_file gitignore, "public/stylesheets/application.css\n" if File.exist?(gitignore)
+end
