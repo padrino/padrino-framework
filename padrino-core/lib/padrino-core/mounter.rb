@@ -183,7 +183,8 @@ module Padrino
     def locate_app_object
       @_app_object ||= begin
         ensure_app_file!
-        Padrino.require_dependencies(app_file)
+        # Always tracked, since Application#reload! must re-run the app file.
+        Reloader.safe_load(app_file) if File.file?(app_file)
         app_constant
       end
     end

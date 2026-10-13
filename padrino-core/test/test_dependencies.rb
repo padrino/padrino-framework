@@ -108,11 +108,18 @@ describe 'Dependencies' do
 
   describe 'when reloading is disabled' do
     before do
+      @enabled = Padrino::Reloader.instance_variable_get(:@enabled)
       Padrino::Reloader.enabled = false
+      @log_level = Padrino::Logger::Config[:test]
+      @io = StringIO.new
+      Padrino::Logger::Config[:test] = { log_level: :warn, stream: @io }
+      Padrino::Logger.setup!
     end
 
     after do
-      Padrino::Reloader.enabled = true
+      Padrino::Reloader.enabled = @enabled
+      Padrino::Logger::Config[:test] = @log_level
+      Padrino::Logger.setup!
     end
 
     it 'should resolve dependency problems without tracking files' do
@@ -124,22 +131,80 @@ describe 'Dependencies' do
       end
       assert_equal UntrackedBase, Untracked.superclass
     end
+
+    it 'should remove constants of a file that failed partway before retrying it' do
+      capture_io do
+        Padrino.require_dependencies(
+          Padrino.root('fixtures/dependencies/partial/a.rb'),
+          Padrino.root('fixtures/dependencies/partial/b.rb')
+        )
+      end
+      assert_includes PartialPoint.ancestors, PartialConcern
+    end
+
+    it 'should not re-run files on reload' do
+      file = Padrino.root('fixtures/dependencies/reload/untracked.rb')
+      Object.const_set(:UNTRACKED_LOADS, [])
+      # Only the fixture is checked for changes, not files other tests left mounted.
+      Padrino.stub(:dependency_paths, [file]) do
+        Padrino.stub(:mounted_apps, []) do
+          Padrino::Reloader.stub(:special_files, Set.new) do
+            Padrino.require_dependencies(file)
+            refute Padrino::Reloader.changed?
+            Padrino.reload!
+
+            mtime = File.mtime(file)
+            File.utime(mtime + 60, mtime + 60, file)
+            begin
+              assert Padrino::Reloader.changed?
+              Padrino.reload!
+              refute Padrino::Reloader.changed?
+            ensure
+              File.utime(mtime, mtime, file)
+            end
+          end
+        end
+      end
+      assert_equal [:untracked], UNTRACKED_LOADS
+      assert_match(/Skipping reload of .*untracked\.rb/, @io.string)
+    end
+
+    it 'should track and reload files loaded with force' do
+      file = Padrino.root('fixtures/dependencies/reload/forced.rb')
+      Object.const_set(:FORCED_LOADS, [])
+      Padrino.require_dependencies(file, force: true)
+      Padrino.require_dependencies(file, force: true)
+      assert_equal %i[forced forced], FORCED_LOADS
+    end
+
+    it 'should not force reload files loaded without tracking' do
+      file = Padrino.root('fixtures/dependencies/reload/untracked_forced.rb')
+      Object.const_set(:UNTRACKED_FORCED_LOADS, [])
+      Padrino.require_dependencies(file)
+      Padrino.require_dependencies(file, force: true)
+      assert_equal [:untracked_forced], UNTRACKED_FORCED_LOADS
+      assert_match(/Skipping reload of .*untracked_forced\.rb/, @io.string)
+    end
   end
 
   describe 'Padrino::Reloader.enabled?' do
     before do
+      @enabled = Padrino::Reloader.instance_variable_get(:@enabled)
       Padrino::Reloader.enabled = nil
     end
 
     after do
-      Padrino::Reloader.enabled = true
+      Padrino::Reloader.enabled = @enabled
     end
 
     it 'should be enabled only in development by default' do
-      Padrino.stub(:mounted_apps, []) do
-        refute Padrino::Reloader.enabled?
-        Padrino.stub(:env, :development) { assert Padrino::Reloader.enabled? }
-      end
+      refute Padrino::Reloader.enabled?
+      Padrino.stub(:env, :development) { assert Padrino::Reloader.enabled? }
+    end
+
+    it 'should be configurable' do
+      Padrino::Reloader.enabled = true
+      assert Padrino::Reloader.enabled?
     end
   end
 end

@@ -2,6 +2,8 @@
 
 == Unreleased
 
+- NEW #2331 Faster boot outside development: files are no longer tracked for reloading unless `Padrino::Reloader.enabled = true` (@osbre)
+- WARN #2331 Reloading outside development (`enable :reload`, `Padrino.reload!` or `reload!` in the console) needs `Padrino::Reloader.enabled = true` before `Padrino.load!`; files loaded without it are skipped with a warning when they change
 - FIX #2328 Falcon projects also get fiber settings for Mongoid and for ORMs added later with `padrino g component`, and the generated Gemfile requires falcon >= 0.43 (@nesquena)
 - NEW #2327 Falcon server support: `padrino g project --server=falcon`, and Falcon is auto-detected by `padrino start` (@osbre)
 - WARN #2327 When neither thin nor puma is installed, server auto-detection now picks falcon before spider-gazelle, mongrel, trinidad and webrick

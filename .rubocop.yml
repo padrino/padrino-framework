@@ -214,3 +214,7 @@ Lint/EmptyFile:
 Lint/ConstantDefinitionInBlock:
   Exclude:
     - '**/test/**/*'
+
+Style/StructInheritance:
+  Exclude:
+    - '**/test/**/*'

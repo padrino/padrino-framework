@@ -15,9 +15,6 @@ require 'rack/test'
 require 'yaml'
 require 'padrino-core'
 
-# The suite tests reloader internals, which need tracking outside development.
-Padrino::Reloader.enabled = true
-
 require 'ext/minitest-spec'
 require 'ext/rack-test-methods'
 
