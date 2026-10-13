@@ -1,0 +1,2 @@
+class Untracked < UntrackedBase
+end

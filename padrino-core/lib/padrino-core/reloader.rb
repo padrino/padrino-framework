@@ -28,6 +28,17 @@ module Padrino
     end
 
     ##
+    # Tracking files for reloading slows down boot, so it's only enabled in development
+    # by default. Files loaded while it's disabled are never reloaded. To reload code in
+    # other environments, set +Padrino::Reloader.enabled = true+ before +Padrino.load!+.
+    #
+    attr_writer :enabled
+
+    def enabled?
+      @enabled.nil? ? Padrino.env == :development : @enabled
+    end
+
+    ##
     # Specified constants can be excluded from the code unloading process.
     #
     def exclude_constants
@@ -48,6 +59,7 @@ module Padrino
     def reload!
       rotation do |file|
         next unless file_changed?(file)
+        next skip_untracked(file) if untracked_files.include?(file)
         reload_special(file) || reload_regular(file)
       end
     end
@@ -57,6 +69,7 @@ module Padrino
     #
     def clear!
       MTIMES.clear
+      untracked_files.clear
       Storage.clear!
     end
 
@@ -87,6 +100,7 @@ module Padrino
       began_at = Time.now
       file     = figure_path(file)
       return unless options[:force] || file_changed?(file)
+      return skip_untracked(file) if untracked_files.include?(file)
       return require(file) if feature_excluded?(file)
 
       Storage.prepare(file) # might call #safe_load recursively
@@ -95,6 +109,7 @@ module Padrino
         with_silence { require(file) }
         Storage.commit(file)
         update_modification_time(file)
+        untracked_files.delete(file)
       rescue Exception => e
         unless options[:cyclic]
           logger.exception e, :short
@@ -103,6 +118,24 @@ module Padrino
         Storage.rollback(file)
         raise
       end
+    end
+
+    ##
+    # A Kernel::require for when tracking is disabled. Only the modification time is
+    # recorded, so later changes are detected but the file is not reloaded.
+    #
+    def untracked_load(file)
+      file = figure_path(file)
+      features = $LOADED_FEATURES.dup
+      begin
+        with_silence { require(file) }
+      rescue Exception
+        rollback_untracked(file, $LOADED_FEATURES - features)
+        raise
+      end
+      return if feature_excluded?(file) || !File.file?(file)
+      update_modification_time(file)
+      untracked_files << file
     end
 
     ##
@@ -151,6 +184,39 @@ module Padrino
         return File.expand_path(found) if File.file?(found)
       end
       file
+    end
+
+    ##
+    # Files loaded while tracking was disabled.
+    #
+    def untracked_files
+      @untracked_files ||= Set.new
+    end
+
+    ##
+    # Like Storage.rollback, removes classes defined by a file that failed partway and by
+    # the app files it required, so they can be required again. Only the failure pays for
+    # walking Object.constants, which keeps boot as fast as a plain require.
+    #
+    def rollback_untracked(file, features)
+      features = features.reject { |feature| feature_excluded?(feature) || untracked_files.include?(feature) }
+      features.each { |feature| $LOADED_FEATURES.delete(feature) }
+      files = Set.new(features << file)
+      Object.constants.each do |name|
+        next if Object.autoload?(name)
+        next unless files.include?(Object.const_source_location(name)&.first)
+        klass = Object.const_get(name)
+        remove_constant(klass) if klass.is_a?(Class)
+      end
+    end
+
+    ##
+    # Warns that a changed file can't be reloaded because it was loaded without tracking.
+    #
+    def skip_untracked(file)
+      logger.warn "Skipping reload of #{file}, it was loaded with Padrino::Reloader disabled. " \
+                  'Set Padrino::Reloader.enabled = true before Padrino.load! to reload it'
+      update_modification_time(file)
     end
 
     ##
@@ -244,7 +310,12 @@ module Padrino
     # Tells if a constant should be excluded from Reloader routines.
     #
     def constant_excluded?(const)
-      external_constant?(const) || (exclude_constants - include_constants).any? { |excluded_constant| constant_name(const).start_with?(excluded_constant) }
+      return true if external_constant?(const)
+      name = constant_name(const)
+      (exclude_constants - include_constants).any? do |excluded|
+        excluded = excluded.to_s
+        name == excluded || name.start_with?("#{excluded}::")
+      end
     end
 
     ##
