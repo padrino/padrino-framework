@@ -98,7 +98,7 @@ describe 'ProjectGenerator' do
     end
 
     it 'should generate lean project correctly even if the component is specified' do
-      _, err = capture_io { generate(:project, 'sample_project', '--lean', "--root=#{@apptmp}", '--orm=activerecord', '--stylesheet=compass') }
+      _, err = capture_io { generate(:project, 'sample_project', '--lean', "--root=#{@apptmp}", '--orm=activerecord', '--stylesheet=scss') }
       assert_match('', err)
     end
 
@@ -390,14 +390,6 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/Ohm.connect/, "#{@apptmp}/sample_project/config/database.rb")
     end
 
-    it 'should properly generate for mongomatic' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=mongomatic', '--script=none') }
-      assert_match(/applying.*?mongomatic.*?orm/, out)
-      assert_match_in_file(/gem 'bson_ext'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'mongomatic'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/Mongomatic.db = Mongo::Connection.new.db/, "#{@apptmp}/sample_project/config/database.rb")
-    end
-
     it 'should properly generate for dynamoid' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=dynamoid', '--script=none') }
       assert_match(/applying.*?dynamoid.*?orm/, out)
@@ -457,14 +449,6 @@ describe 'ProjectGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/protopak.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/lowpro.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/prototype-ujs.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
-    end
-
-    it 'should properly generate for ext-core' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=extcore') }
-      assert_match(/applying.*?extcore.*?script/, out)
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/ext-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
@@ -574,17 +558,6 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/module LessInitializer.*Rack::Less/m, "#{@apptmp}/sample_project/config/initializers/less.rb")
       assert_match_in_file(/register LessInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
-    end
-
-    it 'should properly generate for compass' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=compass') }
-      assert_match_in_file(/gem 'compass-blueprint'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/Compass.configure_sass_plugin!/, "#{@apptmp}/sample_project/config/initializers/compass.rb")
-      assert_match_in_file(/module CompassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/compass.rb")
-      assert_match_in_file(/register CompassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
-
-      assert_file_exists("#{@apptmp}/sample_project/app/stylesheets/application.scss")
-      assert_file_exists("#{@apptmp}/sample_project/app/stylesheets/partials/_base.scss")
     end
 
     it 'should properly generate for scss' do
