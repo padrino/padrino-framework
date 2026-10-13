@@ -5,6 +5,8 @@
 - NEW #2331 Faster boot outside development: files are no longer tracked for reloading unless `Padrino::Reloader.enabled = true` (@osbre)
 - WARN #2331 Reloading outside development (`enable :reload`, `Padrino.reload!` or `reload!` in the console) needs `Padrino::Reloader.enabled = true` before `Padrino.load!`; files loaded without it are skipped with a warning when they change
 - FIX #2331 Excluding a constant from reloading no longer also excludes constants whose names merely start with it (e.g. excluding `F` excluded `Foo`); only the constant and its namespace are excluded
+- FIX #2330 Keep a plus sign in the request path instead of decoding it as a space (@Shaisolaris)
+- NEW #2329 Generated projects disable CSRF protection in the test environment, so test requests no longer need a token (@osbre)
 - FIX #2328 Falcon projects also get fiber settings for Mongoid and for ORMs added later with `padrino g component`, and the generated Gemfile requires falcon >= 0.43 (@nesquena)
 - NEW #2327 Falcon server support: `padrino g project --server=falcon`, and Falcon is auto-detected by `padrino start` (@osbre)
 - WARN #2327 When neither thin nor puma is installed, server auto-detection now picks falcon before spider-gazelle, mongrel, trinidad and webrick
