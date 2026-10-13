@@ -31,7 +31,7 @@ module Padrino
     DEFAULT_ADDRESS = { Host: '127.0.0.1', Port: 3000 }
 
     # Server Handlers
-    Handlers = %i[thin puma spider-gazelle mongrel trinidad webrick]
+    Handlers = %i[thin puma falcon spider-gazelle mongrel trinidad webrick]
 
     # Starts the application on the available server with specified options.
     def self.start(app, options = {})

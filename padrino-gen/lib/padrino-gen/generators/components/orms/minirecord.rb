@@ -144,6 +144,10 @@ def setup_orm
   end
 
   require_dependencies 'mini_record'
+
+  # Falcon serves each request in a fiber
+  ar = "ActiveSupport::IsolatedExecutionState.isolation_level = :fiber\n#{ar}" if options[:server] == 'falcon'
+
   create_file('config/database.rb', ar)
   insert_hook('ActiveRecord::Base.auto_upgrade!', :after_load)
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE

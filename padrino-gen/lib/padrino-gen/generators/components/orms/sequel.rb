@@ -43,6 +43,9 @@ def setup_orm
     retry
   end
 
+  # Falcon serves each request in a fiber
+  sequel = "Sequel.extension :fiber_concurrency\n#{sequel}" if options[:server] == 'falcon'
+
   create_file('config/database.rb', sequel)
   empty_directory('db/migrate')
 end
