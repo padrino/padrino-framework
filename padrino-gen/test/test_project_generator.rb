@@ -262,12 +262,12 @@ describe 'ProjectGenerator' do
 
     it 'should properly generate for falcon' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon') }
-      assert_match_in_file(/# Server requirements\ngem 'falcon'\n/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/# Server requirements\ngem 'falcon', '>= 0.43'\n/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     it 'should enable fiber concurrency for sequel on falcon' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon', '--orm=sequel') }
-      assert_match_in_file(/\ASequel.extension :fiber_concurrency\n/, "#{@apptmp}/sample_project/config/database.rb")
+      assert_match_in_file(/\A# Falcon serves each request in a fiber.*\nSequel\.extension :fiber_concurrency\n\n/, "#{@apptmp}/sample_project/config/database.rb")
     end
 
     it 'should not enable fiber concurrency for sequel on other servers' do
@@ -277,7 +277,7 @@ describe 'ProjectGenerator' do
 
     it 'should enable fiber isolation for activerecord on falcon' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon', '--orm=activerecord') }
-      assert_match_in_file(/\AActiveSupport::IsolatedExecutionState.isolation_level = :fiber\n/, "#{@apptmp}/sample_project/config/database.rb")
+      assert_match_in_file(/\A# Falcon serves each request in a fiber.*\nActiveSupport::IsolatedExecutionState\.isolation_level = :fiber\n\n/, "#{@apptmp}/sample_project/config/database.rb")
     end
 
     it 'should not enable fiber isolation for activerecord on other servers' do
@@ -287,7 +287,22 @@ describe 'ProjectGenerator' do
 
     it 'should enable fiber isolation for minirecord on falcon' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon', '--orm=minirecord') }
-      assert_match_in_file(/\AActiveSupport::IsolatedExecutionState.isolation_level = :fiber\n/, "#{@apptmp}/sample_project/config/database.rb")
+      assert_match_in_file(/\A# Falcon serves each request in a fiber.*\nActiveSupport::IsolatedExecutionState\.isolation_level = :fiber\n\n/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should not enable fiber isolation for minirecord on other servers' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma', '--orm=minirecord') }
+      assert_no_match_in_file(/isolation_level/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should enable fiber isolation for mongoid on falcon' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon', '--orm=mongoid') }
+      assert_match_in_file(/\A# Falcon serves each request in a fiber(.*\n)+?Mongoid::Config\.isolation_level = :fiber if /, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should not enable fiber isolation for mongoid on other servers' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma', '--orm=mongoid') }
+      assert_no_match_in_file(/isolation_level/, "#{@apptmp}/sample_project/config/database.rb")
     end
 
     it 'should properly generate for thin' do

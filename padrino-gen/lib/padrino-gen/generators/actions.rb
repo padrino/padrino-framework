@@ -316,6 +316,18 @@ module Padrino
       end
 
       ##
+      # Returns true if the project runs on Falcon, which serves each request in
+      # a fiber. Uses the --server option when generating a project, and the
+      # project's Gemfile when adding a component later.
+      #
+      def falcon_server?
+        return options[:server] == 'falcon' if options[:server]
+
+        gemfile = destination_root('Gemfile')
+        File.exist?(gemfile) && File.read(gemfile).match?(/^\s*gem ['"]falcon['"]/)
+      end
+
+      ##
       # Inserts a required gem into the Gemfile to add the bundler dependency.
       #
       # @param [String] name

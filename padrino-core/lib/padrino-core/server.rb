@@ -1,7 +1,7 @@
 module Padrino
   ##
-  # Runs the Padrino apps as a self-hosted server using:
-  # thin, mongrel, or WEBrick in that order.
+  # Runs the Padrino apps as a self-hosted server using the first available
+  # handler in Server::Handlers (thin, puma, falcon, ..., WEBrick).
   #
   # @example
   #   Padrino.run! # with these defaults => host: '127.0.0.1', port: '3000', adapter: the first found
