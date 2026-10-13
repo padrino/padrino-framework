@@ -128,6 +128,11 @@ describe 'AssetTagHelpers' do
       assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
     end
 
+    it 'should reject unsafe URIs with tabs or newlines inside the scheme' do
+      assert_html_has_tag(link_to('click', "java\tscript:alert(1)"), 'a', href: '#', content: 'click')
+      assert_html_has_tag(link_to('click', "java\nscript:alert(1)"), 'a', href: '#', content: 'click')
+    end
+
     it 'should not escape image_tag' do
       actual_link = link_to(image_tag('/my/fancy/image.png'), class: 'first', id: 'binky')
       assert_html_has_tag(actual_link, 'img', src: '/my/fancy/image.png')
@@ -461,6 +466,11 @@ describe 'AssetTagHelpers' do
 
     it 'should generate proper paths for public folder' do
       assert_match(%r{/files/file.ext\?\d+}, asset_path('files/file.ext'))
+    end
+
+    it 'should keep colons in asset names' do
+      assert_match(%r{/images/a:b.png\?\d+}, asset_path(:images, 'a:b.png'))
+      assert_match(%r{/images/photos/10:30.png\?\d+}, asset_path(:images, 'photos/10:30.png'))
     end
   end
 end
