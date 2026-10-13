@@ -102,10 +102,11 @@ module Padrino
       end
 
       ##
-      # Decode uri escape sequences
+      # Decode uri escape sequences. A literal + is kept as is: it means a
+      # space only in form data, not in a path.
       #
       def decode_uri(string)
-        string.split(/%2F|%2f/, -1).map { |part| Rack::Utils.unescape_path(part) }.join('%2F')
+        string.split(/%2F|%2f/, -1).map { |part| Rack::Utils.unescape(part.gsub('+', '%2B')) }.join('%2F')
       end
     end
   end
