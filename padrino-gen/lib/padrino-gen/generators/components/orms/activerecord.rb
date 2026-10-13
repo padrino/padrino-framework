@@ -147,6 +147,10 @@ def setup_orm
   end
 
   require_dependencies 'activerecord', require: 'active_record', version: '>= 3.1'
+
+  # Falcon serves each request in a fiber
+  ar = "ActiveSupport::IsolatedExecutionState.isolation_level = :fiber\n#{ar}" if options[:server] == 'falcon'
+
   create_file('config/database.rb', ar)
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end

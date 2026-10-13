@@ -260,6 +260,36 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/# Server requirements\ngem 'puma'\n/, "#{@apptmp}/sample_project/Gemfile")
     end
 
+    it 'should properly generate for falcon' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon') }
+      assert_match_in_file(/# Server requirements\ngem 'falcon'\n/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should enable fiber concurrency for sequel on falcon' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon', '--orm=sequel') }
+      assert_match_in_file(/\ASequel.extension :fiber_concurrency\n/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should not enable fiber concurrency for sequel on other servers' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma', '--orm=sequel') }
+      assert_no_match_in_file(/fiber_concurrency/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should enable fiber isolation for activerecord on falcon' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon', '--orm=activerecord') }
+      assert_match_in_file(/\AActiveSupport::IsolatedExecutionState.isolation_level = :fiber\n/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should not enable fiber isolation for activerecord on other servers' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma', '--orm=activerecord') }
+      assert_no_match_in_file(/isolation_level/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should enable fiber isolation for minirecord on falcon' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon', '--orm=minirecord') }
+      assert_match_in_file(/\AActiveSupport::IsolatedExecutionState.isolation_level = :fiber\n/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
     it 'should properly generate for thin' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=thin') }
       assert_match_in_file(/# Server requirements\ngem 'thin'\n/, "#{@apptmp}/sample_project/Gemfile")
