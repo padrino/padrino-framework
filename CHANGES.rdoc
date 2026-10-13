@@ -3,6 +3,8 @@
 == Unreleased
 
 - NEW #2325 Run CI on pull requests from forks (@nesquena)
+- REMOVE #2324 Compass stylesheet, ExtCore script and Mongomatic ORM generator components (@osbre)
+- WARN #2324 #2320 `padrino g` commands fail in existing projects whose `.components` file still lists a removed component
 - FIX #2323 Require `cgi/escape` instead of `cgi` to silence the Ruby 4.0 "please install cgi gem" warning (@osbre)
 - WARN #2323 Padrino no longer loads the full CGI library. Apps on Ruby < 4.0 that use other parts of it (e.g. `CGI::Cookie`, `CGI.parse`) must `require 'cgi'` themselves
 - REMOVE #2320 DataMapper, MongoMapper, CouchRest and Ripple ORM generators and rake tasks (@achiurizo)
