@@ -219,6 +219,23 @@ describe 'Routing' do
     assert_equal 'a+b', body
     get('/items/a%20b')
     assert_equal 'a b', body
+    get('/items/a%2Bb')
+    assert_equal 'a+b', body
+    get('/tags/c%2B%2B')
+    assert_equal 'cpp', body
+  end
+
+  it 'should keep path params UTF-8 regardless of default_external' do
+    mock_app { get(:show, map: '/items/:id') { params[:id] == 'щ' ? 'ok' : "bad #{params[:id].encoding}" } }
+    old_verbose = $VERBOSE
+    old_encoding = Encoding.default_external
+    $VERBOSE = nil
+    Encoding.default_external = 'ISO-8859-1'
+    get '/items/%D1%89'
+    assert_equal 'ok', body
+  ensure
+    Encoding.default_external = old_encoding
+    $VERBOSE = old_verbose
   end
 
   it 'should parse routes that include encoded slash' do
