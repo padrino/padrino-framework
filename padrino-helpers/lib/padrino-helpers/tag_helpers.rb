@@ -260,12 +260,14 @@ module Padrino
       def unsafe_uri_scheme?(uri)
         return false unless uri
 
-        normalized = uri.to_s.strip.downcase.gsub(/[\t\n\r]/, '')
-        return false if normalized.start_with?('/', '#', '?')
-        return false unless normalized.include?(':')
+        # Read the scheme the way browsers do: drop tabs and newlines, skip leading
+        # control characters and spaces, then take a run of scheme characters
+        # followed by a colon. Relative links like 'search?q=a:b' have no scheme.
+        # Everything is anchored at the start so long inputs are scanned once.
+        scheme = uri.to_s.delete("\t\n\r")[/\A[\x00-\x20]*([a-z][a-z0-9+.-]*):/i, 1]
+        return false unless scheme
 
-        scheme = normalized.split(':', 2).first
-        !SAFE_URI_SCHEMES.include?(scheme)
+        !SAFE_URI_SCHEMES.include?(scheme.downcase)
       end
 
       private

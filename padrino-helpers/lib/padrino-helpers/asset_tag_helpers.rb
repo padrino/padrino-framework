@@ -5,7 +5,7 @@ module Padrino
     #
     module AssetTagHelpers
       APPEND_ASSET_EXTENSIONS = %w[js css]
-      ABSOLUTE_URL_PATTERN = %r{^(https?://)}
+      ABSOLUTE_URL_PATTERN = %r{\A(https?://)}
       ASSET_FOLDERS = {
         js: 'javascripts',
         css: 'stylesheets'
@@ -316,8 +316,8 @@ module Padrino
       #
       def asset_path(kind, source = nil)
         kind, source = source, kind if source.nil?
-        source = asset_normalize_extension(kind, escape_link(source.to_s))
-        return source if source =~ ABSOLUTE_URL_PATTERN || source =~ %r{^/}
+        source = asset_normalize_extension(kind, source.to_s.gsub(' ', '%20'))
+        return source if source =~ ABSOLUTE_URL_PATTERN || source =~ %r{\A/}
         source = File.join(asset_folder_name(kind), source)
         timestamp = asset_timestamp(source)
         result_path = uri_root_path(source)
