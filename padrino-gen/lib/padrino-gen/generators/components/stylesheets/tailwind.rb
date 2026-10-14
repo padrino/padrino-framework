@@ -21,7 +21,7 @@ TAILWIND_RAKE = <<~RAKE unless defined?(TAILWIND_RAKE)
 RAKE
 
 def setup_stylesheet
-  require_dependencies 'tailwindcss-ruby'
+  require_dependencies 'tailwindcss-ruby', version: '~> 4.0'
   # Tailwind writes its build to public/stylesheets/application.css, so carry
   # any hand-written styles there over into a new source file instead of losing them.
   # Once the source exists, that file is build output and must not be merged again.
