@@ -52,6 +52,14 @@ describe 'ComponentGenerator' do
       assert File.exist?("#{@apptmp}/sample_project/public/stylesheets/application.css")
     end
 
+    it 'should append the tailwind watcher to Procfile.dev once' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/Procfile.dev", "web: bundle exec padrino start\nvite: bundle exec vite dev\n")
+      2.times { capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") } }
+      assert_equal "web: bundle exec padrino start\nvite: bundle exec vite dev\ncss: bundle exec rake tailwind:watch\n", File.read("#{@apptmp}/sample_project/Procfile.dev")
+      assert_equal 1, File.read("#{@apptmp}/sample_project/.gitignore").scan(%r{^public/stylesheets/application\.css$}).size
+    end
+
     it 'should properly generate with adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       out, = capture_io { generate(:component, '--orm=sequel', '--adapter=postgres', "-r=#{@apptmp}/sample_project") }
