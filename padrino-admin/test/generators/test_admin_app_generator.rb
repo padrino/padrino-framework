@@ -26,6 +26,12 @@ describe 'AdminAppGenerator' do
       assert_raises(SystemExit) { @out, @err = capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
     end
 
+    it 'should generate the account model test with the project test_config path' do
+      capture_io { generate(:project, 'sample_project', '-e=haml', "--root=#{@apptmp}", '-d=activerecord', '-t=minitest') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file %r{__dir__\}/\.\./test_config\.rb}, "#{@apptmp}/sample_project/test/models/account_test.rb"
+    end
+
     it 'should store and apply session_secret' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
       assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
