@@ -104,6 +104,7 @@ module Padrino
         #
         def allowed?(account = nil, path = nil)
           path = '/' if path.nil? || path.empty?
+          path = Rack::Utils.unescape_path(path.b).force_encoding(Encoding::UTF_8) # compare the decoded path
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq
@@ -118,9 +119,19 @@ module Padrino
             denied_paths  += authorizations.map(&:allowed).flatten.uniq # remove paths explicitly allowed for other roles
             denied_paths  += authorizations.map(&:denied).flatten.uniq # remove paths explicitly denied to other roles
           end
-          return true  if allowed_paths.any? { |p| path.start_with?(p) }
-          return false if denied_paths.any?  { |p| path.start_with?(p) }
+          return true  if allowed_paths.any? { |p| path_within?(path, p) }
+          return false if denied_paths.any?  { |p| path.start_with?(p) } # loose on purpose: fails closed
           true
+        end
+
+        private
+
+        # An allowed path covers itself, its sub-paths and its formats ('/posts' allows '/posts',
+        # '/posts/1' and '/posts.json'), but not unrelated paths that merely start with it ('/posts_admin').
+        def path_within?(path, prefix)
+          return path.start_with?(prefix) if prefix.end_with?('/', '.')
+
+          path == prefix || path.start_with?("#{prefix}/", "#{prefix}.")
         end
       end
 
