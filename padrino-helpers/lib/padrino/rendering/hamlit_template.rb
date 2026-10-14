@@ -20,7 +20,7 @@ module Padrino
       include SafeTemplate
 
       def precompiled_preamble(locals)
-        "__in_hamlit_template = true\n" << super
+        "__in_hamlit_template = true\n#{super}"
       end
     end
   end

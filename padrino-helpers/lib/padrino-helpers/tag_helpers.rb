@@ -278,7 +278,7 @@ module Padrino
       def tag_attributes(options)
         return '' unless options
 
-        options.inject('') do |all, (key, value)|
+        options.inject(+'') do |all, (key, value)|
           next all unless value
 
           all << ' ' if all.empty?
@@ -305,7 +305,7 @@ module Padrino
       # Iterate through nested values.
       #
       def nested_values(attribute, hash)
-        hash.inject('') do |all, (key, value)|
+        hash.inject(+'') do |all, (key, value)|
           attribute_with_name = "#{attribute}-#{key.to_s.tr('_', '-')}"
           all <<
             if value.is_a?(Hash)
