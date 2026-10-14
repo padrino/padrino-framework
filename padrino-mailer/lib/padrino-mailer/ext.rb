@@ -5,6 +5,7 @@ module Mail # @private
     include Sinatra::Templates
     include Padrino::Rendering if defined?(Padrino::Rendering)
     include Padrino::Helpers::RenderHelpers if defined? Padrino::Helpers::RenderHelpers
+    include Padrino::Helpers if defined?(Padrino::Helpers)
     attr_reader :template_cache
     attr_accessor :mailer_name, :message_name
 
