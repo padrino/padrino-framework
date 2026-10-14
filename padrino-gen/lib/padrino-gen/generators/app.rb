@@ -43,7 +43,7 @@ module Padrino
             elsif !options[:force]
               say "#{@app_name} already exists."
               say 'Please, change the name.'
-              return
+              exit 1
             end
           end
 
@@ -67,7 +67,7 @@ module Padrino
           say "This application has been mounted to /#{@app_name.downcase}"
           say "You can configure a different path by editing 'config/apps.rb'"
         else
-          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+          exit_outside_app_root!
         end
       end
     end

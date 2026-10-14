@@ -17,9 +17,16 @@ describe 'ControllerGenerator' do
 
   describe 'the controller generator' do
     it 'should fail outside app root' do
-      out, = capture_io { generate(:controller, 'demo', "-r=#{@apptmp}") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:controller, 'demo', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/app/controllers/demo.rb")
+    end
+
+    it 'should fail if the app does not exist' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:controller, 'demo', '-a=nosuchapp', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Unable to locate 'Nosuchapp' application/, out)
+      assert_no_file_exists("#{@apptmp}/sample_project/nosuchapp/controllers/demo.rb")
     end
 
     it 'should fail with NameError if given invalid namespace names' do

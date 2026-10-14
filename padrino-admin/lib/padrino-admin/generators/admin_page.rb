@@ -44,6 +44,7 @@ module Padrino
           @app_name = fetch_app_name
           @admin_name = options[:admin_name].classify
           @admin_path = options[:admin_name].underscore
+          check_app_existence(@admin_path)
           @admin_model = options[:admin_model]
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)
@@ -63,7 +64,7 @@ module Padrino
             options[:destroy] ? remove_project_module(@orm.name_plural) : add_project_module(@orm.name_plural)
           end
         else
-          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+          exit_outside_app_root!
         end
       end
     end

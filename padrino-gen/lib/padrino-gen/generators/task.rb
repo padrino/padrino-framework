@@ -37,7 +37,7 @@ module Padrino
 
           template 'templates/task.rb.tt', destination_root('tasks', filename)
         else
-          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+          exit_outside_app_root!
         end
       end
     end

@@ -43,10 +43,14 @@ module Padrino
         generator_class = Padrino::Generators.mappings[generator_kind]
 
         if generator_class
-          args = ARGV.empty? && generator_class.require_arguments? ? ['-h'] : ARGV
-          generator_class.start(args)
+          if ARGV.empty? && generator_class.require_arguments?
+            generator_class.start(['-h'])
+            exit 1
+          end
+          generator_class.start(ARGV)
         else
           puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(', ')})"
+          exit 1 unless generator_kind == :help
         end
       end
     end

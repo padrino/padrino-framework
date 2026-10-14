@@ -43,6 +43,22 @@ describe 'Padrino::Cli' do
     assert_includes out.lines.map(&:strip), 'URL /runner/hello'
   end
 
+  it 'should load the models in the rake environment task after a skeleton task' do
+    out, err, status = run_in_project(<<~RUBY)
+      require 'rake'
+      FileUtils.mkdir_p('models')
+      File.write('models/widget.rb', "class Widget; end\\n")
+      load 'padrino-core/cli/rake_tasks.rb'
+      Rake::Task[:skeleton].invoke
+      puts "SKELETON \#{defined?(Widget).inspect}"
+      Rake::Task[:environment].invoke
+      puts "ENVIRONMENT \#{defined?(Widget).inspect}"
+    RUBY
+    assert status.success?, err
+    assert_includes out.lines.map(&:strip), 'SKELETON nil'
+    assert_includes out.lines.map(&:strip), 'ENVIRONMENT "constant"'
+  end
+
   it 'should set up the mounted apps with their mount path in the rake environment task' do
     out, err, status = run_in_project(<<~RUBY)
       require 'rake'

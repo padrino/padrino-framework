@@ -15,7 +15,7 @@ describe 'ComponentGenerator' do
 
   describe 'the controller generator' do
     it 'should fail outside app root' do
-      out, = capture_io { generate(:component, 'demo', "-r=#{@apptmp}") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, 'demo', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
     end
   end
@@ -194,7 +194,7 @@ describe 'ComponentGenerator' do
 
     it 'should not generate component in specified app if the app does not exist' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      out, = capture_io { generate_with_parts(:component, '--test=cucumber', '--app=compo', "-r=#{@apptmp}/sample_project", apps: 'compo') }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate_with_parts(:component, '--test=cucumber', '--app=compo', "-r=#{@apptmp}/sample_project", apps: 'compo') }.status }
       assert_match(/SampleProject::Compo does not exist./, out)
       assert_no_file_exists("#{@apptmp}/sample_project/features")
     end

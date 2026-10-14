@@ -63,6 +63,7 @@ class Minitest::Spec
     end
 
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
+  ensure
     ($LOADED_FEATURES - features).each { |x| $LOADED_FEATURES.delete(x) }
     (Object.constants - constants).each { |constant| Object.instance_eval { remove_const(constant) } }
   end
