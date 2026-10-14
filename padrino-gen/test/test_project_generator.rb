@@ -14,6 +14,12 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the project generator' do
+    it 'should set SameSite=Lax on the session cookie' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      assert_match_in_file(/^    set :sessions, same_site: :lax$/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_no_match_in_file(/^\s*enable :sessions/, "#{@apptmp}/sample_project/app/app.rb")
+    end
+
     it 'should allow simple generator to run and create base_app with no options' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       assert_dir_exists("#{@apptmp}/sample_project")
@@ -262,6 +268,35 @@ describe 'ProjectGenerator' do
       assert_match(/applying.*?mocha.*?mock/, out)
       assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/conf.mock_with :mocha/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+    end
+
+    it 'should load the mocha minitest integration for minitest' do
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      assert_match(/applying.*?mocha.*?mock/, out)
+      assert_match_in_file(/gem 'mocha', group: 'test', require: false/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(%r{^require_relative '../config/boot'\nrequire 'mocha/minitest'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_no_match_in_file(/Mocha::API/, "#{@apptmp}/sample_project/test/test_config.rb")
+    end
+
+    it 'should load the mocha test-unit integration for testunit' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=testunit', '--mock=mocha', '--script=none') }
+      assert_match_in_file(%r{^require_relative '../config/boot'\nrequire 'mocha/test_unit'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_no_match_in_file(/Mocha::API/, "#{@apptmp}/sample_project/test/test_config.rb")
+    end
+
+    it 'should load the mocha test-unit integration after test/unit for shoulda' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=shoulda', '--mock=mocha', '--script=none') }
+      assert_match_in_file(%r{^require "test/unit"\nrequire 'mocha/test_unit'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_no_match_in_file(/Mocha::API/, "#{@apptmp}/sample_project/test/test_config.rb")
+    end
+
+    it 'should explain how to set up mocha for test components without a mocha integration' do
+      %w[bacon cucumber none].each do |test|
+        out, = capture_io { generate(:project, "project_#{test}", "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
+        assert_match(/Mocha is in the Gemfile but not set up for the '#{test}' test component/, out)
+        assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/project_#{test}/Gemfile")
+      end
+      assert_no_match_in_file(/mocha|Mocha/, "#{@apptmp}/project_bacon/test/test_config.rb")
     end
   end
 

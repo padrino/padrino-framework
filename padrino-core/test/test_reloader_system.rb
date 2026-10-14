@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'tmpdir'
 
 # Reloading outside development needs tracking enabled before the apps load.
 Padrino::Reloader.enabled = true
@@ -122,6 +123,34 @@ describe 'SystemReloader' do
       get '/'
       FileUtils.touch File.expand_path("#{__dir__}/fixtures/apps/stealthy/helpers/stealthy_class_helpers.rb")
       Padrino.reload!
+    end
+
+    it 'should keep method-less external constants first required from an app file' do
+      gem_dir = Dir.mktmpdir
+      File.write(File.join(gem_dir, 'padrino_reloader_fake_gem.rb'), <<-DOC)
+        module PadrinoReloaderFakeGem
+          class Error < StandardError
+          end
+        end
+      DOC
+      $LOAD_PATH.unshift(gem_dir)
+      begin
+        Padrino.clear!
+        require File.expand_path("#{__dir__}/fixtures/apps/external_constants/app.rb")
+        @app = SystemExternalConstantsDemo
+        Padrino.mount(SystemExternalConstantsDemo).to('/')
+        get '/'
+        assert defined?(PadrinoReloaderFakeGem::Error), 'PadrinoReloaderFakeGem::Error was removed by the first reload'
+        app_error = ExternalConstantsAppError
+        FileUtils.touch File.expand_path("#{__dir__}/fixtures/apps/external_constants/helpers/external_constants_helpers.rb")
+        Padrino.reload!
+        assert defined?(PadrinoReloaderFakeGem::Error), 'PadrinoReloaderFakeGem::Error was removed on reload'
+        assert defined?(ExternalConstantsAppError), 'ExternalConstantsAppError undefined'
+        refute_same app_error, ExternalConstantsAppError, 'ExternalConstantsAppError was not reloaded'
+      ensure
+        $LOAD_PATH.delete(gem_dir)
+        FileUtils.rm_rf(gem_dir)
+      end
     end
   end
 
