@@ -104,6 +104,7 @@ module Padrino
         #
         def allowed?(account = nil, path = nil)
           path = '/' if path.nil? || path.empty?
+          path = Rack::Utils.unescape_path(path) # compare the path as the router matches it
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq
@@ -128,7 +129,7 @@ module Padrino
         # An allowed path covers itself, its sub-paths and its formats ('/posts' allows '/posts',
         # '/posts/1' and '/posts.json'), but not unrelated paths that merely start with it ('/posts_admin').
         def path_within?(path, prefix)
-          return path.start_with?(prefix) if prefix.end_with?('/')
+          return path.start_with?(prefix) if prefix.end_with?('/', '.')
 
           path == prefix || path.start_with?("#{prefix}/", "#{prefix}.")
         end

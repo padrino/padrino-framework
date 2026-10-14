@@ -210,6 +210,10 @@ describe 'AdminApplication' do
     assert @app.access_control.allowed?(Account.editor, '/posts/1/edit')
     refute @app.access_control.allowed?(Account.editor, '/posts_admin')
     assert @app.access_control.allowed?(Account.admin, '/posts_admin')
+
+    # Paths are compared as the router sees them, after percent-decoding.
+    refute @app.access_control.allowed?(Account.editor, '/%70osts_admin')
+    assert @app.access_control.allowed?(Account.editor, '/%70osts')
   end
 
   it 'should emulate an ecommerce app' do
