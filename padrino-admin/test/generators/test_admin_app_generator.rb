@@ -77,6 +77,13 @@ describe 'AdminAppGenerator' do
       assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
+    it 'should set SameSite=Lax on the admin session cookie' do
+      capture_io { generate(:project, 'sample_project', '-e=haml', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/^    set :sessions, same_site: :lax$/, "#{@apptmp}/sample_project/admin/app.rb")
+      assert_no_match_in_file(/^\s*enable\s+:sessions/, "#{@apptmp}/sample_project/admin/app.rb")
+    end
+
     it 'should generate the admin app' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
