@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2363 The development reloader keeps gem exception classes that were first required from an app file (@nesquena)
 - FIX #2362 A class-level layout given as an absolute path is applied instead of silently ignored (@nesquena)
 - NEW #2359 Generated projects set SameSite=Lax on the session cookie (@nesquena)
 - FIX #2360 Projects generated with --mock=mocha load mocha's integration for their test framework (they failed to load in 0.16) (@nesquena)
