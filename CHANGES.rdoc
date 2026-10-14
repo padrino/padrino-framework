@@ -3,6 +3,12 @@
 == Unreleased
 
 - FIX #2346 Mailer templates: cached templates are keyed by views path (no Errno::ENOENT when two mailers share a template name in production), and `partial`, `form_tag` and `button_to` work (@nesquena)
+- FIX #2338 Padrino runs with `--enable-frozen-string-literal` and no longer prints "literal string will be frozen" warnings on Ruby 3.4+ (@achiurizo)
+- FIX #2338 `Logger#<<`, `simple_format` and `url(..., fragment:)` no longer modify the strings passed to them or stored in routes (@achiurizo)
+- FIX #2338 padrino-mailer uses `Sinatra::TemplateCache` instead of the deprecated `Tilt::Cache` (@achiurizo)
+- FIX #2337 `padrino g project -b` works with Bundler 4: it runs `bundle install` and `bundle binstubs --all` instead of the removed `bundle install --binstubs` (@achiurizo)
+- FIX #2337 `padrino start --server_options` works with Rack 3 (@achiurizo)
+- FIX #2337 Constant removal on reload, `app_name` of mounted Sinatra apps and the `pluralize` helper work without padrino-gen or ActiveSupport loaded (@achiurizo)
 - FIX #2342 The development logger no longer warns "strftime called with empty format string" under `-w` (@achiurizo)
 - FIX #2342 The generated Gemfile states Ruby 2.7.8 as the minimum version (@achiurizo)
 - FIX #2192 `padrino g admin_page` raises a clear `OrmError` when the model does not match the project ORM (@achiurizo)
@@ -11,7 +17,7 @@
 - FIX #2170 `Padrino.logger = Logger.new($stdout)` works without `Padrino::Logger::Extensions`: a logger gets plain `devel`, `bench`, `exception` and `colorize` when it lacks them (@achiurizo)
 - SEC #2344 Static files are only served from inside the public folder, not from sibling folders whose names start with the same text (@nesquena)
 - FIX #2343 `padrino g project -s jquery` selects the script component again instead of the server (@achiurizo)
-- WARN #2343 `--server` no longer has the `-s` alias; use `--server=puma` instead of `-s puma`
+- WARN #2343 #2345 `-s` selects `--script` again, so `--server` has no short alias; `padrino g project -s puma` now stops with a hint to use `--server=puma`
 - FIX #2340 Mailer views path no longer breaks when the app path contains the mailer name, and no longer leaks between messages delivered concurrently (@achiurizo)
 - FIX #2340 Padrino view helpers (`link_to` etc.) are available in mailer templates (@achiurizo)
 - NEW #2331 Faster boot outside development: files are no longer tracked for reloading unless `Padrino::Reloader.enabled = true` (@osbre)

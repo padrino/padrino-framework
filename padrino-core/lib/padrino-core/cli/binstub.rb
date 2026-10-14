@@ -21,7 +21,7 @@ module Padrino
     if File.file?(binstub)
       exec Gem.ruby, binstub, *ARGV
     else
-      puts 'Please run `bundle install --binstubs` from your project root to generate bundle-specific executables'
+      puts 'Please run `bundle install && bundle binstubs --all` from your project root to generate bundle-specific executables'
       exit!
     end
   end

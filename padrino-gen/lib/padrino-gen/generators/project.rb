@@ -45,6 +45,10 @@ module Padrino
       #
       def setup_project
         valid_constant? name
+        # In 0.16.0 and 0.16.1 -s meant --server; stop before prompting for a script named after a server.
+        if %w[webrick thin puma falcon trinidad mongrel spider-gazelle].include?(options[:script].to_s)
+          raise "-s selects the javascript library (--script); use --server=#{options[:script]} to choose the HTTP server"
+        end
         app = options[:app] || 'App'
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
@@ -139,7 +143,7 @@ module Padrino
         say "#{name} is ready for development!", :green
         say '=' * 65, :green
         say "$ cd #{options[:root]}/#{name}"
-        say '$ bundle --binstubs' unless options[:bundle]
+        say '$ bundle install && bundle binstubs --all' unless options[:bundle]
         say '=' * 65, :green
         say
       end

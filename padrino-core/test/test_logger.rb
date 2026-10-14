@@ -72,6 +72,26 @@ describe 'PadrinoLogger' do
       assert_match(/Yep this can be logged/, @log.string)
     end
 
+    it 'should not mutate the message passed to #<<' do
+      setup_logger(log_level: :error)
+      message = +'not mutated'
+      @logger << message
+      assert_equal 'not mutated', message
+      assert_match(/not mutated\n/, @log.string)
+    end
+
+    it 'should not mutate or choke on a frozen message that already ends in a newline' do
+      setup_logger(log_level: :error, sanitize_encoding: 'windows-1251')
+      message = "ends in newline\n".b.freeze
+      unfrozen = "unfrozen\n".b
+      @logger << message
+      @logger << unfrozen
+      @logger << 'still logging'
+      assert_equal Encoding::BINARY, unfrozen.encoding
+      assert_match(/ends in newline\n/, @log.string)
+      assert_match(/still logging\n/, @log.string)
+    end
+
     it 'should respond to #write for Rack::CommonLogger' do
       setup_logger(log_level: :error)
       @logger.error 'Error message'
@@ -97,7 +117,7 @@ describe 'PadrinoLogger' do
 
     it 'should not blow up on mixed or broken encodings' do
       setup_logger(log_level: :error, auto_flush: false)
-      binary_data = "\xD0".force_encoding('BINARY')
+      binary_data = "\xD0".b
       utf8_data = 'фыв'
       @logger.error binary_data
       @logger.error utf8_data
@@ -110,7 +130,7 @@ describe 'PadrinoLogger' do
       encoding = 'windows-1251'
       setup_logger(log_level: :error, auto_flush: false, sanitize_encoding: encoding)
       @log.string.encode! encoding
-      binary_data = "\xD0".force_encoding('BINARY')
+      binary_data = "\xD0".b
       utf8_data = 'фыв'
       @logger.error binary_data
       @logger.error utf8_data
