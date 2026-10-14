@@ -371,11 +371,15 @@ module Padrino
     # Defines the {Fallbacks} methods a logger does not have yet.
     #
     def self.add_fallbacks(logger)
-      missing = Fallbacks.instance_methods.reject { |name| logger.respond_to?(name, true) }
+      return if logger.nil?
+
+      missing = Fallbacks.instance_methods.reject { |name| logger.respond_to?(name) }
       return if missing.empty?
       return warn("WARNING! Padrino.logger is frozen and lacks #{missing.join(', ')}, logging from Padrino will fail.") if logger.frozen?
 
-      missing.each { |name| logger.define_singleton_method(name, Fallbacks.instance_method(name)) }
+      fallbacks = ::Module.new
+      missing.each { |name| fallbacks.send(:define_method, name, Fallbacks.instance_method(name)) }
+      logger.extend(fallbacks)
     end
 
     ##

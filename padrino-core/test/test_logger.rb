@@ -300,6 +300,31 @@ describe 'stdlib logger without Padrino::Logger::Extensions' do
     Padrino.logger.exception(Exception.new('scary message'))
     assert_equal 'custom exception', @log.string
   end
+
+  it 'should use Padrino formatting when the logger is extended after being assigned' do
+    Padrino.logger.extend(Padrino::Logger::Extensions)
+    Padrino.logger.colorize!
+    Padrino.logger.bench('GET', Time.now, '/blog')
+    assert_match(%r{\e\[0;33m +GET\e\[0m}, @log.string)
+  end
+
+  it 'should add a public fallback when the logger only has a private one' do
+    custom = Class.new(Logger) do
+      def bench(*)
+        raise 'private bench called'
+      end
+      private :bench
+    end.new(@log)
+    custom.formatter = proc { |_, _, _, message| "#{message}\n" }
+    capture_io { Padrino.logger = custom }
+    Padrino.logger.bench('GET', Time.now, '/blog')
+    assert_match(%r{GET \(\d+\.\d+s\) /blog}, @log.string)
+  end
+
+  it 'should not warn when the logger is reset to the default' do
+    _, err = capture_io { Padrino.logger = nil }
+    assert_empty err
+  end
 end
 
 describe 'alternate logger: stdlib logger' do
