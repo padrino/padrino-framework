@@ -55,7 +55,7 @@ module Padrino
         require 'padrino-gen/command'
         ARGV.shift
         ARGV << 'help' if ARGV.empty?
-        Padrino.bin_gen(*ARGV)
+        exit 1 unless Padrino.bin_gen(*ARGV)
       rescue StandardError
         puts '<= You need padrino-gen! Run: gem install padrino-gen'
       end

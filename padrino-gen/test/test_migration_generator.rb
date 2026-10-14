@@ -12,7 +12,7 @@ describe 'MigrationGenerator' do
 
   describe 'the migration generator' do
     it 'should fail outside app root' do
-      out, = capture_io { generate(:migration, 'add_email_to_users', '-r=/tmp') }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'add_email_to_users', '-r=/tmp') }.status }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/db/migrate")
     end
@@ -24,7 +24,8 @@ describe 'MigrationGenerator' do
 
     it 'should fail if we do not use an adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
-      assert_raises(SystemExit) { capture_io { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") } }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/You need an ORM adapter/, out)
     end
 
     it 'should generate migration inside app root' do

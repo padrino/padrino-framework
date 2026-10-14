@@ -240,6 +240,14 @@ module Padrino
       end
 
       ##
+      # Says that the generator must run at the root of a Padrino application and exits with status 1.
+      #
+      def exit_outside_app_root!
+        say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+        exit 1
+      end
+
+      ##
       # Returns true if constant name already exists.
       #
       def already_exists?(name, project_name = nil)
@@ -479,7 +487,7 @@ module Padrino
       end
 
       ##
-      # Raise SystemExit if the app does not exist.
+      # Exits with status 1 if the app does not exist.
       #
       # @param [String] app
       #   Directory name of application.
@@ -495,7 +503,7 @@ module Padrino
         say "Unable to locate '#{app.underscore.camelize}' application        "
         say '================================================================='
         say
-        raise SystemExit
+        exit 1
       end
 
       ##
@@ -635,6 +643,13 @@ module Padrino
         #
         def require_arguments?
           @require_arguments
+        end
+
+        ##
+        # Tells Thor to exit with status 1 when it rejects the arguments, e.g. a missing required argument.
+        #
+        def exit_on_failure?
+          true
         end
 
         ##

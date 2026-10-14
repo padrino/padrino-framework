@@ -17,6 +17,18 @@ describe 'PluginGenerator' do
       out, _err = capture_io { generate(:plugin, path, "--root=#{@apptmp}/sample_project") }
       refute_match(/You are not at the root/, out)
     end
+
+    it 'should fail outside app root' do
+      path = File.expand_path('fixtures/plugin_template.rb', __dir__)
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:plugin, path, "--root=#{@apptmp}") }.status }
+      assert_match(/not at the root/, out)
+    end
+
+    it 'should fail if the project template cannot be loaded' do
+      path = "#{@apptmp}/missing_template.rb"
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:project, 'sample_project', "--template=#{path}", "--root=#{@apptmp}") }.status }
+      assert_match(/The template at #{path} could not be loaded/, out)
+    end
   end
 
   describe 'the plugin destroy option' do
@@ -55,6 +67,14 @@ describe 'PluginGenerator' do
       out, = capture_subprocess_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{template_path}") }
       refute_match(/could not be loaded/, out)
       assert_match_in_file(/class Post < Sequel::Model/, "#{@apptmp}/sample_project/models/post.rb")
+    end
+
+    it 'should let a template check whether app succeeded' do
+      template_path = "#{@apptmp}/app_result_template.rb"
+      File.write(template_path, "project orm: :none\nputs(app(:blog) ? 'FIRST OK' : 'FIRST FAILED')\nputs(app(:blog) ? 'AGAIN OK' : 'AGAIN FAILED')\n")
+      out, = capture_subprocess_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{template_path}") }
+      assert_match(/^FIRST OK$/, out)
+      assert_match(/^AGAIN FAILED$/, out)
     end
 
     it 'should generate a sub app named with a Symbol' do
@@ -118,7 +138,7 @@ describe 'PluginGenerator' do
       plugin_gen.expects(:in_app_root?).returns(true).once
       # Use regex to ignore trailing whitespace in message
       plugin_gen.expects(:say).with { |message, color| (message =~ /The template at #{resolved_path} could not be loaded:.*404.*/) && (color == :red) }.returns(true).once
-      capture_io { plugin_gen.invoke_all }
+      capture_io { assert_equal 1, assert_raises(SystemExit) { plugin_gen.invoke_all }.status }
     end
   end
 

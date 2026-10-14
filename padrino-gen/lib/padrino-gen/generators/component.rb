@@ -41,6 +41,7 @@ module Padrino
             exit
           end
 
+          missing_app = false
           self.class.component_types.each do |comp|
             next if @_components[comp].empty?
 
@@ -53,6 +54,7 @@ module Padrino
             if comp.to_s == 'test' && !already_exists?(@app_name, @project_name)
               say "#{@project_name}::#{@app_name} does not exist."
               say 'Please, change app name.'
+              missing_app = true
               next
             end
 
@@ -63,8 +65,9 @@ module Padrino
               inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", before: 'PadrinoTasks.init'
             end
           end
+          exit 1 if missing_app
         else
-          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+          exit_outside_app_root!
         end
       end
     end
