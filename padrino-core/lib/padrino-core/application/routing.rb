@@ -341,7 +341,7 @@ module Padrino
         params = args.last.is_a?(Hash) ? args.pop : {}
         fragment = params.delete(:fragment) || params.delete(:anchor)
         path = make_path_with_params(args, value_to_param(params))
-        rebase_url(fragment ? path << '#' << fragment.to_s : path)
+        rebase_url(fragment ? "#{path}##{fragment}" : path)
       end
       alias url_for url
 
@@ -605,7 +605,7 @@ module Padrino
         # Build our controller
         controller = Array(@_controller).map(&:to_s)
 
-        path = path.dup if path.is_a?(String) && path.frozen?
+        path = path.dup if path.is_a?(String)
 
         case path
         when String # path i.e "/index" or "/show"
@@ -862,8 +862,10 @@ module Padrino
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
         public_dir = File.expand_path(public_dir)
-        path = File.expand_path(public_dir + unescape(path_info))
-        return unless path.start_with?(public_dir)
+        path = "#{public_dir}#{unescape(path_info)}"
+        return unless Rack::Utils.valid_path?(path)
+        path = File.expand_path(path)
+        return unless path.start_with?("#{public_dir}/")
         return unless File.file?(path)
         path
       end

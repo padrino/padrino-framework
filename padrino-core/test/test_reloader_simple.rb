@@ -136,4 +136,17 @@ describe 'SimpleReloader' do
       end
     end
   end
+
+  describe 'for removing constants' do
+    it 'should remove a namespaced constant without String inflections' do
+      module ::ReloaderNamespace
+        class Inner; end
+      end
+
+      without_string_inflections { Padrino::Reloader.remove_constant(ReloaderNamespace::Inner) }
+      refute ReloaderNamespace.const_defined?(:Inner, false)
+    ensure
+      Object.send(:remove_const, :ReloaderNamespace)
+    end
+  end
 end

@@ -111,7 +111,7 @@ module Padrino
       #
       def fetch_layout_path(given_layout, layouts_path = views)
         layout_name = (given_layout || @layout || :application).to_s
-        cache_layout_path(layout_name) do
+        cache_layout_path([layouts_path.to_s, layout_name]) do
           if Pathname.new(layout_name).absolute? && Dir["#{layout_name}.*"].any? || Dir["#{layouts_path}/#{layout_name}.*"].any?
             layout_name
           else
@@ -132,12 +132,12 @@ module Padrino
       def cache_template_path(options)
         began_at = Time.now
         @_cached_templates ||= {}
-        logging = defined?(settings) && settings.logging? && defined?(logger)
+        logging = defined?(settings) && settings.logging? && defined?(logger) && logger.respond_to?(:bench) && logger.debug?
         if !reload_templates? && (path = @_cached_templates[options])
-          logger.debug :cached, began_at, path[0] if logging
+          logger.bench :cached, began_at, path[0] if logging
         else
-          path = @_cached_templates[options] = yield(name)
-          logger.debug :template, began_at, path[0] if path && logging
+          path = @_cached_templates[options] = yield
+          logger.bench :template, began_at, path[0] if path && logging
         end
         path
       end
@@ -293,11 +293,10 @@ module Padrino
         template_path = template_path.to_s
         controller_key = respond_to?(:request) && request.respond_to?(:controller) && request.controller
         rendering_options = [template_path, content_type || :html, locale]
+        options = DEFAULT_RENDERING_OPTIONS.merge(options)
+        view_path = options[:views] || settings.views || './views'
 
-        settings.cache_template_path(["#{controller_key}/#{template_path}", rendering_options[1], rendering_options[2]]) do
-          options = DEFAULT_RENDERING_OPTIONS.merge(options)
-          view_path = options[:views] || settings.views || './views'
-
+        settings.cache_template_path([view_path.to_s, "#{controller_key}/#{template_path}", rendering_options[1], rendering_options[2]]) do
           template_candidates = glob_templates(view_path, template_path)
           selected_template = select_template(template_candidates, *rendering_options)
           selected_template ||= template_candidates.first unless options[:strict_format]
@@ -319,7 +318,7 @@ module Padrino
         template_path = settings.fetch_layout_path(layout, layouts_path)
         rendering_options = [template_path, content_type || :html, locale]
 
-        settings.cache_template_path(rendering_options) do
+        settings.cache_template_path([layouts_path.to_s, *rendering_options]) do
           template_candidates = glob_templates(layouts_path, template_path)
           selected_template = select_template(template_candidates, *rendering_options)
 

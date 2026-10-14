@@ -8,7 +8,7 @@ SEQUEL = <<~SEQUEL unless defined?(SEQUEL)
 SEQUEL
 
 def setup_orm
-  sequel = SEQUEL
+  sequel = SEQUEL.dup
   db = @project_name.underscore
   require_dependencies 'sequel'
 

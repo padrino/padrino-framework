@@ -39,6 +39,13 @@ describe 'FormatHelpers' do
       assert_equal "<p>Don't try to escape <b>me</b>!</p>", actual_text
     end
 
+    it 'should not modify already sanitized text it is given' do
+      text = "Keep me\nas I am".html_safe
+      simple_format(text)
+      assert_equal "Keep me\nas I am", text
+      assert_equal "<p>Keep me\n<br />as I am</p>", simple_format(text.freeze)
+    end
+
     describe 'wrapped in a custom tag' do
       it 'should format simple text into html format' do
         actual_text = simple_format("Here is some basic text...\n...with a line break.", tag: :div)
@@ -53,6 +60,28 @@ describe 'FormatHelpers' do
       it 'should support defining a class for the paragraphs' do
         actual_text = simple_format('Look me! A class!', class: 'description', tag: :div)
         assert_equal '<div class="description">Look me! A class!</div>', actual_text
+      end
+    end
+  end
+
+  describe 'for #pluralize method' do
+    it 'should pluralize with the given count' do
+      assert_equal '1 person', pluralize(1, 'person')
+      assert_equal '2 people', pluralize(2, 'person')
+      assert_equal '2 folks', pluralize(2, 'person', 'folks')
+    end
+
+    it 'should pluralize without String#pluralize from ActiveSupport or padrino-gen' do
+      hidden = String.method_defined?(:pluralize)
+      if hidden
+        String.send(:alias_method, :__hidden_pluralize, :pluralize)
+        String.send(:remove_method, :pluralize)
+      end
+      assert_equal '2 items', pluralize(2, 'item')
+    ensure
+      if hidden
+        String.send(:alias_method, :pluralize, :__hidden_pluralize)
+        String.send(:remove_method, :__hidden_pluralize)
       end
     end
   end

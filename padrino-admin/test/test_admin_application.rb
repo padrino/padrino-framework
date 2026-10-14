@@ -299,4 +299,11 @@ describe 'AdminApplication' do
     assert_equal '/foo', app1.access_control.project_modules(:any).first.path
     assert_equal '/bar', app2.access_control.project_modules(:any).first.path
   end
+
+  it 'should raise AccessControlError for invalid roles' do
+    access_control = Padrino::Admin::AccessControl::Base.new
+    error = assert_raises(Padrino::Admin::AccessControlError) { access_control.roles_for('admin') }
+    assert_match(/"admin"/, error.message)
+    assert_raises(Padrino::Admin::AccessControlError) { access_control.roles_for }
+  end
 end
