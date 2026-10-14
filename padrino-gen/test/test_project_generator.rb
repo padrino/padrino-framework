@@ -487,6 +487,13 @@ describe 'ProjectGenerator' do
       assert_no_match_in_file(/gem 'jquery'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
+    it 'should point -s with a server name at --server instead of prompting' do
+      Padrino::Generators::Project.any_instance.stubs(:ask).raises('prompted for a script')
+      error = assert_raises(RuntimeError) { generate(:project, 'sample_project', "--root=#{@apptmp}", '-s', 'puma') }
+      assert_match(/--server=puma/, error.message)
+      assert_no_dir_exists("#{@apptmp}/sample_project")
+    end
+
     it 'should properly generate for mootools' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=mootools') }
       assert_match(/applying.*?mootools.*?script/, out)
