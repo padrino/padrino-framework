@@ -1,7 +1,7 @@
 BACON_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
   require_relative '../config/boot'
-  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
+  Padrino.mounted_apps.each { |app| Padrino.require_dependencies(File.join(app.app_root, '{helpers.rb,helpers/**/*.rb}')) }
 
   class Bacon::Context
     include Rack::Test::Methods
