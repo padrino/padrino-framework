@@ -78,6 +78,13 @@ describe 'ComponentGenerator' do
       assert_equal "# edited\n", File.read(rakefile)
     end
 
+    it 'should tell to remove the old stylesheet engine when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_match(%r{Switching from scss: .* remove them from Gemfile, app/app\.rb and config/initializers/scss\.rb\.}, out)
+    end
+
     it 'should append the tailwind watcher to Procfile.dev once' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/Procfile.dev", "web: bundle exec padrino start\nvite: bundle exec vite dev\n")

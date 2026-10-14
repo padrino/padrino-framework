@@ -63,6 +63,12 @@ def setup_stylesheet
   gitignore = destination_root('.gitignore')
   append_line.call(gitignore, "public/stylesheets/application.css\n") if File.exist?(gitignore)
 
+  previous = fetch_component_choice(:stylesheet).to_s
+  if %w[sass scss less].include?(previous)
+    say "Switching from #{previous}: its gems and initializer remain and also write public/stylesheets/application.css, " \
+        "so remove them from Gemfile, app/app.rb and config/initializers/#{previous}.rb.", :yellow
+  end
+
   renderer = fetch_component_choice(:renderer).to_s
   renderer = 'erb' unless %w[haml slim].include?(renderer)
   tag = renderer == 'erb' ? "<%= stylesheet_link_tag 'application' %>" : "= stylesheet_link_tag 'application'"
