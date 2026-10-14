@@ -136,7 +136,7 @@ module Padrino
         if !reload_templates? && (path = @_cached_templates[options])
           logger.debug :cached, began_at, path[0] if logging
         else
-          path = @_cached_templates[options] = yield(name)
+          path = @_cached_templates[options] = yield
           logger.debug :template, began_at, path[0] if path && logging
         end
         path
