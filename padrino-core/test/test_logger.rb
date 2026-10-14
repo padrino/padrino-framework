@@ -80,6 +80,16 @@ describe 'PadrinoLogger' do
       assert_match(/not mutated\n/, @log.string)
     end
 
+    it 'should not mutate or choke on a frozen message that already ends in a newline' do
+      setup_logger(log_level: :error, sanitize_encoding: 'windows-1251')
+      message = "ends in newline\n".b.freeze
+      @logger << message
+      @logger << 'still logging'
+      assert_equal Encoding::BINARY, message.encoding
+      assert_match(/ends in newline\n/, @log.string)
+      assert_match(/still logging\n/, @log.string)
+    end
+
     it 'should respond to #write for Rack::CommonLogger' do
       setup_logger(log_level: :error)
       @logger.error 'Error message'

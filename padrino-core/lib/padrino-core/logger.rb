@@ -444,9 +444,9 @@ module Padrino
       self.class.mutex.synchronize do
         @buffer.each do |line|
           if @sanitize_encoding
-            line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace)
-          else
-            line.encode!(@log.external_encoding || Encoding::UTF_8, invalid: :replace, undef: :replace) unless line.encoding == Encoding::UTF_8
+            line = line.encode(@sanitize_encoding, invalid: :replace, undef: :replace)
+          elsif line.encoding != Encoding::UTF_8
+            line = line.encode(@log.external_encoding || Encoding::UTF_8, invalid: :replace, undef: :replace)
           end
           @log.write(line)
         end
