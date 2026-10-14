@@ -64,6 +64,8 @@ module Padrino
               path = Application.process_path_for_parent_params(path, [options[:parent]]).prepend('/')
             end
             path.prepend('/') unless path.start_with?('/')
+            mount_path = File.read(destination_root('config/apps.rb'))[/^Padrino\.mount\(\s*['"]#{Regexp.escape("#{@project_name}::#{@app_name}")}['"].*?\.to\(\s*['"]([^'"]+)['"]/, 1]
+            path.prepend(mount_path.chomp('/')) if mount_path
             generate_controller_test(name, path)
           end
 

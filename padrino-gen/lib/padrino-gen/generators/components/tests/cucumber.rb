@@ -3,7 +3,7 @@ apply_component_for(:rspec, :test)
 CUCUMBER_SETUP = <<~TEST unless defined?(CUCUMBER_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
   require_relative '../../config/boot'
-  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
+  Padrino.mounted_apps.each { |app| Dir[File.join(app.app_root, 'helpers/**/*.rb')].each(&method(:require)) }
 
   require 'capybara/cucumber'
   require 'rspec/expectations'

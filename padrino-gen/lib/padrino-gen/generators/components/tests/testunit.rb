@@ -1,7 +1,7 @@
 TESTUNIT_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
   require_relative '../config/boot'
-  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
+  Padrino.mounted_apps.each { |app| Dir[File.join(app.app_root, 'helpers/**/*.rb')].each(&method(:require)) }
 
   class Test::Unit::TestCase
     include Rack::Test::Methods
@@ -45,7 +45,7 @@ TESTUNIT_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_C
 
   class !NAME!ControllerTest < Test::Unit::TestCase
     def setup
-      get "/"
+      get "!EXPANDED_PATH!"
     end
 
     def test_returns_hello_world_text
@@ -92,7 +92,7 @@ def setup_test
 end
 
 def generate_controller_test(name, path)
-  test_unit_contents = TESTUNIT_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+  test_unit_contents = TESTUNIT_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, '1'))
   controller_test_path = File.join('test', options[:app], 'controllers', "#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), test_unit_contents, skip: true
 end
