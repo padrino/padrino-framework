@@ -41,6 +41,17 @@ describe 'ComponentGenerator' do
       refute File.exist?("#{@apptmp}/sample_project/public/stylesheets/application.css")
     end
 
+    it 'should keep the tailwind source when re-run after a build' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=tailwind') }
+      source = "#{@apptmp}/sample_project/app/stylesheets/application.css"
+      File.write(source, "@import \"tailwindcss\";\n.btn { @apply px-4 py-2; }\n")
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", ".btn{padding:1rem}\n")
+      Readline.stubs(:readline).returns('y')
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "@import \"tailwindcss\";\n.btn { @apply px-4 py-2; }\n", File.read(source)
+      assert File.exist?("#{@apptmp}/sample_project/public/stylesheets/application.css")
+    end
+
     it 'should properly generate with adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       out, = capture_io { generate(:component, '--orm=sequel', '--adapter=postgres', "-r=#{@apptmp}/sample_project") }

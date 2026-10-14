@@ -23,13 +23,15 @@ RAKE
 def setup_stylesheet
   require_dependencies 'tailwindcss-ruby'
   # Tailwind writes its build to public/stylesheets/application.css, so carry
-  # any hand-written styles there over into the source file instead of losing them.
+  # any hand-written styles there over into a new source file instead of losing them.
+  # Once the source exists, that file is build output and must not be merged again.
+  source = destination_root('app/stylesheets/application.css')
   existing = destination_root('public/stylesheets/application.css')
-  if File.exist?(existing)
-    create_file destination_root('app/stylesheets/application.css'), "#{TAILWIND_CSS}\n#{File.read(existing)}"
+  if !File.exist?(source) && File.exist?(existing)
+    create_file source, "#{TAILWIND_CSS}\n#{File.read(existing)}"
     remove_file existing
   else
-    create_file destination_root('app/stylesheets/application.css'), TAILWIND_CSS
+    create_file source, TAILWIND_CSS, skip: true
   end
   create_file destination_root('tasks/tailwind.rake'), TAILWIND_RAKE
 
