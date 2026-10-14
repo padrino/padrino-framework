@@ -4,7 +4,8 @@ module <%= @project_name %>
     register Padrino::Mailer
     register Padrino::Helpers
 <% end -%>
-    enable :sessions
+    set :sessions, same_site: :lax
+    # set :sessions, same_site: :lax, secure: true # Send the session cookie over HTTPS only
 
     ##
     # Caching support.
