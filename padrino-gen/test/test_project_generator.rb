@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'timeout'
 
 describe 'ProjectGenerator' do
   def setup
@@ -457,6 +458,33 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'dynamoid', '~>0.7.1'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/AWS.config/, "#{@apptmp}/sample_project/config/database.rb")
       assert_match_in_file(/Dynamoid.configure/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+  end
+
+  describe 'an invalid component option' do
+    def generate_without_terminal(*params)
+      $stdin.stubs(:tty?).returns(false)
+      Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
+      Timeout.timeout(30) { capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *params) } }
+    end
+
+    it 'should stop with the valid choices without a terminal' do
+      error = assert_raises(RuntimeError) { generate_without_terminal('--orm=bogus') }
+      assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
+    end
+
+    %w[sequel activerecord minirecord].each do |orm|
+      it "should stop with the valid #{orm} adapters without a terminal" do
+        error = assert_raises(RuntimeError) { generate_without_terminal("--orm=#{orm}", '--adapter=bogus') }
+        assert_match(/--adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite/, error.message)
+      end
+    end
+
+    it 'should still ask for a valid choice in a terminal' do
+      $stdin.stubs(:tty?).returns(true)
+      Thor::LineEditor.stubs(:readline).returns('sequel')
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=bogus') }
+      assert_match_in_file(/Sequel.connect/, "#{@apptmp}/sample_project/config/database.rb")
     end
   end
 

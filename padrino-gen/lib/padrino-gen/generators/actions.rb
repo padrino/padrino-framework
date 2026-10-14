@@ -152,9 +152,31 @@ module Padrino
         choice = options[component]
         until valid_choice?(component, choice)
           say("Option for --#{component} '#{choice}' is not available.", :red)
-          choice = ask("Please enter a valid option for #{component}:", limited_to: choices)
+          choice = ask_valid_option(component, choices, "Please enter a valid option for #{component}:")
         end
         choice
+      end
+
+      ##
+      # Asks for one of the valid choices of an option. Without a terminal there is
+      # nobody to answer, and Thor would repeat the prompt forever, so it raises instead.
+      #
+      # @param [Symbol] option
+      #   The name of the option.
+      # @param [Array<String>] choices
+      #   The valid choices for the option.
+      # @param [String] statement
+      #   The prompt to show.
+      #
+      # @return [String] The choice entered.
+      #
+      # @example
+      #   ask_valid_option(:adapter, %w[mysql sqlite], 'Please, choose a proper adapter:')
+      #
+      def ask_valid_option(option, choices, statement)
+        raise "No terminal to ask for a valid --#{option}; pass one of: #{choices.join(', ')}" unless $stdin.tty?
+
+        ask(statement, limited_to: choices)
       end
 
       ##

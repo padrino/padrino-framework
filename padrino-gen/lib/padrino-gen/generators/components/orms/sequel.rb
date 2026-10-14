@@ -39,7 +39,7 @@ def setup_orm
       raise ArgumentError
     end
   rescue ArgumentError
-    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask_valid_option(:adapter, %w[mysql mysql2 mysql-gem postgres sqlite], 'Please, choose a proper adapter:')
     retry
   end
 
