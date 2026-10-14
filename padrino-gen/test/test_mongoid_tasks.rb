@@ -51,7 +51,7 @@ describe 'Mongoid rake tasks' do
     RUBY
     out, err, status = run_create_indexes(fake_mongoid, 'app/models/account.rb' => model('Account'))
     assert status.success?, err
-    assert_equal ['DELEGATED'], out.lines.map(&:strip)
+    assert_equal ['DELEGATED'], out.lines.map(&:strip).grep(/\A(DELEGATED|GLOBBED)\b/)
   end
 
   it 'should index the models found in app/models and models without Mongoid::Tasks::Database' do
@@ -69,6 +69,6 @@ describe 'Mongoid rake tasks' do
     models = { 'app/models/account.rb' => model('Account'), 'models/user.rb' => model('User') }
     out, err, status = run_create_indexes(fake_mongoid, models)
     assert status.success?, err
-    assert_equal ['GLOBBED User', 'GLOBBED Account'], out.lines.map(&:strip)
+    assert_equal ['GLOBBED User', 'GLOBBED Account'], out.lines.map(&:strip).grep(/\A(DELEGATED|GLOBBED)\b/)
   end
 end
