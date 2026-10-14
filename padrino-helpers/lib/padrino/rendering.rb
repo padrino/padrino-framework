@@ -316,6 +316,10 @@ module Padrino
       def resolve_layout(layout, options = {})
         layouts_path = options[:layout_options] && options[:layout_options][:views] || options[:views] || settings.views || './views'
         template_path = settings.fetch_layout_path(layout, layouts_path)
+        if !layout && Pathname.new(template_path).absolute? && Dir["#{template_path}.*"].any?
+          layouts_path, _, template_path = template_path.rpartition('/')
+          options[:layout_options] = (options[:layout_options] || {}).merge(views: layouts_path)
+        end
         rendering_options = [template_path, content_type || :html, locale]
 
         settings.cache_template_path([layouts_path.to_s, *rendering_options]) do
