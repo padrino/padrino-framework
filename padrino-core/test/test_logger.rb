@@ -85,9 +85,12 @@ describe 'PadrinoLogger' do
     it 'should not warn about an empty datetime format' do
       setup_logger(log_level: :error, colorize_logging: false, format_datetime: '')
       verbose = $VERBOSE
-      $VERBOSE = true
-      _, err = capture_io { @logger.error 'no timestamp' }
-      $VERBOSE = verbose
+      begin
+        $VERBOSE = true
+        _, err = capture_io { @logger.error 'no timestamp' }
+      ensure
+        $VERBOSE = verbose
+      end
       assert_equal "  ERROR -  no timestamp\n", @log.string
       assert_empty err
     end
