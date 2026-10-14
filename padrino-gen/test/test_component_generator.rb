@@ -33,6 +33,115 @@ describe 'ComponentGenerator' do
       assert_equal 'activerecord', components_chosen[:orm]
     end
 
+    it 'should move existing public styles into the tailwind source' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "body { color: red; }\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/@import "tailwindcss";\n\nbody \{ color: red; \}/, "#{@apptmp}/sample_project/app/stylesheets/application.css")
+      refute File.exist?("#{@apptmp}/sample_project/public/stylesheets/application.css")
+    end
+
+    it 'should keep the charset and imports of moved public styles above tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "@charset \"UTF-8\";\n/* fonts */\n@import url(https://fonts.example.com/inter.css);\nbody { color: red; }\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      expected = "@charset \"UTF-8\";\n/* fonts */\n@import url(https://fonts.example.com/inter.css);\n@import \"tailwindcss\";\n\nbody { color: red; }\n"
+      assert_equal expected, File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+    end
+
+    it 'should keep imports of moved public styles resolving from public/stylesheets' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      css = "@import \"reset.css\";\n@import url('print.css') print;\n@import \"//cdn.example.com/x.css\";\n@import url(/base.css);\n.a { color: red; }\n"
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", css)
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      expected = "@import url(\"reset.css\");\n@import url('print.css') print;\n@import url(\"//cdn.example.com/x.css\");\n@import url(/base.css);\n" \
+                 "@import \"tailwindcss\";\n\n.a { color: red; }\n"
+      assert_equal expected, File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+    end
+
+    it 'should move public styles with a byte order mark or non-UTF-8 bytes into the tailwind source' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.binwrite("#{@apptmp}/sample_project/public/stylesheets/application.css", "\xEF\xBB\xBF@charset \"UTF-8\";\nbody { content: \"\xE9\"; }\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      expected = "@charset \"UTF-8\";\n@import \"tailwindcss\";\n\nbody { content: \"\xE9\"; }\n".b
+      assert_equal expected, File.binread("#{@apptmp}/sample_project/app/stylesheets/application.css")
+    end
+
+    it 'should keep the tailwind source when re-run after a build' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=tailwind') }
+      source = "#{@apptmp}/sample_project/app/stylesheets/application.css"
+      File.write(source, "@import \"tailwindcss\";\n.btn { @apply px-4 py-2; }\n")
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", ".btn{padding:1rem}\n")
+      Readline.stubs(:readline).returns('y')
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "@import \"tailwindcss\";\n.btn { @apply px-4 py-2; }\n", File.read(source)
+      assert File.exist?("#{@apptmp}/sample_project/public/stylesheets/application.css")
+    end
+
+    it 'should keep an edited tailwind rake file when applied again without a terminal' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=tailwind') }
+      rakefile = "#{@apptmp}/sample_project/tasks/tailwind.rake"
+      File.write(rakefile, "# edited\n")
+      Readline.stubs(:readline).returns(nil)
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "# edited\n", File.read(rakefile)
+    end
+
+    it 'should tell to remove the old stylesheet engine when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      File.write("#{@apptmp}/sample_project/app/stylesheets/application.scss", ".compiled { color: red; }\n")
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", ".compiled { color: red; }\n")
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "@import \"tailwindcss\";\n", File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+      assert_match(%r{Switching from scss: .* remove them from Gemfile, app/app\.rb and config/initializers/scss\.rb\.}, out)
+    end
+
+    it 'should move hand-written public styles when switching from scss without a scss source' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", ".handwritten { color: red; }\n")
+      Readline.stubs(:readline).returns('yes').once
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "@import \"tailwindcss\";\n\n.handwritten { color: red; }\n", File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+    end
+
+    it 'should not move compiled scss output when the project path has glob characters' do
+      root = "#{@apptmp}/projects [old]"
+      capture_io { generate(:project, 'sample_project', "--root=#{root}", '--stylesheet=scss') }
+      File.write("#{root}/sample_project/app/stylesheets/application.scss", ".compiled { color: red; }\n")
+      File.write("#{root}/sample_project/public/stylesheets/application.css", ".compiled { color: red; }\n")
+      Readline.stubs(:readline).returns('yes').once
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{root}/sample_project") }
+      assert_equal "@import \"tailwindcss\";\n", File.read("#{root}/sample_project/app/stylesheets/application.css")
+    end
+
+    it 'should append the tailwind watcher to Procfile.dev once' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/Procfile.dev", "web: bundle exec padrino start\nvite: bundle exec vite dev\n")
+      2.times { capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") } }
+      assert_equal "web: bundle exec padrino start\nvite: bundle exec vite dev\ncss: bundle exec rake tailwind:watch\n", File.read("#{@apptmp}/sample_project/Procfile.dev")
+      assert_equal 1, File.read("#{@apptmp}/sample_project/.gitignore").scan(%r{^public/stylesheets/application\.css$}).size
+    end
+
+    it 'should start the tailwind lines on a new line' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(procfile, 'web: bundle exec puma')
+      File.write(gitignore, '.env')
+      2.times { capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") } }
+      assert_equal "web: bundle exec puma\ncss: bundle exec rake tailwind:watch\n", File.read(procfile)
+      assert_equal ".env\npublic/stylesheets/application.css\n", File.read(gitignore)
+    end
+
+    it 'should keep a css process already in Procfile.dev' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n", File.read(procfile)
+    end
+
     it 'should properly generate with adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       out, = capture_io { generate(:component, '--orm=sequel', '--adapter=postgres', "-r=#{@apptmp}/sample_project") }

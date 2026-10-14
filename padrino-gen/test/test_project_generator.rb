@@ -660,6 +660,23 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/register ScssInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
+
+    it 'should properly generate for tailwind' do
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=tailwind') }
+      assert_match(/rake tailwind:build/, out)
+      assert_match(%r{layouts/application\.haml\):\n\s*= stylesheet_link_tag 'application'$}, out)
+      assert_match_in_file(/gem 'tailwindcss-ruby', '~> 4.0'$/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/@import "tailwindcss";/, "#{@apptmp}/sample_project/app/stylesheets/application.css")
+      assert_match_in_file(/task :build.*task :watch/m, "#{@apptmp}/sample_project/tasks/tailwind.rake")
+      assert_match_in_file(/namespace :assets do\n\s*task precompile: 'tailwind:build'$/, "#{@apptmp}/sample_project/tasks/tailwind.rake")
+      assert_match_in_file(/^web: bundle exec padrino start\ncss: bundle exec rake tailwind:watch$/, "#{@apptmp}/sample_project/Procfile.dev")
+      assert_match_in_file(%r{^public/stylesheets/application\.css$}, "#{@apptmp}/sample_project/.gitignore")
+    end
+
+    it 'should print an erb link tag for tailwind with erb' do
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erb', '--stylesheet=tailwind') }
+      assert_match(%r{layouts/application\.erb\):\n\s*<%= stylesheet_link_tag 'application' %>$}, out)
+    end
   end
 
   describe 'tiny app skeleton generator for test component' do
