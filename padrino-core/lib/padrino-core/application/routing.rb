@@ -862,8 +862,10 @@ module Padrino
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
         public_dir = File.expand_path(public_dir)
-        path = File.expand_path(public_dir + unescape(path_info))
-        return unless path.start_with?(public_dir)
+        path = "#{public_dir}#{unescape(path_info)}"
+        return unless Rack::Utils.valid_path?(path)
+        path = File.expand_path(path)
+        return unless path.start_with?("#{public_dir}/")
         return unless File.file?(path)
         path
       end

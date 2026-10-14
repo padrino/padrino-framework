@@ -117,7 +117,7 @@ module Padrino
           route_cache_key = resolve_cache_key || env['PATH_INFO']
 
           value = settings.cache[route_cache_key]
-          logger.debug 'GET Cache', began_at, route_cache_key if defined?(logger) && value
+          logger.bench 'GET Cache', began_at, route_cache_key if defined?(logger) && logger.respond_to?(:bench) && logger.debug? && value
 
           value
         end
@@ -135,7 +135,7 @@ module Padrino
 
           settings.cache.store(route_cache_key, content, expires: cache_expires)
 
-          logger.debug 'SET Cache', began_at, route_cache_key if defined?(logger)
+          logger.bench 'SET Cache', began_at, route_cache_key if defined?(logger) && logger.respond_to?(:bench) && logger.debug?
         end
 
         ##
