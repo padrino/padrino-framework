@@ -532,6 +532,25 @@ describe 'ProjectGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/dojo-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
+
+    it 'should properly generate for vite' do
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=vite') }
+      assert_match(/applying.*?vite.*?script/, out)
+      assert_match(/vite_javascript_tag 'application'/, out)
+      assert_match(/Run `npm install`/, out)
+      assert_match(/<%= vite_client_tag %>/, out)
+      assert_match_in_file(/gem 'vite_padrino', '~> 3.0'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/^gem 'activesupport', '>= 3.1'$/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(%r{^Bundler\.require\(:default, RACK_ENV\)\nrequire 'active_support/core_ext/object/try'}, "#{@apptmp}/sample_project/config/boot.rb")
+      assert_match_in_file(/register VitePadrino/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/"publicOutputDir": "vite-dev"/, "#{@apptmp}/sample_project/config/vite.json")
+      assert_match_in_file(/RubyPlugin\(\)/, "#{@apptmp}/sample_project/vite.config.ts")
+      assert_match_in_file(/"vite-plugin-ruby"/, "#{@apptmp}/sample_project/package.json")
+      assert_equal "web: bundle exec padrino start\nvite: bundle exec vite dev\n", File.read("#{@apptmp}/sample_project/Procfile.dev")
+      assert_match_in_file(/ViteRuby.install_tasks/, "#{@apptmp}/sample_project/Rakefile")
+      assert_match_in_file(%r{/public/vite\*}, "#{@apptmp}/sample_project/.gitignore")
+      assert_file_exists("#{@apptmp}/sample_project/app/frontend/entrypoints/application.js")
+    end
   end
 
   describe 'the generator for test component' do

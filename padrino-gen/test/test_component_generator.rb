@@ -75,6 +75,110 @@ describe 'ComponentGenerator' do
     end
   end
 
+  describe 'vite script component' do
+    it 'should start on a new line when Procfile.dev and .gitignore lack a trailing newline' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      root = "#{@apptmp}/sample_project"
+      File.write("#{root}/Procfile.dev", 'web: bundle exec puma')
+      File.write("#{root}/.gitignore", '.env')
+      capture_io { generate(:component, '--script=vite', "-r=#{root}") }
+      assert_equal "web: bundle exec puma\nvite: bundle exec vite dev\n", File.read("#{root}/Procfile.dev")
+      assert_equal ".env\n/public/vite*\nnode_modules\n*.local\n", File.read("#{root}/.gitignore")
+    end
+
+    it 'should keep an activesupport line the Gemfile already has' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      root = "#{@apptmp}/sample_project"
+      File.write("#{root}/Gemfile", "#{File.read("#{root}/Gemfile")}gem 'activesupport', '~> 8.1'\n")
+      capture_io { generate(:component, '--script=vite', "-r=#{root}") }
+      assert_equal 1, File.read("#{root}/Gemfile").scan(/^gem 'activesupport'/).size
+    end
+
+    it 'should keep an activesupport line written as a parenthesized call' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      root = "#{@apptmp}/sample_project"
+      File.write("#{root}/Gemfile", "#{File.read("#{root}/Gemfile")}gem('activesupport', '~> 8.1')\n")
+      capture_io { generate(:component, '--script=vite', "-r=#{root}") }
+      assert_equal 1, File.read("#{root}/Gemfile").scan(/activesupport/).size
+    end
+
+    it 'should apply to a project without a Rakefile' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      FileUtils.rm("#{@apptmp}/sample_project/Rakefile")
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal 'vite', YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+    end
+
+    it 'should apply when the default external encoding is not UTF-8' do
+      original = Encoding.default_external
+      begin
+        capture_io { Encoding.default_external = Encoding::US_ASCII }
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=vite') }
+      ensure
+        capture_io { Encoding.default_external = original }
+      end
+      assert_file_exists("#{@apptmp}/sample_project/app/frontend/entrypoints/application.js")
+    end
+
+    it 'should apply to a project without a Gemfile' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      FileUtils.rm("#{@apptmp}/sample_project/Gemfile")
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_file_exists("#{@apptmp}/sample_project/vite.config.ts")
+    end
+
+    it 'should say how to require Object#try when config/boot.rb has no Bundler.require line' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      root = "#{@apptmp}/sample_project"
+      File.write("#{root}/config/boot.rb", File.read("#{root}/config/boot.rb").sub('Bundler.require(:default, RACK_ENV)', 'Bundler.require(:default, RACK_ENV.to_sym)'))
+      out, = capture_io { generate(:component, '--script=vite', "-r=#{root}") }
+      assert_match(%r{Add `require 'active_support/core_ext/object/try'`}, out)
+    end
+
+    it 'should add vite to an existing project and keep its package.json' do
+      capture_io { generate(:project, 'sample_project', '--renderer=haml', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/package.json", "{}\n")
+      out, = capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_match(/applying.*?vite.*?script/, out)
+      assert_match(/npm install -D vite@\^8\.0\.0 vite-plugin-ruby@\^5\.2\.5/, out)
+      assert_match(/application\.haml/, out)
+      assert_match(/^\s+= vite_javascript_tag 'application'/, out)
+      assert_equal "{}\n", File.read("#{@apptmp}/sample_project/package.json")
+      assert_match_in_file(/gem 'vite_padrino', '~> 3.0'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/register VitePadrino/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_file_exists("#{@apptmp}/sample_project/app/frontend/entrypoints/application.js")
+    end
+
+    it 'should add the vite process to an existing Procfile.dev' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec puma\n")
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: bundle exec puma\nvite: bundle exec vite dev\n", File.read(procfile)
+    end
+
+    it 'should keep a vite process already in Procfile.dev' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec puma\nvite: bin/vite dev\n")
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: bundle exec puma\nvite: bin/vite dev\n", File.read(procfile)
+    end
+
+    it 'should keep edited vite files when applied again without a terminal' do
+      capture_io { generate(:project, 'sample_project', '--script=vite', "--root=#{@apptmp}") }
+      edited = %w[vite.config.ts app/frontend/entrypoints/application.js config/vite.json].map { |path| "#{@apptmp}/sample_project/#{path}" }
+      edited.each { |path| File.write(path, "// edited\n") }
+      Readline.stubs(:readline).returns(nil)
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal(["// edited\n"] * 3, edited.map { |path| File.read(path) })
+      assert_equal 1, File.read("#{@apptmp}/sample_project/Gemfile").scan(/^gem 'activesupport'/).size
+      assert_equal 1, File.read("#{@apptmp}/sample_project/config/boot.rb").scan(%r{active_support/core_ext/object/try}).size
+      assert_equal 1, File.read("#{@apptmp}/sample_project/Rakefile").scan('ViteRuby.install_tasks').size
+      assert_equal "web: bundle exec padrino start\nvite: bundle exec vite dev\n", File.read("#{@apptmp}/sample_project/Procfile.dev")
+    end
+  end
+
   describe 'specified of same the component' do
     it 'should does not change' do
       capture_io { generate(:project, 'sample_project', '--script=jquery', "--root=#{@apptmp}") }
