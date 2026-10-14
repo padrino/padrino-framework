@@ -2,6 +2,8 @@
 
 == Unreleased
 
+- FIX #2342 The development logger no longer warns "strftime called with empty format string" under `-w` (@achiurizo)
+- FIX #2342 The generated Gemfile states Ruby 2.7.8 as the minimum version (@achiurizo)
 - FIX #2192 `padrino g admin_page` raises a clear `OrmError` when the model does not match the project ORM (@achiurizo)
 - FIX #2341 `roles_for` with invalid roles raises `AccessControlError` instead of `NameError` (@achiurizo)
 - FIX #2341 `padrino g admin` writes the correct `test_config` path in the generated account model test (@achiurizo)
