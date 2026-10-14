@@ -152,9 +152,8 @@ describe 'ComponentGenerator' do
       assert_equal 'sequel', components_chosen[:orm]
     end
 
-    it 'should stop with the valid choices for an invalid option without a terminal' do
+    it 'should stop with the valid choices for an invalid option at the end of input' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      $stdin.stubs(:tty?).returns(false)
       Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
       error = assert_raises(RuntimeError) do
         Timeout.timeout(30) { capture_io { generate(:component, '--orm=bogus', "-r=#{@apptmp}/sample_project") } }

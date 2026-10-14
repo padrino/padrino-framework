@@ -462,26 +462,30 @@ describe 'ProjectGenerator' do
   end
 
   describe 'an invalid component option' do
-    def generate_without_terminal(*params)
-      $stdin.stubs(:tty?).returns(false)
+    def generate_at_end_of_input(*params)
       Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
       Timeout.timeout(30) { capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *params) } }
     end
 
-    it 'should stop with the valid choices without a terminal' do
-      error = assert_raises(RuntimeError) { generate_without_terminal('--orm=bogus') }
+    it 'should stop with the valid choices at the end of input' do
+      error = assert_raises(RuntimeError) { generate_at_end_of_input('--orm=bogus') }
       assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
     end
 
     %w[sequel activerecord minirecord].each do |orm|
-      it "should stop with the valid #{orm} adapters without a terminal" do
-        error = assert_raises(RuntimeError) { generate_without_terminal("--orm=#{orm}", '--adapter=bogus') }
+      it "should stop with the valid #{orm} adapters at the end of input" do
+        error = assert_raises(RuntimeError) { generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus') }
         assert_match(/--adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite/, error.message)
       end
     end
 
-    it 'should still ask for a valid choice in a terminal' do
-      $stdin.stubs(:tty?).returns(true)
+    it 'should re-ask after an invalid answer and take a piped one' do
+      Thor::LineEditor.stubs(:readline).returns('bogus2').then.returns('sequel')
+      capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=bogus') } }
+      assert_match_in_file(/Sequel.connect/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should still ask for a valid choice' do
       Thor::LineEditor.stubs(:readline).returns('sequel')
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=bogus') }
       assert_match_in_file(/Sequel.connect/, "#{@apptmp}/sample_project/config/database.rb")

@@ -158,8 +158,9 @@ module Padrino
       end
 
       ##
-      # Asks for one of the valid choices of an option. Without a terminal there is
-      # nobody to answer, and Thor would repeat the prompt forever, so it raises instead.
+      # Asks once for one of the valid choices of an option; callers re-ask while the answer is invalid.
+      # Thor's limited_to: would repeat the prompt forever at the end of input (no terminal, empty pipe),
+      # so that case raises instead.
       #
       # @param [Symbol] option
       #   The name of the option.
@@ -168,15 +169,16 @@ module Padrino
       # @param [String] statement
       #   The prompt to show.
       #
-      # @return [String] The choice entered.
+      # @return [String] The answer entered.
       #
       # @example
       #   ask_valid_option(:adapter, %w[mysql sqlite], 'Please, choose a proper adapter:')
       #
       def ask_valid_option(option, choices, statement)
-        raise "No terminal to ask for a valid --#{option}; pass one of: #{choices.join(', ')}" unless $stdin.tty?
+        answer = ask("#{statement} [#{choices.join(', ')}]")
+        raise "No input left to choose a valid --#{option}; pass one of: #{choices.join(', ')}" if answer.nil?
 
-        ask(statement, limited_to: choices)
+        answer
       end
 
       ##
