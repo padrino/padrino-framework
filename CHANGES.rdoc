@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2370 Generated RSpec placeholder specs run their request and helper setup and report as pending, and the testunit helper placeholder calls its setup (@nesquena)
 - NEW #2359 Generated projects set SameSite=Lax on the session cookie (@nesquena)
 - FIX #2360 Projects generated with --mock=mocha load mocha's integration for their test framework (they failed to load in 0.16) (@nesquena)
 - NEW #2364 ActiveRecord model and migration generators take a third field segment, :index or :uniq, to add an index, as in email:string:uniq (@nesquena)
