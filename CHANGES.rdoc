@@ -4,6 +4,9 @@
 
 - FIX #2342 The development logger no longer warns "strftime called with empty format string" under `-w` (@achiurizo)
 - FIX #2342 The generated Gemfile states Ruby 2.7.8 as the minimum version (@achiurizo)
+- FIX #2192 `padrino g admin_page` raises a clear `OrmError` when the model does not match the project ORM (@achiurizo)
+- FIX #2341 `roles_for` with invalid roles raises `AccessControlError` instead of `NameError` (@achiurizo)
+- FIX #2341 `padrino g admin` writes the correct `test_config` path in the generated account model test (@achiurizo)
 - FIX #2170 `Padrino.logger = Logger.new($stdout)` works without `Padrino::Logger::Extensions`: a logger gets plain `devel`, `bench`, `exception` and `colorize` when it lacks them (@achiurizo)
 - SEC #2344 Static files are only served from inside the public folder, not from sibling folders whose names start with the same text (@nesquena)
 - FIX #2343 `padrino g project -s jquery` selects the script component again instead of the server (@achiurizo)
