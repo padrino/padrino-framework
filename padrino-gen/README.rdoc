@@ -42,7 +42,7 @@ test::       none  (default), bacon, shoulda, cucumber, rspec, minitest, testuni
 renderer::   none  (default), slim, erb, erubis, liquid, haml
 stylesheet:: none  (default), tailwind, less, sass, scss
 mock::       none  (default), mocha, rr
-script::     none  (default), jquery, prototype, mootools, dojo
+script::     none  (default), jquery, prototype, mootools, dojo, vite
 orm::        none  (default), mongoid, activerecord, minirecord, sequel, ohm, dynamoid
 
 In addition, you can generate projects based on existing templates:
