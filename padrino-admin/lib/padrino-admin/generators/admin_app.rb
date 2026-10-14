@@ -41,13 +41,13 @@ module Padrino
         if in_app_root?
           unless supported_orm.include?(orm)
             say "<= At the moment, Padrino only supports #{supported_orm.join(' or ')}. Sorry!", :yellow
-            raise SystemExit
+            exit 1
           end
 
           tmp_ext = options[:renderer] || fetch_component_choice(:renderer)
           unless supported_ext.include?(tmp_ext.to_sym)
             say "<= You are using '#{tmp_ext}' and for admin we only support '#{supported_ext.join(', ')}'. Please use #{supported_ext.map { |ext| "-e #{ext}" }.join(' or ')}", :yellow
-            raise SystemExit
+            exit 1
           end
 
           # Get the app's namespace.
@@ -86,7 +86,9 @@ module Padrino
           params << '-s' if options[:skip_migration]
           params << '-d' if options[:destroy]
 
-          Padrino::Generators::Model.start(params)
+          # An existing model is reused: the model generator would refuse it and exit 1.
+          model_exists = already_exists?(@model_name, fetch_component_choice(:namespace))
+          Padrino::Generators::Model.start(params) if options[:destroy] || !model_exists
           column = Struct.new(:name, :type)
           columns = %i[id name surname email].map { |col| column.new(col) }
           column_fields = [
@@ -99,7 +101,7 @@ module Padrino
           ]
 
           unless options[:destroy]
-            admin_app = Padrino::Generators::AdminPage.new([@model_singular], root: options[:root], destroy: options[:destroy], admin_model: @model_singular, admin_name: @admin_name)
+            admin_app = Padrino::Generators::AdminPage.new([@model_singular], root: options[:root], destroy: options[:destroy], admin_model: @model_singular, admin_name: options[:admin_name])
             admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
             admin_app.invoke_all
           end
@@ -161,7 +163,7 @@ module Padrino
           say '=' * 65, :green
           say
         else
-          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+          exit_outside_app_root!
         end
       end
     end
