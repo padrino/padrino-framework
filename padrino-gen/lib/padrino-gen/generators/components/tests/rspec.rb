@@ -1,7 +1,7 @@
 RSPEC_SETUP = <<~TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
   require_relative '../config/boot'
-  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
+  Padrino.mounted_apps.each { |app| Padrino.require_dependencies(File.join(app.app_root, '{helpers.rb,helpers/**/*.rb}')) }
 
   RSpec.configure do |conf|
     conf.include Rack::Test::Methods
@@ -26,14 +26,13 @@ RSPEC_CONTROLLER_TEST = <<~TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_CONTROL
   require 'spec_helper'
 
   RSpec.describe "!PATH!" do
-    pending "add some examples to \#{__FILE__}" do
-      before do
-        get "!EXPANDED_PATH!"
-      end
+    before do
+      get "!EXPANDED_PATH!"
+    end
 
-      it "returns hello world" do
-        expect(last_response.body).to eq "Hello World"
-      end
+    it "returns hello world" do
+      pending "add some examples to \#{__FILE__}"
+      expect(last_response.body).to eq "Hello World"
     end
   end
 TEST
@@ -77,14 +76,13 @@ RSPEC_HELPER_TEST = <<~TEST unless defined?(RSPEC_HELPER_TEST)
   require 'spec_helper'
 
   RSpec.describe "!NAME!" do
-    pending "add some examples to (or delete) \#{__FILE__}" do
-      let(:helpers){ Class.new }
-      before { helpers.extend !NAME! }
-      subject { helpers }
+    let(:helpers){ Class.new }
+    before { helpers.extend !NAME! }
+    subject { helpers }
 
-      it "should return nil" do
-        expect(subject.foo).to be_nil
-      end
+    it "should return nil" do
+      pending "add some examples to (or delete) \#{__FILE__}"
+      expect(subject.foo).to be_nil
     end
   end
 TEST

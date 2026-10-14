@@ -77,6 +77,20 @@ describe 'Dependencies' do
       assert_equal 'hello', M.hello
     end
 
+    it 'should not remove constants that are already `remove_const`ed' do
+      enabled = Padrino::Reloader.instance_variable_get(:@enabled)
+      Padrino::Reloader.enabled = true
+      capture_io do
+        Padrino.require_dependencies(
+          Padrino.root('fixtures/dependencies/gc/t.rb'),
+          Padrino.root('fixtures/dependencies/gc/u.rb')
+        )
+      end
+      assert_equal 'hello', V.hello
+    ensure
+      Padrino::Reloader.enabled = enabled
+    end
+
     describe 'change log level for :devel' do
       before do
         @log_level_devel = Padrino::Logger::Config[:test]
@@ -228,6 +242,30 @@ describe 'Dependencies' do
     it 'should be configurable' do
       Padrino::Reloader.enabled = true
       assert Padrino::Reloader.enabled?
+    end
+  end
+
+  describe 'Padrino::Reloader.remove_constant' do
+    after do
+      Object.send(:remove_const, :RemoveConstantTarget) if Object.autoload?(:RemoveConstantTarget) || Object.const_defined?(:RemoveConstantTarget, false)
+    end
+
+    it 'should not remove a newer class defined under the same name' do
+      old_class = Object.const_set(:RemoveConstantTarget, Class.new)
+      Object.send(:remove_const, :RemoveConstantTarget)
+      new_class = Object.const_set(:RemoveConstantTarget, Class.new)
+      Padrino::Reloader.remove_constant(old_class)
+      assert_same new_class, Object.const_get(:RemoveConstantTarget)
+      Padrino::Reloader.remove_constant(new_class)
+      refute Object.const_defined?(:RemoveConstantTarget, false)
+    end
+
+    it 'should leave an autoload registered under the removed name alone' do
+      old_class = Object.const_set(:RemoveConstantTarget, Class.new)
+      Object.send(:remove_const, :RemoveConstantTarget)
+      Object.autoload(:RemoveConstantTarget, '/nonexistent/padrino_missing_autoload.rb')
+      Padrino::Reloader.remove_constant(old_class)
+      assert Object.autoload?(:RemoveConstantTarget)
     end
   end
 end

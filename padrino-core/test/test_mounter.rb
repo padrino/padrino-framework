@@ -127,6 +127,15 @@ describe 'Mounter' do
       end
     end
 
+    it 'should apply the mount settings when setting up the app' do
+      class ::SubMountedApp < Padrino::Application
+        get(:hello) { 'hello' }
+      end
+      mounter = Padrino.mount('SubMountedApp', app_file: __FILE__).to('/sub')
+      mounter.setup_application!
+      assert_equal '/sub/hello', SubMountedApp.url(:hello)
+    end
+
     it 'should change mounted_root' do
       Padrino.mounted_root = 'fixtures'
       assert_equal Padrino.root('fixtures', 'test', 'app.rb'), Padrino.mounted_root('test', 'app.rb')

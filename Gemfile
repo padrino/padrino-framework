@@ -7,6 +7,7 @@ if ENV['AS_VERSION']
 end
 
 group :db do
+  gem 'activerecord', platforms: [:mri]
   gem 'jdbc-sqlite3', '~> 3.7.2', platform: :jruby
   gem 'sequel'
   if RUBY_VERSION < '3.1'
@@ -22,7 +23,7 @@ group :development do
     gem 'sinatra', "~> #{ENV['SINATRA_VERSION']}"
   elsif ENV['SINATRA_EDGE']
     puts '=> Using sinatra edge'
-    gem 'sinatra', git: 'git://github.com/sinatra/sinatra.git'
+    gem 'sinatra', git: 'https://github.com/sinatra/sinatra.git'
   end
 
   gem 'liquid',    '>= 2.1.1'

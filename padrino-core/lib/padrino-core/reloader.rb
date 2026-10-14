@@ -145,6 +145,8 @@ module Padrino
       return if constant_excluded?(const)
       base, _, object = const.to_s.rpartition('::')
       base = base.empty? ? Object : Inflections.constantize(base)
+      return if base.autoload?(object, false) || !base.const_defined?(object, false)
+      return unless base.const_get(object, false).equal?(const)
       base.send :remove_const, object
       logger.devel "Removed constant #{const} from #{base}"
     rescue NameError
@@ -322,12 +324,27 @@ module Padrino
     # Tells if a constant is defined only outside of Padrino project path.
     # If a constant has any methods defined inside of the project path it's
     # considered internal and will be included in further testing.
+    # A constant without methods (an exception class, say) is judged by
+    # where its name was defined instead.
     #
     def external_constant?(const)
       sources = object_sources(const)
-      # consider methodless constants not external
+      sources = [constant_source(const)].compact if sources.empty?
+      # consider methodless constants of unknown origin not external
       return false if sources.empty?
       sources.none? { |source| source.start_with?(Padrino.root) }
+    end
+
+    ##
+    # Returns the file in which the constant's name was defined, if known.
+    #
+    def constant_source(const)
+      base, _, object = constant_name(const).to_s.rpartition('::')
+      return if object.empty?
+      base = base.empty? ? Object : Inflections.constantize(base)
+      base.const_source_location(object)&.first
+    rescue NameError
+      nil
     end
 
     ##
