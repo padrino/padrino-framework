@@ -3,6 +3,7 @@
 == Unreleased
 
 - FIX #2354 Project templates can use `app` and `generate :name` again (they failed with a TypeError) (@nesquena)
+- FIX #2353 Generators stop with an error listing the valid options when given an invalid component or adapter and no input is left, instead of prompting forever (@nesquena)
 - FIX #2355 The development reloader no longer removes a newer class that reuses an unloaded class's name (@genkami)
 - FIX #2356 Generated minitest config supports unit-style Minitest::Test classes as well as specs (@nesquena)
 - NEW #2335 Tailwind stylesheet component: `padrino g project --stylesheet=tailwind`, built with the tailwindcss-ruby standalone binary (needs Ruby 3.0+). `rake tailwind:build` and `rake assets:precompile` build public/stylesheets/application.css (@osbre)
