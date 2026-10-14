@@ -20,7 +20,8 @@ describe 'Mongoid rake tasks' do
         load #{tasks.inspect}
         Rake::Task['mi:create_indexes'].invoke
       RUBY
-      Open3.capture3(RbConfig.ruby, '-I', dir, '-e', script, chdir: dir)
+      env = { 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
+      Open3.capture3(env, RbConfig.ruby, '-I', dir, '-e', script, chdir: dir)
     end
   end
 
