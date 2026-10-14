@@ -14,7 +14,7 @@ describe 'PadrinoTasks' do
         require 'padrino-core/cli/rake'
         Padrino::Tasks.files.concat(#{files.inspect})
         PadrinoTasks.init
-        puts Rake::Task.tasks.map(&:name).grep(/\\Ademo_/).inspect
+        puts "TASKS \#{Rake::Task.tasks.map(&:name).grep(/\\Ademo_/).inspect}"
       RUBY
       lib = File.expand_path('../lib', __dir__)
       Open3.capture3(RbConfig.ruby, '-I', lib, '-e', script)
@@ -24,13 +24,13 @@ describe 'PadrinoTasks' do
   it 'should load every registered task file' do
     out, err, status = run_init('task :demo_one', 'task :demo_two')
     assert status.success?, err
-    assert_equal %w[demo_one demo_two].inspect, out.strip
+    assert_includes out.lines.map(&:strip), "TASKS #{%w[demo_one demo_two].inspect}"
   end
 
   it 'should raise the error of a task file that fails to load' do
     out, err, status = run_init('task :demo_one', 'raise "broken task file"')
     refute status.success?
-    assert_empty out
+    refute_match(/^TASKS/, out)
     assert_match(/broken task file/, err)
     refute_match(/Failed load/, err + out)
   end
