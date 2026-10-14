@@ -31,4 +31,20 @@ class Minitest::Spec
   def app
     Rack::Lint.new(@app)
   end
+
+  # Hides String#constantize and String#underscore (from padrino-gen or
+  # ActiveSupport) so the block runs against plain Ruby strings.
+  def without_string_inflections
+    hidden = %i[constantize underscore].select { |name| String.method_defined?(name) }
+    hidden.each do |name|
+      String.send(:alias_method, :"__hidden_#{name}", name)
+      String.send(:remove_method, name)
+    end
+    yield
+  ensure
+    Array(hidden).each do |name|
+      String.send(:alias_method, name, :"__hidden_#{name}")
+      String.send(:remove_method, :"__hidden_#{name}")
+    end
+  end
 end
