@@ -173,6 +173,12 @@ describe 'ComponentGenerator' do
       assert_no_match_in_file(/fiber_concurrency/, "#{@apptmp}/sample_project/config/database.rb")
     end
 
+    it 'should load the mocha integration for the project test component' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--script=none') }
+      capture_io { generate(:component, '--mock=mocha', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(%r{^require_relative '../config/boot'\nrequire 'mocha/minitest'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
+    end
+
     it 'should enable @app_name value' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate_with_parts(:component, '--test=cucumber', "-r=#{@apptmp}/sample_project", apps: 'app') }
