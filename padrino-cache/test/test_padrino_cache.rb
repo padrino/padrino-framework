@@ -55,12 +55,15 @@ describe 'PadrinoCache' do
       helpers { define_method(:logger) { @logger ||= Logger.new(log).freeze } }
       get('/foo') { cache(:test) { 'test fragment' } }
       get('/bar', cache: true) { cache_object(:object) { 'test object' } }
+      get('/baz') { cache_object(:uncached_page) { 'object only' } }
     end
     2.times do
       get '/foo'
       assert_equal 'test fragment', body
       get '/bar'
       assert_equal 'test object', body
+      get '/baz'
+      assert_equal 'object only', body
     end
   end
 
