@@ -1,7 +1,16 @@
+# Model paths that :skeleton left out, loaded by a later :environment in the same run
+# (e.g. `rake ar:migrate db:seed`).
+skipped_model_paths = []
+
 # Loads the Padrino applications mounted within the project.
 # Setting up the required environment for Padrino.
 task :environment do
   require File.expand_path('config/boot.rb', Rake.application.original_dir)
+  unless skipped_model_paths.empty?
+    Padrino.dependency_paths.concat(skipped_model_paths)
+    Padrino.require_dependencies(*skipped_model_paths)
+    skipped_model_paths.clear
+  end
 
   Padrino.mounted_apps.each(&:setup_application!)
 end
@@ -9,7 +18,8 @@ end
 task :skeleton do
   PADRINO_ROOT ||= Rake.application.original_dir
   require 'padrino-core'
-  Padrino.send(:dependency_paths).reject! { |path| path.include?('/models/') }
+  skipped_model_paths.concat(Padrino.dependency_paths.select { |path| path.include?('/models/') })
+  Padrino.dependency_paths.reject! { |path| path.include?('/models/') }
   require File.expand_path('config/boot.rb', Rake.application.original_dir)
 end
 
