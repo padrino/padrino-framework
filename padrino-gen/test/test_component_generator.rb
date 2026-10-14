@@ -89,6 +89,22 @@ describe 'ComponentGenerator' do
       assert_match_in_file(/register VitePadrino/, "#{@apptmp}/sample_project/app/app.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/frontend/entrypoints/application.js")
     end
+
+    it 'should add the vite process to an existing Procfile.dev' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec puma\n")
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: bundle exec puma\nvite: bundle exec vite dev\n", File.read(procfile)
+    end
+
+    it 'should keep a vite process already in Procfile.dev' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec puma\nvite: bin/vite dev\n")
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: bundle exec puma\nvite: bin/vite dev\n", File.read(procfile)
+    end
   end
 
   describe 'specified of same the component' do

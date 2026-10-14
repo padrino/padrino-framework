@@ -62,7 +62,12 @@ def setup_script
   package_json_exists = File.exist?(destination_root('package.json'))
   create_file destination_root('package.json'), VITE_PACKAGE_JSON, skip: true
   create_file destination_root('app/frontend/entrypoints/application.js'), VITE_ENTRYPOINT
-  create_file destination_root('Procfile.dev'), "web: bundle exec padrino start\nvite: bundle exec vite dev\n", skip: true
+  procfile = destination_root('Procfile.dev')
+  if File.exist?(procfile)
+    append_file procfile, "vite: bundle exec vite dev\n" unless File.read(procfile).match?(/^vite:/)
+  else
+    create_file procfile, "web: bundle exec padrino start\nvite: bundle exec vite dev\n"
+  end
   append_file destination_root('Rakefile'), VITE_RAKE
   append_file destination_root('.gitignore'), VITE_GITIGNORE if File.exist?(destination_root('.gitignore'))
   renderer = fetch_component_choice(:renderer).to_s

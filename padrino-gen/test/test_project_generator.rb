@@ -546,7 +546,7 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/"publicOutputDir": "vite-dev"/, "#{@apptmp}/sample_project/config/vite.json")
       assert_match_in_file(/RubyPlugin\(\)/, "#{@apptmp}/sample_project/vite.config.ts")
       assert_match_in_file(/"vite-plugin-ruby"/, "#{@apptmp}/sample_project/package.json")
-      assert_match_in_file(/vite dev/, "#{@apptmp}/sample_project/Procfile.dev")
+      assert_equal "web: bundle exec padrino start\nvite: bundle exec vite dev\n", File.read("#{@apptmp}/sample_project/Procfile.dev")
       assert_match_in_file(/ViteRuby.install_tasks/, "#{@apptmp}/sample_project/Rakefile")
       assert_match_in_file(%r{/public/vite\*}, "#{@apptmp}/sample_project/.gitignore")
       assert_file_exists("#{@apptmp}/sample_project/app/frontend/entrypoints/application.js")
