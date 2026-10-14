@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #NNNN The development reloader no longer removes a newer class that reuses an unloaded class's name (@genkami)
 - NEW #2335 Tailwind stylesheet component: `padrino g project --stylesheet=tailwind`, built with the tailwindcss-ruby standalone binary (needs Ruby 3.0+). `rake tailwind:build` and `rake assets:precompile` build public/stylesheets/application.css (@osbre)
 - NEW #2334 Vite script component using vite_padrino: `padrino g project --script=vite`, or `padrino g component --script=vite` in an existing project (@osbre)
 - SEC #2350 Admin access control compares request paths after percent-decoding them (@nesquena)

@@ -3,7 +3,7 @@ class V
   $prevent_from_being_gced.push(self)
 
   def self.hello
-    "hello"
+    'hello'
   end
 
   W
