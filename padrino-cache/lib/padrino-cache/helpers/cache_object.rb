@@ -7,11 +7,11 @@ module Padrino
             began_at = Time.now
             if settings.cache.key?(key.to_s)
               value = settings.cache[key.to_s]
-              logger.debug 'GET Object', began_at, key.to_s if defined?(logger)
+              logger.bench 'GET Object', began_at, key.to_s if defined?(logger) && logger.debug?
             else
               value = yield
               settings.cache.store(key.to_s, value, opts)
-              logger.debug 'SET Object', began_at, key.to_s if defined?(logger)
+              logger.bench 'SET Object', began_at, key.to_s if defined?(logger) && logger.debug?
             end
             value
           else

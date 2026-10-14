@@ -245,6 +245,63 @@ describe 'binary logger' do
   end
 end
 
+describe 'stdlib logger without Padrino::Logger::Extensions' do
+  before do
+    @save_logger = Padrino.logger
+    @log = StringIO.new
+    new_logger = Logger.new(@log)
+    new_logger.formatter = proc { |_, _, _, message| "#{message}\n" }
+    capture_io { Padrino.logger = new_logger }
+  end
+
+  after do
+    Padrino.logger = @save_logger
+  end
+
+  it 'should accept devel messages without logging them' do
+    Padrino.logger.devel('Devel message')
+    Padrino.logger.devel(:setup, Time.now, 'Devel bench')
+    assert_equal '', @log.string
+    refute_predicate Padrino.logger, :devel?
+  end
+
+  it 'should log an exception' do
+    Padrino.logger.exception(Exception.new('scary message'))
+    assert_match(/Exception - scary message/, @log.string)
+  end
+
+  it 'should log a benchmarked action' do
+    Padrino.logger.bench('GET', Time.now, '/blog')
+    assert_match(%r{GET \(\d+\.\d+s\) /blog}, @log.string)
+  end
+
+  it 'should log requests' do
+    mock_app do
+      enable :logging
+      get('/') { 'Foo' }
+    end
+    get '/'
+
+    assert_equal 200, status
+    assert_match(%r{GET \(\d+\.\d+s\) / - 200 OK}, @log.string)
+  end
+
+  it 'should warn about a frozen logger instead of raising' do
+    frozen = Logger.new(@log).freeze
+    _, err = capture_io { Padrino.logger = frozen }
+    assert_match(/frozen and lacks .*devel/, err)
+    assert_same frozen, Padrino.logger
+  end
+
+  it 'should keep the methods a logger already defines' do
+    custom = Class.new(Logger) { define_method(:exception) { |*| add(Logger::ERROR, 'custom exception') } }.new(@log)
+    custom.formatter = proc { |_, _, _, message| message }
+    capture_io { Padrino.logger = custom }
+    Padrino.logger.exception(Exception.new('scary message'))
+    assert_equal 'custom exception', @log.string
+  end
+end
+
 describe 'alternate logger: stdlib logger' do
   before do
     @log = StringIO.new

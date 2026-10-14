@@ -22,6 +22,31 @@ describe 'PadrinoCache' do
     refute_equal called, false
   end
 
+  it 'should cache with a logger without Padrino::Logger::Extensions' do
+    log = StringIO.new
+    save_logger = Padrino.logger
+    Padrino.logger = Logger.new(log)
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/foo') { cache(:test) { 'test fragment' } }
+      get('/bar', cache: true) { cache_object(:object) { 'test object' } }
+    end
+    2.times do
+      get '/foo'
+      assert_equal 200, status
+      assert_equal 'test fragment', body
+      get '/bar'
+      assert_equal 200, status
+      assert_equal 'test object', body
+    end
+    ['SET FRAGMENT', 'GET FRAGMENT', 'SET OBJECT', 'SET CACHE', 'GET CACHE'].each do |action|
+      assert_match(/#{action} \(\d+\.\d+s\)/, log.string)
+    end
+  ensure
+    Padrino.logger = save_logger
+  end
+
   it 'should cache a page' do
     called = false
     mock_app do
