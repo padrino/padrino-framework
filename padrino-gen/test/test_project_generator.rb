@@ -481,6 +481,12 @@ describe 'ProjectGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
+    it 'should generate jquery with the -s alias' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-s', 'jquery') }
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery.js")
+      assert_no_match_in_file(/gem 'jquery'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
     it 'should properly generate for mootools' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=mootools') }
       assert_match(/applying.*?mootools.*?script/, out)

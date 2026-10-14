@@ -3,6 +3,8 @@
 == Unreleased
 
 - SEC #2344 Static files are only served from inside the public folder, not from sibling folders whose names start with the same text (@nesquena)
+- FIX #2343 `padrino g project -s jquery` selects the script component again instead of the server (@achiurizo)
+- WARN #2343 `--server` no longer has the `-s` alias; use `--server=puma` instead of `-s puma`
 - FIX #2340 Mailer views path no longer breaks when the app path contains the mailer name, and no longer leaks between messages delivered concurrently (@achiurizo)
 - FIX #2340 Padrino view helpers (`link_to` etc.) are available in mailer templates (@achiurizo)
 - NEW #2331 Faster boot outside development: files are no longer tracked for reloading unless `Padrino::Reloader.enabled = true` (@osbre)
