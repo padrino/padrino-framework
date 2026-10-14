@@ -180,6 +180,38 @@ describe 'AdminApplication' do
     refute @app.access_control.allowed?(nil, '/accountsXjson')
   end
 
+  it 'should not allow paths that merely start with an allowed path' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/sessions'
+      end
+
+      access_control.roles_for :editor do |role|
+        role.project_module :posts, '/posts'
+      end
+
+      access_control.roles_for :admin do |role|
+        role.project_module :post_admin, '/posts_admin'
+      end
+    end
+
+    assert @app.access_control.allowed?(nil, '/sessions')
+    assert @app.access_control.allowed?(nil, '/sessions/new')
+    assert @app.access_control.allowed?(nil, '/sessions.json')
+    refute @app.access_control.allowed?(nil, '/sessions_admin')
+    refute @app.access_control.allowed?(nil, '/sessionsX')
+
+    # An editor's '/posts' must not reach the admin-only '/posts_admin' module.
+    assert @app.access_control.allowed?(Account.editor, '/posts')
+    assert @app.access_control.allowed?(Account.editor, '/posts/1/edit')
+    refute @app.access_control.allowed?(Account.editor, '/posts_admin')
+    assert @app.access_control.allowed?(Account.admin, '/posts_admin')
+  end
+
   it 'should emulate an ecommerce app' do
     mock_app do
       register Padrino::Admin::AccessControl
