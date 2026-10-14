@@ -71,6 +71,14 @@ describe 'ComponentGenerator' do
       assert_equal ".env\npublic/stylesheets/application.css\n", File.read(gitignore)
     end
 
+    it 'should keep a css process already in Procfile.dev' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n", File.read(procfile)
+    end
+
     it 'should properly generate with adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       out, = capture_io { generate(:component, '--orm=sequel', '--adapter=postgres', "-r=#{@apptmp}/sample_project") }

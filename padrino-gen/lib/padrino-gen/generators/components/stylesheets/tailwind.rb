@@ -47,7 +47,7 @@ def setup_stylesheet
 
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
-    append_line.call(procfile, "css: bundle exec rake tailwind:watch\n")
+    append_line.call(procfile, "css: bundle exec rake tailwind:watch\n") unless File.read(procfile).match?(/^css:/)
   else
     create_file procfile, "web: bundle exec padrino start\ncss: bundle exec rake tailwind:watch\n"
   end
