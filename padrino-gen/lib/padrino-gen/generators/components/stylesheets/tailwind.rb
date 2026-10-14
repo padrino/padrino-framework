@@ -32,20 +32,20 @@ def setup_stylesheet
   end
 
   require_dependencies 'tailwindcss-ruby', version: '~> 4.0'
+  previous = fetch_component_choice(:stylesheet).to_s
+  preprocessed = %w[sass scss less].include?(previous)
   # Tailwind writes its build to public/stylesheets/application.css, so carry
   # any hand-written styles there over into a new source file instead of losing them.
-  # Once the source exists, that file is build output and must not be merged again.
+  # Once the source exists, or a sass/scss/less engine compiles it, that file is build output and must not be merged.
   source = destination_root('app/stylesheets/application.css')
   existing = destination_root('public/stylesheets/application.css')
-  if !File.exist?(source) && File.exist?(existing)
-    css = File.read(existing)
-    # Browsers ignore @charset and @import after other rules, so keep them above Tailwind's import,
-    # with relative imports pointing back at public/stylesheets from the new location.
-    head = css[%r{\A(?:\s+|/\*.*?\*/|@(?:charset|import)\b[^;]*;)*}m]
-    imports = head.strip.gsub(/(@import\s+(?:url\(\s*)?["']?)([^"')\s;]+)/) do
-      prefix, path = Regexp.last_match.captures
-      "#{prefix}#{'../../public/stylesheets/' unless path.match?(%r{\A(?:[a-z][a-z0-9+.-]*:|/)}i)}#{path}"
-    end
+  if !preprocessed && !File.exist?(source) && File.exist?(existing)
+    css = File.binread(existing).delete_prefix("\xEF\xBB\xBF".b)
+    # Browsers ignore @charset and @import after other rules, so keep them above Tailwind's import.
+    # Tailwind inlines string imports but passes url() imports through to the build in public/stylesheets,
+    # so make every import a url() import that resolves as it did before.
+    head = css[%r{\A(?:\s+|/\*.*?\*/|@(?:charset|import)\b(?:"[^"]*"|'[^']*'|[^;"'])*;)*}mi]
+    imports = head.strip.gsub(/(@import\s+)("[^"]*"|'[^']*')/i) { "#{Regexp.last_match(1)}url(#{Regexp.last_match(2)})" }
     create_file source, "#{imports}#{"\n" unless imports.empty?}#{TAILWIND_CSS}\n#{css[head.size..]}"
     remove_file existing
   else
@@ -63,8 +63,7 @@ def setup_stylesheet
   gitignore = destination_root('.gitignore')
   append_line.call(gitignore, "public/stylesheets/application.css\n") if File.exist?(gitignore)
 
-  previous = fetch_component_choice(:stylesheet).to_s
-  if %w[sass scss less].include?(previous)
+  if preprocessed
     say "Switching from #{previous}: its gems and initializer remain and also write public/stylesheets/application.css, " \
         "so remove them from Gemfile, app/app.rb and config/initializers/#{previous}.rb.", :yellow
   end

@@ -49,14 +49,22 @@ describe 'ComponentGenerator' do
       assert_equal expected, File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
     end
 
-    it 'should point relative imports of moved public styles at public/stylesheets' do
+    it 'should keep imports of moved public styles resolving from public/stylesheets' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       css = "@import \"reset.css\";\n@import url('print.css') print;\n@import \"//cdn.example.com/x.css\";\n@import url(/base.css);\n.a { color: red; }\n"
       File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", css)
       capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
-      expected = "@import \"../../public/stylesheets/reset.css\";\n@import url('../../public/stylesheets/print.css') print;\n@import \"//cdn.example.com/x.css\";\n@import url(/base.css);\n" \
+      expected = "@import url(\"reset.css\");\n@import url('print.css') print;\n@import url(\"//cdn.example.com/x.css\");\n@import url(/base.css);\n" \
                  "@import \"tailwindcss\";\n\n.a { color: red; }\n"
       assert_equal expected, File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+    end
+
+    it 'should move public styles with a byte order mark or non-UTF-8 bytes into the tailwind source' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.binwrite("#{@apptmp}/sample_project/public/stylesheets/application.css", "\xEF\xBB\xBF@charset \"UTF-8\";\nbody { content: \"\xE9\"; }\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      expected = "@charset \"UTF-8\";\n@import \"tailwindcss\";\n\nbody { content: \"\xE9\"; }\n".b
+      assert_equal expected, File.binread("#{@apptmp}/sample_project/app/stylesheets/application.css")
     end
 
     it 'should keep the tailwind source when re-run after a build' do
@@ -81,8 +89,10 @@ describe 'ComponentGenerator' do
 
     it 'should tell to remove the old stylesheet engine when switching to tailwind' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", ".compiled { color: red; }\n")
       Readline.stubs(:readline).returns('yes').once
       out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "@import \"tailwindcss\";\n", File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
       assert_match(%r{Switching from scss: .* remove them from Gemfile, app/app\.rb and config/initializers/scss\.rb\.}, out)
     end
 
