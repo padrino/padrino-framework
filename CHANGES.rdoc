@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- NEW #2334 Vite script component: `padrino g project --script=vite` (@osbre)
+- NEW #2334 Vite script component using vite_padrino: `padrino g project --script=vite`, or `padrino g component --script=vite` in an existing project (@osbre)
 - FIX #2348 `form_for` and `fields_for` work in mailer templates (@nesquena)
 - FIX #2346 Mailer templates: cached templates are keyed by views path (no Errno::ENOENT when two mailers share a template name in production), and `partial`, `form_tag` and `button_to` work. With `reload_templates` off, app renders with a per-render `views:`, `layout_options` views or an absolute layout path no longer pick up another path's cached template (@nesquena)
 - FIX #2338 Padrino runs with `--enable-frozen-string-literal` and no longer prints "literal string will be frozen" warnings on Ruby 3.4+ (@achiurizo)
