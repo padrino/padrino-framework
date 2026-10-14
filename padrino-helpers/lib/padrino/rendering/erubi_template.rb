@@ -22,7 +22,7 @@ module Padrino
 
     class ErubiTemplate < Tilt::ErubiTemplate
       def precompiled_preamble(*)
-        "__in_erb_template = true\n" << super
+        "__in_erb_template = true\n#{super}"
       end
     end
   end
