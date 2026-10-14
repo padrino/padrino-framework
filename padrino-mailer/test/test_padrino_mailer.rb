@@ -102,12 +102,11 @@ describe 'PadrinoMailer' do
     end
 
     it 'should be able to deliver a basic email using Padrino::Helpers' do
-      skip # FIXME
       post '/deliver/helper'
       assert_equal 'mail delivered', body
       assert_email_sent(to: 'jim@fake.com', from: 'noreply@custom.com',
                         content_type: 'text/html',
-                        subject: 'Welcome Helper!', body: '<a href="#">jim</a>')
+                        subject: 'Welcome Helper!', body: '<a href="#">Jim</a>')
     end
 
     it 'should fail with proper message if mailer is not registered' do

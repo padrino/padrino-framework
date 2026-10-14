@@ -158,4 +158,58 @@ describe 'Email' do
       end
     end
   end
+
+  describe 'the mailer views path' do
+    def mailer_views(root)
+      views = File.join(@tmp, root, 'views')
+      { 'alpha/hello.erb' => 'alpha hello', 'beta/hello.erb' => 'beta hello',
+        'gamma/hello.plain.erb' => 'gamma plain', 'gamma/hello.html.erb' => 'gamma html' }.each do |path, content|
+        file = File.join(views, 'mailers', path)
+        FileUtils.mkdir_p(File.dirname(file))
+        File.write(file, content)
+      end
+      views
+    end
+
+    def mailer_app(views)
+      mock_app do
+        register Padrino::Mailer
+        set :views, views
+        set :delivery_method, :test
+        set :mailer_defaults, from: 'padrino@me.com', to: 'padrino@you.com'
+        mailer(:alpha) { email(:hello) { via :test; render :hello } }
+        mailer(:beta)  { email(:hello) { via :test; render :hello } }
+        mailer(:gamma) { email(:hello) { via :test; provides :plain, :html; render :hello } }
+      end
+    end
+
+    def build_message(mailer_name)
+      message = @app.settings._padrino_mailer::Message.new(@app)
+      message.mailer_name = mailer_name
+      message
+    end
+
+    before { @tmp = Dir.mktmpdir }
+    after  { FileUtils.rm_rf(@tmp) }
+
+    it 'should add the mailer name when the app path contains it' do
+      mailer_app(mailer_views('beta_site'))
+      email = @app.deliver(:beta, :hello)
+      assert_equal 'beta hello', email.body.to_s
+    end
+
+    it 'should not leak the mailer path between messages' do
+      mailer_app(mailer_views('site'))
+      alpha = build_message(:alpha)
+      beta = build_message(:beta)
+      assert_equal 'beta hello', beta.send(:render, :hello)
+      assert_equal 'alpha hello', alpha.send(:render, :hello)
+    end
+
+    it 'should render each provided format from the mailer path' do
+      mailer_app(mailer_views('site'))
+      email = @app.deliver(:gamma, :hello)
+      assert_equal(['gamma plain', 'gamma html'], email.parts.map { |part| part.body.to_s })
+    end
+  end
 end
