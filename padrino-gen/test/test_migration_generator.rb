@@ -123,6 +123,37 @@ describe 'MigrationGenerator' do
       assert_match_in_file(/change_table :users.*?t\.string :email/m, migration_file_path)
       assert_match_in_file(/t\.integer :age/m, migration_file_path)
     end
+
+    it 'should remove references with remove_references' do
+      capture_io { generate(:migration, 'AddUserToOrders', 'user:references', 'account:belongs_to', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_user_to_orders.rb"
+      assert_match_in_file(/def self\.up\s+change_table :orders do \|t\|\s+t\.references :user\s+t\.belongs_to :account\s+end/m, migration_file_path)
+      assert_match_in_file(/def self\.down\s+change_table :orders do \|t\|\s+t\.remove_references :user\s+t\.remove_references :account\s+end/m, migration_file_path)
+    end
+
+    it 'should add references when rolling back a migration removing them' do
+      capture_io { generate(:migration, 'RemoveUserFromOrders', 'user:references', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_user_from_orders.rb"
+      assert_match_in_file(/def self\.up\s+change_table :orders do \|t\|\s+t\.remove_references :user\s+end/m, migration_file_path)
+      assert_match_in_file(/def self\.down\s+change_table :orders do \|t\|\s+t\.references :user\s+end/m, migration_file_path)
+    end
+
+    it 'should add an index for a third index or uniq segment' do
+      migration_params = ['AddUserIdToOrders', 'user_id:integer:index', 'code:string:uniq', 'note:string', "-r=#{@apptmp}/sample_project"]
+      capture_io { generate(:migration, *migration_params) }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_user_id_to_orders.rb"
+      up = /def self\.up\s+change_table :orders do \|t\|\s+t\.integer :user_id\s+t\.index :user_id\s+t\.string :code\s+t\.index :code, unique: true\s+t\.string :note\s+end/m
+      assert_match_in_file(up, migration_file_path)
+      assert_match_in_file(/def self\.down\s+change_table :orders do \|t\|\s+t\.remove :user_id\s+t\.remove :code\s+t\.remove :note\s+end/m, migration_file_path)
+    end
+
+    it 'should pass a third index or uniq segment to references' do
+      capture_io { generate(:migration, 'AddUserToOrders', 'user:references:uniq', 'account:references:index', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_user_to_orders.rb"
+      assert_match_in_file(/t\.references :user, index: \{ unique: true \}\n/, migration_file_path)
+      assert_match_in_file(/t\.references :account, index: true\n/, migration_file_path)
+      assert_match_in_file(/t\.remove_references :user\n/, migration_file_path)
+    end
   end
 
   describe 'the migration generator for sequel' do

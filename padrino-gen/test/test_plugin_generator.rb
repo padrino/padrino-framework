@@ -48,6 +48,22 @@ describe 'PluginGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{example_template_path}", '> /dev/null') }
       File.unstub(:exist?)
     end
+
+    it 'should run generators named with a Symbol' do
+      template_path = "#{@apptmp}/symbol_template.rb"
+      File.write(template_path, "project orm: :sequel\ngenerate :model, 'post title:string'\n")
+      out, = capture_subprocess_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{template_path}") }
+      refute_match(/could not be loaded/, out)
+      assert_match_in_file(/class Post < Sequel::Model/, "#{@apptmp}/sample_project/models/post.rb")
+    end
+
+    it 'should generate a sub app named with a Symbol' do
+      template_path = "#{@apptmp}/app_template.rb"
+      File.write(template_path, "project orm: :none\napp :blog\n")
+      out, = capture_subprocess_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{template_path}") }
+      refute_match(/could not be loaded/, out)
+      assert_match_in_file(/class Blog < Padrino::Application/, "#{@apptmp}/sample_project/blog/app.rb")
+    end
   end
 
   describe 'with resolving urls' do

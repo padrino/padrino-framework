@@ -155,6 +155,15 @@ describe 'ModelGenerator' do
       assert_match_in_file(/      t.string :email/m,  migration_file_path)
       assert_match_in_file(/    drop_table :friends/m, migration_file_path)
     end
+
+    it 'should generate migration file with references and indexed fields' do
+      stop_time_for_test
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:model, 'order', 'user:belongs_to', 'code:string:uniq', 'state:string:index', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_orders.rb"
+      fields = /create_table :orders do \|t\|\s+t\.belongs_to :user\s+t\.string :code\s+t\.index :code, unique: true\s+t\.string :state\s+t\.index :state\s+t\.timestamps/m
+      assert_match_in_file(fields, migration_file_path)
+    end
   end
 
   # MINIRECORD
