@@ -7,6 +7,7 @@ if ENV['AS_VERSION']
 end
 
 group :db do
+  gem 'activerecord', platforms: [:mri]
   gem 'jdbc-sqlite3', '~> 3.7.2', platform: :jruby
   gem 'sequel'
   if RUBY_VERSION < '3.1'
