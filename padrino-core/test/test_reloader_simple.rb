@@ -57,6 +57,10 @@ describe 'SimpleReloader' do
         get "/__sinatra__/#{relative.gsub('/', '%2F')}.png"
         refute_equal 'not a padrino image', body
         assert_equal 404, status
+        get '/__sinatra__/0404.png'
+        assert_equal 404, status
+        get '/__sinatra__/500.png'
+        assert_equal 200, status
       end
     end
   end
