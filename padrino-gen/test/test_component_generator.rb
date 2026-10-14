@@ -69,6 +69,15 @@ describe 'ComponentGenerator' do
       assert File.exist?("#{@apptmp}/sample_project/public/stylesheets/application.css")
     end
 
+    it 'should keep an edited tailwind rake file when applied again without a terminal' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=tailwind') }
+      rakefile = "#{@apptmp}/sample_project/tasks/tailwind.rake"
+      File.write(rakefile, "# edited\n")
+      Readline.stubs(:readline).returns(nil)
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "# edited\n", File.read(rakefile)
+    end
+
     it 'should append the tailwind watcher to Procfile.dev once' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/Procfile.dev", "web: bundle exec padrino start\nvite: bundle exec vite dev\n")

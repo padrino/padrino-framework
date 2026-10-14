@@ -51,7 +51,7 @@ def setup_stylesheet
   else
     create_file source, TAILWIND_CSS, skip: true
   end
-  create_file destination_root('tasks/tailwind.rake'), TAILWIND_RAKE
+  create_file destination_root('tasks/tailwind.rake'), TAILWIND_RAKE, skip: true
 
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
