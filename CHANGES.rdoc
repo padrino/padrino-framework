@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- WARN #2371 Generators exit with status 1 when they fail (not at a project root, unknown generator, missing name, missing app, unsupported ORM or renderer, existing model or app, invalid fields, a template or plugin that fails to load) instead of 0, and padrino g passes the status on (@nesquena)
+- WARN #2371 Generators exit with status 1 when they fail (not at a project root, unknown generator, missing name, missing app or admin app, no or unsupported ORM, unsupported renderer, existing model or app, invalid fields, a template or plugin that fails to load) instead of 0, and padrino g passes the status on. Code that calls a generator's `start` in-process now gets SystemExit with status 1 on those paths (@nesquena)
 - FIX #2361 Generated tests load the helpers of every mounted app and request each controller's own path, including a sub-app's mount path (@nesquena)
 - FIX #2367 Fetch git submodules and edge Sinatra over https; GitHub no longer serves git:// (@nesquena)
 - FIX #2358 rake mi:create_indexes creates indexes for every Mongoid model, including those outside app/models and models (@nesquena)

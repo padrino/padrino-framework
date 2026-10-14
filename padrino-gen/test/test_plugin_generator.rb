@@ -69,6 +69,14 @@ describe 'PluginGenerator' do
       assert_match_in_file(/class Post < Sequel::Model/, "#{@apptmp}/sample_project/models/post.rb")
     end
 
+    it 'should let a template check whether app succeeded' do
+      template_path = "#{@apptmp}/app_result_template.rb"
+      File.write(template_path, "project orm: :none\nputs(app(:blog) ? 'FIRST OK' : 'FIRST FAILED')\nputs(app(:blog) ? 'AGAIN OK' : 'AGAIN FAILED')\n")
+      out, = capture_subprocess_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{template_path}") }
+      assert_match(/^FIRST OK$/, out)
+      assert_match(/^AGAIN FAILED$/, out)
+    end
+
     it 'should generate a sub app named with a Symbol' do
       template_path = "#{@apptmp}/app_template.rb"
       File.write(template_path, "project orm: :none\napp :blog\n")

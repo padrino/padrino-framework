@@ -72,8 +72,8 @@ module Padrino
       #
       def app(name)
         say "=> Executing: padrino-gen app #{name} -r=#{destination_root}", :magenta
-        Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}")
-        return unless block_given?
+        created = Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}")
+        return created unless block_given?
 
         @_app_name = name
         yield

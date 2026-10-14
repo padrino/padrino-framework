@@ -44,6 +44,7 @@ module Padrino
           @app_name = fetch_app_name
           @admin_name = options[:admin_name].classify
           @admin_path = options[:admin_name].underscore
+          check_app_existence(@admin_path)
           @admin_model = options[:admin_model]
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)

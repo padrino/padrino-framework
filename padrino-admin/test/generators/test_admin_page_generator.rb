@@ -18,6 +18,13 @@ describe 'AdminPageGenerator' do
       assert_no_file_exists("#{@apptmp}/admin")
     end
 
+    it 'should fail when the admin app does not exist' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Unable to locate 'Admin' application/, out)
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin")
+    end
+
     it 'should fail without an existent model' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
