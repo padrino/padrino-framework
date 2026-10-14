@@ -1,5 +1,6 @@
 require_relative 'helper'
 require 'rb-readline'
+require 'timeout'
 
 describe 'ComponentGenerator' do
   def setup
@@ -151,6 +152,15 @@ describe 'ComponentGenerator' do
       assert_equal 'sequel', components_chosen[:orm]
     end
 
+    it 'should stop with the valid choices for an invalid option at the end of input' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
+      error = assert_raises(RuntimeError) do
+        Timeout.timeout(30) { capture_io { generate(:component, '--orm=bogus', "-r=#{@apptmp}/sample_project") } }
+      end
+      assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
+    end
+
     it 'should enable fiber concurrency when adding an orm to a falcon project' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon') }
       capture_io { generate(:component, '--orm=sequel', "-r=#{@apptmp}/sample_project") }
@@ -161,6 +171,12 @@ describe 'ComponentGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma') }
       capture_io { generate(:component, '--orm=sequel', "-r=#{@apptmp}/sample_project") }
       assert_no_match_in_file(/fiber_concurrency/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should load the mocha integration for the project test component' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--script=none') }
+      capture_io { generate(:component, '--mock=mocha', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(%r{^require_relative '../config/boot'\nrequire 'mocha/minitest'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
     it 'should enable @app_name value' do

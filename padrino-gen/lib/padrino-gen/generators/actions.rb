@@ -152,9 +152,33 @@ module Padrino
         choice = options[component]
         until valid_choice?(component, choice)
           say("Option for --#{component} '#{choice}' is not available.", :red)
-          choice = ask("Please enter a valid option for #{component}:", limited_to: choices)
+          choice = ask_valid_option(component, choices, "Please enter a valid option for #{component}:")
         end
         choice
+      end
+
+      ##
+      # Asks once for one of the valid choices of an option; callers re-ask while the answer is invalid.
+      # Thor's limited_to: would repeat the prompt forever at the end of input (no terminal, empty pipe),
+      # so that case raises instead.
+      #
+      # @param [Symbol] option
+      #   The name of the option.
+      # @param [Array<String>] choices
+      #   The valid choices for the option.
+      # @param [String] statement
+      #   The prompt to show.
+      #
+      # @return [String] The answer entered.
+      #
+      # @example
+      #   ask_valid_option(:adapter, %w[mysql sqlite], 'Please, choose a proper adapter:')
+      #
+      def ask_valid_option(option, choices, statement)
+        answer = ask("#{statement} [#{choices.join(', ')}]")
+        raise "No input left to choose a valid --#{option}; pass one of: #{choices.join(', ')}" if answer.nil?
+
+        answer
       end
 
       ##
