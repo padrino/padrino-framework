@@ -47,7 +47,11 @@ module Padrino
           @admin_model = options[:admin_model]
           models.each do |model|
             @orm = default_orm || Padrino::Admin::Generators::Orm.new(model, adapter)
-            self.behavior = :revoke if options[:destroy]
+            if options[:destroy]
+              self.behavior = :revoke
+            else
+              @orm.check_model_orm
+            end
             empty_directory destination_root("#{@admin_path}/views/#{@orm.name_plural}")
 
             template 'templates/page/controller.rb.tt',       destination_root("#{@admin_path}/controllers/#{@orm.name_plural}.rb")

@@ -24,6 +24,29 @@ describe 'AdminPageGenerator' do
       assert_raises(Padrino::Admin::Generators::OrmError) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
     end
 
+    it 'should fail when the model does not match the project orm' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      error = assert_raises(Padrino::Admin::Generators::OrmError) { capture_io { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project") } }
+      assert_match(/Friend.*activerecord/m, error.message)
+    end
+
+    it 'should destroy a page even when the model does not match the project orm' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/admin/views/friends")
+      capture_io { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project", '-d') }
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin/views/friends")
+    end
+
+    it 'should fail when the project has no orm and the model is not activerecord' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(/^:orm:.*\n/, ''))
+      assert_raises(Padrino::Admin::Generators::OrmError) { capture_io { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project") } }
+    end
+
     it 'should correctly generate a new page' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
