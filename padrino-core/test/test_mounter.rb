@@ -245,6 +245,49 @@ describe 'Mounter' do
       assert_equal File.read(__FILE__), res.body
     end
 
+    describe 'serving static assets under a sub-path' do
+      def with_public_files(*files, &block)
+        Dir.mktmpdir do |root|
+          files.each do |file|
+            path = File.join(root, 'public', file)
+            FileUtils.mkdir_p(File.dirname(path))
+            File.write(path, file)
+          end
+          Padrino.stub(:root, proc { |*args| File.expand_path(File.join(root, *args)) }, &block)
+        end
+      end
+
+      it 'should serve assets from the project public folder' do
+        class ::StaticSubApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css') do
+          Padrino.mount('static_sub_app').to('/myapp')
+          res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+          assert res.ok?
+          assert_equal 'stylesheets/site.css', res.body
+        end
+      end
+
+      it 'should serve assets from a public folder named after the uri root' do
+        class ::StaticOwnApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css', 'myapp/stylesheets/site.css') do
+          Padrino.mount('static_own_app').to('/myapp')
+          res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+          assert res.ok?
+          assert_equal 'myapp/stylesheets/site.css', res.body
+        end
+      end
+
+      it 'should serve assets for an app mounted at the root' do
+        class ::StaticRootApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css') do
+          Padrino.mount('static_root_app').to('/')
+          res = Rack::MockRequest.new(Padrino.application).get('/stylesheets/site.css')
+          assert res.ok?
+          assert_equal 'stylesheets/site.css', res.body
+        end
+      end
+    end
+
     it 'should load apps from gems' do
       spec_file = Padrino.root('fixtures', 'app_gem', 'app_gem.gemspec')
       spec = Gem::Specification.load(spec_file)

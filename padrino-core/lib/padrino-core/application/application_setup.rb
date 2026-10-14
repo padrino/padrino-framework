@@ -60,7 +60,10 @@ module Padrino
         set :views,         proc { File.join(root, 'views') }
 
         set :uri_root,      '/'
-        set :public_folder, proc { Padrino.root('public', uri_root) }
+        set :public_folder, proc {
+          app_public = Padrino.root('public', uri_root)
+          File.exist?(app_public) ? app_public : Padrino.root('public')
+        }
         set :images_path,   proc { File.join(public_folder, 'images') }
         set :base_url,      'http://localhost'
       end
