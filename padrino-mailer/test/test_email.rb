@@ -206,6 +206,37 @@ describe 'Email' do
       assert_equal 'alpha hello', alpha.send(:render, :hello)
     end
 
+    it 'should not reuse a cached template from another mailer' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'beta', 'greet.haml'), '%p beta greet')
+      File.write(File.join(views, 'mailers', 'alpha', 'greet.erb'), 'alpha greet')
+      mailer_app(views)
+      @app.set :reload_templates, false
+      @app.mailer(:alpha) { email(:greet) { via :test; render :greet } }
+      @app.mailer(:beta)  { email(:greet) { via :test; render :greet } }
+      assert_equal 'alpha greet', @app.deliver(:alpha, :greet).body.to_s
+      assert_equal '<p>beta greet</p>', @app.deliver(:beta, :greet).body.to_s.strip
+    end
+
+    it 'should render a partial from a mailer template' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'alpha', 'listing.erb'), "<%= partial 'item', object: 'one' %>")
+      File.write(File.join(views, 'mailers', 'alpha', '_item.erb'), 'item <%= item %>')
+      mailer_app(views)
+      @app.mailer(:alpha) { email(:listing) { via :test; render :listing } }
+      assert_equal 'item one', @app.deliver(:alpha, :listing).body.to_s.strip
+    end
+
+    it 'should build forms in a mailer template without a CSRF token' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'alpha', 'confirm.erb'), "<%= button_to 'Confirm', '/confirm' %>")
+      mailer_app(views)
+      @app.mailer(:alpha) { email(:confirm) { via :test; render :confirm } }
+      body = @app.deliver(:alpha, :confirm).body.to_s
+      assert_match(%r{<form[^>]*action="/confirm"}, body)
+      refute_match(/authenticity_token/, body)
+    end
+
     it 'should render each provided format from the mailer path' do
       mailer_app(mailer_views('site'))
       email = @app.deliver(:gamma, :hello)

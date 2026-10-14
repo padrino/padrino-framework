@@ -216,6 +216,14 @@ module Mail # @private
     end
 
     ##
+    # Emails have no session to check a token against, so forms in mailer
+    # templates are built without a CSRF token.
+    #
+    def self.protect_from_csrf
+      false
+    end
+
+    ##
     # Check if we can log.
     #
     def self.logging?
@@ -263,6 +271,9 @@ module Mail # @private
       locals = @_locals || {} if !options[:locals] && locals.empty?
       @template_cache.clear if settings.reload_templates?
 
+      # render(nil, 'template', ...) as RenderHelpers#partial calls it: shift the arguments
+      # the way Padrino::Rendering#render does, before defaulting to the message name.
+      engine, data, options = data, options, locals if engine.nil? && data
       engine ||= message_name
 
       if mailer_name && !engine.to_s.index('/')
