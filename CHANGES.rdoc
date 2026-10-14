@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- NEW #2359 Generated projects set SameSite=Lax on the session cookie (@nesquena)
 - FIX #2360 Projects generated with --mock=mocha load mocha's integration for their test framework (they failed to load in 0.16) (@nesquena)
 - NEW #2364 ActiveRecord model and migration generators take a third field segment, :index or :uniq, to add an index, as in email:string:uniq (@nesquena)
 - FIX #2364 ActiveRecord migrations generated with references or belongs_to fields roll back with remove_references, and belongs_to fields generate t.belongs_to instead of the invalid t.belongsto (@nesquena)
