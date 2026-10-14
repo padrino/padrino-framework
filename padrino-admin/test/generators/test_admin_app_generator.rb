@@ -38,7 +38,11 @@ describe 'AdminAppGenerator' do
     it 'should reuse an existing account model' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
       Object.const_set(:Account, Class.new)
-      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      begin
+        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      rescue SystemExit => e
+        flunk "the admin generator exited with status #{e.status}"
+      end
       assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
       assert_match_in_file(/class Account < ActiveRecord::Base/, "#{@apptmp}/sample_project/models/account.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
@@ -142,6 +146,17 @@ describe 'AdminAppGenerator' do
       `mkdir -p #{custom_template_path} && echo "h1 = 'Hello, custom generator' " > #{custom_template_path}application.slim.tt`
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_match_in_file(/Hello, custom generator/, "#{@apptmp}/sample_project/admin/views/layouts/application.slim")
+    end
+
+    it 'should generate the account pages in an admin app named with a plural' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
+      begin
+        capture_io { generate(:admin_app, '-a=admins', "--root=#{@apptmp}/sample_project") }
+      rescue SystemExit => e
+        flunk "the admin generator exited with status #{e.status}"
+      end
+      assert_file_exists("#{@apptmp}/sample_project/admins/controllers/accounts.rb")
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin")
     end
 
     it 'should generate the admin app under a different folder' do
