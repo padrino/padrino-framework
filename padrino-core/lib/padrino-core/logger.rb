@@ -479,7 +479,7 @@ module Padrino
     #   The message
     #
     def <<(message = nil)
-      message << "\n" unless message[-1] == "\n"
+      message += "\n" unless message[-1] == "\n"
       self.class.mutex.synchronize { @buffer << message }
       flush if @auto_flush
       message

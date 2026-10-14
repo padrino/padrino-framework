@@ -605,7 +605,7 @@ module Padrino
         # Build our controller
         controller = Array(@_controller).map(&:to_s)
 
-        path = path.dup if path.is_a?(String) && path.frozen?
+        path = path.dup if path.is_a?(String)
 
         case path
         when String # path i.e "/index" or "/show"
