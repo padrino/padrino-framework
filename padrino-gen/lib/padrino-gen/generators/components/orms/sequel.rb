@@ -35,7 +35,7 @@ def setup_orm
       sequel.gsub!(/!DB_TEST!/,       "\"sqlite://db/#{db}_test.db\"")
       require_dependencies 'sqlite3'
     else
-      say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
+      say "Failed to generate `config/database.rb` for ORM adapter `#{adapter}`", :red
       raise ArgumentError
     end
   rescue ArgumentError

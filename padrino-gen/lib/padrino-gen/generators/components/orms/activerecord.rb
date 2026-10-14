@@ -138,7 +138,7 @@ def setup_orm
       ar.sub!(/!DB_TEST!/, SQLITE.sub(/!DB_NAME!/, "Padrino.root('db', '#{db}_test.db')"))
       require_dependencies 'sqlite3'
     else
-      say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
+      say "Failed to generate `config/database.rb` for ORM adapter `#{adapter}`", :red
       raise ArgumentError
     end
   rescue ArgumentError

@@ -479,6 +479,13 @@ describe 'ProjectGenerator' do
       end
     end
 
+    it 'should re-ask after an invalid adapter and name the answer given' do
+      Thor::LineEditor.stubs(:readline).returns('nope').then.returns('sqlite')
+      out, = capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=bogus') } }
+      assert_match(/for ORM adapter `nope`/, out)
+      assert_match_in_file(%r{sqlite://}, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
     it 'should re-ask after an invalid answer and take a piped one' do
       Thor::LineEditor.stubs(:readline).returns('bogus2').then.returns('sequel')
       capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=bogus') } }
