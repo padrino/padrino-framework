@@ -121,6 +121,7 @@ module Padrino
       def default_routes
         configure :development do
           get '*__sinatra__/:image.png' do
+            halt 404 unless %w[404 500].include?(params[:image])
             content_type :png
             send_file("#{__dir__}/../images/#{params[:image]}.png")
           end
