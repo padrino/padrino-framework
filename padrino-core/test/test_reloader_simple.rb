@@ -44,6 +44,21 @@ describe 'SimpleReloader' do
       assert_equal 200, status
       assert_match(%r{image/png}, response['Content-Type'])
     end
+
+    it 'should only serve its own images from the development sinatra route' do
+      Dir.mktmpdir do |dir|
+        File.binwrite("#{dir}/outside.png", 'not a padrino image')
+        images = File.expand_path('../lib/padrino-core/images', __dir__)
+        relative = Pathname.new("#{dir}/outside").relative_path_from(Pathname.new(images)).to_s
+        mock_app do
+          set :environment, :development
+          get('/') { 'ok' }
+        end
+        get "/__sinatra__/#{relative.gsub('/', '%2F')}.png"
+        refute_equal 'not a padrino image', body
+        assert_equal 404, status
+      end
+    end
   end
 
   describe 'for simple reload functionality' do
