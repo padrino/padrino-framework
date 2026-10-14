@@ -211,9 +211,27 @@ describe 'AdminApplication' do
     refute @app.access_control.allowed?(Account.editor, '/posts_admin')
     assert @app.access_control.allowed?(Account.admin, '/posts_admin')
 
-    # Paths are compared as the router sees them, after percent-decoding.
+    # Paths are compared after percent-decoding.
     refute @app.access_control.allowed?(Account.editor, '/%70osts_admin')
     assert @app.access_control.allowed?(Account.editor, '/%70osts')
+  end
+
+  it 'should allow decoded non-ASCII paths and prefixes ending in a dot' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/café'
+        role.allow '/v1.'
+      end
+    end
+
+    assert @app.access_control.allowed?(nil, '/caf%C3%A9'.b)
+    assert @app.access_control.allowed?(nil, '/café')
+    assert @app.access_control.allowed?(nil, '/v1.json')
+    refute @app.access_control.allowed?(nil, '/v2.json')
   end
 
   it 'should emulate an ecommerce app' do

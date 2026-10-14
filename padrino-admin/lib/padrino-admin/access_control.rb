@@ -104,7 +104,7 @@ module Padrino
         #
         def allowed?(account = nil, path = nil)
           path = '/' if path.nil? || path.empty?
-          path = Rack::Utils.unescape_path(path) # compare the path as the router matches it
+          path = Rack::Utils.unescape_path(path.b).force_encoding(Encoding::UTF_8) # compare the decoded path
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq
