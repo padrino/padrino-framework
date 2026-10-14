@@ -26,7 +26,8 @@ module <%= @app_name %>
     set :admin_model, '<%= @model_name %>'
     set :login_page,  '/sessions/new'
 
-    enable  :sessions
+    set :sessions, same_site: :lax
+    # set :sessions, same_site: :lax, secure: true # Send the session cookie over HTTPS only
     disable :store_location
 
     access_control.roles_for :any do |role|

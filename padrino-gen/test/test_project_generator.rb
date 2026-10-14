@@ -13,6 +13,12 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the project generator' do
+    it 'should set SameSite=Lax on the session cookie' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      assert_match_in_file(/^    set :sessions, same_site: :lax$/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_no_match_in_file(/^\s*enable :sessions/, "#{@apptmp}/sample_project/app/app.rb")
+    end
+
     it 'should allow simple generator to run and create base_app with no options' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       assert_dir_exists("#{@apptmp}/sample_project")
