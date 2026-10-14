@@ -94,6 +94,32 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{root}/Gemfile").scan(/^gem 'activesupport'/).size
     end
 
+    it 'should keep an activesupport line written as a parenthesized call' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      root = "#{@apptmp}/sample_project"
+      File.write("#{root}/Gemfile", "#{File.read("#{root}/Gemfile")}gem('activesupport', '~> 8.1')\n")
+      capture_io { generate(:component, '--script=vite', "-r=#{root}") }
+      assert_equal 1, File.read("#{root}/Gemfile").scan(/activesupport/).size
+    end
+
+    it 'should apply to a project without a Rakefile' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      FileUtils.rm("#{@apptmp}/sample_project/Rakefile")
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal 'vite', YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+    end
+
+    it 'should apply when the default external encoding is not UTF-8' do
+      original = Encoding.default_external
+      begin
+        capture_io { Encoding.default_external = Encoding::US_ASCII }
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=vite') }
+      ensure
+        capture_io { Encoding.default_external = original }
+      end
+      assert_file_exists("#{@apptmp}/sample_project/app/frontend/entrypoints/application.js")
+    end
+
     it 'should apply to a project without a Gemfile' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       FileUtils.rm("#{@apptmp}/sample_project/Gemfile")

@@ -60,7 +60,7 @@ def setup_script
   end
 
   gemfile = destination_root('Gemfile')
-  require_dependencies 'activesupport', version: '>= 3.1' unless File.exist?(gemfile) && File.read(gemfile).match?(/^\s*gem ['"]activesupport['"]/)
+  require_dependencies 'activesupport', version: '>= 3.1' unless File.exist?(gemfile) && File.read(gemfile).match?(/^\s*gem[\s(]+['"]activesupport['"]/)
   require_dependencies 'vite_padrino', version: '~> 3.0'
   boot = destination_root('config/boot.rb')
   try_require = "require 'active_support/core_ext/object/try' # vite_padrino 3.0.0 needs it until https://github.com/ElMassimo/vite_ruby/pull/635 ships\n"
@@ -80,7 +80,7 @@ def setup_script
   else
     create_file procfile, "web: bundle exec padrino start\nvite: bundle exec vite dev\n"
   end
-  append_file destination_root('Rakefile'), VITE_RAKE
+  append_file destination_root('Rakefile'), VITE_RAKE if File.exist?(destination_root('Rakefile'))
   append_line.call(destination_root('.gitignore'), VITE_GITIGNORE) if File.exist?(destination_root('.gitignore'))
   renderer = fetch_component_choice(:renderer).to_s
   renderer = 'erb' unless %w[haml slim].include?(renderer)
