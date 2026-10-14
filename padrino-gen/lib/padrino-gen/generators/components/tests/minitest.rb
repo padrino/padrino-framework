@@ -3,7 +3,7 @@ MINITEST_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_SETUP)
   require_relative '../config/boot'
   Padrino.mounted_apps.each { |app| Dir[File.join(app.app_root, 'helpers/**/*.rb')].each(&method(:require)) }
 
-  class Minitest::Spec
+  class Minitest::Test
     include Rack::Test::Methods
 
     # You can use this method to custom specify a Rack app
