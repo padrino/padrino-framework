@@ -149,6 +149,16 @@ describe 'PluginGenerator' do
       capture_io { plugin_gen.invoke_all }
     end
 
+    it 'should list the plugins named on the recipes page with the default certificate checks' do
+      page = '<a href="/padrino/padrino-recipes/blob/master/plugins/omniauth_plugin.rb">' \
+             '<a href="/padrino/padrino-recipes/blob/master/plugins/will_paginate_plugin.rb">'
+      WebMock::API.stub_request(:get, Padrino::Generators::Plugin::PLUGIN_URL).to_return(body: page)
+      Net::HTTP.any_instance.expects(:verify_mode=).never
+      out, = capture_io { Padrino::Generators::Plugin.new([], ['-l'], {}).invoke_all }
+      assert_match(/- omniauth$/, out)
+      assert_match(/- will_paginate$/, out)
+    end
+
     it 'should return a list of available plugins with list option' do
       plugin_gen = Padrino::Generators::Plugin.new(['some_plugin'], ['-l', "-r=#{@apptmp}/sample_project"], {})
       plugin_gen.expects(:list_plugins).returns(true).once
