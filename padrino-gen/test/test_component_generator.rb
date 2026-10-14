@@ -112,7 +112,7 @@ describe 'ComponentGenerator' do
       edited.each { |path| File.write(path, "// edited\n") }
       Readline.stubs(:readline).returns(nil)
       capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
-      assert_equal ["// edited\n"] * 3, edited.map { |path| File.read(path) }
+      assert_equal(["// edited\n"] * 3, edited.map { |path| File.read(path) })
       assert_equal 1, File.read("#{@apptmp}/sample_project/Gemfile").scan(/^gem 'activesupport'/).size
       assert_equal 1, File.read("#{@apptmp}/sample_project/config/boot.rb").scan(%r{active_support/core_ext/object/try}).size
       assert_equal 1, File.read("#{@apptmp}/sample_project/Rakefile").scan('ViteRuby.install_tasks').size

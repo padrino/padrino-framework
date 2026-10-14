@@ -203,7 +203,7 @@ describe 'AdminAppGenerator' do
         Bundler.ui.expects(:warn).never
         dsl = Bundler::Dsl.new
         dsl.eval_gemfile(gemfile)
-        assert_equal 1, dsl.dependencies.count { |dep| dep.name == 'activesupport' }
+        assert_equal(1, dsl.dependencies.count { |dep| dep.name == 'activesupport' })
       end
 
       it 'should list activesupport once when admin is added after vite' do
