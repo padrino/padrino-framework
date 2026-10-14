@@ -84,6 +84,8 @@ describe 'Routing' do
       assert_equal 'visible', body
       get '/%2e%2e/public_bak/secret.txt'
       assert_equal 'not found', body
+      get '/visible.txt%00.png'
+      assert_equal 'not found', body
     end
   end
 
