@@ -247,7 +247,7 @@ describe 'Dependencies' do
 
   describe 'Padrino::Reloader.remove_constant' do
     after do
-      Object.send(:remove_const, :RemoveConstantTarget) if Object.const_defined?(:RemoveConstantTarget, false)
+      Object.send(:remove_const, :RemoveConstantTarget) if Object.autoload?(:RemoveConstantTarget) || Object.const_defined?(:RemoveConstantTarget, false)
     end
 
     it 'should not remove a newer class defined under the same name' do
@@ -258,6 +258,14 @@ describe 'Dependencies' do
       assert_same new_class, Object.const_get(:RemoveConstantTarget)
       Padrino::Reloader.remove_constant(new_class)
       refute Object.const_defined?(:RemoveConstantTarget, false)
+    end
+
+    it 'should leave an autoload registered under the removed name alone' do
+      old_class = Object.const_set(:RemoveConstantTarget, Class.new)
+      Object.send(:remove_const, :RemoveConstantTarget)
+      Object.autoload(:RemoveConstantTarget, '/nonexistent/padrino_missing_autoload.rb')
+      Padrino::Reloader.remove_constant(old_class)
+      assert Object.autoload?(:RemoveConstantTarget)
     end
   end
 end
