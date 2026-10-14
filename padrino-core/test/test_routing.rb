@@ -1,4 +1,6 @@
 require_relative 'helper'
+require 'tmpdir'
+require 'fileutils'
 
 class FooError < RuntimeError; end
 
@@ -67,6 +69,22 @@ describe 'Routing' do
     assert_equal response.status, 422
     assert_equal File.size(__FILE__).to_s, response['Content-Length']
     assert_includes response.headers, 'Last-Modified'
+  end
+
+  it 'should not serve files from sibling folders sharing the public folder prefix' do
+    Dir.mktmpdir do |dir|
+      FileUtils.mkdir_p(["#{dir}/public", "#{dir}/public_bak"])
+      File.write("#{dir}/public/visible.txt", 'visible')
+      File.write("#{dir}/public_bak/secret.txt", 'secret')
+      mock_app do
+        set :public_folder, "#{dir}/public"
+        get('/*') { 'not found' }
+      end
+      get '/visible.txt'
+      assert_equal 'visible', body
+      get '/%2e%2e/public_bak/secret.txt'
+      assert_equal 'not found', body
+    end
   end
 
   it 'should ignore trailing delimiters for basic route' do

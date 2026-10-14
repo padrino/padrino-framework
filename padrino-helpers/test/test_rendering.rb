@@ -314,6 +314,24 @@ describe 'Rendering' do
       assert_equal 'bar', body
     end
 
+    it 'should render with logging and a logger without Padrino::Logger::Extensions' do
+      create_template :index, 'plain logger'
+      log = StringIO.new
+      save_logger = Padrino.logger
+      Padrino.logger = Logger.new(log)
+      mock_app do
+        enable :logging
+        get('/') { render(:index, layout: false) }
+      end
+      get '/'
+      assert_equal 200, status
+      assert_equal 'plain logger', body
+      assert_match(/TEMPLATE \(\d+\.\d+s\) .*index/, log.string)
+    ensure
+      Padrino.logger = save_logger
+      remove_views
+    end
+
     it 'should work properly with logging and layout' do
       create_layout :application, 'layout <%= yield %>'
       create_view :index, '<%= foo %>'

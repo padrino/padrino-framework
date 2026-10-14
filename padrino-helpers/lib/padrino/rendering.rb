@@ -132,12 +132,12 @@ module Padrino
       def cache_template_path(options)
         began_at = Time.now
         @_cached_templates ||= {}
-        logging = defined?(settings) && settings.logging? && defined?(logger)
+        logging = defined?(settings) && settings.logging? && defined?(logger) && logger.respond_to?(:bench) && logger.debug?
         if !reload_templates? && (path = @_cached_templates[options])
-          logger.debug :cached, began_at, path[0] if logging
+          logger.bench :cached, began_at, path[0] if logging
         else
           path = @_cached_templates[options] = yield(name)
-          logger.debug :template, began_at, path[0] if path && logging
+          logger.bench :template, began_at, path[0] if path && logging
         end
         path
       end
