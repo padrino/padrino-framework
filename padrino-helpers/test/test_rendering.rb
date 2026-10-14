@@ -218,6 +218,38 @@ describe 'Rendering' do
       get '/'
       assert_equal 'default layout at application', body
     end
+
+    it 'should use a class-level layout given as an absolute path' do
+      absolute_layout = File.expand_path('fixtures/layouts/layout', __dir__)
+      create_view :foo, 'erb file'
+      create_view :foo, 'js file', format: :js
+      mock_app do
+        layout absolute_layout
+        get('/layout_test', provides: %i[html js]) { render :foo }
+      end
+      get '/layout_test'
+      assert_equal 'erb file absolute layout', body
+      get '/layout_test.js'
+      assert_equal 'js file', body
+    end
+
+    it 'should use a class-level absolute layout with cached templates' do
+      absolute_layout = File.expand_path('fixtures/layouts/layout', __dir__)
+      create_layout :"layouts/layout", 'relative layout <%= yield %>'
+      create_view :foo, 'erb file'
+      mock_app do
+        disable :reload_templates
+        layout absolute_layout
+        get('/absolute') { render :foo }
+        get('/relative') { render :foo, layout: :layout }
+      end
+      2.times do
+        get '/absolute'
+        assert_equal 'erb file absolute layout', body
+        get '/relative'
+        assert_equal 'relative layout erb file', body
+      end
+    end
   end
 
   it 'should solve layout in layouts paths' do
