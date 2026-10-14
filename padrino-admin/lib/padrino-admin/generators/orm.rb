@@ -39,7 +39,7 @@ module Padrino
           base = MODEL_BASES[orm]
           return if base.nil? || @klass.ancestors.any? { |mod| mod.name == base }
 
-          raise OrmError, "Model '#{klass_name}' is not a #{base} but the project orm is #{orm}!\nCheck the orm in your .components file."
+          raise OrmError, "Model '#{klass_name}' is not based on #{base} but the project orm is #{orm}!\nCheck the orm in your .components file."
         end
 
         def activerecord?
