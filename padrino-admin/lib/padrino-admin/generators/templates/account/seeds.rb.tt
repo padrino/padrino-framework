@@ -10,7 +10,7 @@ if $stdin.tty?
   password = shell.ask "Tell me the password to use:", echo: false
 else
   # Piped input (CI, Docker): the email and the password on two lines, not echoed.
-  email, password = 2.times.map { $stdin.gets.to_s.chomp }
+  email, password = 2.times.map { $stdin.gets.to_s.strip }
 end
 
 shell.say ""

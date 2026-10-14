@@ -38,8 +38,16 @@ describe 'AdminAppGenerator' do
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       script = <<~RUBY
         require 'thor'
+        # Thor's line editor can echo or buffer piped input, so without a terminal the
+        # seeds must not ask through it.
+        class NoAskShell < Thor::Base.shell
+          def ask(*)
+            raise 'shell.ask used without a terminal'
+          end
+        end
+
         def shell
-          @shell ||= Thor::Base.shell.new
+          @shell ||= NoAskShell.new
         end
         class Account
           def initialize(attributes)
@@ -58,7 +66,7 @@ describe 'AdminAppGenerator' do
       RUBY
       env = { 'BUNDLE_GEMFILE' => File.expand_path('../../../Gemfile', __dir__) }
       out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script,
-                                        chdir: "#{@apptmp}/sample_project", stdin_data: "admin@example.com\nsecret123\n")
+                                        chdir: "#{@apptmp}/sample_project", stdin_data: "admin@example.com \nsecret123\r\n")
       assert status.success?, err
       assert_includes out.lines.map(&:strip), 'SAVED admin@example.com true'
       refute_includes out, 'secret123'
