@@ -1,7 +1,7 @@
 RSPEC_SETUP = <<~TEST.gsub(/^ {12}/, '') unless defined?(RSPEC_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
   require_relative '../config/boot'
-  Padrino.mounted_apps.each { |app| Dir[File.join(app.app_root, 'helpers/**/*.rb')].each(&method(:require)) }
+  Padrino.mounted_apps.each { |app| Padrino.require_dependencies(File.join(app.app_root, '{helpers.rb,helpers/**/*.rb}')) }
 
   RSpec.configure do |conf|
     conf.include Rack::Test::Methods

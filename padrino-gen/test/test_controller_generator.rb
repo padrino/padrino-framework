@@ -204,6 +204,24 @@ describe 'ControllerGenerator' do
       assert_match_in_file(%r{get "/api/v1/demo_items"}, @controller_test_path.gsub('app', 'subby'))
     end
 
+    it 'should generate controller test without a mount prefix when the mount path is interpolated' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
+      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      apps_path = "#{@apptmp}/sample_project/config/apps.rb"
+      File.write(apps_path, File.read(apps_path).sub(".to('/subby')", ".to(\"/\#{ENV.fetch('PREFIX', 'x')}\")"))
+      capture_io { generate(:controller, 'DemoItems', '-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(%r{get "/demo_items"}, @controller_test_path.gsub('app', 'subby'))
+    end
+
+    it 'should generate the controller and its helper when config/apps.rb is missing' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
+      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
+      FileUtils.rm("#{@apptmp}/sample_project/config/apps.rb")
+      capture_io { generate(:controller, 'DemoItems', '-a=/subby', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(%r{get "/demo_items"}, @controller_test_path.gsub('app', 'subby'))
+      assert_file_exists("#{@apptmp}/sample_project/subby/helpers/demo_items_helper.rb")
+    end
+
     it 'should correctly generate file names' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }

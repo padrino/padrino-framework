@@ -64,7 +64,10 @@ module Padrino
               path = Application.process_path_for_parent_params(path, [options[:parent]]).prepend('/')
             end
             path.prepend('/') unless path.start_with?('/')
-            mount_path = File.read(destination_root('config/apps.rb'))[/^Padrino\.mount\(\s*['"]#{Regexp.escape("#{@project_name}::#{@app_name}")}['"].*?\.to\(\s*['"]([^'"]+)['"]/, 1]
+            # ceiling: reads a literal single-line `Padrino.mount(...).to('/path')`; a mount split over lines or
+            # with an interpolated path gets no prefix. Booting the project to ask Padrino.mounted_apps would be exact.
+            apps_rb = destination_root('config/apps.rb')
+            mount_path = File.read(apps_rb)[/^Padrino\.mount\(\s*['"]#{Regexp.escape("#{@project_name}::#{@app_name}")}['"].*?\.to\(\s*['"]([^'"#]+)['"]/, 1] if File.exist?(apps_rb)
             path.prepend(mount_path.chomp('/')) if mount_path
             generate_controller_test(name, path)
           end
