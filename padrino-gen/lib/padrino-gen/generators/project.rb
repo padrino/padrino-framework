@@ -139,7 +139,7 @@ module Padrino
         say "#{name} is ready for development!", :green
         say '=' * 65, :green
         say "$ cd #{options[:root]}/#{name}"
-        say '$ bundle --binstubs' unless options[:bundle]
+        say '$ bundle install && bundle binstubs --all' unless options[:bundle]
         say '=' * 65, :green
         say
       end

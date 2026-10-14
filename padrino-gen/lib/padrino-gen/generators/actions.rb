@@ -448,7 +448,10 @@ module Padrino
       #
       def run_bundler
         say 'Bundling application dependencies using bundler...', :yellow
-        in_root { run 'bundle install --binstubs' }
+        in_root do
+          run 'bundle install'
+          run 'bundle binstubs --all'
+        end
       end
 
       ##

@@ -25,7 +25,7 @@ module Padrino
       end
 
       def app_name
-        @__app_name ||= mounter_options[:app_name] || self.to_s.underscore.to_sym
+        @__app_name ||= mounter_options[:app_name] || Inflections.underscore(self.to_s).to_sym
       end
 
       def setup_application!

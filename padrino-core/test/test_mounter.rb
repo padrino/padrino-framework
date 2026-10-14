@@ -279,6 +279,14 @@ describe 'Mounter' do
       assert_empty RackApp.prerequisites
     end
 
+    it 'should name a mounted Sinatra application without String inflections' do
+      path = File.expand_path("#{__dir__}/fixtures/apps/mountable_apps/rack_apps")
+      require path
+      mounter = Padrino.mount('sinatra_app', app_class: 'SinatraApp', app_file: path)
+      app_name = without_string_inflections { mounter.app_obj.app_name }
+      assert_equal :sinatra_app, app_name
+    end
+
     it 'should support the Rack Application with cascading style' do
       path = File.expand_path("#{__dir__}/fixtures/apps/mountable_apps/rack_apps")
       require path

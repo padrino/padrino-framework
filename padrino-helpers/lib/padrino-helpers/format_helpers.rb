@@ -103,7 +103,7 @@ module Padrino
       #   pluralize(2, 'person') => '2 people'
       #
       def pluralize(count, singular, plural = nil)
-        "#{count || 0} " + ([1, '1'].include?(count) ? singular : (plural || singular.pluralize))
+        "#{count || 0} " + ([1, '1'].include?(count) ? singular : (plural || Inflections.pluralize(singular)))
       end
 
       ##

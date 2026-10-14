@@ -57,6 +57,28 @@ describe 'FormatHelpers' do
     end
   end
 
+  describe 'for #pluralize method' do
+    it 'should pluralize with the given count' do
+      assert_equal '1 person', pluralize(1, 'person')
+      assert_equal '2 people', pluralize(2, 'person')
+      assert_equal '2 folks', pluralize(2, 'person', 'folks')
+    end
+
+    it 'should pluralize without String#pluralize from ActiveSupport or padrino-gen' do
+      hidden = String.method_defined?(:pluralize)
+      if hidden
+        String.send(:alias_method, :__hidden_pluralize, :pluralize)
+        String.send(:remove_method, :pluralize)
+      end
+      assert_equal '2 items', pluralize(2, 'item')
+    ensure
+      if hidden
+        String.send(:alias_method, :pluralize, :__hidden_pluralize)
+        String.send(:remove_method, :__hidden_pluralize)
+      end
+    end
+  end
+
   describe 'for #word_wrap method' do
     it 'should return proper formatting for 8 max width' do
       actual_text = word_wrap('Once upon a time', line_width: 8)
