@@ -44,4 +44,11 @@ def setup_stylesheet
 
   gitignore = destination_root('.gitignore')
   append_file gitignore, "public/stylesheets/application.css\n" if File.exist?(gitignore)
+
+  renderer = fetch_component_choice(:renderer).to_s
+  renderer = 'erb' unless %w[haml slim].include?(renderer)
+  tag = renderer == 'erb' ? "<%= stylesheet_link_tag 'application' %>" : "= stylesheet_link_tag 'application'"
+  say 'Run `bundle exec rake tailwind:build` to build public/stylesheets/application.css (or run Procfile.dev to rebuild on change),', :yellow
+  say "then add to the <head> of your layout (app/views/layouts/application.#{renderer}):", :yellow
+  say "  #{tag}", :yellow
 end
