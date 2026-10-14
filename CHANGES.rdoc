@@ -3,6 +3,7 @@
 == Unreleased
 
 - FIX #NNNN ActiveRecord rake tasks work with ActiveRecord 7.1+ and 8.x (`ar:migrate:up/down/redo`, `ar:rollback` and `ar:forward` no longer raise NoMethodError on `schema_format`; `ar:schema:dump`, and so `ar:migrate`, works on 7.2+; `ar:structure:dump` works on 8.1) (@matsubara0507)
+- FIX #2356 Generated minitest config supports unit-style Minitest::Test classes as well as specs (@nesquena)
 - NEW #2335 Tailwind stylesheet component: `padrino g project --stylesheet=tailwind`, built with the tailwindcss-ruby standalone binary (needs Ruby 3.0+). `rake tailwind:build` and `rake assets:precompile` build public/stylesheets/application.css (@osbre)
 - NEW #2334 Vite script component using vite_padrino: `padrino g project --script=vite`, or `padrino g component --script=vite` in an existing project (@osbre)
 - SEC #2350 Admin access control compares request paths after percent-decoding them (@nesquena)
