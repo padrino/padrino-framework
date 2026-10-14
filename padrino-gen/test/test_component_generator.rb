@@ -51,7 +51,8 @@ describe 'ComponentGenerator' do
 
     it 'should point relative imports of moved public styles at public/stylesheets' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "@import \"reset.css\";\n@import url('print.css') print;\n@import \"//cdn.example.com/x.css\";\n@import url(/base.css);\n.a { color: red; }\n")
+      css = "@import \"reset.css\";\n@import url('print.css') print;\n@import \"//cdn.example.com/x.css\";\n@import url(/base.css);\n.a { color: red; }\n"
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", css)
       capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       expected = "@import \"../../public/stylesheets/reset.css\";\n@import url('../../public/stylesheets/print.css') print;\n@import \"//cdn.example.com/x.css\";\n@import url(/base.css);\n" \
                  "@import \"tailwindcss\";\n\n.a { color: red; }\n"
