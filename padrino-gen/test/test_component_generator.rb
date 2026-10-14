@@ -89,11 +89,20 @@ describe 'ComponentGenerator' do
 
     it 'should tell to remove the old stylesheet engine when switching to tailwind' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      File.write("#{@apptmp}/sample_project/app/stylesheets/application.scss", ".compiled { color: red; }\n")
       File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", ".compiled { color: red; }\n")
       Readline.stubs(:readline).returns('yes').once
       out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       assert_equal "@import \"tailwindcss\";\n", File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
       assert_match(%r{Switching from scss: .* remove them from Gemfile, app/app\.rb and config/initializers/scss\.rb\.}, out)
+    end
+
+    it 'should move hand-written public styles when switching from scss without a scss source' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", ".handwritten { color: red; }\n")
+      Readline.stubs(:readline).returns('yes').once
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "@import \"tailwindcss\";\n\n.handwritten { color: red; }\n", File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
     end
 
     it 'should append the tailwind watcher to Procfile.dev once' do
