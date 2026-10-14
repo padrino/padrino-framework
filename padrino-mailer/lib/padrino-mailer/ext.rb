@@ -13,10 +13,10 @@ module Mail # @private
       # Check if we have an app passed into initialize
       if args[0].respond_to?(:views) && args[0].respond_to?(:reload_templates?)
         app                       = args.shift
-        settings.views            = File.join(app.views, 'mailers')
+        @_views                   = File.join(app.views, 'mailers')
         settings.reload_templates = app.reload_templates?
       else
-        settings.views = File.expand_path('./mailers')
+        @_views = File.expand_path('./mailers')
         settings.reload_templates = true
       end
 
@@ -107,7 +107,7 @@ module Mail # @private
     def part(params = {}, &block)
       part_block = params.delete(:part_block)
       new_part = Mail::Part.new(params)
-      new_part.settings.views = settings.views
+      new_part.views(@_views)
       new_part.settings.reload_templates = settings.reload_templates?
       new_part.instance_eval(&part_block) if part_block
       yield new_part if block_given?
@@ -146,7 +146,8 @@ module Mail # @private
     # Sets the message defined template path to the given view path.
     #
     def views(value)
-      settings.views = value
+      @_views = value
+      @_mailer_views = false
     end
 
     ##
@@ -264,8 +265,16 @@ module Mail # @private
       engine ||= message_name
 
       if mailer_name && !engine.to_s.index('/')
-        settings.views += "/#{mailer_name}" unless settings.views.include?("/#{mailer_name}")
+        @_views = File.join(@_views, mailer_name.to_s) unless @_mailer_views
+        @_mailer_views = true
         engine = engine.to_s.sub(%r{^#{mailer_name}/}, '')
+      end
+
+      # Pass the views path per render: class-level settings are shared by every message.
+      if data.is_a?(Hash)
+        data = { views: @_views }.merge(data)
+      else
+        options = { views: @_views }.merge(options)
       end
 
       provides.each do |format|
