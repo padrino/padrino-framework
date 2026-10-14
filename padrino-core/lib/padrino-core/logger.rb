@@ -89,8 +89,8 @@ module Padrino
           if args.size > 1
             bench(args[0], args[1], args[2], name)
           else
-            location = resolve_source_location(caller(1).shift)
-            args.unshift(location) if location && enable_source_location?
+            location = resolve_source_location(caller(1).shift) if enable_source_location?
+            args.unshift(location) if location
             push(args * '', name)
           end
         end
@@ -98,7 +98,7 @@ module Padrino
         define_method(:"#{name}?") { number >= level }
       end
 
-      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in `.+?')?$/
+      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in [`'].+?')?$/
 
       ##
       # Returns true if :source_location is set to true.
@@ -115,7 +115,11 @@ module Padrino
         return unless path && line
 
         root = Padrino.root
-        path = File.realpath(path) if Pathname.new(path).relative?
+        if Pathname.new(path).relative?
+          return unless File.exist?(path) # code from irb, eval or ruby -e has no file
+
+          path = File.realpath(path)
+        end
         return unless path.start_with?(root) && !path.start_with?(Padrino.root('vendor'))
 
         "[#{path.gsub("#{root}/", '')}:#{line}] "
