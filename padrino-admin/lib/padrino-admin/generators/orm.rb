@@ -32,10 +32,13 @@ module Padrino
           @columns        = columns
           @column_fields  = column_fields
           raise OrmError, "Model '#{klass_name}' could not be found!\nPerhaps you would like to run 'bundle exec padrino g model #{klass_name}' to create it first?" if @columns.nil? && @klass.nil?
-          check_model_orm if @columns.nil?
         end
 
+        # Raises OrmError when the model does not belong to the project's orm. Only needed when
+        # reading the model's columns to generate a page, so destroying a page skips it.
         def check_model_orm
+          return unless @columns.nil?
+
           base = MODEL_BASES[orm]
           return if base.nil? || @klass.ancestors.any? { |mod| mod.name == base }
 
