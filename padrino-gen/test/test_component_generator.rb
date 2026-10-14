@@ -105,6 +105,19 @@ describe 'ComponentGenerator' do
       capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
       assert_equal "web: bundle exec puma\nvite: bin/vite dev\n", File.read(procfile)
     end
+
+    it 'should keep edited vite files when applied again without a terminal' do
+      capture_io { generate(:project, 'sample_project', '--script=vite', "--root=#{@apptmp}") }
+      edited = %w[vite.config.ts app/frontend/entrypoints/application.js config/vite.json].map { |path| "#{@apptmp}/sample_project/#{path}" }
+      edited.each { |path| File.write(path, "// edited\n") }
+      Readline.stubs(:readline).returns(nil)
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal ["// edited\n"] * 3, edited.map { |path| File.read(path) }
+      assert_equal 1, File.read("#{@apptmp}/sample_project/Gemfile").scan(/^gem 'activesupport'/).size
+      assert_equal 1, File.read("#{@apptmp}/sample_project/config/boot.rb").scan(%r{active_support/core_ext/object/try}).size
+      assert_equal 1, File.read("#{@apptmp}/sample_project/Rakefile").scan('ViteRuby.install_tasks').size
+      assert_equal "web: bundle exec padrino start\nvite: bundle exec vite dev\n", File.read("#{@apptmp}/sample_project/Procfile.dev")
+    end
   end
 
   describe 'specified of same the component' do

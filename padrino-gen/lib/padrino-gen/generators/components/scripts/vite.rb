@@ -57,11 +57,11 @@ def setup_script
   require_dependencies 'vite_padrino', version: '~> 3.0'
   inject_into_file destination_root('config/boot.rb'), "require 'active_support/core_ext/object/try' # vite_padrino 3.0.0, see vite_ruby#635\n", after: "Bundler.require(:default, RACK_ENV)\n"
   initializer :VitePadrino
-  create_file destination_root('config/vite.json'), VITE_JSON
-  create_file destination_root('vite.config.ts'), VITE_CONFIG
+  create_file destination_root('config/vite.json'), VITE_JSON, skip: true
+  create_file destination_root('vite.config.ts'), VITE_CONFIG, skip: true
   package_json_exists = File.exist?(destination_root('package.json'))
   create_file destination_root('package.json'), VITE_PACKAGE_JSON, skip: true
-  create_file destination_root('app/frontend/entrypoints/application.js'), VITE_ENTRYPOINT
+  create_file destination_root('app/frontend/entrypoints/application.js'), VITE_ENTRYPOINT, skip: true
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
     append_file procfile, "vite: bundle exec vite dev\n" unless File.read(procfile).match?(/^vite:/)
