@@ -848,7 +848,7 @@ module Padrino
       def adjust_color(color)
         return '#000000' unless color =~ COLOR_CODE_REGEXP
         return color if (color_size = color.size) == 7
-        color.slice(1, color_size - 1).each_char.with_object('#') do |chr, obj|
+        color.slice(1, color_size - 1).each_char.with_object(+'#') do |chr, obj|
           obj << chr * 2
         end
       end

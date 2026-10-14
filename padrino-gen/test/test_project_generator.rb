@@ -70,6 +70,20 @@ describe 'ProjectGenerator' do
       assert_match(%r{cd /tmp/project}, out)
     end
 
+    it 'should run bundle install then bundle binstubs --all with --bundle' do
+      generator = Padrino::Generators::Project.any_instance
+      generator.stubs(:run)
+      generator.expects(:run).with('bundle install').once
+      generator.expects(:run).with('bundle binstubs --all').once
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--bundle') }
+    end
+
+    it 'should tell the user to run bundle binstubs --all without --bundle' do
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      assert_match(/\$ bundle install && bundle binstubs --all/, out)
+      refute_match(/--binstubs/, out)
+    end
+
     it 'should allow specifying alternate application name' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=base_app') }
       assert_dir_exists("#{@apptmp}/sample_project")
@@ -479,6 +493,19 @@ describe 'ProjectGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery-ujs.js")
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
+    end
+
+    it 'should generate jquery with the -s alias' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-s', 'jquery') }
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery.js")
+      assert_no_match_in_file(/gem 'jquery'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should point -s with a server name at --server instead of prompting' do
+      Padrino::Generators::Project.any_instance.stubs(:ask).raises('prompted for a script')
+      error = assert_raises(RuntimeError) { generate(:project, 'sample_project', "--root=#{@apptmp}", '-s', 'puma') }
+      assert_match(/--server=puma/, error.message)
+      assert_no_dir_exists("#{@apptmp}/sample_project")
     end
 
     it 'should properly generate for mootools' do

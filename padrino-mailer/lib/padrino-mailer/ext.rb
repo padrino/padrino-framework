@@ -5,18 +5,19 @@ module Mail # @private
     include Sinatra::Templates
     include Padrino::Rendering if defined?(Padrino::Rendering)
     include Padrino::Helpers::RenderHelpers if defined? Padrino::Helpers::RenderHelpers
+    include Padrino::Helpers if defined?(Padrino::Helpers)
     attr_reader :template_cache
     attr_accessor :mailer_name, :message_name
 
     def initialize_with_app(*args, &block)
-      @template_cache = Tilt::Cache.new
+      @template_cache = Sinatra::TemplateCache.new
       # Check if we have an app passed into initialize
       if args[0].respond_to?(:views) && args[0].respond_to?(:reload_templates?)
         app                       = args.shift
-        settings.views            = File.join(app.views, 'mailers')
+        @_views                   = File.join(app.views, 'mailers')
         settings.reload_templates = app.reload_templates?
       else
-        settings.views = File.expand_path('./mailers')
+        @_views = File.expand_path('./mailers')
         settings.reload_templates = true
       end
 
@@ -107,7 +108,7 @@ module Mail # @private
     def part(params = {}, &block)
       part_block = params.delete(:part_block)
       new_part = Mail::Part.new(params)
-      new_part.settings.views = settings.views
+      new_part.views(@_views)
       new_part.settings.reload_templates = settings.reload_templates?
       new_part.instance_eval(&part_block) if part_block
       yield new_part if block_given?
@@ -146,7 +147,8 @@ module Mail # @private
     # Sets the message defined template path to the given view path.
     #
     def views(value)
-      settings.views = value
+      @_views = value
+      @_mailer_views = false
     end
 
     ##
@@ -214,6 +216,21 @@ module Mail # @private
     end
 
     ##
+    # Emails have no session to check a token against, so forms in mailer
+    # templates are built without a CSRF token.
+    #
+    def self.protect_from_csrf
+      false
+    end
+
+    ##
+    # The form builder form_for and fields_for use in mailer templates.
+    #
+    def self.default_builder
+      'StandardFormBuilder'
+    end
+
+    ##
     # Check if we can log.
     #
     def self.logging?
@@ -261,28 +278,55 @@ module Mail # @private
       locals = @_locals || {} if !options[:locals] && locals.empty?
       @template_cache.clear if settings.reload_templates?
 
+      # render(nil, 'template', ...) as RenderHelpers#partial calls it: shift the arguments
+      # the way Padrino::Rendering#render does, before defaulting to the message name.
+      engine, data, options = data, options, locals if engine.nil? && data && !data.is_a?(Hash)
       engine ||= message_name
 
       if mailer_name && !engine.to_s.index('/')
-        settings.views += "/#{mailer_name}" unless settings.views.include?("/#{mailer_name}")
+        @_views = File.join(@_views, mailer_name.to_s) unless @_mailer_views
+        @_mailer_views = true
         engine = engine.to_s.sub(%r{^#{mailer_name}/}, '')
       end
 
-      provides.each do |format|
-        part do |p|
-          p.content_type(format)
-          p.send(:render, engine, data, options, locals, &block)
-          add_multipart_alternate_header if html_part || provides.include?(:html)
-        end
+      # Pass the views path per render: class-level settings are shared by every message.
+      if data.is_a?(Hash)
+        data = { views: @_views }.merge(data)
+      else
+        options = { views: @_views }.merge(options)
       end
 
-      self.body = super(engine, data, options, locals, &block) if provides.empty?
+      # A render nested in a template (a partial) returns its output; only the outermost one sets the body.
+      return super(engine, data, options, locals, &block) if @_rendering
+
+      begin
+        @_rendering = true
+        provides.each do |format|
+          part do |p|
+            p.content_type(format)
+            p.send(:render, engine, data, options, locals, &block)
+            add_multipart_alternate_header if html_part || provides.include?(:html)
+          end
+        end
+
+        self.body = super(engine, data, options, locals, &block) if provides.empty?
+      ensure
+        @_rendering = false
+      end
     end
 
     alias original_partial partial if instance_methods.include?(:partial)
     def partial(template, options = {}, &block)
       raise "gem 'padrino-helpers' is required to render partials" unless respond_to?(:original_partial)
-      self.body = original_partial(template, options, &block)
+      return original_partial(template, options, &block) if @_rendering
+
+      begin
+        @_rendering = true
+        output = original_partial(template, options, &block)
+      ensure
+        @_rendering = false
+      end
+      self.body = output
     end
 
     ##

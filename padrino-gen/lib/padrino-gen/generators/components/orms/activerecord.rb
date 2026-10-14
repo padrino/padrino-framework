@@ -112,7 +112,7 @@ CONNECTION_POOL_MIDDLEWARE = <<~MIDDLEWARE
 MIDDLEWARE
 
 def setup_orm
-  ar = AR
+  ar = AR.dup
   db = @project_name.underscore
 
   begin

@@ -34,7 +34,6 @@ module Padrino
       class_option :renderer,       type: :string,  aliases: '-e',                     desc: 'Rendering engine (erb, haml, slim)'
       class_option :admin_model,    type: :string,  aliases: '-m', default: 'Account', desc: 'The name of model for access controlling'
       class_option :admin_name,     type: :string,  aliases: '-a', default: 'admin',   desc: 'The admin application name and path'
-      # class_option :models_path,     desc: 'The models destination path', default: '.', type: :string
 
       # Copies over the Padrino base admin application.
       def create_admin
@@ -82,7 +81,6 @@ module Padrino
 
           params = [
             @model_singular, 'name:string', 'surname:string', 'email:string', 'crypted_password:string', 'role:string',
-            "-a=#{options[:models_path]}",
             "-r=#{options[:root]}"
           ]
           params << '-s' if options[:skip_migration]
