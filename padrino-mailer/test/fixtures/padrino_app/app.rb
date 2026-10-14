@@ -37,12 +37,13 @@ class PadrinoApp < Padrino::Application
     end
 
     message :helper do |name|
-      subject 'Welcome Helper!'
-      to      'jim@fake.com'
-      from    'noreply@custom.com'
-      locals  name: name
-      via     :test
-      render  'sample/helper_message'
+      subject      'Welcome Helper!'
+      to           'jim@fake.com'
+      from         'noreply@custom.com'
+      content_type :html
+      locals       name: name
+      via          :test
+      render       'sample/helper_message'
     end
 
     message :default_mailer_name do |name|
