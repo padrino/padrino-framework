@@ -18,7 +18,7 @@ module Padrino
       method_option :pid,            type: :string,  aliases: '-i', desc: 'File to store pid.'
       method_option :debug,          type: :boolean,                desc: 'Set debugging flags.'
       method_option :options,        type: :array,   aliases: '-O', desc: <<~DESC.chomp
-        --options NAME=VALUE NAME2=VALUE2'. pass VALUE to the server as option NAME. If no VALUE, sets it to true. Run '#{$PROGRAM_NAME} --server_options
+        --options NAME=VALUE NAME2=VALUE2. pass VALUE to the server as option NAME. If no VALUE, sets it to true. Run '#{$PROGRAM_NAME} start --server_options'
       DESC
       method_option :server_options, type: :boolean,                desc: "Tells the current server handler's options that can be used with --options"
 
@@ -48,7 +48,7 @@ module Padrino
       # https://github.com/rack/rack/blob/master/lib/rack/server.rb\#L100
       def server_options(options)
         info = []
-        server = Rack::Handler.get(options[:server]) || Rack::Handler.default(options)
+        server = Rackup::Handler.get(options[:server]) || Rackup::Handler.default
         if server.respond_to?(:valid_options)
           info << ''
           info << "Server-specific options for #{server.name}:"
@@ -62,7 +62,7 @@ module Padrino
           return '' unless has_options
         end
         info.join("\n")
-      rescue NameError
+      rescue NameError, LoadError
         "Warning: Could not find handler specified (#{options[:server] || 'default'}) to determine handler-specific options"
       end
 

@@ -102,6 +102,19 @@ describe 'PadrinoLogger' do
       assert_match(/log via alias/, @log.string)
     end
 
+    it 'should not warn about an empty datetime format' do
+      setup_logger(log_level: :error, colorize_logging: false, format_datetime: '')
+      verbose = $VERBOSE
+      begin
+        $VERBOSE = true
+        _, err = capture_io { @logger.error 'no timestamp' }
+      ensure
+        $VERBOSE = verbose
+      end
+      assert_equal "  ERROR -  no timestamp\n", @log.string
+      assert_empty err
+    end
+
     it 'should not blow up on mixed or broken encodings' do
       setup_logger(log_level: :error, auto_flush: false)
       binary_data = "\xD0".b
