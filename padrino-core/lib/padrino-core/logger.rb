@@ -527,7 +527,8 @@ module Padrino
     alias write <<
 
     def format(message, level)
-      Kernel.format(@format_message, stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip)
+      datetime = @format_datetime.empty? ? '' : Time.now.strftime(@format_datetime)
+      Kernel.format(@format_message, stylized_level(level), colorize(datetime, :yellow), message.to_s.strip)
     end
 
     ##
