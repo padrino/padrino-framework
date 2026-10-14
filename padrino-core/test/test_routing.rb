@@ -1743,7 +1743,7 @@ describe 'Routing' do
   it 'should execute the before/after filters when they are inserted after the target route' do
     mock_app do
       controller :after_test do
-        global = 'global variable'
+        global = +'global variable'
         get(:index) { global }
         get(:foo) { global }
         before(:index) { global.delete!(' ') }
