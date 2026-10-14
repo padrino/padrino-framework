@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2375 `--script jquery` copies jQuery 3.7.1 and the updated UJS adapter (the method form uses the link's href verbatim; X-CSRF-Token goes only on same-origin requests that change data) (@nesquena)
 - FIX #2372 Running a migration and a seed in one rake call (`rake ar:migrate db:seed`) loads the models instead of failing with an uninitialized constant (@nesquena)
 - WARN #2371 Generators exit with status 1 when they fail (not at a project root, unknown generator, missing name, missing app or admin app, no or unsupported ORM, unsupported renderer, existing model or app, invalid fields, a template or plugin that fails to load) instead of 0, and padrino g passes the status on. Code that calls a generator's `start` in-process now gets SystemExit with status 1 on those paths (@nesquena)
 - FIX #2369 Logging from `padrino console`, inline `padrino runner` code or `ruby -e` no longer raises Errno::ENOENT, and `:source_location` works with Ruby 3.4 backtraces (@nesquena)
