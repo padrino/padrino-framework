@@ -5,6 +5,8 @@
 - FIX #2337 `padrino g project -b` works with Bundler 4: it runs `bundle install` and `bundle binstubs --all` instead of the removed `bundle install --binstubs` (@achiurizo)
 - FIX #2337 `padrino start --server_options` works with Rack 3 (@achiurizo)
 - FIX #2337 Constant removal on reload and `app_name` of mounted Sinatra apps work without padrino-gen or ActiveSupport loaded (@achiurizo)
+- FIX #2340 Mailer views path no longer breaks when the app path contains the mailer name, and no longer leaks between messages delivered concurrently (@achiurizo)
+- FIX #2340 Padrino view helpers (`link_to` etc.) are available in mailer templates (@achiurizo)
 - NEW #2331 Faster boot outside development: files are no longer tracked for reloading unless `Padrino::Reloader.enabled = true` (@osbre)
 - WARN #2331 Reloading outside development (`enable :reload`, `Padrino.reload!` or `reload!` in the console) needs `Padrino::Reloader.enabled = true` before `Padrino.load!`. Without it, app files and controllers still reload, but changes to lib, models, shared and app prerequisites (e.g. app/models) are skipped with a warning
 - FIX #2331 Excluding a constant from reloading no longer also excludes constants whose names merely start with it (e.g. excluding `F` excluded `Foo`); only the constant and its namespace are excluded, and symbols and classes are accepted too
