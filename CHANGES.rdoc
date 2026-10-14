@@ -2,6 +2,8 @@
 
 == Unreleased
 
+- SEC #2350 Admin access control compares request paths after percent-decoding them (@nesquena)
+- WARN #2350 Admin access control matches allowed paths on path boundaries: `allow '/posts'` covers `/posts`, `/posts/...` and `/posts.json` but no longer `/posts_admin`; allow such paths explicitly (@nesquena)
 - SEC #2349 The development-only `__sinatra__` image route serves only Padrino's own error-page images (@nesquena)
 - FIX #2348 `form_for` and `fields_for` work in mailer templates (@nesquena)
 - FIX #2346 Mailer templates: cached templates are keyed by views path (no Errno::ENOENT when two mailers share a template name in production), and `partial`, `form_tag` and `button_to` work. With `reload_templates` off, app renders with a per-render `views:`, `layout_options` views or an absolute layout path no longer pick up another path's cached template (@nesquena)
