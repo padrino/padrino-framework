@@ -18,6 +18,10 @@ TAILWIND_RAKE = <<~RAKE unless defined?(TAILWIND_RAKE)
       sh Tailwindcss::Ruby.executable, *TAILWIND_ARGS, '--watch=always'
     end
   end
+
+  namespace :assets do
+    task precompile: 'tailwind:build'
+  end
 RAKE
 
 def setup_stylesheet

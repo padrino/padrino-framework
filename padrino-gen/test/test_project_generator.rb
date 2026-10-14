@@ -649,6 +649,7 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'tailwindcss-ruby', '~> 4.0'$/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/@import "tailwindcss";/, "#{@apptmp}/sample_project/app/stylesheets/application.css")
       assert_match_in_file(/task :build.*task :watch/m, "#{@apptmp}/sample_project/tasks/tailwind.rake")
+      assert_match_in_file(/namespace :assets do\n\s*task precompile: 'tailwind:build'$/, "#{@apptmp}/sample_project/tasks/tailwind.rake")
       assert_match_in_file(/^web: bundle exec padrino start\ncss: bundle exec rake tailwind:watch$/, "#{@apptmp}/sample_project/Procfile.dev")
       assert_match_in_file(%r{^public/stylesheets/application\.css$}, "#{@apptmp}/sample_project/.gitignore")
     end
