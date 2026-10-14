@@ -59,8 +59,8 @@ def setup_script
     append_file path, content.empty? || content.end_with?("\n") ? text : "\n#{text}"
   end
 
-  gemfile = File.read(destination_root('Gemfile'))
-  require_dependencies 'activesupport', version: '>= 3.1' unless gemfile.match?(/^\s*gem ['"]activesupport['"]/)
+  gemfile = destination_root('Gemfile')
+  require_dependencies 'activesupport', version: '>= 3.1' unless File.exist?(gemfile) && File.read(gemfile).match?(/^\s*gem ['"]activesupport['"]/)
   require_dependencies 'vite_padrino', version: '~> 3.0'
   boot = destination_root('config/boot.rb')
   try_require = "require 'active_support/core_ext/object/try' # vite_padrino 3.0.0 needs it until https://github.com/ElMassimo/vite_ruby/pull/635 ships\n"

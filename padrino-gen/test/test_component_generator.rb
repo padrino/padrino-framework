@@ -94,6 +94,13 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{root}/Gemfile").scan(/^gem 'activesupport'/).size
     end
 
+    it 'should apply to a project without a Gemfile' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      FileUtils.rm("#{@apptmp}/sample_project/Gemfile")
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_file_exists("#{@apptmp}/sample_project/vite.config.ts")
+    end
+
     it 'should say how to require Object#try when config/boot.rb has no Bundler.require line' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       root = "#{@apptmp}/sample_project"
