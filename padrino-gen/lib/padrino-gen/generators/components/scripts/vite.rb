@@ -63,7 +63,8 @@ def setup_script
   require_dependencies 'activesupport', version: '>= 3.1' unless gemfile.match?(/^\s*gem ['"]activesupport['"]/)
   require_dependencies 'vite_padrino', version: '~> 3.0'
   boot = destination_root('config/boot.rb')
-  inject_into_file boot, "require 'active_support/core_ext/object/try' # vite_padrino 3.0.0 needs it until https://github.com/ElMassimo/vite_ruby/pull/635 ships\n", after: "Bundler.require(:default, RACK_ENV)\n"
+  try_require = "require 'active_support/core_ext/object/try' # vite_padrino 3.0.0 needs it until https://github.com/ElMassimo/vite_ruby/pull/635 ships\n"
+  inject_into_file boot, try_require, after: "Bundler.require(:default, RACK_ENV)\n"
   unless File.read(boot).include?('active_support/core_ext/object/try')
     say "Add `require 'active_support/core_ext/object/try'` after Bundler.require in config/boot.rb: vite_padrino 3.0.0 needs Object#try.", :red
   end

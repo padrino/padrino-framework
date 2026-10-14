@@ -89,7 +89,7 @@ describe 'ComponentGenerator' do
     it 'should keep an activesupport line the Gemfile already has' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       root = "#{@apptmp}/sample_project"
-      File.write("#{root}/Gemfile", File.read("#{root}/Gemfile") + "gem 'activesupport', '~> 8.1'\n")
+      File.write("#{root}/Gemfile", "#{File.read("#{root}/Gemfile")}gem 'activesupport', '~> 8.1'\n")
       capture_io { generate(:component, '--script=vite', "-r=#{root}") }
       assert_equal 1, File.read("#{root}/Gemfile").scan(/^gem 'activesupport'/).size
     end
