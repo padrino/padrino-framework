@@ -3,9 +3,7 @@
 task :environment do
   require File.expand_path('config/boot.rb', Rake.application.original_dir)
 
-  Padrino.mounted_apps.each do |app|
-    app.app_obj.setup_application!
-  end
+  Padrino.mounted_apps.each(&:setup_application!)
 end
 
 task :skeleton do

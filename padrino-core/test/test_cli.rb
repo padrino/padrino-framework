@@ -4,7 +4,7 @@ require 'tmpdir'
 
 describe 'Padrino::Cli::Base' do
   describe 'run' do
-    it 'should load the controllers of mounted apps before running the code' do
+    it 'should set up the mounted apps before running the code' do
       Dir.mktmpdir do |dir|
         FileUtils.mkdir_p(File.join(dir, 'config'))
         FileUtils.mkdir_p(File.join(dir, 'app', 'controllers'))
@@ -14,7 +14,7 @@ describe 'Padrino::Cli::Base' do
           PADRINO_ROOT = #{dir.inspect} unless defined?(PADRINO_ROOT)
           require 'padrino-core'
           require_relative '../app/app'
-          Padrino.mount('RunnerDemo', app_file: File.expand_path('../app/app.rb', __dir__)).to('/')
+          Padrino.mount('RunnerDemo', app_file: File.expand_path('../app/app.rb', __dir__)).to('/runner')
           Padrino.load!
         RUBY
         script = <<~RUBY
@@ -25,7 +25,7 @@ describe 'Padrino::Cli::Base' do
         env = { 'RACK_ENV' => 'test', 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
         out, err, status = Open3.capture3(env, RbConfig.ruby, '-I', lib, '-e', script, chdir: dir)
         assert status.success?, err
-        assert_includes out.lines.map(&:strip), 'URL /hello'
+        assert_includes out.lines.map(&:strip), 'URL /runner/hello'
       end
     end
   end

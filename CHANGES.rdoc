@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #2366 `padrino run` sets up the mounted apps, so their routes and mailers are available, as in `rake` and `padrino console` (@nesquena)
+- FIX #2366 `padrino runner` (`run`, `r`) sets up the mounted apps, so their routes and mailers are available; there and in `padrino console` and rake tasks that depend on `:environment`, a sub-app's `url` includes its mount path (@nesquena)
 - FIX #2353 Generators stop with an error listing the valid options when given an invalid component or adapter and no input is left, instead of prompting forever (@nesquena)
 - FIX #2355 The development reloader no longer removes a newer class that reuses an unloaded class's name (@genkami)
 - FIX #2356 Generated minitest config supports unit-style Minitest::Test classes as well as specs (@nesquena)
