@@ -39,7 +39,7 @@ def setup_stylesheet
   # Once the source exists, or a sass/scss/less engine compiles it, that file is build output and must not be merged.
   source = destination_root('app/stylesheets/application.css')
   existing = destination_root('public/stylesheets/application.css')
-  compiled = preprocessed && !Dir[destination_root('app/stylesheets/application.{sass,scss,less}')].empty?
+  compiled = preprocessed && %w[sass scss less].any? { |ext| File.exist?(destination_root("app/stylesheets/application.#{ext}")) }
   if !compiled && !File.exist?(source) && File.exist?(existing)
     css = File.binread(existing).delete_prefix("\xEF\xBB\xBF".b)
     # Browsers ignore @charset and @import after other rules, so keep them above Tailwind's import.

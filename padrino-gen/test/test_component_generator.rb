@@ -105,6 +105,16 @@ describe 'ComponentGenerator' do
       assert_equal "@import \"tailwindcss\";\n\n.handwritten { color: red; }\n", File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
     end
 
+    it 'should not move compiled scss output when the project path has glob characters' do
+      root = "#{@apptmp}/projects [old]"
+      capture_io { generate(:project, 'sample_project', "--root=#{root}", '--stylesheet=scss') }
+      File.write("#{root}/sample_project/app/stylesheets/application.scss", ".compiled { color: red; }\n")
+      File.write("#{root}/sample_project/public/stylesheets/application.css", ".compiled { color: red; }\n")
+      Readline.stubs(:readline).returns('yes').once
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{root}/sample_project") }
+      assert_equal "@import \"tailwindcss\";\n", File.read("#{root}/sample_project/app/stylesheets/application.css")
+    end
+
     it 'should append the tailwind watcher to Procfile.dev once' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/Procfile.dev", "web: bundle exec padrino start\nvite: bundle exec vite dev\n")
