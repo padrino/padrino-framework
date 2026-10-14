@@ -259,14 +259,16 @@ describe 'Email' do
       assert_equal 'B[beta hello]', @app.deliver(:beta, :boxed).body.to_s.strip
     end
 
+    MailerFormUser = Struct.new(:name) unless defined?(MailerFormUser)
+
     it 'should build forms with form_for in a mailer template' do
       views = mailer_views('site')
-      File.write(File.join(views, 'mailers', 'alpha', 'signup.erb'), "<% @user = Struct.new(:name).new('Joe') %><%= form_for(:user, '/signup') { |f| f.text_field(:name) } %>")
+      File.write(File.join(views, 'mailers', 'alpha', 'signup.erb'), "<% @user = MailerFormUser.new('Joe') %><%= form_for(:user, '/signup') { |f| f.text_field(:name) } %>")
       mailer_app(views)
       @app.mailer(:alpha) { email(:signup) { via :test; render :signup } }
       body = @app.deliver(:alpha, :signup).body.to_s
       assert_match(%r{<form[^>]*action="/signup"}, body)
-      assert_match(/<input type="text" name="[^"]*\[name\]" value="Joe"/, body)
+      assert_match(/<input type="text" name="mailer_form_user\[name\]" value="Joe"/, body)
     end
 
     it 'should build forms in a mailer template without a CSRF token' do
