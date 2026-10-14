@@ -70,6 +70,20 @@ describe 'ProjectGenerator' do
       assert_match(%r{cd /tmp/project}, out)
     end
 
+    it 'should run bundle install then bundle binstubs --all with --bundle' do
+      generator = Padrino::Generators::Project.any_instance
+      generator.stubs(:run)
+      generator.expects(:run).with('bundle install').once
+      generator.expects(:run).with('bundle binstubs --all').once
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--bundle') }
+    end
+
+    it 'should tell the user to run bundle binstubs --all without --bundle' do
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      assert_match(/\$ bundle install && bundle binstubs --all/, out)
+      refute_match(/--binstubs/, out)
+    end
+
     it 'should allow specifying alternate application name' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=base_app') }
       assert_dir_exists("#{@apptmp}/sample_project")
