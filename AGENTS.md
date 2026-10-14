@@ -29,6 +29,8 @@ bundle exec rubocop <files you changed>
 
 - Run suites one at a time. Some tests use fixed paths under `/tmp`, so two
   suites running at once can fail each other.
+- Treat a test that fails only sometimes as a bug to fix, not something to
+  re-run until it passes.
 - `padrino-helpers/test/test_rendering.rb` errors when run on its own; run the
   padrino-helpers suite instead.
 - Exercise generator changes through the real CLI as well as the tests, e.g.
@@ -70,6 +72,61 @@ So, in code you add:
   documented behaviour needs a matching PR on padrino-docs. There, regenerate
   `llms-full.txt` with `LANG=C.UTF-8 ruby scripts/generate_llms_txt.rb`.
   Docs for unreleased features are merged when the release ships.
+
+## Writing a change
+
+A wrong change that passes the tests is worse than no change. These habits
+prevent most of the bugs that review catches here:
+
+- **Reproduce first.** Show the bug on current master with your own repro
+  before fixing it, and trace the symptom to its cause. Read the history
+  (`git log -p`, `git blame`, `git log -S`): something that looks missing may
+  have been left out on purpose.
+- **Say what "done" means up front**, then check it in running code: generate
+  a real project, boot it, make the request. "The tests pass" and "the diff
+  looks right" aren't done.
+- **Keep the change surgical.** No drive-by renames or cleanups, and no
+  features nobody asked for. Match the conventions of the code around you,
+  and raise disagreements separately.
+- **Prefer the smallest thing that works:** reuse what the codebase has, then
+  the standard library, then an existing dependency, before new code. Don't
+  leave an old and a new way of doing the same thing side by side.
+- **Read the consumers before changing a producer.** Before changing what a
+  method returns or a generator writes, find everything that reads it.
+- **Cover the cases, not just the example.** Think through:
+  - entry points: `g project` and `g component`; mounted at `/` and under a
+    sub-path;
+  - backends: each ORM, template engine and test framework the code touches;
+  - inputs: empty, missing, repeated, encoded, non-ASCII, a file without a
+    trailing newline;
+  - lifecycle: first run and re-run; success and error; reload.
+- **Use one value end to end.** Check, act on and store the same normalized
+  value. Checking one form of a path and acting on another is a classic
+  silent bug.
+- **Clean up on every exit,** not only on success (temp files, `ENV`,
+  stubbed constants, global settings such as `Padrino::Reloader.enabled`).
+- **Key caches by everything that selects the entry,** not just a name.
+- **Report honestly.** In the PR, separate what you verified from what you
+  assumed, and name what you skipped.
+
+## Reviewing a change
+
+- **Check the premise before the code.** Reproduce the problem on master. The
+  most common reason a well-built change is wrong is a wrong idea of what the
+  code does or why.
+- **Read the whole diff,** and the changed files as they are on master and on
+  the branch. Look at the changed-file list for anything outside the PR's
+  purpose. Watch for a stale branch reverting newer work: compare with
+  `git log <merge-base>..origin/master -- <files>`.
+- **Look for the rest of the class.** Grep for sibling sites; a fix to one
+  ORM, generator or caller usually applies to the others.
+- **Check the tests bite:** revert the fix, and the new test must fail for the
+  right reason. Tests should assert behaviour, not counts, version strings or
+  source text.
+- **Re-derive claims instead of trusting them.** "All tests pass" or "fixed
+  in X" in a PR or comment is a claim; run it or read the line.
+- **Credit contributors.** When a change builds on someone's PR or report,
+  keep their commits or name them in `CHANGES.rdoc` and the PR.
 
 ## Pitfalls by area
 
