@@ -25,6 +25,12 @@ TAILWIND_RAKE = <<~RAKE unless defined?(TAILWIND_RAKE)
 RAKE
 
 def setup_stylesheet
+  # Start on a new line so a file without a trailing newline keeps its last line intact.
+  append_line = lambda do |path, text|
+    content = File.read(path)
+    append_file path, content.empty? || content.end_with?("\n") ? text : "\n#{text}"
+  end
+
   require_dependencies 'tailwindcss-ruby', version: '~> 4.0'
   # Tailwind writes its build to public/stylesheets/application.css, so carry
   # any hand-written styles there over into a new source file instead of losing them.
@@ -41,13 +47,13 @@ def setup_stylesheet
 
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
-    append_file procfile, "css: bundle exec rake tailwind:watch\n"
+    append_line.call(procfile, "css: bundle exec rake tailwind:watch\n")
   else
     create_file procfile, "web: bundle exec padrino start\ncss: bundle exec rake tailwind:watch\n"
   end
 
   gitignore = destination_root('.gitignore')
-  append_file gitignore, "public/stylesheets/application.css\n" if File.exist?(gitignore)
+  append_line.call(gitignore, "public/stylesheets/application.css\n") if File.exist?(gitignore)
 
   renderer = fetch_component_choice(:renderer).to_s
   renderer = 'erb' unless %w[haml slim].include?(renderer)
