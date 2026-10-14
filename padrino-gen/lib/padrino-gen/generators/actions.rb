@@ -472,9 +472,11 @@ module Padrino
       #
       def run_bundler
         say 'Bundling application dependencies using bundler...', :yellow
+        # The new project's Gemfile, not a BUNDLE_GEMFILE inherited from the caller (`bundle exec`, a binstub).
+        env = { 'BUNDLE_GEMFILE' => destination_root('Gemfile') }
         in_root do
-          run 'bundle install'
-          run 'bundle binstubs --all'
+          run 'bundle install', env: env
+          run 'bundle binstubs --all', env: env
         end
       end
 
