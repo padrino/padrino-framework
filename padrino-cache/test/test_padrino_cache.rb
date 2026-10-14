@@ -47,6 +47,23 @@ describe 'PadrinoCache' do
     Padrino.logger = save_logger
   end
 
+  it 'should cache with a logger that lacks bench' do
+    log = StringIO.new
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      helpers { define_method(:logger) { @logger ||= Logger.new(log).freeze } }
+      get('/foo') { cache(:test) { 'test fragment' } }
+      get('/bar', cache: true) { cache_object(:object) { 'test object' } }
+    end
+    2.times do
+      get '/foo'
+      assert_equal 'test fragment', body
+      get '/bar'
+      assert_equal 'test object', body
+    end
+  end
+
   it 'should cache a page' do
     called = false
     mock_app do

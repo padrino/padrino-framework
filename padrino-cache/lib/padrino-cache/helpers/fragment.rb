@@ -53,12 +53,12 @@ module Padrino
             began_at = Time.now
             if settings.cache.key?(key.to_s)
               value = settings.cache[key.to_s]
-              logger.bench 'GET Fragment', began_at, key.to_s if defined?(logger) && logger.debug?
+              logger.bench 'GET Fragment', began_at, key.to_s if defined?(logger) && logger.respond_to?(:bench) && logger.debug?
               concat_content(value.to_s.html_safe)
             else
               value = capture_html(&block)
               settings.cache.store(key.to_s, value, opts)
-              logger.bench 'SET Fragment', began_at, key.to_s if defined?(logger) && logger.debug?
+              logger.bench 'SET Fragment', began_at, key.to_s if defined?(logger) && logger.respond_to?(:bench) && logger.debug?
               concat_content(value)
             end
           else
