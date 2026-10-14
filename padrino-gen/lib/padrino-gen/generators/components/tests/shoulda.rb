@@ -1,7 +1,7 @@
 SHOULDA_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_SETUP)
   RACK_ENV = 'test' unless defined?(RACK_ENV)
   require_relative '../config/boot'
-  Dir[File.expand_path("\#{__dir__}/../app/helpers/**/*.rb")].each(&method(:require))
+  Padrino.mounted_apps.each { |app| Padrino.require_dependencies(File.join(app.app_root, '{helpers.rb,helpers/**/*.rb}')) }
 
   require "test/unit"
 
@@ -30,7 +30,7 @@ SHOULDA_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_CON
   class !NAME!ControllerTest < Test::Unit::TestCase
     context "!NAME!Controller" do
       setup do
-        get '/'
+        get "!EXPANDED_PATH!"
       end
 
       should "return hello world text" do
@@ -96,8 +96,8 @@ def setup_test
   create_file destination_root('test/test.rake'), SHOULDA_RAKE
 end
 
-def generate_controller_test(name, path = nil)
-  shoulda_contents = SHOULDA_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize)
+def generate_controller_test(name, path)
+  shoulda_contents = SHOULDA_CONTROLLER_TEST.gsub(/!NAME!/, name.to_s.underscore.camelize).gsub(/!EXPANDED_PATH!/, path.gsub(/:\w+?_id/, '1'))
   controller_test_path = File.join('test', options[:app], 'controllers', "#{name.to_s.underscore}_controller_test.rb")
   create_file destination_root(controller_test_path), shoulda_contents, skip: true
 end
