@@ -224,6 +224,13 @@ module Mail # @private
     end
 
     ##
+    # The form builder form_for and fields_for use in mailer templates.
+    #
+    def self.default_builder
+      'StandardFormBuilder'
+    end
+
+    ##
     # Check if we can log.
     #
     def self.logging?
