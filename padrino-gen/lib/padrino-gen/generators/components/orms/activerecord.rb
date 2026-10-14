@@ -138,11 +138,11 @@ def setup_orm
       ar.sub!(/!DB_TEST!/, SQLITE.sub(/!DB_NAME!/, "Padrino.root('db', '#{db}_test.db')"))
       require_dependencies 'sqlite3'
     else
-      say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
+      say "Failed to generate `config/database.rb` for ORM adapter `#{adapter}`", :red
       raise ArgumentError
     end
   rescue ArgumentError
-    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask_valid_option(:adapter, %w[mysql mysql2 mysql-gem postgres sqlite], 'Please, choose a proper adapter:')
     retry
   end
 
@@ -210,11 +210,33 @@ AR_MODEL_DOWN_MG = <<~MIGRATION unless defined?(AR_MODEL_DOWN_MG)
   drop_table :!TABLE!
 MIGRATION
 
+def ar_reference?(kind)
+  %w[references belongs_to].include?(kind.underscore)
+end
+
+# A third field segment, as in user_id:integer:index or email:string:uniq, adds an index.
+def ar_add_column(field, kind, index)
+  if ar_reference?(kind)
+    index_option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }' }[index]
+    return "t.#{kind.underscore} :#{field}#{index_option}"
+  end
+
+  columns = ["t.#{kind.underscore.gsub(/_/, '')} :#{field}"]
+  columns << "t.index :#{field}" if index == 'index'
+  columns << "t.index :#{field}, unique: true" if index == 'uniq'
+  columns
+end
+
+# Removing a column also removes its indexes.
+def ar_remove_column(field, kind)
+  ar_reference?(kind) ? "t.remove_references :#{field}" : "t.remove :#{field}"
+end
+
 def create_model_migration(migration_name, name, columns)
   output_model_migration(
     migration_name, name, columns,
     base: AR_MIGRATION,
-    column_format: proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
+    column_format: proc { |field, kind, index| ar_add_column(field, kind, index) },
     up: AR_MODEL_UP_MG,
     down: AR_MODEL_DOWN_MG
   )
@@ -231,7 +253,7 @@ def create_migration_file(migration_name, name, columns)
     migration_name, name, columns,
     base: AR_MIGRATION,
     change_format: AR_CHANGE_MG,
-    add: proc { |field, kind| "t.#{kind.underscore.gsub(/_/, '')} :#{field}" },
-    remove: proc { |field, _kind| "t.remove :#{field}" }
+    add: proc { |field, kind, index| ar_add_column(field, kind, index) },
+    remove: proc { |field, kind| ar_remove_column(field, kind) }
   )
 end

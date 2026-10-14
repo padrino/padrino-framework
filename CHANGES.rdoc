@@ -3,6 +3,13 @@
 == Unreleased
 
 - FIX #2362 A class-level layout given as an absolute path is applied instead of silently ignored (@nesquena)
+- NEW #2359 Generated projects set SameSite=Lax on the session cookie (@nesquena)
+- FIX #2360 Projects generated with --mock=mocha load mocha's integration for their test framework (they failed to load in 0.16) (@nesquena)
+- NEW #2364 ActiveRecord model and migration generators take a third field segment, :index or :uniq, to add an index, as in email:string:uniq (@nesquena)
+- FIX #2364 ActiveRecord migrations generated with references or belongs_to fields roll back with remove_references, and belongs_to fields generate t.belongs_to instead of the invalid t.belongsto (@nesquena)
+- FIX #2365 ActiveRecord rake tasks work with ActiveRecord 7.1+ and 8.x (`ar:migrate:up/down/redo`, `ar:rollback` and `ar:forward` no longer raise NoMethodError on `schema_format`; `ar:schema:dump`, and so `ar:migrate`, works on 7.2+; `ar:structure:dump` works on 8.1) (@matsubara0507)
+- FIX #2354 Project templates can use `app` and `generate :name` again (they failed with a TypeError) (@nesquena)
+- FIX #2353 Generators stop with an error listing the valid options when given an invalid component or adapter and no input is left, instead of prompting forever (@nesquena)
 - FIX #2355 The development reloader no longer removes a newer class that reuses an unloaded class's name (@genkami)
 - FIX #2356 Generated minitest config supports unit-style Minitest::Test classes as well as specs (@nesquena)
 - NEW #2335 Tailwind stylesheet component: `padrino g project --stylesheet=tailwind`, built with the tailwindcss-ruby standalone binary (needs Ruby 3.0+). `rake tailwind:build` and `rake assets:precompile` build public/stylesheets/application.css (@osbre)
