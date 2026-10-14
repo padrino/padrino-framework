@@ -74,8 +74,6 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
     task reset: %w[drop create migrate seed]
 
     task seed: :environment do
-      missing_model_features = Padrino.send(:default_dependency_paths) - Padrino.send(:dependency_paths)
-      Padrino.require_dependencies(missing_model_features)
       Rake::Task['db:seed'].invoke
     end
   end

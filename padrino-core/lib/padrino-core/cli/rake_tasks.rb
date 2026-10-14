@@ -1,5 +1,7 @@
 # Model paths that :skeleton left out, loaded by a later :environment in the same run
 # (e.g. `rake ar:migrate db:seed`).
+# ceiling: they load after config/apps.rb and the after_load hooks, so a hook that walks the models
+# doesn't see them in that case; loading them before the hooks would mean re-running Padrino.load!.
 skipped_model_paths = []
 
 # Loads the Padrino applications mounted within the project.
