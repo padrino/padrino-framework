@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #2361 Generated tests for sub-apps load their helpers and request the sub-app's routes (@nesquena)
+- FIX #2361 Generated tests load the helpers of every mounted app and request each controller's own path, including a sub-app's mount path (@nesquena)
 - FIX #2365 ActiveRecord rake tasks work with ActiveRecord 7.1+ and 8.x (`ar:migrate:up/down/redo`, `ar:rollback` and `ar:forward` no longer raise NoMethodError on `schema_format`; `ar:schema:dump`, and so `ar:migrate`, works on 7.2+; `ar:structure:dump` works on 8.1) (@matsubara0507)
 - FIX #2354 Project templates can use `app` and `generate :name` again (they failed with a TypeError) (@nesquena)
 - FIX #2353 Generators stop with an error listing the valid options when given an invalid component or adapter and no input is left, instead of prompting forever (@nesquena)
