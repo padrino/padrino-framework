@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2170 `Padrino.logger = Logger.new($stdout)` works without `Padrino::Logger::Extensions`: a logger gets plain `devel`, `bench`, `exception` and `colorize` when it lacks them (@achiurizo)
 - SEC #2344 Static files are only served from inside the public folder, not from sibling folders whose names start with the same text (@nesquena)
 - FIX #2343 `padrino g project -s jquery` selects the script component again instead of the server (@achiurizo)
 - WARN #2343 `--server` no longer has the `-s` alias; use `--server=puma` instead of `-s puma`
