@@ -69,7 +69,7 @@ TESTUNIT_HELPER_TEST = <<~TEST unless defined?(TESTUNIT_HELPER_TEST)
   require File.expand_path("\#{__dir__}!PATH!/test_config.rb")
 
   class !NAME!Test < Test::Unit::TestCase
-    def self.setup
+    def setup
       @helpers = Class.new
       @helpers.extend !CONSTANT_NAME!
     end
