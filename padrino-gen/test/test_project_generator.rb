@@ -80,7 +80,7 @@ describe 'ProjectGenerator' do
     it 'should run bundle install then bundle binstubs --all with --bundle' do
       generator = Padrino::Generators::Project.any_instance
       generator.stubs(:run)
-      env = { env: { 'BUNDLE_GEMFILE' => "#{@apptmp}/sample_project/Gemfile" } }
+      env = { env: { 'BUNDLE_GEMFILE' => "#{@apptmp}/sample_project/Gemfile", 'BUNDLE_LOCKFILE' => "#{@apptmp}/sample_project/Gemfile.lock" } }
       generator.expects(:run).with('bundle install', env).once
       generator.expects(:run).with('bundle binstubs --all', env).once
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--bundle') }
