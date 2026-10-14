@@ -96,6 +96,8 @@ For security problems, don't open a public issue; report them privately through 
 
 Log it onto Github by {creating a new issue}[http://github.com/padrino/padrino-framework/issues].
 
+To contribute a fix or feature, see {CONTRIBUTING.md}[https://github.com/padrino/padrino-framework/blob/master/CONTRIBUTING.md].
+
 Be sure to include all relevant information, like the versions of Padrino, Rack, Sinatra, Ruby and operating system you are using.
 
 A minimal project showing the issue published on Github with Gemfile.lock is also extremely helpful.

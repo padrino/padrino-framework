@@ -33,44 +33,57 @@ bundle exec rubocop <files you changed>
   re-run until it passes.
 - `padrino-helpers/test/test_rendering.rb` errors when run on its own; run the
   padrino-helpers suite instead.
-- Exercise generator changes through the real CLI as well as the tests, e.g.
-  `ruby padrino-gen/bin/padrino-gen project demo -d sequel -e haml -t minitest --dev`,
-  then `bundle install` and boot or test the generated project.
+- Exercise generator changes through the real CLI as well as the tests, and
+  generate outside the checkout so nothing stray gets committed:
+
+  ```shell
+  bundle exec ruby padrino-gen/bin/padrino-gen project demo -d sequel -e haml -t minitest --dev -r /tmp
+  cd /tmp/demo && bundle install
+  ```
+
+  then boot or test the generated project. `--dev` points its Gemfile at your
+  checkout.
 
 ## What CI checks
 
-- `bundle exec rake test` on Ruby 2.7 through 4.0 and JRuby, with HAML 5 and 7.
+- `bundle exec rake test` on Ruby 2.7 through 4.0 and JRuby, with HAML 5
+  and 7. Pull requests from forks run once a maintainer approves the run.
 - The whole suite again with `RUBYOPT=--enable-frozen-string-literal`.
+- CI doesn't run RuboCop.
 
 So, in code you add:
 
-- **Ruby 2.7 syntax** (the gemspecs require `>= 2.7.8`): no endless methods,
-  no `it` block parameter, no anonymous block, rest or keyword-rest arguments.
-  RuboCop targets 2.7.
+- **Ruby 2.7 syntax** (the gemspecs require `>= 2.7.8`). Not available:
+  endless methods, the `it` block parameter, anonymous block, rest and
+  keyword-rest arguments (`&`, `*`, `**`), hash shorthand (`{x:}`) and
+  rightward assignment (`=>`). RuboCop targets 2.7 and flags most of these,
+  but not `it` or newer core methods such as `Hash#except`; those only fail
+  on the 2.7 CI job.
 - **No mutation of string literals or of strings you were given** (`<<`,
   `gsub!`, `encode!`, `force_encoding` on a caller's string). Build a new
   string (`+''`, `dup`, `encode`) instead.
 - **JRuby** runs the same suite; avoid MRI-only APIs.
 - **Rack 3 and Sinatra 4** only.
 
-## Every change
+## Every fix or behaviour change
 
-- **A regression test that fails without your fix.** Check it: revert the
-  library change, watch the test fail for the right reason, then restore it.
-  A test that passes either way proves nothing. Tests use minitest-spec
-  (`describe`/`it`). Don't test counts or version strings, and don't match on
-  source code.
-- **Fix the whole class, not one instance.** Before you finish, grep for the
-  same pattern elsewhere (other generators, other ORM components, other
-  callers of the method) and fix or rule out each one.
-- **A line in `CHANGES.rdoc`**, at the top of `== Unreleased`:
-  `- FIX #<PR number> What changed, for users (@your-github-handle)`.
+- **A regression test that fails without your fix.** Revert the library
+  change, watch the test fail for the right reason, then restore it. A test
+  that passes either way proves nothing. Tests use minitest-spec
+  (`describe`/`it`). Test behaviour, not counts, version strings or source
+  text.
+- **Fix the whole class, not one instance.** Grep for the same pattern
+  elsewhere (other generators, other ORM components, other callers of the
+  method) and fix or rule out each one.
+- **A line in `CHANGES.rdoc`**, at the top of `== Unreleased`, once the PR is
+  open: `- FIX #<PR number> What changed, for users (@your-github-handle)`.
   The prefixes are `NEW`, `FIX`, `SEC`, `REMOVE` and `WARN` (for changes that
   can break existing apps).
-- **RuboCop clean** on the files you touched; match the surrounding style.
+- **No new RuboCop offenses** in the lines you change. Some files have older
+  offenses; leave those for a separate PR.
 - **Docs follow code.** A change to generator options, components or
   documented behaviour needs a matching PR on padrino-docs. There, regenerate
-  `llms-full.txt` with `LANG=C.UTF-8 ruby scripts/generate_llms_txt.rb`.
+  `llms-full.txt` with `LC_ALL=C.UTF-8 ruby scripts/generate_llms_txt.rb`.
   Docs for unreleased features are merged when the release ships.
 
 ## Writing a change
@@ -78,10 +91,10 @@ So, in code you add:
 A wrong change that passes the tests is worse than no change. These habits
 prevent most of the bugs that review catches here:
 
-- **Reproduce first.** Show the bug on current master with your own repro
-  before fixing it, and trace the symptom to its cause. Read the history
-  (`git log -p`, `git blame`, `git log -S`): something that looks missing may
-  have been left out on purpose.
+- **Reproduce first.** Show the bug on current master with your own repro,
+  and trace the symptom to its cause. Read the history (`git log -p`,
+  `git blame`, `git log -S`): something that looks missing may have been left
+  out on purpose.
 - **Say what "done" means up front**, then check it in running code: generate
   a real project, boot it, make the request. "The tests pass" and "the diff
   looks right" aren't done.
@@ -93,21 +106,14 @@ prevent most of the bugs that review catches here:
   leave an old and a new way of doing the same thing side by side.
 - **Read the consumers before changing a producer.** Before changing what a
   method returns or a generator writes, find everything that reads it.
-- **Cover the cases, not just the example.** Think through:
-  - entry points: `g project` and `g component`; mounted at `/` and under a
-    sub-path;
-  - backends: each ORM, template engine and test framework the code touches;
-  - inputs: empty, missing, repeated, encoded, non-ASCII, a file without a
-    trailing newline;
-  - lifecycle: first run and re-run; success and error; reload.
+- **Cover the cases, not just the example:** `g project` and `g component`;
+  first run and re-run; each ORM, template engine and test framework the code
+  touches; empty, repeated, encoded and non-ASCII input; success and error.
 - **Use one value end to end.** Check, act on and store the same normalized
   value. Checking one form of a path and acting on another is a classic
   silent bug.
-- **Clean up on every exit,** not only on success (temp files, `ENV`,
-  stubbed constants, global settings such as `Padrino::Reloader.enabled`).
-- **Key caches by everything that selects the entry,** not just a name.
-- **Report honestly.** In the PR, separate what you verified from what you
-  assumed, and name what you skipped.
+- **Clean up on every exit,** not only on success: temp files, `ENV`, stubbed
+  constants and global settings.
 
 ## Reviewing a change
 
@@ -118,11 +124,6 @@ prevent most of the bugs that review catches here:
   the branch. Look at the changed-file list for anything outside the PR's
   purpose. Watch for a stale branch reverting newer work: compare with
   `git log <merge-base>..origin/master -- <files>`.
-- **Look for the rest of the class.** Grep for sibling sites; a fix to one
-  ORM, generator or caller usually applies to the others.
-- **Check the tests bite:** revert the fix, and the new test must fail for the
-  right reason. Tests should assert behaviour, not counts, version strings or
-  source text.
 - **Re-derive claims instead of trusting them.** "All tests pass" or "fixed
   in X" in a PR or comment is a claim; run it or read the line.
 - **Credit contributors.** When a change builds on someone's PR or report,
@@ -142,11 +143,15 @@ prevent most of the bugs that review catches here:
   lacks a trailing newline doesn't get its last line glued to yours.
 - Generators also run without a terminal (CI, Dockerfiles, piped input). A
   prompt must stop with an error when input runs out, not ask again forever.
-- Use `Padrino::Inflections` (`pluralize`, `underscore`, `camelize`,
-  `constantize`) rather than `String#pluralize` and friends, which only exist
-  when ActiveSupport is loaded.
-- Test across the ORMs and template engines a change touches (e.g. sequel and
-  activerecord; haml, slim and erb), with the real CLI.
+
+### Inflections outside the generators
+
+padrino-gen adds `String#pluralize`, `underscore`, `camelize`, `classify` and
+`constantize`, so generator code may use them. Runtime code in padrino-core,
+-helpers, -mailer, -cache and -admin must not: those methods only exist when
+padrino-gen or ActiveSupport is loaded. Use `Padrino::Inflections.pluralize(str)`
+and its siblings (`singularize`, `underscore`, `camelize`, `classify`,
+`constantize`) there.
 
 ### Routing, static files and access control
 
@@ -160,8 +165,9 @@ prevent most of the bugs that review catches here:
 
 ### Logger
 
-- `Padrino.logger` can be any Ruby `Logger`, not only Padrino's. Guard calls
-  to Padrino-only methods (`bench`, `devel`, ...) with `respond_to?`.
+- `Padrino.logger` can be any Ruby `Logger`. Setting it adds fallbacks for
+  Padrino's extra methods (`bench`, `devel`, ...), but a frozen logger can't
+  take them, so guard those calls with `respond_to?`.
 - Keep the default log output byte-identical unless changing it is the point.
 
 ### Rendering and mailers
@@ -173,9 +179,11 @@ prevent most of the bugs that review catches here:
 
 ### Reloader
 
-- Reloading is on only in development (`Padrino::Reloader.enabled`). A test
-  that relies on it must enable it and restore the previous value in
-  `ensure`.
+- Reloading is on only in development unless `Padrino::Reloader.enabled` is
+  set. A test that needs it on should save
+  `Padrino::Reloader.instance_variable_get(:@enabled)`, set `enabled = true`,
+  and restore the saved value in `ensure`. `enabled?` is computed, so saving
+  it would pin the setting instead of restoring the default.
 
 ## Security
 
@@ -189,6 +197,6 @@ for this repository, and a maintainer will follow up.
 - Keep each PR to one change, with its test and CHANGES line.
 - In the description, say how to reproduce the bug, show that the new test
   fails without the fix, list the suites and real-project checks you ran, and
-  name anything you couldn't verify.
+  name anything you couldn't verify or assumed.
 - If an agent wrote or helped write the change, report only results you
   actually saw: commands run and their output, not expectations.

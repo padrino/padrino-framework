@@ -1,7 +1,8 @@
 # Contributing to Padrino
 
-Thanks for helping out! Bug reports, fixes, docs and new components are all
-welcome.
+Thanks for helping out! Bug reports, fixes and docs are all welcome. For a new
+component or a larger feature, please open an issue first so we can agree on
+the approach.
 
 ## Questions and bugs
 
@@ -17,6 +18,8 @@ welcome.
   [private vulnerability reporting](https://github.com/padrino/padrino-framework/security/advisories/new).
 
 ## Code changes
+
+Fork the repository on GitHub, then:
 
 ```shell
 git clone https://github.com/<you>/padrino-framework.git
