@@ -76,6 +76,7 @@ module Padrino
         abort 'Please specify code or file' if code_or_file.nil?
 
         require File.expand_path('config/boot.rb')
+        Padrino.mounted_apps.each(&:setup_application!)
 
         if File.exist?(code_or_file)
           eval(File.read(code_or_file), nil, code_or_file)
