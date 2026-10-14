@@ -216,6 +216,14 @@ module Mail # @private
     end
 
     ##
+    # Emails have no session to check a token against, so forms in mailer
+    # templates are built without a CSRF token.
+    #
+    def self.protect_from_csrf
+      false
+    end
+
+    ##
     # Check if we can log.
     #
     def self.logging?
@@ -263,6 +271,9 @@ module Mail # @private
       locals = @_locals || {} if !options[:locals] && locals.empty?
       @template_cache.clear if settings.reload_templates?
 
+      # render(nil, 'template', ...) as RenderHelpers#partial calls it: shift the arguments
+      # the way Padrino::Rendering#render does, before defaulting to the message name.
+      engine, data, options = data, options, locals if engine.nil? && data && !data.is_a?(Hash)
       engine ||= message_name
 
       if mailer_name && !engine.to_s.index('/')
@@ -278,21 +289,37 @@ module Mail # @private
         options = { views: @_views }.merge(options)
       end
 
-      provides.each do |format|
-        part do |p|
-          p.content_type(format)
-          p.send(:render, engine, data, options, locals, &block)
-          add_multipart_alternate_header if html_part || provides.include?(:html)
-        end
-      end
+      # A render nested in a template (a partial) returns its output; only the outermost one sets the body.
+      return super(engine, data, options, locals, &block) if @_rendering
 
-      self.body = super(engine, data, options, locals, &block) if provides.empty?
+      begin
+        @_rendering = true
+        provides.each do |format|
+          part do |p|
+            p.content_type(format)
+            p.send(:render, engine, data, options, locals, &block)
+            add_multipart_alternate_header if html_part || provides.include?(:html)
+          end
+        end
+
+        self.body = super(engine, data, options, locals, &block) if provides.empty?
+      ensure
+        @_rendering = false
+      end
     end
 
     alias original_partial partial if instance_methods.include?(:partial)
     def partial(template, options = {}, &block)
       raise "gem 'padrino-helpers' is required to render partials" unless respond_to?(:original_partial)
-      self.body = original_partial(template, options, &block)
+      return original_partial(template, options, &block) if @_rendering
+
+      begin
+        @_rendering = true
+        output = original_partial(template, options, &block)
+      ensure
+        @_rendering = false
+      end
+      self.body = output
     end
 
     ##

@@ -206,6 +206,69 @@ describe 'Email' do
       assert_equal 'alpha hello', alpha.send(:render, :hello)
     end
 
+    it 'should not reuse a cached template from another mailer' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'beta', 'greet.haml'), '%p beta greet')
+      File.write(File.join(views, 'mailers', 'alpha', 'greet.erb'), 'alpha greet')
+      mailer_app(views)
+      @app.set :reload_templates, false
+      @app.mailer(:alpha) { email(:greet) { via :test; render :greet } }
+      @app.mailer(:beta)  { email(:greet) { via :test; render :greet } }
+      assert_equal 'alpha greet', @app.deliver(:alpha, :greet).body.to_s
+      assert_equal '<p>beta greet</p>', @app.deliver(:beta, :greet).body.to_s.strip
+    end
+
+    it 'should render a partial from a mailer template' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'alpha', 'listing.erb'), "<%= partial 'item', object: 'one' %>")
+      File.write(File.join(views, 'mailers', 'alpha', '_item.erb'), 'item <%= item %>')
+      mailer_app(views)
+      @app.mailer(:alpha) { email(:listing) { via :test; render :listing } }
+      assert_equal 'item one', @app.deliver(:alpha, :listing).body.to_s.strip
+    end
+
+    it 'should render the message template with options when the engine is nil' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'alpha', 'boxed.erb'), 'boxed')
+      File.write(File.join(views, 'mailers', 'alpha', 'box.erb'), '[<%= yield %>]')
+      mailer_app(views)
+      @app.mailer(:alpha) { email(:boxed) { via :test; render nil, layout: :box } }
+      assert_equal '[boxed]', @app.deliver(:alpha, :boxed).body.to_s.strip
+    end
+
+    it 'should not add a part per partial to a message with an attachment' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'alpha', 'listing.erb'), "<%= partial 'item', collection: %w[a b] %>")
+      File.write(File.join(views, 'mailers', 'alpha', '_item.erb'), '<%= item %>')
+      mailer_app(views)
+      @app.mailer(:alpha) { email(:listing) { via :test; add_file filename: 'a.txt', content: 'file'; render :listing } }
+      email = @app.deliver(:alpha, :listing)
+      assert_equal(%w[ab file], email.parts.map { |part| part.body.to_s.strip })
+    end
+
+    it 'should not reuse a cached layout from another mailer' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'alpha', 'box.erb'), 'A[<%= yield %>]')
+      FileUtils.mkdir_p(File.join(views, 'mailers', 'beta', 'layouts'))
+      File.write(File.join(views, 'mailers', 'beta', 'layouts', 'box.erb'), 'B[<%= yield %>]')
+      mailer_app(views)
+      @app.set :reload_templates, false
+      @app.mailer(:alpha) { email(:boxed) { via :test; render :hello, layout: :box } }
+      @app.mailer(:beta)  { email(:boxed) { via :test; render :hello, layout: :box } }
+      assert_equal 'A[alpha hello]', @app.deliver(:alpha, :boxed).body.to_s.strip
+      assert_equal 'B[beta hello]', @app.deliver(:beta, :boxed).body.to_s.strip
+    end
+
+    it 'should build forms in a mailer template without a CSRF token' do
+      views = mailer_views('site')
+      File.write(File.join(views, 'mailers', 'alpha', 'confirm.erb'), "<%= button_to 'Confirm', '/confirm' %>")
+      mailer_app(views)
+      @app.mailer(:alpha) { email(:confirm) { via :test; render :confirm } }
+      body = @app.deliver(:alpha, :confirm).body.to_s
+      assert_match(%r{<form[^>]*action="/confirm"}, body)
+      refute_match(/authenticity_token/, body)
+    end
+
     it 'should render each provided format from the mailer path' do
       mailer_app(mailer_views('site'))
       email = @app.deliver(:gamma, :hello)
