@@ -183,6 +183,14 @@ describe 'Routing' do
     assert_equal '/fob', @app.url(:foo)
   end
 
+  it 'should not change the :generate_with path when adding a fragment' do
+    mock_app do
+      get(%r{/fob|/baz}, name: :foo, generate_with: '/fob') { 'regexp' }
+    end
+    assert_equal '/fob#a', @app.url(:foo, fragment: 'a')
+    assert_equal '/fob', @app.url(:foo)
+  end
+
   it 'should parse routes with question marks' do
     mock_app do
       get('/foo/?') { 'okey' }

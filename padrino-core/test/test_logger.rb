@@ -83,9 +83,11 @@ describe 'PadrinoLogger' do
     it 'should not mutate or choke on a frozen message that already ends in a newline' do
       setup_logger(log_level: :error, sanitize_encoding: 'windows-1251')
       message = "ends in newline\n".b.freeze
+      unfrozen = "unfrozen\n".b
       @logger << message
+      @logger << unfrozen
       @logger << 'still logging'
-      assert_equal Encoding::BINARY, message.encoding
+      assert_equal Encoding::BINARY, unfrozen.encoding
       assert_match(/ends in newline\n/, @log.string)
       assert_match(/still logging\n/, @log.string)
     end

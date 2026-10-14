@@ -3,6 +3,7 @@
 == Unreleased
 
 - FIX #2338 Padrino runs with `--enable-frozen-string-literal` and no longer prints "literal string will be frozen" warnings on Ruby 3.4+ (@achiurizo)
+- FIX #2338 `Logger#<<`, `simple_format` and `url(..., fragment:)` no longer modify the strings passed to them or stored in routes (@achiurizo)
 - FIX #2338 padrino-mailer uses `Sinatra::TemplateCache` instead of the deprecated `Tilt::Cache` (@achiurizo)
 - FIX #2340 Mailer views path no longer breaks when the app path contains the mailer name, and no longer leaks between messages delivered concurrently (@achiurizo)
 - FIX #2340 Padrino view helpers (`link_to` etc.) are available in mailer templates (@achiurizo)
