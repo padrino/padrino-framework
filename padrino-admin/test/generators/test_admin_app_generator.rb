@@ -16,14 +16,33 @@ describe 'AdminAppGenerator' do
     end
 
     it 'should fail outside app root' do
-      out, = capture_io { generate(:admin_app, "-r=#{@apptmp}") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/admin")
     end
 
     it "should fail if we don't specify an orm on the project" do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-e=haml') }
-      assert_raises(SystemExit) { @out, @err = capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project") } }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Padrino only supports/, out)
+    end
+
+    it 'should fail with an unsupported renderer' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}/sample_project", '-e=liquid') }.status }
+      assert_match(/for admin we only support/, out)
+      assert_no_file_exists("#{@apptmp}/sample_project/admin")
+    end
+
+    it 'should reuse an existing account model' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
+      Object.const_set(:Account, Class.new)
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
+      assert_match_in_file(/class Account < ActiveRecord::Base/, "#{@apptmp}/sample_project/models/account.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
+    ensure
+      Object.send(:remove_const, :Account) if defined?(Account)
     end
 
     it 'should generate the account model test with the project test_config path' do

@@ -63,7 +63,7 @@ module Padrino
             options[:destroy] ? remove_project_module(@orm.name_plural) : add_project_module(@orm.name_plural)
           end
         else
-          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+          exit_outside_app_root!
         end
       end
     end

@@ -41,7 +41,7 @@ module Padrino
             self.behavior = :revoke if options[:destroy]
             execute_runner(:plugin, plugin_file)
           else
-            say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+            exit_outside_app_root!
           end
         end
       end

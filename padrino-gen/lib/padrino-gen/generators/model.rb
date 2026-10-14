@@ -48,7 +48,7 @@ module Padrino
       #
       def valid_model_for?(app)
         self.destination_root = options[:root]
-        return false unless correct_path?
+        exit_outside_app_root! unless in_app_root?
 
         check_app_existence(app)
         if model_name_already_exists?
@@ -57,11 +57,11 @@ module Padrino
           elsif !options[:force]
             say "#{@camel_name} already exists."
             say 'Please, change the name.'
-            return false
+            exit 1
           end
         end
 
-        return false if has_invalid_fields?
+        exit 1 if has_invalid_fields?
 
         check_orm
       end
@@ -86,16 +86,7 @@ module Padrino
         return true if include_component_module_for(:orm)
 
         say '<= You need an ORM adapter for run this generator. Sorry!'
-        raise SystemExit
-      end
-
-      ##
-      # Check app path
-      #
-      def correct_path?
-        return true if in_app_root?
-        say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
-        false
+        exit 1
       end
 
       ##

@@ -138,6 +138,7 @@ module Padrino
           self.apply(template_path)
         rescue StandardError => e
           say("The template at #{template_path} could not be loaded: #{e.message}", :red)
+          exit 1
         end
       end
     end

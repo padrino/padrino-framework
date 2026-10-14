@@ -33,10 +33,10 @@ module Padrino
             create_migration_file(name, name, columns)
           else
             say '<= You need an ORM adapter for run this generator. Sorry!'
-            raise SystemExit
+            exit 1
           end
         else
-          say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+          exit_outside_app_root!
         end
       end
     end

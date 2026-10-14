@@ -13,7 +13,7 @@ describe 'AdminPageGenerator' do
 
   describe 'the admin page generator' do
     it 'should fail outside app root' do
-      out, = capture_io { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/admin")
     end
@@ -50,7 +50,6 @@ describe 'AdminPageGenerator' do
     it 'should correctly generate a new page' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'email:string', "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:admin_page, 'friend', "--root=#{@apptmp}/sample_project") }
       assert_file_exists "#{@apptmp}/sample_project/admin/controllers/friends.rb"
       assert_match_in_file 'SampleProject::Admin.controllers :friends do', "#{@apptmp}/sample_project/admin/controllers/friends.rb"
@@ -64,7 +63,6 @@ describe 'AdminPageGenerator' do
       custom_template_path = "#{@apptmp}/sample_project/generators/templates/haml/page/"
       `mkdir -p #{custom_template_path} && echo "%h1= 'Hello, custom generator' " > #{custom_template_path}index.haml.tt`
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'email:string', "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:admin_page, 'friend', "--root=#{@apptmp}/sample_project") }
       assert_match_in_file(/Hello, custom generator/, "#{@apptmp}/sample_project/admin/views/friends/index.haml")
     end
@@ -73,7 +71,6 @@ describe 'AdminPageGenerator' do
       it 'should correctly generate a new page with haml' do
         capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'email:string', "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:admin_page, 'friend', "--root=#{@apptmp}/sample_project") }
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/_form.haml"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/edit.haml"
@@ -89,7 +86,6 @@ describe 'AdminPageGenerator' do
       it 'should correctly generate a new page with erb' do
         capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=erb') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'email:string', "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:admin_page, 'friend', "--root=#{@apptmp}/sample_project") }
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/_form.erb"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/edit.erb"
@@ -105,7 +101,6 @@ describe 'AdminPageGenerator' do
       it 'should correctly generate a new page with slim' do
         capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=slim') }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'email:string', "--root=#{@apptmp}/sample_project") }
         capture_io { generate(:admin_page, 'friend', "--root=#{@apptmp}/sample_project") }
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/_form.slim"
         assert_file_exists "#{@apptmp}/sample_project/admin/views/friends/edit.slim"
@@ -122,8 +117,6 @@ describe 'AdminPageGenerator' do
     it 'should correctly generate a new padrino admin application with multiple models at the same time' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'email:string', "-root=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'page', 'name:string', 'body:string', "-root=#{@apptmp}/sample_project") }
       capture_io { generate(:admin_page, 'friend', 'page', "--root=#{@apptmp}/sample_project") }
       # For Friend
       assert_file_exists "#{@apptmp}/sample_project/admin/controllers/friends.rb"
