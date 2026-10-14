@@ -89,11 +89,6 @@ describe 'ComponentGenerator' do
       assert_match_in_file(/register VitePadrino/, "#{@apptmp}/sample_project/app/app.rb")
       assert_file_exists("#{@apptmp}/sample_project/app/frontend/entrypoints/application.js")
     end
-
-    it 'should declare activesupport like padrino-admin does' do
-      capture_io { generate(:project, 'sample_project', '--script=vite', "--root=#{@apptmp}") }
-      assert_match_in_file(/gem 'activesupport', '>= 3.1'/, "#{@apptmp}/sample_project/Gemfile")
-    end
   end
 
   describe 'specified of same the component' do

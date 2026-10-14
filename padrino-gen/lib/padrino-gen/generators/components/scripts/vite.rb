@@ -52,14 +52,10 @@ VITE_GITIGNORE = <<~GITIGNORE unless defined?(VITE_GITIGNORE)
   *.local
 GITIGNORE
 
-VITE_GEMS = <<~RUBY unless defined?(VITE_GEMS)
-  gem 'vite_padrino', '~> 3.0'
-  # vite_padrino 3.0.0 calls ActiveSupport's `try`, the fix in https://github.com/ElMassimo/vite_ruby/pull/635 is pending
-  gem 'activesupport', '>= 3.1', require: 'active_support/core_ext/object/try'
-RUBY
-
 def setup_script
-  inject_into_file 'Gemfile', VITE_GEMS, after: "Component requirements\n"
+  require_dependencies 'activesupport', version: '>= 3.1'
+  require_dependencies 'vite_padrino', version: '~> 3.0'
+  inject_into_file destination_root('config/boot.rb'), "require 'active_support/core_ext/object/try' # vite_padrino 3.0.0, see vite_ruby#635\n", after: "Bundler.require(:default, RACK_ENV)\n"
   initializer :VitePadrino
   create_file destination_root('config/vite.json'), VITE_JSON
   create_file destination_root('vite.config.ts'), VITE_CONFIG

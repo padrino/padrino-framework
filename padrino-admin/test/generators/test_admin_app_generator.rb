@@ -198,6 +198,28 @@ describe 'AdminAppGenerator' do
 
     end
 
+    describe 'with the vite script component' do
+      def assert_activesupport_listed_once(gemfile)
+        Bundler.ui.expects(:warn).never
+        dsl = Bundler::Dsl.new
+        dsl.eval_gemfile(gemfile)
+        assert_equal 1, dsl.dependencies.count { |dep| dep.name == 'activesupport' }
+      end
+
+      it 'should list activesupport once when admin is added after vite' do
+        capture_io { generate(:project, 'sample_project', '-e=haml', "--root=#{@apptmp}", '-d=sequel', '--script=vite') }
+        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+        assert_activesupport_listed_once("#{@apptmp}/sample_project/Gemfile")
+      end
+
+      it 'should list activesupport once when vite is added after admin' do
+        capture_io { generate(:project, 'sample_project', '-e=haml', "--root=#{@apptmp}", '-d=sequel') }
+        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+        capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+        assert_activesupport_listed_once("#{@apptmp}/sample_project/Gemfile")
+      end
+    end
+
     it 'should not conflict with existing seeds file' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
 
