@@ -53,9 +53,20 @@ VITE_GITIGNORE = <<~GITIGNORE unless defined?(VITE_GITIGNORE)
 GITIGNORE
 
 def setup_script
-  require_dependencies 'activesupport', version: '>= 3.1'
+  # Start on a new line so a file without a trailing newline keeps its last line intact.
+  append_line = lambda do |path, text|
+    content = File.read(path)
+    append_file path, content.empty? || content.end_with?("\n") ? text : "\n#{text}"
+  end
+
+  gemfile = File.read(destination_root('Gemfile'))
+  require_dependencies 'activesupport', version: '>= 3.1' unless gemfile.match?(/^\s*gem ['"]activesupport['"]/)
   require_dependencies 'vite_padrino', version: '~> 3.0'
-  inject_into_file destination_root('config/boot.rb'), "require 'active_support/core_ext/object/try' # vite_padrino 3.0.0, see vite_ruby#635\n", after: "Bundler.require(:default, RACK_ENV)\n"
+  boot = destination_root('config/boot.rb')
+  inject_into_file boot, "require 'active_support/core_ext/object/try' # vite_padrino 3.0.0 needs it until https://github.com/ElMassimo/vite_ruby/pull/635 ships\n", after: "Bundler.require(:default, RACK_ENV)\n"
+  unless File.read(boot).include?('active_support/core_ext/object/try')
+    say "Add `require 'active_support/core_ext/object/try'` after Bundler.require in config/boot.rb: vite_padrino 3.0.0 needs Object#try.", :red
+  end
   initializer :VitePadrino
   create_file destination_root('config/vite.json'), VITE_JSON, skip: true
   create_file destination_root('vite.config.ts'), VITE_CONFIG, skip: true
@@ -64,12 +75,12 @@ def setup_script
   create_file destination_root('app/frontend/entrypoints/application.js'), VITE_ENTRYPOINT, skip: true
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
-    append_file procfile, "vite: bundle exec vite dev\n" unless File.read(procfile).match?(/^vite:/)
+    append_line.call(procfile, "vite: bundle exec vite dev\n") unless File.read(procfile).match?(/^vite:/)
   else
     create_file procfile, "web: bundle exec padrino start\nvite: bundle exec vite dev\n"
   end
   append_file destination_root('Rakefile'), VITE_RAKE
-  append_file destination_root('.gitignore'), VITE_GITIGNORE if File.exist?(destination_root('.gitignore'))
+  append_line.call(destination_root('.gitignore'), VITE_GITIGNORE) if File.exist?(destination_root('.gitignore'))
   renderer = fetch_component_choice(:renderer).to_s
   renderer = 'erb' unless %w[haml slim].include?(renderer)
   tags = renderer == 'erb' ? ['<%= vite_client_tag %>', "<%= vite_javascript_tag 'application' %>"] : ['= vite_client_tag', "= vite_javascript_tag 'application'"]

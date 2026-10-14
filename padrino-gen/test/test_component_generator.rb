@@ -76,6 +76,32 @@ describe 'ComponentGenerator' do
   end
 
   describe 'vite script component' do
+    it 'should start on a new line when Procfile.dev and .gitignore lack a trailing newline' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      root = "#{@apptmp}/sample_project"
+      File.write("#{root}/Procfile.dev", 'web: bundle exec puma')
+      File.write("#{root}/.gitignore", '.env')
+      capture_io { generate(:component, '--script=vite', "-r=#{root}") }
+      assert_equal "web: bundle exec puma\nvite: bundle exec vite dev\n", File.read("#{root}/Procfile.dev")
+      assert_equal ".env\n/public/vite*\nnode_modules\n*.local\n", File.read("#{root}/.gitignore")
+    end
+
+    it 'should keep an activesupport line the Gemfile already has' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      root = "#{@apptmp}/sample_project"
+      File.write("#{root}/Gemfile", File.read("#{root}/Gemfile") + "gem 'activesupport', '~> 8.1'\n")
+      capture_io { generate(:component, '--script=vite', "-r=#{root}") }
+      assert_equal 1, File.read("#{root}/Gemfile").scan(/^gem 'activesupport'/).size
+    end
+
+    it 'should say how to require Object#try when config/boot.rb has no Bundler.require line' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      root = "#{@apptmp}/sample_project"
+      File.write("#{root}/config/boot.rb", File.read("#{root}/config/boot.rb").sub('Bundler.require(:default, RACK_ENV)', 'Bundler.require(:default, RACK_ENV.to_sym)'))
+      out, = capture_io { generate(:component, '--script=vite', "-r=#{root}") }
+      assert_match(%r{Add `require 'active_support/core_ext/object/try'`}, out)
+    end
+
     it 'should add vite to an existing project and keep its package.json' do
       capture_io { generate(:project, 'sample_project', '--renderer=haml', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/package.json", "{}\n")
