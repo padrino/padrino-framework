@@ -41,6 +41,23 @@ describe 'ComponentGenerator' do
       refute File.exist?("#{@apptmp}/sample_project/public/stylesheets/application.css")
     end
 
+    it 'should keep the charset and imports of moved public styles above tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "@charset \"UTF-8\";\n/* fonts */\n@import url(https://fonts.example.com/inter.css);\nbody { color: red; }\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      expected = "@charset \"UTF-8\";\n/* fonts */\n@import url(https://fonts.example.com/inter.css);\n@import \"tailwindcss\";\n\nbody { color: red; }\n"
+      assert_equal expected, File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+    end
+
+    it 'should point relative imports of moved public styles at public/stylesheets' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "@import \"reset.css\";\n@import url('print.css') print;\n@import \"//cdn.example.com/x.css\";\n@import url(/base.css);\n.a { color: red; }\n")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      expected = "@import \"../../public/stylesheets/reset.css\";\n@import url('../../public/stylesheets/print.css') print;\n@import \"//cdn.example.com/x.css\";\n@import url(/base.css);\n" \
+                 "@import \"tailwindcss\";\n\n.a { color: red; }\n"
+      assert_equal expected, File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+    end
+
     it 'should keep the tailwind source when re-run after a build' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=tailwind') }
       source = "#{@apptmp}/sample_project/app/stylesheets/application.css"

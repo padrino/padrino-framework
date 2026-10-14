@@ -38,7 +38,15 @@ def setup_stylesheet
   source = destination_root('app/stylesheets/application.css')
   existing = destination_root('public/stylesheets/application.css')
   if !File.exist?(source) && File.exist?(existing)
-    create_file source, "#{TAILWIND_CSS}\n#{File.read(existing)}"
+    css = File.read(existing)
+    # Browsers ignore @charset and @import after other rules, so keep them above Tailwind's import,
+    # with relative imports pointing back at public/stylesheets from the new location.
+    head = css[%r{\A(?:\s+|/\*.*?\*/|@(?:charset|import)\b[^;]*;)*}m]
+    imports = head.strip.gsub(/(@import\s+(?:url\(\s*)?["']?)([^"')\s;]+)/) do
+      prefix, path = Regexp.last_match.captures
+      "#{prefix}#{'../../public/stylesheets/' unless path.match?(%r{\A(?:[a-z][a-z0-9+.-]*:|/)}i)}#{path}"
+    end
+    create_file source, "#{imports}#{"\n" unless imports.empty?}#{TAILWIND_CSS}\n#{css[head.size..]}"
     remove_file existing
   else
     create_file source, TAILWIND_CSS, skip: true
