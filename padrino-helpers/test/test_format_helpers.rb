@@ -39,6 +39,13 @@ describe 'FormatHelpers' do
       assert_equal "<p>Don't try to escape <b>me</b>!</p>", actual_text
     end
 
+    it 'should not modify already sanitized text it is given' do
+      text = "Keep me\nas I am".html_safe
+      simple_format(text)
+      assert_equal "Keep me\nas I am", text
+      assert_equal "<p>Keep me\n<br />as I am</p>", simple_format(text.freeze)
+    end
+
     describe 'wrapped in a custom tag' do
       it 'should format simple text into html format' do
         actual_text = simple_format("Here is some basic text...\n...with a line break.", tag: :div)

@@ -2,6 +2,9 @@
 
 == Unreleased
 
+- FIX #2338 Padrino runs with `--enable-frozen-string-literal` and no longer prints "literal string will be frozen" warnings on Ruby 3.4+ (@achiurizo)
+- FIX #2338 `Logger#<<`, `simple_format` and `url(..., fragment:)` no longer modify the strings passed to them or stored in routes (@achiurizo)
+- FIX #2338 padrino-mailer uses `Sinatra::TemplateCache` instead of the deprecated `Tilt::Cache` (@achiurizo)
 - FIX #2337 `padrino g project -b` works with Bundler 4: it runs `bundle install` and `bundle binstubs --all` instead of the removed `bundle install --binstubs` (@achiurizo)
 - FIX #2337 `padrino start --server_options` works with Rack 3 (@achiurizo)
 - FIX #2337 Constant removal on reload, `app_name` of mounted Sinatra apps and the `pluralize` helper work without padrino-gen or ActiveSupport loaded (@achiurizo)

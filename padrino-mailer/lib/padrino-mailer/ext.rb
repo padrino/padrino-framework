@@ -10,7 +10,7 @@ module Mail # @private
     attr_accessor :mailer_name, :message_name
 
     def initialize_with_app(*args, &block)
-      @template_cache = Tilt::Cache.new
+      @template_cache = Sinatra::TemplateCache.new
       # Check if we have an app passed into initialize
       if args[0].respond_to?(:views) && args[0].respond_to?(:reload_templates?)
         app                       = args.shift
