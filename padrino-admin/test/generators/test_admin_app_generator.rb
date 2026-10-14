@@ -1,4 +1,5 @@
 require_relative '../helper'
+require 'open3'
 
 describe 'AdminAppGenerator' do
   before do
@@ -49,6 +50,45 @@ describe 'AdminAppGenerator' do
       capture_io { generate(:project, 'sample_project', '-e=haml', "--root=#{@apptmp}", '-d=activerecord', '-t=minitest') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       assert_match_in_file %r{__dir__\}/\.\./test_config\.rb}, "#{@apptmp}/sample_project/test/models/account_test.rb"
+    end
+
+    it 'should generate seeds that read the account from piped input' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      script = <<~RUBY
+        require 'thor'
+        # Thor's line editor can echo or buffer piped input, so without a terminal the
+        # seeds must not ask through it.
+        class NoAskShell < Thor::Base.shell
+          def ask(*)
+            raise 'shell.ask used without a terminal'
+          end
+        end
+
+        def shell
+          @shell ||= NoAskShell.new
+        end
+        class Account
+          def initialize(attributes)
+            @attributes = attributes
+          end
+
+          def valid?
+            true
+          end
+
+          def save
+            puts "SAVED \#{@attributes[:email]} \#{@attributes[:password] == 'secret123'}"
+          end
+        end
+        load 'db/seeds.rb'
+      RUBY
+      env = { 'BUNDLE_GEMFILE' => File.expand_path('../../../Gemfile', __dir__) }
+      out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script,
+                                        chdir: "#{@apptmp}/sample_project", stdin_data: "admin@example.com \nsecret123\r\n")
+      assert status.success?, err
+      assert_includes out.lines.map(&:strip), 'SAVED admin@example.com true'
+      refute_includes out, 'secret123'
     end
 
     it 'should store and apply session_secret' do

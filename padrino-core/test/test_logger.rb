@@ -449,7 +449,21 @@ describe 'options :source_location' do
 
   it 'should output source_location if :source_location is set to true' do
     stub_root { Padrino.logger.debug('hello world') }
-    assert_match(/hello world/, Padrino.logger.log.string)
+    assert_match(%r{\[test/test_logger\.rb:\d+\] hello world}, Padrino.logger.log.string)
+  end
+
+  it 'should output source_location from Ruby 3.4 style backtraces' do
+    stub_message = "test/test_logger.rb:269:in 'Kernel#test'"
+    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root { Padrino.logger.debug('hello new format') } }
+    assert_match(%r{\[test/test_logger\.rb:269\] hello new format}, Padrino.logger.log.string)
+  end
+
+  it 'should log without source_location from code that has no file' do
+    ['(irb):1:in `<main>\'', "(eval at #{__FILE__}:1):1:in 'block'", "-e:1:in '<main>'"].each do |stub_message|
+      Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root { Padrino.logger.debug('hello console') } }
+    end
+    assert_equal 3, Padrino.logger.log.string.scan('hello console').size
+    refute_match(/\] hello console/, Padrino.logger.log.string)
   end
 
   it 'should output source_location if file path is relative' do
@@ -461,6 +475,8 @@ describe 'options :source_location' do
   it 'should not output source_location if :source_location is set to false' do
     Padrino::Logger::Config[:test][:source_location] = false
     Padrino::Logger.setup!
+    Padrino::Logger.logger.stub(:caller, ['(irb):1:in `<main>\'']) { stub_root { Padrino.logger.debug('hello irb') } }
+    assert_match(/hello irb/, Padrino.logger.log.string)
     stub_root { Padrino.logger.debug('hello world') }
     assert_match(/hello world/, Padrino.logger.log.string)
     refute_match(/\[.+?\] hello world/, Padrino.logger.log.string)

@@ -229,6 +229,19 @@ describe 'ControllerGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/subby/helpers/demo_items_helper.rb")
     end
 
+    it 'should generate rspec placeholders that mark the example pending, not the group' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/^  it "returns hello world" do\n    pending "add some examples/, "#{@apptmp}/sample_project/spec/app/controllers/demo_items_controller_spec.rb")
+      assert_match_in_file(/^  it "should return nil" do\n    pending "add some examples/, "#{@apptmp}/sample_project/spec/app/helpers/demo_items_helper_spec.rb")
+    end
+
+    it 'should generate a testunit helper test with an instance setup' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=testunit') }
+      capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/^  def setup$/, @helper_test_path)
+    end
+
     it 'should correctly generate file names' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=rspec') }
       capture_io { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }
