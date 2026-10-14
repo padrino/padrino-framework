@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'timeout'
 
 describe 'ProjectGenerator' do
   def setup
@@ -460,6 +461,44 @@ describe 'ProjectGenerator' do
     end
   end
 
+  describe 'an invalid component option' do
+    def generate_at_end_of_input(*params)
+      Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
+      Timeout.timeout(30) { capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *params) } }
+    end
+
+    it 'should stop with the valid choices at the end of input' do
+      error = assert_raises(RuntimeError) { generate_at_end_of_input('--orm=bogus') }
+      assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
+    end
+
+    %w[sequel activerecord minirecord].each do |orm|
+      it "should stop with the valid #{orm} adapters at the end of input" do
+        error = assert_raises(RuntimeError) { generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus') }
+        assert_match(/--adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite/, error.message)
+      end
+    end
+
+    it 'should re-ask after an invalid adapter and name the answer given' do
+      Thor::LineEditor.stubs(:readline).returns('nope').then.returns('sqlite')
+      out, = capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=bogus') } }
+      assert_match(/for ORM adapter `nope`/, out)
+      assert_match_in_file(%r{sqlite://}, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should re-ask after an invalid answer and take a piped one' do
+      Thor::LineEditor.stubs(:readline).returns('bogus2').then.returns('sequel')
+      capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=bogus') } }
+      assert_match_in_file(/Sequel.connect/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    it 'should still ask for a valid choice' do
+      Thor::LineEditor.stubs(:readline).returns('sequel')
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=bogus') }
+      assert_match_in_file(/Sequel.connect/, "#{@apptmp}/sample_project/config/database.rb")
+    end
+  end
+
   describe 'the generator for renderer component' do
     it 'should properly generate for erb' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erb', '--script=none') }
@@ -605,7 +644,7 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'minitest'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/include Rack::Test::Methods/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(/Minitest::Spec/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_match_in_file(/^class Minitest::Test$/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/SampleProject::App\.tap/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
       assert_match_in_file(/Rake::TestTask\.new\("test:\#/, "#{@apptmp}/sample_project/test/test.rake")
