@@ -46,10 +46,12 @@ end
 desc 'Bumps the version number based on given version'
 task :bump, [:version] do |_t, args|
   raise 'Please specify version=x.x.x !' unless args.version
-  version_path = "#{__dir__}/padrino-core/lib/padrino-core/version.rb"
-  version_text = File.read(version_path).sub(/VERSION = '[a-z0-9.]+'/, "VERSION = '#{args.version}'")
   say "Updating Padrino to version #{args.version}"
-  File.open(version_path, 'w') { |f| f.write version_text }
+  %w[padrino-core/lib/padrino-core/version.rb padrino-performance/lib/padrino-performance/version.rb].each do |path|
+    version_path = File.join(__dir__, path)
+    version_text = File.read(version_path).sub(/VERSION = '[a-z0-9.]+'/, "VERSION = '#{args.version}'")
+    File.open(version_path, 'w') { |f| f.write version_text }
+  end
   sh(format('git commit -am "Bumped version to %s"', args.version))
 end
 
@@ -63,7 +65,7 @@ task :pull do
   sh 'git pull origin master'
   say 'Updating submodules'
   sh 'git submodule sync'
-  sh 'git submodule update'
+  sh 'git submodule update --init'
   sh 'git submodule foreach git pull origin master'
   sh 'ls padrino-gen/lib/padrino-gen/generators/templates/static/README.rdoc'
 end
