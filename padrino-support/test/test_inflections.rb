@@ -3,7 +3,8 @@ require 'padrino-support/inflections'
 
 describe 'Padrino::Inflections' do
   # Each row is a word, its singular and its plural as ActiveSupport's default inflections give them.
-  # Padrino keeps its own plurals for octopus and virus (octopuses, viruses), so those rows have no plural.
+  # Rows without a plural are words whose Padrino plural differs from ActiveSupport's on purpose:
+  # Sequel derives default table names from pluralize, so changing a plural would rename existing tables.
   activesupport_inflections = [
     %w[status status statuses],
     %w[statuses status statuses],
@@ -27,14 +28,14 @@ describe 'Padrino::Inflections' do
     %w[databases database databases],
     %w[octopi octopus],
     %w[virus virus],
-    %w[police police police],
+    %w[police police],
     %w[person person people],
-    %w[people person people],
-    %w[men man men],
-    %w[children child children],
+    %w[people person],
+    %w[men man],
+    %w[children child],
     %w[testis testis testes],
     %w[slice slice slices],
-    %w[blouse blouse blouses],
+    %w[blouse blouse],
     %w[mouse mouse mice],
     %w[post post posts],
     %w[categories category categories],

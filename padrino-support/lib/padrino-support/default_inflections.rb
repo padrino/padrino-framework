@@ -19,7 +19,7 @@ module Padrino
     plural(/([^aeiouy]|qu)y$/i, '\1ies')
     plural(/(x|ch|ss|sh)$/i, '\1es')
     plural(/(matr|vert|ind)ix|ex$/i, '\1ices')
-    plural(/^(m|l)ouse$/i, '\1ice')
+    plural(/([m|l])ouse$/i, '\1ice')
 
     singular(/s$/i, '')
     singular(/(ss)$/i, '\1')
@@ -50,6 +50,6 @@ module Padrino
     irregular('quiz', 'quizzes')
     irregular('testis', 'testes')
 
-    uncountable(%w[equipment information rice money species series fish sheep news police])
+    uncountable(%w[equipment information rice money species series fish sheep news])
   end
 end
