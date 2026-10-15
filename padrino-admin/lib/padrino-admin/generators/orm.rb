@@ -4,8 +4,9 @@ module Padrino
     # Contains all admin related generator functionality.
     #
     module Generators
-      # Defines a generic exception for the admin ORM handler.
-      class OrmError < StandardError; end
+      # Defines a generic exception for the admin ORM handler. A Thor::Error, so the
+      # generators print its message without a backtrace and exit with status 1.
+      class OrmError < Thor::Error; end
 
       ##
       # Defines the generic ORM management functions used to manipulate data for admin.
