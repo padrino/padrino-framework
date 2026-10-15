@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2397 `padrino` and `padrino-gen` in an unbundled project without binstubs print the hint to run `bundle install && bundle binstubs --all` on stderr, so it shows up when the output is piped instead of being lost, and still exit with status 1 (@nesquena)
 - FIX #2395 `padrino start` on WEBrick shuts down cleanly on TERM (as sent by systemd, Docker and Kubernetes) instead of logging a FATAL SystemExit with a backtrace (@nesquena)
 - FIX #2391 Generators load the project's config/boot.rb from the project root, so a project template or plugin run from a parent directory (`padrino g project blog -p template.rb`), or `padrino-gen <generator> -r <project>` run from elsewhere, finds the project's sqlite database: in sequel projects `generate :admin_page` failed with "Model 'Post' could not be found!" and other steps opened or created a database in the caller's directory (@nesquena)
 - FIX #2393 Sending an email no longer gives every class in the process `erb`, `haml` and `slim` methods returning Padrino's engine settings, which made plain Sinatra apps in the same process escape their template output (@nesquena)
