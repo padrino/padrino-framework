@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2395 `padrino start` on WEBrick shuts down cleanly on TERM (as sent by systemd, Docker and Kubernetes) instead of logging a FATAL SystemExit with a backtrace (@nesquena)
 - FIX #2391 Generators load the project's config/boot.rb from the project root, so a project template or plugin run from a parent directory (`padrino g project blog -p template.rb`), or `padrino-gen <generator> -r <project>` run from elsewhere, finds the project's sqlite database: in sequel projects `generate :admin_page` failed with "Model 'Post' could not be found!" and other steps opened or created a database in the caller's directory (@nesquena)
 - FIX #2393 Sending an email no longer gives every class in the process `erb`, `haml` and `slim` methods returning Padrino's engine settings, which made plain Sinatra apps in the same process escape their template output (@nesquena)
 - FIX #2396 `padrino g model` and `padrino g migration` with Active Record turn a third `polymorphic` segment on a reference (`commentable:references:polymorphic`) into `polymorphic: true` on both `t.references` and `t.remove_references`, instead of silently dropping it (@nesquena)
