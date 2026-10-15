@@ -207,10 +207,11 @@ def ar_reference?(kind)
 end
 
 # A third field segment, as in user_id:integer:index or email:string:uniq, adds an index.
+# On a reference it can also be polymorphic, as in commentable:references:polymorphic.
 def ar_add_column(field, kind, index)
   if ar_reference?(kind)
-    index_option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }' }[index]
-    return "t.#{kind.underscore} :#{field}#{index_option}"
+    option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }', 'polymorphic' => ', polymorphic: true' }[index]
+    return "t.#{kind.underscore} :#{field}#{option}"
   end
 
   columns = ["t.#{kind.underscore.gsub(/_/, '')} :#{field}"]
@@ -219,9 +220,12 @@ def ar_add_column(field, kind, index)
   columns
 end
 
-# Removing a column also removes its indexes.
-def ar_remove_column(field, kind)
-  ar_reference?(kind) ? "t.remove_references :#{field}" : "t.remove :#{field}"
+# Removing a column also removes its indexes. A polymorphic reference also drops its type column.
+def ar_remove_column(field, kind, option = nil)
+  return "t.remove :#{field}" unless ar_reference?(kind)
+
+  polymorphic = ', polymorphic: true' if option == 'polymorphic'
+  "t.remove_references :#{field}#{polymorphic}"
 end
 
 def create_model_migration(migration_name, name, columns)
@@ -246,6 +250,6 @@ def create_migration_file(migration_name, name, columns)
     base: AR_MIGRATION,
     change_format: AR_CHANGE_MG,
     add: proc { |field, kind, index| ar_add_column(field, kind, index) },
-    remove: proc { |field, kind| ar_remove_column(field, kind) }
+    remove: proc { |field, kind, option| ar_remove_column(field, kind, option) }
   )
 end
