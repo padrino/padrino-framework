@@ -50,6 +50,22 @@ describe 'Sequel tasks' do
     assert_includes File.binread(database), 'widgets'
   end
 
+  it 'should leave a database the boot could reach alone, without running createdb' do
+    bin = File.join(@root, 'bin')
+    FileUtils.mkdir_p(bin)
+    File.write(File.join(bin, 'createdb'), "#!/bin/sh\ntouch #{File.join(@root, 'createdb.ran')}\nexit 1\n")
+    File.chmod(0o755, File.join(bin, 'createdb'))
+    File.write(File.join(@root, 'config', 'boot.rb'), <<~RUBY)
+      require 'padrino-core'
+      require 'sequel'
+      db = Sequel.connect('sqlite://db/development.db')
+      db.opts.update(adapter: 'postgres', host: 'db.internal', port: 5433, user: 'app', database: 'app_db')
+      Sequel::Model.db = db
+    RUBY
+    assert_includes rake('sq:create', path: bin), "<= Database 'app_db' already exists"
+    refute File.exist?(File.join(@root, 'createdb.ran'))
+  end
+
   it 'should create a database the boot could not reach, with the configured port' do
     bin = File.join(@root, 'bin')
     FileUtils.mkdir_p(bin)

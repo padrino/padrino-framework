@@ -70,12 +70,11 @@ module Padrino
         end
       end
 
-      # The mysql client talks to the local socket for localhost and ignores --port there,
-      # so a configured port also needs the host (or TCP) to reach that server.
+      # Reach the server the app connects to (mysql2 passes the host and port as given): 127.0.0.1
+      # with a port is a TCP server, so it gets --host, while localhost stays on the local socket.
       def self.mysql_host_arguments(host, port)
         arguments = []
         arguments << "--host=#{host}" if host && (port || !%w[127.0.0.1 localhost].include?(host))
-        arguments << '--protocol=TCP' if port && host.nil?
         arguments << "--port=#{port}" if port
         arguments
       end
