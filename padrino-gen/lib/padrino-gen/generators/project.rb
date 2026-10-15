@@ -47,13 +47,13 @@ module Padrino
         valid_constant? name
         # In 0.16.0 and 0.16.1 -s meant --server; stop before prompting for a script named after a server.
         if %w[webrick thin puma falcon trinidad mongrel spider-gazelle].include?(options[:script].to_s)
-          raise "-s selects the javascript library (--script); use --server=#{options[:script]} to choose the HTTP server"
+          raise Thor::Error, "-s selects the javascript library (--script); use --server=#{options[:script]} to choose the HTTP server"
         end
         app = options[:app] || 'App'
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
 
-        raise "Constant `#{@project_name}` already exists. Please, use another name" if already_exists?(@project_name)
+        raise Thor::Error, "Constant `#{@project_name}` already exists. Please, use another name" if already_exists?(@project_name)
 
         @app_name = app.gsub(/\W/, '_').camelize
         # Settle every component choice before writing, so an invalid one leaves no partial project behind.

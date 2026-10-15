@@ -195,7 +195,7 @@ module Padrino
       ##
       # Asks once for one of the valid choices of an option; callers re-ask while the answer is invalid.
       # Thor's limited_to: would repeat the prompt forever at the end of input (no terminal, empty pipe),
-      # so that case raises instead.
+      # so that case raises a Thor::Error instead: the generator's start prints its message and exits with status 1.
       #
       # @param [Symbol] option
       #   The name of the option.
@@ -211,7 +211,7 @@ module Padrino
       #
       def ask_valid_option(option, choices, statement)
         answer = ask("#{statement} [#{choices.join(', ')}]")
-        raise "No input left to choose a valid --#{option}; pass one of: #{choices.join(', ')}" if answer.nil?
+        raise Thor::Error, "No input left to choose a valid --#{option}; pass one of: #{choices.join(', ')}" if answer.nil?
 
         answer
       end
@@ -694,7 +694,7 @@ module Padrino
             [:stylesheet, 'stylesheet engine',  { aliases: '-c', default: :none }]
           ].each do |name, caption, opts|
             opts[:default] = '' if options[:default] == false
-            component_option name, caption, opts.merge(choices: Dir["#{__dir__}/components/#{name.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb').to_sym })
+            component_option name, caption, opts.merge(choices: Dir["#{__dir__}/components/#{name.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb') }.sort.map(&:to_sym))
           end
         end
 
