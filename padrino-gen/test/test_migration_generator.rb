@@ -155,6 +155,20 @@ describe 'MigrationGenerator' do
       assert_match_in_file(/t\.references :account, index: true\n/, migration_file_path)
       assert_match_in_file(/t\.remove_references :user\n/, migration_file_path)
     end
+
+    it 'should add and remove a polymorphic reference for a third polymorphic segment' do
+      capture_io { generate(:migration, 'AddCommentableToComments', 'commentable:references:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_commentable_to_comments.rb"
+      assert_match_in_file(/def self\.up\s+change_table :comments do \|t\|\s+t\.references :commentable, polymorphic: true\s+end/m, migration_file_path)
+      assert_match_in_file(/def self\.down\s+change_table :comments do \|t\|\s+t\.remove_references :commentable, polymorphic: true\s+end/m, migration_file_path)
+    end
+
+    it 'should add a polymorphic reference when rolling back a migration removing it' do
+      capture_io { generate(:migration, 'RemoveCommentableFromComments', 'commentable:belongs_to:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_commentable_from_comments.rb"
+      assert_match_in_file(/def self\.up\s+change_table :comments do \|t\|\s+t\.remove_references :commentable, polymorphic: true\s+end/m, migration_file_path)
+      assert_match_in_file(/def self\.down\s+change_table :comments do \|t\|\s+t\.belongs_to :commentable, polymorphic: true\s+end/m, migration_file_path)
+    end
   end
 
   describe 'the migration generator for sequel' do

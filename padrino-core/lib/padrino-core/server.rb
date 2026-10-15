@@ -55,6 +55,8 @@ module Padrino
       %i[INT TERM].each { |sig| trap(sig) { exit } }
       super do |server|
         server.threaded = true if server.respond_to?(:threaded=)
+        # WEBrick: stop on TERM the way Rackup stops it on INT, instead of raising SystemExit in its accept loop.
+        trap(:TERM) { server.shutdown } if server.respond_to?(:shutdown)
       end
     ensure
       puts '<= Padrino leaves the gun, takes the cannoli' unless options[:daemonize]
