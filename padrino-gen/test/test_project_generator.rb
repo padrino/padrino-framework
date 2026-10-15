@@ -505,6 +505,12 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'mongoid'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/Mongoid::Config.sessions =/, "#{@apptmp}/project.com/config/database.rb")
     end
+
+    it 'should set a process-wide default time zone for mongoid' do
+      capture_io { generate(:project, 'project.com', "--root=#{@apptmp}", '--orm=mongoid', '--script=none') }
+      database = File.read("#{@apptmp}/project.com/config/database.rb")
+      assert_equal 1, database.scan(/^Time\.zone_default \|\|= Time\.find_zone!\('UTC'\)$/).size
+    end
   end
 
   describe 'an invalid component option' do
