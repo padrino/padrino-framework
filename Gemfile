@@ -9,7 +9,11 @@ end
 group :db do
   gem 'jdbc-sqlite3', '~> 3.7.2', platform: :jruby
   gem 'sequel'
-  gem 'sqlite3', platforms: [:mri]
+  if RUBY_VERSION < '3.1'
+    gem 'sqlite3', '~> 1.7', platforms: [:mri]
+  else
+    gem 'sqlite3', platforms: [:mri]
+  end
 end
 
 group :development do
