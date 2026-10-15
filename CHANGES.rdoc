@@ -1,5 +1,10 @@
 = CHANGES
 
+== 0.16.2 (2026-10-15)
+
+- NEW #2317 HAML 6 and 7 compatibility (@achiurizo)
+- FIX #2367 Fetch git submodules over https; GitHub no longer serves git:// (@nesquena)
+
 == 0.16.1 (2026-03-27)
 
 - FIX #2312 Change HAML setup to support newer versions (@crashtech)
