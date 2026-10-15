@@ -32,7 +32,7 @@ describe 'AppGenerator' do
       assert_match_in_file('module SampleProject', "#{@apptmp}/sample_project/demo/app.rb")
       assert_match_in_file('class Demo < Padrino::Application', "#{@apptmp}/sample_project/demo/app.rb")
       assert_match_in_file(/Padrino.configure_apps do/, "#{@apptmp}/sample_project/config/apps.rb")
-      assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file(/^  set :session_secret, ENV\.fetch\('SESSION_SECRET'\) \{ '\h{64}' \}$/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     it 'should create correctly a new padrino application with an underscore name' do
@@ -50,7 +50,7 @@ describe 'AppGenerator' do
       assert_match_in_file('module SampleProject', "#{@apptmp}/sample_project/demo_app/app.rb")
       assert_match_in_file('class DemoApp < Padrino::Application', "#{@apptmp}/sample_project/demo_app/app.rb")
       assert_match_in_file(/Padrino.configure_apps do/, "#{@apptmp}/sample_project/config/apps.rb")
-      assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file(/^  set :session_secret, ENV\.fetch\('SESSION_SECRET'\) \{ '\h{64}' \}$/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     it 'should generate tiny app skeleton' do
