@@ -862,7 +862,8 @@ module Padrino
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
         public_dir = File.expand_path(public_dir)
-        path = "#{public_dir}#{unescape(path_info)}"
+        # Decode the path the way Sinatra's static! and the router do: %XX only, so '+' stays a plus.
+        path = "#{public_dir}#{Rack::Utils.unescape_path(path_info.b).force_encoding(Encoding::UTF_8)}"
         return unless Rack::Utils.valid_path?(path)
         path = File.expand_path(path)
         return unless path.start_with?("#{public_dir}/")

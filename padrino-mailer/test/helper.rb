@@ -9,6 +9,7 @@ require 'padrino-helpers'
 require 'padrino/rendering'
 require 'padrino-mailer/ext'
 require 'padrino-mailer'
+require 'padrino-mailer/mime'
 
 require 'ext/rack-test-methods'
 
