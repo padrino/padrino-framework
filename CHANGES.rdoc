@@ -2,8 +2,8 @@
 
 == Unreleased
 
-- FIX #XXXX The `rake`, `generate` and `app` steps of a project template or plugin run under the project's own bundle once the project is bundled, instead of inheriting the bundle of the caller's `bundle exec` or binstub, so a template run from a checkout can migrate and seed (`rake 'sq:migrate'` failed with an uninitialized constant) and its generators load the project (@nesquena)
-- FIX #XXXX `run_bundler` in a plugin or project template bundles the project without the Bundler setup of the caller's `bundle exec` or binstub, so a plugin run with `bundle exec padrino g plugin` (or `padrino-gen plugin -r` from a checkout) installs the gems it adds instead of failing with Bundler::GemNotFound (@nesquena)
+- FIX #2381 The `rake`, `generate` and `app` steps of a project template or plugin run under the project's own bundle once the project is bundled, instead of inheriting the bundle of the caller's `bundle exec` or binstub, so a template run from a checkout can migrate and seed (`rake 'sq:migrate'` failed with an uninitialized constant) and its generators load the project (@nesquena)
+- FIX #2381 `run_bundler` in a plugin or project template bundles the project without the Bundler setup of the caller's `bundle exec` or binstub, so a plugin run with `bundle exec padrino g plugin` (or `padrino-gen plugin -r` from a checkout) installs the gems it adds instead of failing with Bundler::GemNotFound (@nesquena)
 - FIX #2378 Project templates and plugins load from gists again: a gist page URL applies the gist's raw file instead of scraping the page, and a raw gist URL is downloaded instead of being looked up as a local file (@nesquena)
 - FIX #2377 Script components and official plugins and templates fetched by name download from raw.githubusercontent.com instead of the old raw.github.com redirect (@nesquena)
 - FIX #2375 `--script jquery` copies jQuery 3.7.1 and the updated UJS adapter (the method form uses the link's href verbatim; X-CSRF-Token goes only on same-origin requests that change data) (@nesquena)
