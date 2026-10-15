@@ -332,9 +332,15 @@ module Mail # @private
     ##
     # Register all special template configurations Padrino has to our fake settings object.
     #
+    # The settings object is the message class, so the engine settings go on Mail::Message
+    # itself (Mail::Part inherits them). Each is defined once and reads the current
+    # configuration, so an engine registered later is picked up by the next message.
+    #
     def initialize_template_settings!
-      Padrino::Rendering.engine_configurations.each do |name, value|
-        settings.class.instance_eval { define_method(name) { value } }
+      Padrino::Rendering.engine_configurations.each_key do |name|
+        next if Message.singleton_class.method_defined?(name, false)
+
+        Message.define_singleton_method(name) { Padrino::Rendering.engine_configurations[name] }
       end
     end
   end
