@@ -84,11 +84,32 @@ MONGOID_MODEL = <<~MODEL unless defined?(MONGOID_MODEL)
   end
 MODEL
 
+# Field kinds from the SQL generators that aren't Mongoid types. Any other kind
+# is camelized, so string, integer, boolean, date, time, big_decimal, array,
+# hash, symbol or a class name of your own work as before.
+unless defined?(MONGOID_FIELD_TYPES)
+  MONGOID_FIELD_TYPES = {
+    'text' => 'String', 'uuid' => 'String', 'bigint' => 'Integer', 'decimal' => 'BigDecimal',
+    'datetime' => 'Time', 'timestamp' => 'Time', 'binary' => 'BSON::Binary', 'json' => 'Object',
+    'object_id' => 'BSON::ObjectId'
+  }.freeze
+end
+
+# A references (or belongs_to) field becomes an association, as in Mongoid's own generator.
+def mongoid_field(field, kind, option = nil)
+  kind = kind.underscore
+  if %w[references belongs_to].include?(kind)
+    return "belongs_to :#{field}#{', polymorphic: true' if option == 'polymorphic'}"
+  end
+
+  "field :#{field}, type: #{MONGOID_FIELD_TYPES.fetch(kind) { kind.camelize }}"
+end
+
 # options => { fields: ['title:string', 'body:string'], app: 'app' }
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(':') }
-  column_declarations = field_tuples.map { |field, kind| "field :#{field}, type: #{kind.underscore.camelize}" }.join("\n  ")
+  column_declarations = field_tuples.map { |field, kind, option| mongoid_field(field, kind, option) }.join("\n  ")
   model_contents = MONGOID_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)
