@@ -3,6 +3,8 @@
 == Unreleased
 
 - FIX #2393 Sending an email no longer gives every class in the process `erb`, `haml` and `slim` methods returning Padrino's engine settings, which made plain Sinatra apps in the same process escape their template output (@nesquena)
+- FIX #2396 `padrino g model` and `padrino g migration` with Active Record turn a third `polymorphic` segment on a reference (`commentable:references:polymorphic`) into `polymorphic: true` on both `t.references` and `t.remove_references`, instead of silently dropping it (@nesquena)
+- FIX #2394 Static files whose names contain a plus sign are served (`/a+b.txt` gave a 404), and a `+` in the URL no longer serves a file whose name has a space in its place (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
