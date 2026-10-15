@@ -40,14 +40,15 @@ describe 'AdminPageGenerator' do
     it 'should fail without an existent model' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      assert_raises(Padrino::Admin::Generators::OrmError) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Model 'Foo' could not be found/, err)
     end
 
     it 'should fail when the model does not match the project orm' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      error = assert_raises(Padrino::Admin::Generators::OrmError) { capture_io { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project") } }
-      assert_match(/Friend.*activerecord/m, error.message)
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Friend.*activerecord/m, err)
     end
 
     it 'should destroy a page even when the model does not match the project orm' do
@@ -63,7 +64,8 @@ describe 'AdminPageGenerator' do
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       components = "#{@apptmp}/sample_project/.components"
       File.write(components, File.read(components).sub(/^:orm:.*\n/, ''))
-      assert_raises(Padrino::Admin::Generators::OrmError) { capture_io { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project") } }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/not based on/, err)
     end
 
     it 'should correctly generate a new page' do

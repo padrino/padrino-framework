@@ -155,10 +155,12 @@ describe 'ComponentGenerator' do
     it 'should stop with the valid choices for an invalid option at the end of input' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
-      error = assert_raises(RuntimeError) do
-        Timeout.timeout(30) { capture_io { generate(:component, '--orm=bogus', "-r=#{@apptmp}/sample_project") } }
+      stop = nil
+      _, err = Timeout.timeout(30) do
+        capture_io { stop = assert_raises(SystemExit) { generate(:component, '--orm=bogus', "-r=#{@apptmp}/sample_project") } }
       end
-      assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
+      assert_equal 1, stop.status
+      assert_match(/No input left to choose a valid --orm; pass one of: .*\bsequel\b/, err)
     end
 
     %w[--renderer=bogus --adapter=bogus].each do |option|
@@ -166,9 +168,11 @@ describe 'ComponentGenerator' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
         before = Dir["#{@apptmp}/sample_project/**/*", "#{@apptmp}/sample_project/.components"].to_h { |path| [path, File.file?(path) && File.read(path)] }
         Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
-        assert_raises(RuntimeError) do
-          Timeout.timeout(30) { capture_io { generate(:component, '--orm=sequel', option, "-r=#{@apptmp}/sample_project") } }
+        stop = nil
+        Timeout.timeout(30) do
+          capture_io { stop = assert_raises(SystemExit) { generate(:component, '--orm=sequel', option, "-r=#{@apptmp}/sample_project") } }
         end
+        assert_equal 1, stop.status
         after = Dir["#{@apptmp}/sample_project/**/*", "#{@apptmp}/sample_project/.components"].to_h { |path| [path, File.file?(path) && File.read(path)] }
         assert_equal before, after
       end

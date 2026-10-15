@@ -139,5 +139,38 @@ describe 'Cli' do
       assert_equal 0, status, out
       assert_match(/Please specify generator to use/, out)
     end
+
+    # Runs with stdin at its end, as in CI or a Dockerfile, and returns stderr and the exit status.
+    # The prompt goes through rb-readline from this repository's Gemfile, which isn't frozen-literal safe,
+    # so the frozen-literal CI job's flag is kept from the child.
+    def run_without_input(bin, *args)
+      rubyopt = ENV['RUBYOPT'].to_s.split.grep_v(/frozen.string.literal/).join(' ')
+      env = { 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__), 'RUBYOPT' => rubyopt }
+      _, err, status = Open3.capture3(env, RbConfig.ruby, bin, *args, stdin_data: '', chdir: @apptmp)
+      [err, status.exitstatus]
+    end
+
+    def assert_stopped_without_backtrace(message, err, status)
+      assert_equal 1, status, err
+      assert_includes err.lines.map(&:strip), message
+      refute(err.lines.any? { |line| line =~ /\A\s+from \S+:\d+|\((RuntimeError|Thor::Error)\)/ }, err)
+    end
+
+    it 'should print only the message when a prompt runs out of input' do
+      message = 'No input left to choose a valid --stylesheet; pass one of: sass, scss, tailwind, none'
+      padrino_gen_bin = File.expand_path('../bin/padrino-gen', __dir__)
+      padrino_bin = File.expand_path('../../padrino-core/bin/padrino', __dir__)
+
+      assert_stopped_without_backtrace(message, *run_without_input(padrino_gen_bin, 'project', 'demo', '-c', 'bogus'))
+      assert_stopped_without_backtrace(message, *run_without_input(padrino_bin, 'g', 'project', 'demo', '-c', 'bogus'))
+      assert_stopped_without_backtrace('No input left to choose a valid --adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite',
+                                       *run_without_input(padrino_gen_bin, 'project', 'demo', '-d', 'sequel', '-a', 'bogus'))
+      assert_no_dir_exists("#{@apptmp}/demo")
+
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      components = File.read("#{@apptmp}/sample_project/.components")
+      assert_stopped_without_backtrace(message, *run_without_input(padrino_bin, 'g', 'component', '-c', 'bogus', '-r', 'sample_project'))
+      assert_equal components, File.read("#{@apptmp}/sample_project/.components")
+    end
   end
 end
