@@ -56,6 +56,8 @@ module Padrino
         raise "Constant `#{@project_name}` already exists. Please, use another name" if already_exists?(@project_name)
 
         @app_name = app.gsub(/\W/, '_').camelize
+        # Settle every component choice before writing, so an invalid one leaves no partial project behind.
+        resolve_component_choices unless options[:template]
         self.destination_root = File.join(options[:root], name)
         if options[:template]
           execute_runner(:template, options[:template])
@@ -91,10 +93,8 @@ module Padrino
       #
       def setup_components
         return if options[:template]
-        @_components = options.class.new(options.slice(*self.class.component_types))
         self.class.component_types.each do |comp|
-          choice = @_components[comp] = resolve_valid_choice(comp)
-          execute_component_setup(comp, choice)
+          execute_component_setup(comp, @_components[comp])
         end
         store_component_config('.components', force: true)
         store_component_choice(:namespace, @project_name)
@@ -160,6 +160,19 @@ module Padrino
       def git_author_email
         git_author_email = `git config user.email`.chomp rescue ''
         git_author_email.empty? ? 'TODO: Write your email address' : git_author_email
+      end
+
+      private
+
+      ##
+      # Resolves each component choice, and the SQL adapter when the ORM needs one, prompting for invalid ones.
+      #
+      def resolve_component_choices
+        @_components = options.class.new(options.slice(*self.class.component_types))
+        self.class.component_types.each do |comp|
+          @_components[comp] = resolve_valid_choice(comp)
+        end
+        resolve_valid_adapter if SQL_ADAPTER_ORMS.include?(@_components[:orm])
       end
     end
   end

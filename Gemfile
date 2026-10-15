@@ -26,7 +26,7 @@ group :development do
     gem 'sinatra', git: 'https://github.com/sinatra/sinatra.git'
   end
 
-  gem 'liquid',    '>= 2.1.1'
+  gem 'liquid',    '>= 4.0.4'
   gem 'slim',      '>= 1.3.0'
 
   if ENV['HAML_ENGINE'] == 'hamlit'

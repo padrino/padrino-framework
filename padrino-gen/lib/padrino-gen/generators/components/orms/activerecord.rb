@@ -115,35 +115,27 @@ def setup_orm
   ar = AR.dup
   db = @project_name.underscore
 
-  begin
-    case adapter ||= options[:adapter]
-    when 'mysql-gem'
-      ar.sub!(/!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_development'"))
-      ar.sub!(/!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_production'"))
-      ar.sub!(/!DB_TEST!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_test'"))
-      require_dependencies 'mysql', version: '~> 2.8.1'
-    when 'mysql', 'mysql2'
-      ar.sub!(/!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_development'"))
-      ar.sub!(/!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_production'"))
-      ar.sub!(/!DB_TEST!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_test'"))
-      require_dependencies 'mysql2'
-    when 'postgres'
-      ar.sub!(/!DB_DEVELOPMENT!/, POSTGRES.sub(/!DB_NAME!/, "'#{db}_development'"))
-      ar.sub!(/!DB_PRODUCTION!/, POSTGRES.sub(/!DB_NAME!/, "'#{db}_production'"))
-      ar.sub!(/!DB_TEST!/, POSTGRES.sub(/!DB_NAME!/, "'#{db}_test'"))
-      require_dependencies 'pg'
-    when 'sqlite'
-      ar.sub!(/!DB_DEVELOPMENT!/, SQLITE.sub(/!DB_NAME!/, "Padrino.root('db', '#{db}_development.db')"))
-      ar.sub!(/!DB_PRODUCTION!/, SQLITE.sub(/!DB_NAME!/, "Padrino.root('db', '#{db}_production.db')"))
-      ar.sub!(/!DB_TEST!/, SQLITE.sub(/!DB_NAME!/, "Padrino.root('db', '#{db}_test.db')"))
-      require_dependencies 'sqlite3'
-    else
-      say "Failed to generate `config/database.rb` for ORM adapter `#{adapter}`", :red
-      raise ArgumentError
-    end
-  rescue ArgumentError
-    adapter = ask_valid_option(:adapter, %w[mysql mysql2 mysql-gem postgres sqlite], 'Please, choose a proper adapter:')
-    retry
+  case resolve_valid_adapter
+  when 'mysql-gem'
+    ar.sub!(/!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_development'"))
+    ar.sub!(/!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_production'"))
+    ar.sub!(/!DB_TEST!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_test'"))
+    require_dependencies 'mysql', version: '~> 2.8.1'
+  when 'mysql', 'mysql2'
+    ar.sub!(/!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_development'"))
+    ar.sub!(/!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_production'"))
+    ar.sub!(/!DB_TEST!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_test'"))
+    require_dependencies 'mysql2'
+  when 'postgres'
+    ar.sub!(/!DB_DEVELOPMENT!/, POSTGRES.sub(/!DB_NAME!/, "'#{db}_development'"))
+    ar.sub!(/!DB_PRODUCTION!/, POSTGRES.sub(/!DB_NAME!/, "'#{db}_production'"))
+    ar.sub!(/!DB_TEST!/, POSTGRES.sub(/!DB_NAME!/, "'#{db}_test'"))
+    require_dependencies 'pg'
+  when 'sqlite'
+    ar.sub!(/!DB_DEVELOPMENT!/, SQLITE.sub(/!DB_NAME!/, "Padrino.root('db', '#{db}_development.db')"))
+    ar.sub!(/!DB_PRODUCTION!/, SQLITE.sub(/!DB_NAME!/, "Padrino.root('db', '#{db}_production.db')"))
+    ar.sub!(/!DB_TEST!/, SQLITE.sub(/!DB_NAME!/, "Padrino.root('db', '#{db}_test.db')"))
+    require_dependencies 'sqlite3'
   end
 
   require_dependencies 'activerecord', require: 'active_record', version: '>= 3.1'
@@ -215,10 +207,11 @@ def ar_reference?(kind)
 end
 
 # A third field segment, as in user_id:integer:index or email:string:uniq, adds an index.
+# On a reference it can also be polymorphic, as in commentable:references:polymorphic.
 def ar_add_column(field, kind, index)
   if ar_reference?(kind)
-    index_option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }' }[index]
-    return "t.#{kind.underscore} :#{field}#{index_option}"
+    option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }', 'polymorphic' => ', polymorphic: true' }[index]
+    return "t.#{kind.underscore} :#{field}#{option}"
   end
 
   columns = ["t.#{kind.underscore.gsub(/_/, '')} :#{field}"]
@@ -227,9 +220,12 @@ def ar_add_column(field, kind, index)
   columns
 end
 
-# Removing a column also removes its indexes.
-def ar_remove_column(field, kind)
-  ar_reference?(kind) ? "t.remove_references :#{field}" : "t.remove :#{field}"
+# Removing a column also removes its indexes. A polymorphic reference also drops its type column.
+def ar_remove_column(field, kind, option = nil)
+  return "t.remove :#{field}" unless ar_reference?(kind)
+
+  polymorphic = ', polymorphic: true' if option == 'polymorphic'
+  "t.remove_references :#{field}#{polymorphic}"
 end
 
 def create_model_migration(migration_name, name, columns)
@@ -254,6 +250,6 @@ def create_migration_file(migration_name, name, columns)
     base: AR_MIGRATION,
     change_format: AR_CHANGE_MG,
     add: proc { |field, kind, index| ar_add_column(field, kind, index) },
-    remove: proc { |field, kind| ar_remove_column(field, kind) }
+    remove: proc { |field, kind, option| ar_remove_column(field, kind, option) }
   )
 end
