@@ -384,10 +384,13 @@ module Padrino
       ##
       # The project's shared public/ for an app mounted under a sub-path whose
       # public folder is the default public/<uri_root>. Static files and asset
-      # stamps fall back to it for files public/<uri_root> doesn't have.
+      # stamps fall back to it for files public/<uri_root> doesn't have. Nil for
+      # standalone Sinatra apps that only register Padrino::Routing.
       #
+      # @api private
       def shared_public_folder
-        return if uri_root == '/' || !public_folder
+        return unless respond_to?(:uri_root) && Padrino.respond_to?(:root)
+        return if uri_root.nil? || uri_root == '/' || !public_folder
 
         Padrino.root('public') if File.expand_path(public_folder) == Padrino.root('public', uri_root)
       end

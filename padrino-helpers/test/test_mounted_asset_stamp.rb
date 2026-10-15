@@ -26,4 +26,15 @@ describe 'AssetTagHelpers for an app mounted under a sub-path' do
       end
     end
   end
+
+  it 'should stamp assets in a standalone Sinatra app that registers Padrino::Routing' do
+    app = Class.new(Sinatra::Base) do
+      register Padrino::Routing
+      register Padrino::Helpers
+      get('/tag') { stylesheet_link_tag('nope') }
+    end
+    res = Rack::MockRequest.new(app).get('/tag')
+    assert_equal 200, res.status
+    assert_match(/nope\.css\?\d+/, res.body)
+  end
 end
