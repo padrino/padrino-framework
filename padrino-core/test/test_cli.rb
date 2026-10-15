@@ -43,6 +43,44 @@ describe 'Padrino::Cli' do
     assert_includes out.lines.map(&:strip), 'URL /runner/hello'
   end
 
+  it 'should say how to add irb when padrino console cannot load it' do
+    _, err, status = run_in_project(<<~RUBY)
+      # Ruby 4.0 without irb in the bundle
+      module Kernel
+        alias_method :require_before_test, :require
+        def require(name)
+          if name == 'irb'
+            error = LoadError.new('cannot load such file -- irb')
+            error.define_singleton_method(:path) { 'irb' }
+            raise error
+          end
+
+          require_before_test(name)
+        end
+      end
+      require 'padrino-core/cli/base'
+      Padrino::Cli::Base.start(['console'])
+    RUBY
+    assert_equal 1, status.exitstatus
+    assert_includes err, "add gem 'irb' to your Gemfile"
+  end
+
+  it 'should not hide a LoadError from inside irb in padrino console' do
+    _, err, status = run_in_project(<<~RUBY)
+      module Kernel
+        alias_method :require_before_test, :require
+        def require(name)
+          require_before_test(name == 'irb' ? 'padrino_missing_irb_dependency' : name)
+        end
+      end
+      require 'padrino-core/cli/base'
+      Padrino::Cli::Base.start(['console'])
+    RUBY
+    refute status.success?
+    assert_includes err, 'padrino_missing_irb_dependency'
+    refute_includes err, "add gem 'irb'"
+  end
+
   it 'should load the models in the rake environment task after a skeleton task' do
     out, err, status = run_in_project(<<~RUBY)
       require 'rake'
