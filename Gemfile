@@ -45,7 +45,7 @@ group :development do
   end
 
   gem 'builder',          '>= 2.1.2'
-  gem 'minitest',         '>= 4.0'
+  gem 'minitest',         '>= 4.0', '< 6'
   gem 'mocha',            '>= 2.0'
   gem 'oga',              '>= 2.5', '< 3'
   gem 'rack',             '~> 3'
