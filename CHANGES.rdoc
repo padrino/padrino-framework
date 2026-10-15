@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2380 Admins generated with `padrino g admin` use jQuery 3.7.1. With it, Bootstrap 3.1's collapse, tab, modal and alert data attributes in custom admin pages need a `data-target` instead of a bare `href="#"` (@nesquena)
 - FIX #2378 Project templates and plugins load from gists again: a gist page URL applies the gist's raw file instead of scraping the page, and a raw gist URL is downloaded instead of being looked up as a local file (@nesquena)
 - FIX #2377 Script components and official plugins and templates fetched by name download from raw.githubusercontent.com instead of the old raw.github.com redirect (@nesquena)
 - FIX #2375 `--script jquery` copies jQuery 3.7.1 and the updated UJS adapter (the method form uses the link's href verbatim; X-CSRF-Token goes only on same-origin requests that change data) (@nesquena)
