@@ -1,5 +1,7 @@
 require_relative 'helper'
 require 'timeout'
+require 'erb'
+require 'shellwords'
 
 describe 'ProjectGenerator' do
   def setup
@@ -756,6 +758,23 @@ describe 'ProjectGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/features/support/env.rb")
       assert_file_exists("#{@apptmp}/sample_project/features/add.feature")
       assert_file_exists("#{@apptmp}/sample_project/features/step_definitions/add_steps.rb")
+    end
+
+    it 'should generate cucumber profiles that current and older cucumbers accept' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=cucumber', '--script=none') }
+      yml = File.read("#{@apptmp}/sample_project/cucumber.yml")
+      profiles = lambda do |version|
+        # cucumber reads cucumber.yml through ERB, then YAML, then splits each profile like a shell
+        scope = Module.new
+        scope.const_set(:Cucumber, Module.new)
+        scope::Cucumber.const_set(:VERSION, version)
+        YAML.safe_load(ERB.new(yml, trim_mode: '%').result(scope.module_eval('binding', __FILE__, __LINE__))).transform_values { |args| Shellwords.split(args) }
+      end
+      assert_equal ['--tags', 'not @wip', 'features'], profiles.call('12.0.0')['default']
+      assert_equal ['--tags', 'not @wip', '--format', 'html', '--out=features_report.html', 'features'], profiles.call('12.0.0')['html_report']
+      assert_equal ['--strict', '--tags', 'not @wip', 'features'], profiles.call('9.2.1')['default']
+      assert_equal ['--strict', '--tags', 'not @wip', '--format', 'html', '--out=features_report.html', 'features'], profiles.call('11.1.1')['html_report']
+      assert_match_in_file(/gem 'cucumber', '>= 3.0'/, "#{@apptmp}/sample_project/Gemfile")
     end
   end
 
