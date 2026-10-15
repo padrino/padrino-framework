@@ -22,7 +22,12 @@ module Padrino
         ENV['BUNDLE_GEMFILE'] = File.join(options[:root], 'Gemfile') if options[:root]
         boot = options[:root] ? File.join(options[:root], 'config/boot.rb') : 'config/boot.rb'
         if File.exist?(boot)
-          require File.expand_path(boot)
+          # Boot from the project root, as `padrino start`, rake and the binstubs do, so that its relative paths
+          # (such as a sqlite database in config/database.rb) don't resolve against the caller's directory.
+          # ceiling: only the boot runs there; a path the project opens lazily after boot still resolves against
+          # the caller's directory. Running the whole generator from the root would need an absolute --root first.
+          boot = File.expand_path(boot)
+          Dir.chdir(File.expand_path('../..', boot)) { require boot }
         else
           require 'padrino-support'
         end

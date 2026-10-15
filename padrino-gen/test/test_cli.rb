@@ -53,6 +53,27 @@ describe 'Cli' do
       skip 'Make a great asserition'
     end
 
+    it 'should load the project boot from the project root' do
+      caller_dir = File.join(@apptmp, 'elsewhere')
+      FileUtils.mkdir_p(caller_dir)
+      %w[absolute relative].each do |name|
+        FileUtils.mkdir_p(File.join(@apptmp, name, 'config'))
+        File.write(File.join(@apptmp, name, 'db.txt'), "#{name} db")
+        File.write(File.join(@apptmp, name, 'config/boot.rb'), "$padrino_test_boot_db = File.read('db.txt')\n")
+      end
+
+      Dir.chdir(caller_dir) do
+        [[File.join(@apptmp, 'absolute'), 'absolute db'], ['../relative', 'relative db']].each do |root, db|
+          $padrino_test_boot_db = nil
+          out, = capture_io { Padrino::Generators::Cli.new([], root: root).load_boot }
+          assert_equal db, $padrino_test_boot_db, out
+          assert_equal File.realpath(caller_dir), File.realpath(Dir.pwd)
+        end
+      end
+    ensure
+      $padrino_test_boot_db = nil
+    end
+
     it 'should give back the environment variables it sets while loading the project boot' do
       saved = { 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'], 'PADRINO_LOG_LEVEL' => ENV['PADRINO_LOG_LEVEL'] }
       ENV['BUNDLE_GEMFILE'] = '/caller/Gemfile'
