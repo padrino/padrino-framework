@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #XXXX Static files whose names contain a plus sign are served (`/a+b.txt` gave a 404), and a `+` in the URL no longer serves a file whose name has a space in its place (@nesquena)
+- FIX #2394 Static files whose names contain a plus sign are served (`/a+b.txt` gave a 404), and a `+` in the URL no longer serves a file whose name has a space in its place (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
