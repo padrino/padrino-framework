@@ -1,5 +1,9 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #XXXX `padrino` and `padrino-gen` in an unbundled project without binstubs print the hint to run `bundle install && bundle binstubs --all` on stderr, so it shows up when the output is piped instead of being lost, and still exit with status 1 (@nesquena)
+
 == 0.17.0 (2026-10-15)
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
