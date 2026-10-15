@@ -299,6 +299,30 @@ describe 'Routing' do
     assert_equal 'cpp', body
   end
 
+  it 'should not find a route for a path that does not decode to valid UTF-8' do
+    mock_app do
+      get('/') { 'root' }
+      get("/caf\u00e9") { 'cafe' }
+      get(:show, map: '/items/:id') { params[:id] }
+    end
+    { '' => Padrino::Router.new(path: '/', to: @app), '/blog' => Padrino::Router.new(path: '/blog', to: @app) }.each do |prefix, app|
+      # Set PATH_INFO directly: Rack::MockRequest refuses to parse a malformed escape such as '%zz'.
+      request = lambda do |path|
+        env = Rack::MockRequest.env_for('/')
+        env['PATH_INFO'] = "#{prefix}#{path}"
+        status, _headers, body = app.call(env)
+        [status, body.to_enum.to_a.join]
+      end
+      ['/%ff.txt', '/a%80', '/items/%ff', '/items/%c0%ae%c0%ae', '/a%zz', '/items/%'].each do |path|
+        assert_equal 404, request.call(path)[0], "#{prefix}#{path}"
+      end
+      assert_equal [200, 'root'], request.call('/')
+      assert_equal [200, 'cafe'], request.call('/caf%C3%A9')
+      assert_equal [200, "caf\u00e9"], request.call('/items/caf%C3%A9')
+      assert_equal [200, 'a+b'], request.call('/items/a+b')
+    end
+  end
+
   it 'should keep path params UTF-8 regardless of default_external' do
     mock_app { get(:show, map: '/items/:id') { params[:id] == 'щ' ? 'ok' : "bad #{params[:id].encoding}" } }
     old_verbose = $VERBOSE

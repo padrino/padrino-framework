@@ -70,6 +70,8 @@ module Padrino
       # Returns a instance of PathRouter::Route if path is matched with current regexp
       #
       def match?(offset, path)
+        return unless path
+
         @routes[offset..].find do |route|
           route.regexp === path || (path.end_with?('/') && route.regexp === path[0..-2])
         end
@@ -88,10 +90,14 @@ module Padrino
       end
 
       ##
-      # Decode env["PATH_INFO"]
+      # Decode env["PATH_INFO"]. Returns nil when the path doesn't decode to valid text
+      # (a malformed or non-UTF-8 escape such as "/%ff"), so it matches no route.
       #
       def decode_pattern(pattern)
-        decode_uri(encode_default_external(pattern))
+        decoded = decode_uri(encode_default_external(pattern))
+        decoded if decoded.valid_encoding?
+      rescue ArgumentError, EncodingError
+        nil
       end
 
       ##

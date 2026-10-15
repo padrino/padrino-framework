@@ -257,6 +257,24 @@ describe 'AdminApplication' do
     refute @app.access_control.allowed?(Account.editor, '/stats')
   end
 
+  it 'should check paths that are not valid UTF-8 once decoded' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect %r{\A/secret}
+        role.protect '/reports'
+        role.allow %r{\A/reports/\d+\z}
+      end
+    end
+
+    refute @app.access_control.allowed?(nil, '/secret%ff')
+    refute @app.access_control.allowed?(nil, '/reports/%c0%ae')
+    assert @app.access_control.allowed?(nil, '/reports/1')
+    assert @app.access_control.allowed?(nil, '/public/%ff')
+  end
+
   it 'should emulate an ecommerce app' do
     mock_app do
       register Padrino::Admin::AccessControl
