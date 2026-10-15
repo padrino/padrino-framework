@@ -39,7 +39,6 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
     desc 'Create the database'
     task create: :skeleton do
       config = Sequel::Model.db.opts
-      user, password, host = config[:user], config[:password], config[:host]
       database = config[:database]
       charset = config[:charset] || ENV['CHARSET'] || 'utf8'
       collation = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
@@ -54,19 +53,18 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
         nil
       end
       require 'padrino-gen/padrino-tasks/sql-helpers'
-      Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation, port: config[:port])
+      Padrino::Generators::SqlHelpers.create_db(config, charset, collation)
       puts '<= sq:create executed'
     end
 
     desc 'Drop the database'
     task drop: :skeleton do
       config = ::Sequel::Model.db.opts
-      user, password, host, database = config[:user], config[:password], config[:host], config[:database]
 
       ::Sequel::Model.db.disconnect
 
-      puts "=> Dropping database '#{database}'"
-      Padrino::Generators::SqlHelpers.drop_db(config[:adapter], user, password, host, database, port: config[:port])
+      puts "=> Dropping database '#{config[:database]}'"
+      Padrino::Generators::SqlHelpers.drop_db(config)
       puts '<= sq:drop executed'
     end
 
