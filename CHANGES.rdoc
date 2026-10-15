@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2398 `rake sq:create` (`db:create`) with Sequel reports a database it can already connect to as existing and carries on, as Rails does (with SQLite it used to fail with "already exists" because connecting at boot creates the file); otherwise `sq:create` and `sq:drop` pass a configured port to `createdb`, `dropdb` and `mysql`, accept the `postgresql://` scheme, and stop with an error naming the client's exit status when the client fails, instead of reporting success (@nesquena)
 - FIX #2401 The admin uses Bootstrap 3.4.1 (was 3.1.0) for its CSS and JavaScript. Font Awesome and the wider containers on large screens move from `bootstrap.css` to the admin's `application.css`, so `bootstrap.css` is the unmodified Bootstrap file. Bootstrap 3.4.1's alert close button works with a bare `href="#"`; collapse, tab and modal still need a `data-target` (@nesquena)
 - REMOVE #2401 padrino-admin's Bootstrap 3.1 LESS sources and its `bootstrap:css` rake task, which built the old `bootstrap.css` (@nesquena)
 - NEW #2400 Generated projects read the session secret from the SESSION_SECRET environment variable, falling back to the random value written into `config/apps.rb`, so production can use its own secret without editing the file. Existing projects are unchanged (@nesquena)
