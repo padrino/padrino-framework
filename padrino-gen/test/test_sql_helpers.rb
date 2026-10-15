@@ -117,9 +117,14 @@ describe 'SqlHelpers' do
         assert_equal ['--user=admin', '--host=127.0.0.1', '--port=3307', '-e'], call[:args].first(4)
       end
 
-      it 'passes only the port when no host is configured, as mysql2 does' do
+      it 'uses the local socket without a host, as mysql2 does, so passes no port' do
         create('mysql', port: 3307)
-        assert_equal ['--user=admin', '--port=3307', '-e'], call[:args].first(3)
+        assert_equal ['--user=admin', '-e'], call[:args].first(2)
+      end
+
+      it 'uses the local socket for localhost with a port, as mysql2 does' do
+        create('mysql', host: 'localhost', port: 3307)
+        assert_equal ['--user=admin', '-e'], call[:args].first(2)
       end
 
       it 'does not set MYSQL_PWD when password is nil' do

@@ -70,11 +70,14 @@ module Padrino
         end
       end
 
-      # Reach the server the app connects to (mysql2 passes the host and port as given): 127.0.0.1
-      # with a port is a TCP server, so it gets --host, while localhost stays on the local socket.
+      # Reach the server the app connects to. mysql2 uses the local socket when the host is missing
+      # or localhost, and ignores the port there; the MariaDB client switches to TCP whenever it gets
+      # --port, so pass neither. Any other host is TCP to that host and port.
       def self.mysql_host_arguments(host, port)
+        return [] if host.nil? || host == 'localhost'
+
         arguments = []
-        arguments << "--host=#{host}" if host && (port || !%w[127.0.0.1 localhost].include?(host))
+        arguments << "--host=#{host}" if port || host != '127.0.0.1'
         arguments << "--port=#{port}" if port
         arguments
       end
