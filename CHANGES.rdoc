@@ -2,6 +2,8 @@
 
 == 0.16.2 (2026-10-15)
 
+- FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
+- FIX #2316 Ruby 4.0: padrino-core depends on the ostruct gem, which Ruby 4.0 no longer ships as a default gem (@nesquena)
 - NEW #2317 HAML 6 and 7 compatibility (@achiurizo)
 - FIX #2367 Fetch git submodules over https; GitHub no longer serves git:// (@nesquena)
 
