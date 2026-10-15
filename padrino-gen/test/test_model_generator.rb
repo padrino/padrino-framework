@@ -14,7 +14,7 @@ describe 'ModelGenerator' do
     it 'should fail outside app root' do
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
-      assert_no_file_exists('/tmp/models/user.rb')
+      assert_empty Dir.children(@apptmp)
     end
 
     it 'should fail if the name is missing' do
@@ -45,6 +45,15 @@ describe 'ModelGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/You need an ORM adapter/, out)
+    end
+
+    it 'should fail with a message if the orm in .components is no longer available' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':orm: sequel', ':orm: minirecord'))
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/The minirecord orm component is no longer available in Padrino \(available: .*\bsequel\b/, out)
+      assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
     end
 
     it 'should not fail if we do not have test component' do
@@ -171,38 +180,13 @@ describe 'ModelGenerator' do
       fields = /create_table :orders do \|t\|\s+t\.belongs_to :user\s+t\.string :code\s+t\.index :code, unique: true\s+t\.string :state\s+t\.index :state\s+t\.timestamps/m
       assert_match_in_file(fields, migration_file_path)
     end
-  end
 
-  # MINIRECORD
-  describe 'model generator using minirecord' do
-    it 'should generate hooks for auto upgrade' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=minirecord') }
-      assert_match_in_file(
-        "Padrino.after_load do\n  ActiveRecord::Base.auto_upgrade!",
-        "#{@apptmp}/sample_project/config/boot.rb"
-      )
-    end
-
-    it 'should add activerecord middleware' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=minirecord') }
-      assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/app/app.rb")
-      assert_file_exists("#{@apptmp}/sample_project/lib/connection_pool_management_middleware.rb")
-    end
-
-    it 'should generate model file' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=minirecord') }
-      capture_io { generate(:model, 'user', 'name:string', 'surname:string', 'age:integer', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :name, as: :string/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :surname, as: :string/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :age, as: :integer/m, "#{@apptmp}/sample_project/models/user.rb")
-    end
-
-    it 'should generate model file with camelized name' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=minirecord') }
-      capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
-      assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
+    it 'should generate migration file with a polymorphic reference' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:model, 'comment', 'body:text', 'commentable:references:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_comments.rb"
+      fields = /create_table :comments do \|t\|\s+t\.text :body\s+t\.references :commentable, polymorphic: true\s+t\.timestamps/m
+      assert_match_in_file(fields, migration_file_path)
     end
   end
 
@@ -271,24 +255,6 @@ describe 'ModelGenerator' do
       assert_match_in_file(/attribute :name/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/attribute :age/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/attribute :email/m, "#{@apptmp}/sample_project/models/user.rb")
-    end
-  end
-
-  # DYNAMOID
-  describe 'model generator using dynamoid' do
-    it 'should generate model file with no properties' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=dynamoid') }
-      capture_io { generate(:model, 'person', 'name:string', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person\n\s+include Dynamoid::Document/m, "#{@apptmp}/sample_project/models/person.rb")
-    end
-
-    it 'should generate model file with given fields' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=dynamoid') }
-      capture_io { generate(:model, 'user', 'name:string', 'age:integer', 'email:string', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User\n\s+include Dynamoid::Document/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :name, :string/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :age, :integer/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/field :email, :string/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 

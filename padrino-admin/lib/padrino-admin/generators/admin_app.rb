@@ -76,7 +76,7 @@ module Padrino
           RUBY
 
           unless options[:destroy]
-            insert_middleware 'ConnectionPoolManagement', @admin_path if %i[minirecord activerecord].include?(orm)
+            insert_middleware 'ConnectionPoolManagement', @admin_path if orm == :activerecord
           end
 
           params = [

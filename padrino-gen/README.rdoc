@@ -40,10 +40,10 @@ The available components and their default options are listed below:
 
 test::       none  (default), bacon, shoulda, cucumber, rspec, minitest, testunit
 renderer::   none  (default), slim, erb, liquid, haml
-stylesheet:: none  (default), tailwind, less, sass, scss
+stylesheet:: none  (default), tailwind, sass, scss
 mock::       none  (default), mocha, rr
 script::     none  (default), jquery, prototype, mootools, dojo, vite
-orm::        none  (default), mongoid, activerecord, minirecord, sequel, ohm, dynamoid
+orm::        none  (default), mongoid, activerecord, sequel, ohm
 
 In addition, you can generate projects based on existing templates:
 

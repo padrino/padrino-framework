@@ -70,9 +70,10 @@ describe 'SystemReloader' do
           end
         end
       DOC
-      tmp_file = '/tmp/padrino_class_demo.rb'
+      gem_dir = Dir.mktmpdir
+      File.write(File.join(gem_dir, 'padrino_class_demo.rb'), new_class)
+      $LOAD_PATH.unshift(gem_dir)
       begin
-        File.open(tmp_file, 'w') { |f| f.write(new_class) }
         Padrino.clear!
         require File.expand_path("#{__dir__}/fixtures/apps/system_class_methods_demo.rb")
         @app = SystemClassMethodsDemo
@@ -85,7 +86,8 @@ describe 'SystemReloader' do
         assert defined?(SingletonClassTest), 'SingletonClassTest undefined'
         assert_includes SingletonClassTest.singleton_methods, :external_test
       ensure
-        FileUtils.rm tmp_file
+        $LOAD_PATH.delete(gem_dir)
+        FileUtils.rm_rf(gem_dir)
       end
     end
 
@@ -96,9 +98,10 @@ describe 'SystemReloader' do
           end
         end
       DOC
-      tmp_file = '/tmp/padrino_instance_demo.rb'
+      gem_dir = Dir.mktmpdir
+      File.write(File.join(gem_dir, 'padrino_instance_demo.rb'), new_class)
+      $LOAD_PATH.unshift(gem_dir)
       begin
-        File.open(tmp_file, 'w') { |f| f.write(new_class) }
         Padrino.clear!
         require File.expand_path("#{__dir__}/fixtures/apps/system_instance_methods_demo.rb")
         @app = SystemInstanceMethodsDemo
@@ -111,7 +114,8 @@ describe 'SystemReloader' do
         assert defined?(InstanceTest), 'InstanceTest undefined'
         assert_includes InstanceTest.new.methods, :instance_test
       ensure
-        FileUtils.rm tmp_file
+        $LOAD_PATH.delete(gem_dir)
+        FileUtils.rm_rf(gem_dir)
       end
     end
 

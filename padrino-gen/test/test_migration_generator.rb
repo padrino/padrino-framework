@@ -12,9 +12,9 @@ describe 'MigrationGenerator' do
 
   describe 'the migration generator' do
     it 'should fail outside app root' do
-      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'add_email_to_users', '-r=/tmp') }.status }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'add_email_to_users', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
-      assert_no_file_exists("#{@apptmp}/db/migrate")
+      assert_empty Dir.children(@apptmp)
     end
 
     it 'should fail with NameError if given invalid namespace names' do
@@ -26,6 +26,15 @@ describe 'MigrationGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/You need an ORM adapter/, out)
+    end
+
+    it 'should fail with a message if the orm in .components is no longer available' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':orm: activerecord', ':orm: dynamoid'))
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/The dynamoid orm component is no longer available in Padrino/, out)
+      assert_empty Dir["#{@apptmp}/sample_project/db/migrate/*"]
     end
 
     it 'should generate migration inside app root' do
@@ -154,6 +163,20 @@ describe 'MigrationGenerator' do
       assert_match_in_file(/t\.references :user, index: \{ unique: true \}\n/, migration_file_path)
       assert_match_in_file(/t\.references :account, index: true\n/, migration_file_path)
       assert_match_in_file(/t\.remove_references :user\n/, migration_file_path)
+    end
+
+    it 'should add and remove a polymorphic reference for a third polymorphic segment' do
+      capture_io { generate(:migration, 'AddCommentableToComments', 'commentable:references:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_commentable_to_comments.rb"
+      assert_match_in_file(/def self\.up\s+change_table :comments do \|t\|\s+t\.references :commentable, polymorphic: true\s+end/m, migration_file_path)
+      assert_match_in_file(/def self\.down\s+change_table :comments do \|t\|\s+t\.remove_references :commentable, polymorphic: true\s+end/m, migration_file_path)
+    end
+
+    it 'should add a polymorphic reference when rolling back a migration removing it' do
+      capture_io { generate(:migration, 'RemoveCommentableFromComments', 'commentable:belongs_to:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_commentable_from_comments.rb"
+      assert_match_in_file(/def self\.up\s+change_table :comments do \|t\|\s+t\.remove_references :commentable, polymorphic: true\s+end/m, migration_file_path)
+      assert_match_in_file(/def self\.down\s+change_table :comments do \|t\|\s+t\.belongs_to :commentable, polymorphic: true\s+end/m, migration_file_path)
     end
   end
 

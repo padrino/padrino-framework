@@ -8,7 +8,8 @@ module Padrino
     # common actions for modifying a project or application.
     #
     module Runner
-      # Generates project scaffold based on a given template file.
+      # Generates project scaffold based on a given template file. A project generated with --dev
+      # passes it on, unless the template sets :dev itself.
       #
       # @param [Hash] options
       #   Options to use to generate the project.
@@ -17,6 +18,7 @@ module Padrino
       #   project test: :shoulda, orm: :activerecord, renderer: "haml"
       #
       def project(options = {})
+        options = { dev: true }.merge(options) if self.options[:dev]
         components = options.sort_by { |k, _v| k.to_s }.map { |component, value| "--#{component}=#{value}" }
         params = [name, *components].push("-r=#{destination_root('../')}")
         say "=> Executing: padrino-gen project #{params.join(' ')}", :magenta
