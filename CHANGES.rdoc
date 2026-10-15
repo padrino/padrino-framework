@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- WARN #XXXX Without ActiveSupport, `Padrino::Inflections.singularize` keeps singular words that end in s intact (status, address, class, alias, bus, analysis, ...), singularizes databases to database and leaves slice and police alone, and `pluralize` leaves people, men, children and police unchanged, as ActiveSupport does. So `parent: :status` routes use `params[:status_id]` (was `:statu_id`) and `parent: :address` uses `params[:address_id]` (was `:addres_id`) (@nesquena)
 - FIX #2394 Static files whose names contain a plus sign are served (`/a+b.txt` gave a 404), and a `+` in the URL no longer serves a file whose name has a space in its place (@nesquena)
 
 == 0.17.0 (2026-10-15)

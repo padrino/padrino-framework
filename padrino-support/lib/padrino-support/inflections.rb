@@ -71,6 +71,8 @@ module Padrino
     #   irregular 'person', 'people'
     def self.irregular(singular, plural)
       plural(Regexp.new("(#{singular[0, 1]})#{singular[1..]}$", 'i'), "\\1#{plural[1..]}")
+      plural(Regexp.new("(#{plural[0, 1]})#{plural[1..]}$", 'i'), "\\1#{plural[1..]}")
+      singular(Regexp.new("(#{singular[0, 1]})#{singular[1..]}$", 'i'), "\\1#{singular[1..]}")
       singular(Regexp.new("(#{plural[0, 1]})#{plural[1..]}$", 'i'), "\\1#{singular[1..]}")
     end
 
