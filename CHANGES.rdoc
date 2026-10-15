@@ -1,6 +1,6 @@
 = CHANGES
 
-== Unreleased
+== 0.17.0 (2026-10-15)
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
 - FIX #2381 The `rake`, `generate` and `app` steps of a project template or plugin run under the project's own bundle once the project is bundled, instead of inheriting the bundle of the caller's `bundle exec` or binstub, so a template run from a checkout can migrate and seed (`rake 'sq:migrate'` failed with an uninitialized constant) and its generators load the project (@nesquena)
@@ -79,6 +79,13 @@
 - FIX #2318 `Mail::Message.set` checked for an `erb` method instead of the setting's own name, and defined the setting on every class instead of only the message (@achiurizo)
 - NEW #2317 HAML 6 and 7 compatibility (@achiurizo)
 - NEW #2316 Ruby 4.0 compatibility: fix frozen string mutations in routing, re-encode non-UTF-8 log lines, add `ostruct` dependency (@nesquena)
+
+== 0.16.2 (2026-10-15)
+
+- FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
+- FIX #2316 Ruby 4.0: padrino-core depends on the ostruct gem, which Ruby 4.0 no longer ships as a default gem (@nesquena)
+- NEW #2317 HAML 6 and 7 compatibility (@achiurizo)
+- FIX #2367 Fetch git submodules over https; GitHub no longer serves git:// (@nesquena)
 
 == 0.16.1 (2026-03-27)
 
