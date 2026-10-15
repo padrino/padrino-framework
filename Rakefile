@@ -46,6 +46,7 @@ end
 desc 'Bumps the version number based on given version'
 task :bump, [:version] do |_t, args|
   raise 'Please specify version=x.x.x !' unless args.version
+  raise 'Bump the version on master' unless `git rev-parse --abbrev-ref HEAD`.strip == 'master'
   say "Updating Padrino to version #{args.version}"
   %w[padrino-core/lib/padrino-core/version.rb padrino-performance/lib/padrino-performance/version.rb].each do |path|
     version_path = File.join(__dir__, path)
@@ -72,6 +73,9 @@ end
 
 desc 'Pushes repository to GitHub'
 task push: :pull do
+  raise 'Commit or stash local changes before releasing' unless system('git diff --quiet && git diff --cached --quiet')
+  committed = File.read(File.join(__dir__, 'padrino-core/lib/padrino-core/version.rb'))[/VERSION = '([^']+)'/, 1]
+  raise "master has version #{committed}, not #{Padrino.version}; run rake bump on master" unless committed == Padrino.version
   say 'Pushing to github...'
   sh "git tag #{Padrino.version}"
   sh 'git push origin master'
