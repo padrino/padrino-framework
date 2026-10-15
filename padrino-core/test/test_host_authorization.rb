@@ -62,6 +62,14 @@ describe 'Host authorization' do
         assert_equal 200, status_for(@app, 'localhost')
       end
     end
+
+    it 'should treat a setting that is not a Hash as unset' do
+      mock_app do
+        disable :host_authorization
+        get('/') { 'ok' }
+      end
+      assert_equal 200, status_for(@app, 'myapp.example')
+    end
   end
 
   describe 'for mounted apps' do
