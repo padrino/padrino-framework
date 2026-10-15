@@ -234,6 +234,29 @@ describe 'AdminApplication' do
     refute @app.access_control.allowed?(nil, '/v2.json')
   end
 
+  it 'should match Regexp paths at the start of the path' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect %r{\A/secret}
+        role.allow %r{\A/reports/\d+\z}
+      end
+
+      access_control.roles_for :admin do |role|
+        role.allow %r{\A/stats}
+        role.project_module :posts, '/posts'
+      end
+    end
+
+    assert @app.access_control.allowed?(nil, '/reports/1')
+    refute @app.access_control.allowed?(nil, '/secret/x')
+    assert @app.access_control.allowed?(Account.admin, '/stats/today')
+    assert @app.access_control.allowed?(Account.admin, '/posts')
+    refute @app.access_control.allowed?(Account.editor, '/stats')
+  end
+
   it 'should emulate an ecommerce app' do
     mock_app do
       register Padrino::Admin::AccessControl
