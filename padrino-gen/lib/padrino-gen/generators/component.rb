@@ -41,23 +41,26 @@ module Padrino
             exit
           end
 
-          missing_app = false
-          self.class.component_types.each do |comp|
-            next if @_components[comp].empty?
-
-            choice = @_components[comp] = resolve_valid_choice(comp)
+          # Settle every choice, switch and check before applying any, so a failure leaves the project unchanged.
+          chosen = self.class.component_types.reject { |comp| @_components[comp].empty? }
+          chosen.each { |comp| @_components[comp] = resolve_valid_choice(comp) }
+          chosen.select! do |comp|
+            choice = @_components[comp]
             existing = fetch_component_choice(comp)
             ask = existing != 'none' && existing != choice
-            next if ask && !yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
+            !ask || yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
+          end
 
-            @project_name = fetch_component_choice(:namespace)
-            if comp.to_s == 'test' && !already_exists?(@app_name, @project_name)
-              say "#{@project_name}::#{@app_name} does not exist."
-              say 'Please, change app name.'
-              missing_app = true
-              next
-            end
+          @project_name = fetch_component_choice(:namespace)
+          if chosen.include?(:test) && !already_exists?(@app_name, @project_name)
+            say "#{@project_name}::#{@app_name} does not exist."
+            say 'Please, change app name.'
+            exit 1
+          end
+          resolve_valid_adapter if chosen.include?(:orm) && SQL_ADAPTER_ORMS.include?(@_components[:orm])
 
+          chosen.each do |comp|
+            choice = @_components[comp]
             execute_component_setup(comp, choice)
             store_component_choice(comp, choice)
             if comp.to_s == 'orm' && choice.to_s != 'none'
@@ -65,7 +68,6 @@ module Padrino
               inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", before: 'PadrinoTasks.init'
             end
           end
-          exit 1 if missing_app
         else
           exit_outside_app_root!
         end
