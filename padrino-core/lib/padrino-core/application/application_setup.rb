@@ -111,8 +111,21 @@ module Padrino
         builder.use Rack::Head
         register Padrino::Flash
         setup_protection builder
+        setup_host_authorization builder if host_authorization_set?
         setup_csrf_protection builder
         setup_application!
+      end
+
+      ##
+      # Sinatra 4.1+ checks the Host header against its host_authorization
+      # setting. Its default permits only local hosts in development, so
+      # Padrino applies the setting only when the app, a class it inherits
+      # from or a Padrino.configure_apps block sets it, and apps that don't
+      # keep answering any host.
+      #
+      def host_authorization_set?
+        Sinatra::Base.respond_to?(:host_authorization) &&
+          method(:host_authorization).owner != Sinatra::Base.singleton_class
       end
 
       ##
