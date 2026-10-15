@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #XXXX Projects generated with `-e liquid` use a current liquid (4.0.4 or later) instead of liquid 2.1.2 and liquify, so liquid views render instead of failing with an ArgumentError from Tilt (@nesquena)
+- FIX #2406 Projects generated with `-e liquid` use a current liquid (4.0.4 or later) instead of liquid 2.1.2 and liquify, so liquid views render instead of failing with an ArgumentError from Tilt (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
