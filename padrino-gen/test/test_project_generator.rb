@@ -1,5 +1,7 @@
 require_relative 'helper'
 require 'timeout'
+require 'erb'
+require 'shellwords'
 
 describe 'ProjectGenerator' do
   def setup
@@ -10,7 +12,6 @@ describe 'ProjectGenerator' do
 
   def teardown
     `rm -rf #{@apptmp}`
-    `rm -rf /tmp/project`
   end
 
   describe 'the project generator' do
@@ -83,9 +84,9 @@ describe 'ProjectGenerator' do
     end
 
     it 'should display the right path' do
-      out, = capture_io { generate(:project, 'project', '--root=/tmp') }
-      assert_dir_exists('/tmp/project')
-      assert_match(%r{cd /tmp/project}, out)
+      out, = capture_io { generate(:project, 'project', "--root=#{@apptmp}") }
+      assert_dir_exists("#{@apptmp}/project")
+      assert_match(%r{cd #{@apptmp}/project}, out)
     end
 
     it 'should run bundle install then bundle binstubs --all with --bundle' do
@@ -594,6 +595,16 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'liquid'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
+    it 'should require a liquid that Tilt renders with, and not liquify' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=liquid', '--script=none') }
+      gemfile = File.read("#{@apptmp}/sample_project/Gemfile")
+      requirement = gemfile[/^gem 'liquid', '([^']+)'/, 1]
+      require 'tilt/liquid'
+      assert Gem::Requirement.new(requirement).satisfied_by?(Gem::Version.new(Liquid::VERSION)), "liquid #{Liquid::VERSION} is outside #{requirement}"
+      assert_equal 'Hello PADRINO', Tilt::LiquidTemplate.new { 'Hello {{ name | upcase }}' }.render(nil, name: 'padrino')
+      refute_match(/gem 'liquify'/, gemfile)
+    end
+
     it 'should properly generate for slim' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=slim', '--script=none') }
       assert_match(/applying.*?slim.*?renderer/, out)
@@ -752,6 +763,23 @@ describe 'ProjectGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/features/support/env.rb")
       assert_file_exists("#{@apptmp}/sample_project/features/add.feature")
       assert_file_exists("#{@apptmp}/sample_project/features/step_definitions/add_steps.rb")
+    end
+
+    it 'should generate cucumber profiles that current and older cucumbers accept' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=cucumber', '--script=none') }
+      yml = File.read("#{@apptmp}/sample_project/cucumber.yml")
+      profiles = lambda do |version|
+        # cucumber reads cucumber.yml through ERB, then YAML, then splits each profile like a shell
+        scope = Module.new
+        scope.const_set(:Cucumber, Module.new)
+        scope::Cucumber.const_set(:VERSION, version)
+        YAML.safe_load(ERB.new(yml, trim_mode: '%').result(scope.module_eval('binding', __FILE__, __LINE__))).transform_values { |args| Shellwords.split(args) }
+      end
+      assert_equal ['--tags', 'not @wip', 'features'], profiles.call('12.0.0')['default']
+      assert_equal ['--tags', 'not @wip', '--format', 'html', '--out=features_report.html', 'features'], profiles.call('12.0.0')['html_report']
+      assert_equal ['--strict', '--tags', 'not @wip', 'features'], profiles.call('9.2.1')['default']
+      assert_equal ['--strict', '--tags', 'not @wip', '--format', 'html', '--out=features_report.html', 'features'], profiles.call('11.1.1')['html_report']
+      assert_match_in_file(/gem 'cucumber', '>= 3.0'/, "#{@apptmp}/sample_project/Gemfile")
     end
   end
 

@@ -1220,6 +1220,17 @@ describe 'Routing' do
     assert_equal 'show 3 1 2', body
   end
 
+  it 'should name the parent param after a parent that ends in s' do
+    mock_app do
+      controller :comments, parent: :status do
+        get(:index) { "index #{params[:status_id]}" }
+      end
+    end
+    get '/status/1/comments'
+    assert_equal 'index 1', body
+    assert_equal '/status/1/comments', @app.url(:comments, :index, status_id: 1)
+  end
+
   it 'should respect parent precedence: controllers parents go before route parents' do
     mock_app do
       controllers :project do
