@@ -20,6 +20,17 @@ describe 'ProjectGenerator' do
       assert_no_match_in_file(/^\s*enable :sessions/, "#{@apptmp}/sample_project/app/app.rb")
     end
 
+    it 'should read the session secret from SESSION_SECRET with a generated fallback' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:project, 'tiny_project', '--tiny', "--root=#{@apptmp}") }
+      secrets = %w[sample_project tiny_project].map do |name|
+        apps_rb = File.read("#{@apptmp}/#{name}/config/apps.rb")
+        assert_match(/^  set :session_secret, ENV\.fetch\('SESSION_SECRET'\) \{ '\h{64}' \}$/, apps_rb)
+        apps_rb[/\{ '(\h{64})' \}/, 1]
+      end
+      refute_equal secrets[0], secrets[1], 'each project should get its own fallback secret'
+    end
+
     it 'should allow simple generator to run and create base_app with no options' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       assert_dir_exists("#{@apptmp}/sample_project")
@@ -212,7 +223,7 @@ describe 'ProjectGenerator' do
 
     it 'should store and apply session_secret' do
       capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}") }
-      assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file(/^  set :session_secret, ENV\.fetch\('SESSION_SECRET'\) \{ '\h{64}' \}$/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     it 'should create components file containing options chosen with defaults' do

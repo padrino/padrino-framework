@@ -180,6 +180,14 @@ describe 'ModelGenerator' do
       fields = /create_table :orders do \|t\|\s+t\.belongs_to :user\s+t\.string :code\s+t\.index :code, unique: true\s+t\.string :state\s+t\.index :state\s+t\.timestamps/m
       assert_match_in_file(fields, migration_file_path)
     end
+
+    it 'should generate migration file with a polymorphic reference' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:model, 'comment', 'body:text', 'commentable:references:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_comments.rb"
+      fields = /create_table :comments do \|t\|\s+t\.text :body\s+t\.references :commentable, polymorphic: true\s+t\.timestamps/m
+      assert_match_in_file(fields, migration_file_path)
+    end
   end
 
   # SEQUEL
