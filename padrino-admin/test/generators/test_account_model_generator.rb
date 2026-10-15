@@ -34,18 +34,6 @@ describe 'AccountModelGenerator' do
     end
   end
 
-  describe 'ohm' do
-    before do
-      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=ohm') }
-      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      @model = "#{@apptmp}/sample_project/models/account.rb"
-    end
-
-    it 'should be an ohm model instance' do
-      assert_match_in_file(/class Account < Ohm::Model/m, @model)
-    end
-  end
-
   describe 'sequel' do
     before do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }

@@ -505,13 +505,6 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'mongoid'/, "#{@apptmp}/project.com/Gemfile")
       assert_match_in_file(/Mongoid::Config.sessions =/, "#{@apptmp}/project.com/config/database.rb")
     end
-
-    it 'should properly generate for ohm' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=ohm', '--script=none') }
-      assert_match(/applying.*?ohm.*?orm/, out)
-      assert_match_in_file(/gem 'ohm'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/Ohm.connect/, "#{@apptmp}/sample_project/config/database.rb")
-    end
   end
 
   describe 'an invalid component option' do
@@ -520,9 +513,12 @@ describe 'ProjectGenerator' do
       Timeout.timeout(30) { capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *params) } }
     end
 
-    it 'should stop with the valid choices at the end of input' do
-      error = assert_raises(RuntimeError) { generate_at_end_of_input('--orm=bogus') }
-      assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
+    %w[bogus ohm].each do |orm|
+      it "should stop with the valid choices at the end of input for --orm=#{orm}" do
+        error = assert_raises(RuntimeError) { generate_at_end_of_input("--orm=#{orm}") }
+        assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
+        assert_no_dir_exists("#{@apptmp}/sample_project")
+      end
     end
 
     %w[sequel activerecord].each do |orm|

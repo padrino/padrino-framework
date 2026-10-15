@@ -28,6 +28,16 @@ describe 'AdminAppGenerator' do
       assert_match(/Padrino only supports/, out)
     end
 
+    it 'should fail without writing anything when the project orm is no longer supported' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':orm: sequel', ':orm: ohm'))
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/only supports activerecord or mongoid or sequel\. Sorry!/, out)
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin")
+      assert_no_file_exists("#{@apptmp}/sample_project/models/account.rb")
+    end
+
     it 'should fail with an unsupported renderer' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}/sample_project", '-e=liquid') }.status }

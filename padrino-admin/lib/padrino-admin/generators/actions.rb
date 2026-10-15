@@ -27,7 +27,7 @@ module Padrino
         # Tell us for now which orm we support
         #
         def supported_orm
-          %i[activerecord mongoid sequel ohm]
+          %i[activerecord mongoid sequel]
         end
 
         ##
