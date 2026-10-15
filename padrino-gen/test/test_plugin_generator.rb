@@ -255,12 +255,15 @@ describe 'PluginGenerator' do
       saved = ENV.to_h
       # ENV when Bundler loaded, and what the caller's `bundle exec` exported to its children
       # (PADRINO_LOG_LEVEL was set before Bundler loaded and cleared since; a template set MY_TEMPLATE_VAR)
-      Bundler.stubs(:original_env).returns('PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'PADRINO_LOG_LEVEL' => 'test')
+      Bundler.stubs(:original_env).returns('PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'RUBYLIB' => '/user/lib', 'PADRINO_LOG_LEVEL' => 'test')
       ENV.delete('PADRINO_LOG_LEVEL')
       ENV.update('BUNDLE_GEMFILE' => '/caller/Gemfile', 'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'RUBYOPT' => '-rbundler/setup -W0',
-                 'BUNDLER_SETUP' => '/caller/bundler/setup', 'BUNDLER_ORIG_PATH' => ENV['PATH'], 'MY_TEMPLATE_VAR' => 'x')
+                 'BUNDLER_SETUP' => '/caller/bundler/setup', 'BUNDLER_ORIG_PATH' => ENV['PATH'], 'MY_TEMPLATE_VAR' => 'x',
+                 'PATH' => "/caller/vendor/bundle/bin:#{ENV['PATH']}", 'GEM_HOME' => '/caller/vendor/bundle/ruby', 'GEM_PATH' => '',
+                 'RUBYLIB' => '/caller/bundler/lib:/user/lib')
       seen = {}
-      keys = %w[PATH RUBYOPT BUNDLE_GEMFILE BUNDLE_LOCKFILE BUNDLER_SETUP BUNDLER_ORIG_PATH MY_TEMPLATE_VAR PADRINO_LOG_LEVEL]
+      keys = %w[PATH RUBYOPT BUNDLE_GEMFILE BUNDLE_LOCKFILE BUNDLER_SETUP BUNDLER_ORIG_PATH MY_TEMPLATE_VAR PADRINO_LOG_LEVEL
+                GEM_HOME GEM_PATH RUBYLIB]
       record = ->(step) { seen[step] = ENV.to_h.slice(*keys) }
       Padrino.stubs(:bin).with { |*args| record.call(args.first) }.returns(true)
       Padrino.stubs(:bin_gen).with { |*args| record.call(args.first.to_s) }.returns(true)
@@ -280,16 +283,17 @@ describe 'PluginGenerator' do
       File.write("#{project}/Gemfile.lock", '')
       seen = run_steps_under_caller_bundle(project)
       expected = { 'PATH' => ENV['PATH'], 'RUBYOPT' => '-rbundler/setup -W0', 'BUNDLE_GEMFILE' => "#{project}/Gemfile",
-                   'BUNDLE_LOCKFILE' => "#{project}/Gemfile.lock", 'MY_TEMPLATE_VAR' => 'x' }
+                   'BUNDLE_LOCKFILE' => "#{project}/Gemfile.lock", 'MY_TEMPLATE_VAR' => 'x', 'RUBYLIB' => '/user/lib' }
       assert_equal({ 'rake' => expected, 'model' => expected, 'app' => expected }, seen)
     end
 
     it "should run rake, generate and app under the caller's bundle until the project is bundled" do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       seen = run_steps_under_caller_bundle("#{@apptmp}/sample_project")
-      expected = { 'PATH' => ENV['PATH'], 'RUBYOPT' => '-rbundler/setup -W0', 'BUNDLE_GEMFILE' => '/caller/Gemfile',
-                   'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'BUNDLER_SETUP' => '/caller/bundler/setup',
-                   'BUNDLER_ORIG_PATH' => ENV['PATH'], 'MY_TEMPLATE_VAR' => 'x' }
+      expected = { 'PATH' => "/caller/vendor/bundle/bin:#{ENV['PATH']}", 'RUBYOPT' => '-rbundler/setup -W0',
+                   'BUNDLE_GEMFILE' => '/caller/Gemfile', 'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock',
+                   'BUNDLER_SETUP' => '/caller/bundler/setup', 'BUNDLER_ORIG_PATH' => ENV['PATH'], 'MY_TEMPLATE_VAR' => 'x',
+                   'GEM_HOME' => '/caller/vendor/bundle/ruby', 'GEM_PATH' => '', 'RUBYLIB' => '/caller/bundler/lib:/user/lib' }
       assert_equal({ 'rake' => expected, 'model' => expected, 'app' => expected }, seen)
     end
   end
