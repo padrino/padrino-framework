@@ -42,6 +42,41 @@ describe 'AdminPageGenerator' do
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/Model 'Foo' could not be found/, err)
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin/views/foos")
+      assert_no_file_exists("#{@apptmp}/sample_project/admin/controllers/foos.rb")
+      assert_no_match_in_file(/project_module :foos/, "#{@apptmp}/sample_project/admin/app.rb")
+    end
+
+    %w[erb haml slim].each do |renderer|
+      it "should destroy pages whose models were already removed (#{renderer})" do
+        Object.const_set(:GoneWidget, Class.new(Sequel::Model(:friends)))
+        Object.const_set(:GoneGadget, Class.new(Sequel::Model(:pages)))
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
+        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+        capture_io { generate(:admin_page, 'gone_widget', 'gone_gadget', "--root=#{@apptmp}/sample_project") }
+        admin = "#{@apptmp}/sample_project/admin"
+        assert_file_exists("#{admin}/views/gone_widgets/index.#{renderer}")
+        assert_match_in_file("role.project_module :gone_gadgets, '/gone_gadgets'", "#{admin}/app.rb")
+
+        Object.send(:remove_const, :GoneWidget)
+        Object.send(:remove_const, :GoneGadget)
+        status = nil
+        _, err = capture_io do
+          generate(:admin_page, 'gone_widget', 'gone_gadget', "--root=#{@apptmp}/sample_project", '-d')
+        rescue SystemExit => e
+          status = e.status
+        end
+        assert_nil status, err
+        %w[gone_widgets gone_gadgets].each do |page|
+          assert_no_file_exists("#{admin}/controllers/#{page}.rb")
+          assert_no_dir_exists("#{admin}/views/#{page}")
+          assert_no_match_in_file(/project_module :#{page}/, "#{admin}/app.rb")
+        end
+        assert_match_in_file("role.project_module :accounts, '/accounts'", "#{admin}/app.rb")
+      ensure
+        Object.send(:remove_const, :GoneWidget) if Object.const_defined?(:GoneWidget, false)
+        Object.send(:remove_const, :GoneGadget) if Object.const_defined?(:GoneGadget, false)
+      end
     end
 
     it 'should fail when the model does not match the project orm' do
