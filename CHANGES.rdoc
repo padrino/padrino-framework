@@ -2,8 +2,8 @@
 
 == Unreleased
 
-- REMOVE #XXXX MiniRecord and Dynamoid ORM and Less stylesheet generator components, and the MiniRecord rake tasks: the projects they generate no longer boot with current Ruby or gems (mini_record fails on ActiveRecord 6.1+, dynamoid 0.7 on aws-sdk 3, rack-less on Ruby 3.2+). Use activerecord or sequel, and sass, scss or tailwind, instead (@nesquena)
-- FIX #XXXX `padrino g model` and `padrino g migration` in a project whose `.components` names a removed ORM (such as datamapper, minirecord or dynamoid) exit with status 1 and say the component is no longer available, instead of failing with Errno::ENOENT (@nesquena)
+- REMOVE #2402 MiniRecord and Dynamoid ORM and Less stylesheet generator components, and the MiniRecord rake tasks: the projects they generate no longer boot with current Ruby or gems (mini_record fails on ActiveRecord 6.1+, dynamoid 0.7 on aws-sdk 3, rack-less on Ruby 3.2+). Use activerecord or sequel, and sass, scss or tailwind, instead (@nesquena)
+- FIX #2402 `padrino g model` and `padrino g migration` in a project whose `.components` names a removed ORM (such as datamapper, minirecord or dynamoid) exit with status 1 and say the component is no longer available, instead of failing with Errno::ENOENT (@nesquena)
 - FIX #2394 Static files whose names contain a plus sign are served (`/a+b.txt` gave a 404), and a `+` in the URL no longer serves a file whose name has a space in its place (@nesquena)
 
 == 0.17.0 (2026-10-15)
