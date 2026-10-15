@@ -40,7 +40,7 @@ module Padrino
         params = arguments.split(' ').push("-r=#{destination_root}")
         params.push("--app=#{@_app_name}") if @_app_name
         say "=> Executing: padrino-gen #{type} #{params.join(' ')}", :magenta
-        Padrino.bin_gen(*params.unshift(type))
+        in_project_bundle { Padrino.bin_gen(*params.unshift(type)) }
       end
 
       ##
@@ -53,7 +53,7 @@ module Padrino
       #   rake "custom task1 task2"
       #
       def rake(command)
-        Padrino.bin('rake', command, "-c=#{destination_root}")
+        in_project_bundle { Padrino.bin('rake', command, "-c=#{destination_root}") }
       end
 
       ##
@@ -72,7 +72,7 @@ module Padrino
       #
       def app(name)
         say "=> Executing: padrino-gen app #{name} -r=#{destination_root}", :magenta
-        created = Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}")
+        created = in_project_bundle { Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}") }
         return created unless block_given?
 
         @_app_name = name
@@ -103,6 +103,19 @@ module Padrino
       end
 
       private
+
+      ##
+      # Runs a step that loads the project (rake, or a generator, which loads config/boot.rb) under the
+      # project's bundle, as `bundle exec` in the project would. It would otherwise inherit the bundle this
+      # process runs under, such as a checkout's for `bundle exec padrino-gen project -p ...`. Until the
+      # project is bundled (no Gemfile.lock), the step keeps this process's bundle, which is the one that
+      # can load padrino-gen from a checkout.
+      #
+      def in_project_bundle(&block)
+        return yield unless defined?(Bundler) && File.exist?(destination_root('Gemfile.lock'))
+
+        with_project_bundle_env(setup: true, &block)
+      end
 
       ##
       # Resolves the path to the plugin template
