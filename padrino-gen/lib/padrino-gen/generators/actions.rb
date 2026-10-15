@@ -11,6 +11,12 @@ module Padrino
     DEFAULT_HELPER_NAME = 'Helper'.freeze
 
     ##
+    # The SQL adapters for --adapter, and the ORM components that set up their database with one.
+    #
+    SQL_ADAPTERS = %w[mysql mysql2 mysql-gem postgres sqlite].freeze
+    SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
+
+    ##
     # Common actions needed to support project and component generation.
     #
     module Actions
@@ -155,6 +161,25 @@ module Padrino
           choice = ask_valid_option(component, choices, "Please enter a valid option for #{component}:")
         end
         choice
+      end
+
+      ##
+      # Prompts the user if necessary until options[:adapter] or the answer is a valid SQL adapter, and keeps it.
+      #
+      # @return [String] Name of the SQL adapter.
+      #
+      # @example
+      #   resolve_valid_adapter # => 'sqlite'
+      #
+      def resolve_valid_adapter
+        @_adapter ||= begin
+          adapter = options[:adapter]
+          until SQL_ADAPTERS.include?(adapter)
+            say("Option for --adapter '#{adapter}' is not available.", :red)
+            adapter = ask_valid_option(:adapter, SQL_ADAPTERS, 'Please enter a valid option for adapter:')
+          end
+          adapter
+        end
       end
 
       ##

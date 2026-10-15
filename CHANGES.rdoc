@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #XXXX `padrino g project` and `padrino g component` check every component choice and the `--adapter` before writing anything: an invalid one is asked for again first, and without a terminal the generator stops with nothing written, instead of leaving a partial project or a half-applied change. `padrino g component` with a test component for an app that does not exist no longer applies the other components first (@nesquena)
 - FIX #2394 Static files whose names contain a plus sign are served (`/a+b.txt` gave a 404), and a `+` in the URL no longer serves a file whose name has a space in its place (@nesquena)
 
 == 0.17.0 (2026-10-15)

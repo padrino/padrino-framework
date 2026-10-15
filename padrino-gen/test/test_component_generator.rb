@@ -161,6 +161,19 @@ describe 'ComponentGenerator' do
       assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
     end
 
+    %w[--renderer=bogus --adapter=bogus].each do |option|
+      it "should change nothing when #{option} has no valid answer at the end of input" do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        before = Dir["#{@apptmp}/sample_project/**/*", "#{@apptmp}/sample_project/.components"].to_h { |path| [path, File.file?(path) && File.read(path)] }
+        Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
+        assert_raises(RuntimeError) do
+          Timeout.timeout(30) { capture_io { generate(:component, '--orm=sequel', option, "-r=#{@apptmp}/sample_project") } }
+        end
+        after = Dir["#{@apptmp}/sample_project/**/*", "#{@apptmp}/sample_project/.components"].to_h { |path| [path, File.file?(path) && File.read(path)] }
+        assert_equal before, after
+      end
+    end
+
     it 'should enable fiber concurrency when adding an orm to a falcon project' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon') }
       capture_io { generate(:component, '--orm=sequel', "-r=#{@apptmp}/sample_project") }
@@ -197,6 +210,16 @@ describe 'ComponentGenerator' do
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate_with_parts(:component, '--test=cucumber', '--app=compo', "-r=#{@apptmp}/sample_project", apps: 'compo') }.status }
       assert_match(/SampleProject::Compo does not exist./, out)
       assert_no_file_exists("#{@apptmp}/sample_project/features")
+    end
+
+    it 'should not apply the other components when the app for the test component does not exist' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, = capture_io do
+        assert_equal 1, assert_raises(SystemExit) { generate_with_parts(:component, '--orm=sequel', '--test=cucumber', '--app=compo', "-r=#{@apptmp}/sample_project", apps: 'compo') }.status
+      end
+      assert_match(/SampleProject::Compo does not exist./, out)
+      assert_no_file_exists("#{@apptmp}/sample_project/config/database.rb")
+      assert_equal 'none', YAML.load_file("#{@apptmp}/sample_project/.components")[:orm]
     end
   end
 
