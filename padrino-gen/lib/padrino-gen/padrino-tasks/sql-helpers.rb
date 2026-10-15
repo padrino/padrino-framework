@@ -40,6 +40,58 @@ module Padrino
         end
       end
 
+      def self.dump_db(adapter, user, password, host, port, socket, database, file)
+        adapter = adapter.to_s
+        password = password.to_s
+        partial = "#{file}.tmp"
+        environment = {}
+        options = {}
+
+        case adapter
+        when 'postgres', 'postgresql'
+          binary = 'pg_dump'
+          environment['PGPASSWORD'] = password unless password.empty?
+
+          arguments = ["--file=#{partial}"]
+          arguments << "--host=#{host}" if host
+          arguments << "--port=#{port}" if port
+          arguments << "--username=#{user}" if user
+          arguments << database
+        when 'mysql', 'mysql2'
+          binary = 'mysqldump'
+          environment['MYSQL_PWD'] = password unless password.empty?
+
+          arguments = ["--result-file=#{partial}"]
+          arguments << "--user=#{user}" if user
+          arguments << "--host=#{host}" if host
+          arguments << "--port=#{port}" if port
+          arguments << "--socket=#{socket}" if socket
+          arguments << database
+        when 'sqlite', 'sqlite3'
+          raise "Database #{database} does not exist" unless File.file?(database.to_s)
+          binary = 'sqlite3'
+          arguments = [database, '.dump']
+          options[:out] = partial
+        else
+          raise "Adapter #{adapter} not supported for dumping databases yet."
+        end
+
+        FileUtils.mkdir_p(File.dirname(file))
+        begin
+          pid = Process.spawn(environment, binary, *arguments, options)
+        rescue Errno::ENOENT
+          FileUtils.rm_f(partial) # spawn creates the out: file before exec fails
+          raise "#{binary} not found on PATH"
+        end
+        _, status = Process.wait2(pid)
+        unless status.success?
+          FileUtils.rm_f(partial)
+          raise "Error dumping database #{database}"
+        end
+        File.rename(partial, file)
+        file
+      end
+
       # Like createdb and dropdb, Postgres connects to postgres and then template1, but never to the
       # database being created or dropped: Postgres can't drop the database a connection is using.
       def self.postgres_maintenance_databases(database)
