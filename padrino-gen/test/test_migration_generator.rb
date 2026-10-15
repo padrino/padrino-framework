@@ -12,9 +12,9 @@ describe 'MigrationGenerator' do
 
   describe 'the migration generator' do
     it 'should fail outside app root' do
-      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'add_email_to_users', '-r=/tmp') }.status }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'add_email_to_users', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
-      assert_no_file_exists("#{@apptmp}/db/migrate")
+      assert_empty Dir.children(@apptmp)
     end
 
     it 'should fail with NameError if given invalid namespace names' do
