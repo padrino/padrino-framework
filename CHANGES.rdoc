@@ -1,5 +1,9 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #XXXX Sending an email no longer gives every class in the process `erb`, `haml` and `slim` methods returning Padrino's engine settings, which made plain Sinatra apps in the same process escape their template output (@nesquena)
+
 == 0.17.0 (2026-10-15)
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
