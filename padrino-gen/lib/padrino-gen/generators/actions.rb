@@ -480,12 +480,32 @@ module Padrino
       #
       def run_bundler
         say 'Bundling application dependencies using bundler...', :yellow
-        # The new project's Gemfile and lockfile, not the ones a caller's `bundle exec` or binstub exported.
-        env = { 'BUNDLE_GEMFILE' => destination_root('Gemfile'), 'BUNDLE_LOCKFILE' => destination_root('Gemfile.lock') }
         in_root do
-          run 'bundle install', env: env
-          run 'bundle binstubs --all', env: env
+          with_project_bundle_env do
+            run 'bundle install'
+            run 'bundle binstubs --all'
+          end
         end
+      end
+
+      ##
+      # Runs the block with the environment for a command run on the project: the project's Gemfile
+      # and lockfile, and none of the Bundler setup (RUBYOPT=-rbundler/setup, BUNDLE_GEMFILE...) that a
+      # caller's `bundle exec` or binstub exported. With +setup+, the command loads the project's
+      # bundle first, as `bundle exec` would in the project.
+      #
+      # @param [Boolean] setup
+      #   Whether the command requires bundler/setup.
+      #
+      def with_project_bundle_env(setup: false)
+        saved = ENV.to_h
+        ENV.replace(Bundler.original_env) if defined?(Bundler) && Bundler.respond_to?(:original_env)
+        ENV['BUNDLE_GEMFILE'] = destination_root('Gemfile')
+        ENV['BUNDLE_LOCKFILE'] = destination_root('Gemfile.lock')
+        ENV['RUBYOPT'] = ['-rbundler/setup', ENV['RUBYOPT']].compact.join(' ') if setup
+        yield
+      ensure
+        ENV.replace(saved) if saved
       end
 
       ##
