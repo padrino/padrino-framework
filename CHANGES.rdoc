@@ -1,5 +1,9 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #XXXX `rake sq:create` (`db:create`) with Sequel and SQLite no longer fails with "already exists" for the database file that connecting at boot creates, `sq:create` and `sq:drop` pass a configured port to `createdb`, `dropdb` and `mysql` and accept the `postgresql://` scheme, and they stop with an error naming the client's exit status when the client fails, instead of reporting success (@nesquena)
+
 == 0.17.0 (2026-10-15)
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
