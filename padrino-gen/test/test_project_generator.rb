@@ -508,23 +508,28 @@ describe 'ProjectGenerator' do
   end
 
   describe 'an invalid component option' do
+    # Returns what the generator printed on stderr; it must stop with status 1, without prompting again.
     def generate_at_end_of_input(*params)
       Thor::LineEditor.stubs(:readline).returns(nil).then.raises(RuntimeError, 'prompted again at end of input')
-      Timeout.timeout(30) { capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *params) } }
+      stop = nil
+      _, err = Timeout.timeout(30) do
+        capture_io { stop = assert_raises(SystemExit) { generate(:project, 'sample_project', "--root=#{@apptmp}", *params) } }
+      end
+      assert_equal 1, stop.status
+      err
     end
 
     %w[bogus ohm].each do |orm|
       it "should stop with the valid choices at the end of input for --orm=#{orm}" do
-        error = assert_raises(RuntimeError) { generate_at_end_of_input("--orm=#{orm}") }
-        assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
+        assert_match(/No input left to choose a valid --orm; pass one of: .*\bsequel\b/, generate_at_end_of_input("--orm=#{orm}"))
         assert_no_dir_exists("#{@apptmp}/sample_project")
       end
     end
 
     %w[sequel activerecord].each do |orm|
       it "should stop with the valid #{orm} adapters at the end of input" do
-        error = assert_raises(RuntimeError) { generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus') }
-        assert_match(/--adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite/, error.message)
+        err = generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus')
+        assert_match(/No input left to choose a valid --adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite/, err)
       end
     end
 
@@ -537,13 +542,13 @@ describe 'ProjectGenerator' do
 
     %w[--orm=bogus --renderer=bogus --test=bogus --stylesheet=bogus --adapter=bogus].each do |option|
       it "should write nothing when #{option} has no valid answer at the end of input" do
-        assert_raises(RuntimeError) { generate_at_end_of_input('--orm=sequel', '--test=minitest', option) }
+        generate_at_end_of_input('--orm=sequel', '--test=minitest', option)
         assert_no_dir_exists("#{@apptmp}/sample_project")
       end
     end
 
     it 'should write nothing for an invalid choice in a tiny project at the end of input' do
-      assert_raises(RuntimeError) { generate_at_end_of_input('--tiny', '--renderer=bogus') }
+      generate_at_end_of_input('--tiny', '--renderer=bogus')
       assert_no_dir_exists("#{@apptmp}/sample_project")
     end
 
