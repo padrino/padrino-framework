@@ -505,6 +505,8 @@ module Padrino
         saved = ENV.to_h
         if defined?(Bundler) && Bundler.respond_to?(:original_env)
           original = Bundler.original_env
+          # ceiling: a template's own changes to Bundler's keys (PATH, RUBYOPT, GEM_PATH...) made after Bundler loaded
+          # don't reach its steps; upgrade: re-apply the diff from a snapshot taken when the runner starts.
           BUNDLER_ENV_KEYS.each { |key| original.key?(key) ? ENV[key] = original[key] : ENV.delete(key) }
           ENV.keys.grep(/\ABUNDLER_ORIG_/).each { |key| ENV.delete(key) }
         end
