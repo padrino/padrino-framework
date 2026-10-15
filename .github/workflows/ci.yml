@@ -20,6 +20,11 @@ jobs:
             haml_version: '7'
           - ruby: '4.0'
             haml_version: '5'
+        include:
+          # Ruby 2.7 to 3.1 resolve haml 6, since haml 7 needs Ruby 3.2
+          - os: ubuntu-latest
+            ruby: '3.1'
+            haml_version: '6'
     runs-on: ${{ matrix.os }}
     env:
       HAML_VERSION: ${{ matrix.haml_version }}
