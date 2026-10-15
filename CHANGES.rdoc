@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #2389 Generators load the project's config/boot.rb from the project root, so a project template or plugin run from a parent directory (`padrino g project blog -p template.rb`), or `padrino-gen <generator> -r <project>` run from elsewhere, finds the project's sqlite database: in sequel projects `generate :admin_page` failed with "Model 'Post' could not be found!" and other steps opened or created a database in the caller's directory (@nesquena)
+- FIX #2391 Generators load the project's config/boot.rb from the project root, so a project template or plugin run from a parent directory (`padrino g project blog -p template.rb`), or `padrino-gen <generator> -r <project>` run from elsewhere, finds the project's sqlite database: in sequel projects `generate :admin_page` failed with "Model 'Post' could not be found!" and other steps opened or created a database in the caller's directory (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
