@@ -184,6 +184,13 @@ describe 'ComponentGenerator' do
       assert_match_in_file(/^Sequel\.extension :fiber_concurrency$/, "#{@apptmp}/sample_project/config/database.rb")
     end
 
+    it 'should set the mongoid default time zone once when the orm is added again' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      2.times { capture_io { generate(:component, '--orm=mongoid', "-r=#{@apptmp}/sample_project") } }
+      database = File.read("#{@apptmp}/sample_project/config/database.rb")
+      assert_equal 1, database.scan(/^Time\.zone_default \|\|= Time\.find_zone!\('UTC'\)$/).size
+    end
+
     it 'should not enable fiber concurrency when adding an orm to another project' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma') }
       capture_io { generate(:component, '--orm=sequel', "-r=#{@apptmp}/sample_project") }

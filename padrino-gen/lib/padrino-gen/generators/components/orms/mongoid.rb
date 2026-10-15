@@ -24,6 +24,10 @@ MONGOID = <<~MONGO unless defined?(MONGOID)
     Mongoid::Config.load_configuration clients: database_settings
   end
 
+  # Mongoid 9 reads times from strings and dates in Time.zone, which only Rails sets.
+  # zone_default applies to every thread; change 'UTC' to use another zone.
+  Time.zone_default ||= Time.find_zone!('UTC')
+
   # If you want to use a YML file for config, use this instead:
   #
   #   Mongoid.load!(File.join(Padrino.root, 'config', 'database.yml'), Padrino.env)
