@@ -12,7 +12,6 @@ describe 'ProjectGenerator' do
 
   def teardown
     `rm -rf #{@apptmp}`
-    `rm -rf /tmp/project`
   end
 
   describe 'the project generator' do
@@ -85,9 +84,9 @@ describe 'ProjectGenerator' do
     end
 
     it 'should display the right path' do
-      out, = capture_io { generate(:project, 'project', '--root=/tmp') }
-      assert_dir_exists('/tmp/project')
-      assert_match(%r{cd /tmp/project}, out)
+      out, = capture_io { generate(:project, 'project', "--root=#{@apptmp}") }
+      assert_dir_exists("#{@apptmp}/project")
+      assert_match(%r{cd #{@apptmp}/project}, out)
     end
 
     it 'should run bundle install then bundle binstubs --all with --bundle' do

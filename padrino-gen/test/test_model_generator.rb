@@ -14,7 +14,7 @@ describe 'ModelGenerator' do
     it 'should fail outside app root' do
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
-      assert_no_file_exists('/tmp/models/user.rb')
+      assert_empty Dir.children(@apptmp)
     end
 
     it 'should fail if the name is missing' do

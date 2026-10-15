@@ -14,7 +14,7 @@ describe 'MailerGenerator' do
     it 'should fail outside app root' do
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:mailer, 'demo', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
-      assert_no_file_exists('/tmp/app/mailers/demo_mailer.rb')
+      assert_empty Dir.children(@apptmp)
     end
 
     it 'should fail with NameError if given invalid namespace names' do
