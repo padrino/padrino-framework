@@ -2558,4 +2558,21 @@ describe 'Routing' do
     get '/'
     assert_equal 200, status
   end
+
+  it 'functions in a standalone app that has a public folder' do
+    Dir.mktmpdir do |root|
+      FileUtils.mkdir_p(File.join(root, 'public'))
+      File.write(File.join(root, 'public', 'a.txt'), 'static')
+      mock_app(Sinatra::Application) do
+        set :root, root
+        register Padrino::Routing
+        get(:index) { 'Standalone' }
+      end
+      get '/'
+      assert_equal 200, status
+      assert_equal 'Standalone', body
+      get '/a.txt'
+      assert_equal 'static', body
+    end
+  end
 end

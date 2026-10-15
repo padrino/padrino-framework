@@ -382,6 +382,20 @@ module Padrino
       end
 
       ##
+      # The project's shared public/ for an app mounted under a sub-path whose
+      # public folder is the default public/<uri_root>. Static files and asset
+      # stamps fall back to it for files public/<uri_root> doesn't have. Nil for
+      # standalone Sinatra apps that only register Padrino::Routing.
+      #
+      # @api private
+      def shared_public_folder
+        return unless respond_to?(:uri_root) && Padrino.respond_to?(:root)
+        return if uri_root.nil? || uri_root == '/' || !public_folder
+
+        Padrino.root('public') if File.expand_path(public_folder) == Padrino.root('public', uri_root)
+      end
+
+      ##
       # Processes the existing path and prepends the 'parent' parameters onto the route
       # Used for calculating path in route method.
       #
@@ -857,18 +871,20 @@ module Padrino
 
       ##
       # This is mostly just a helper so request.path_info isn't changed when
-      # serving files from the public directory.
+      # serving files from the public directory. An app mounted under a sub-path
+      # falls back to the shared public/ for files missing from public/<uri_root>.
       #
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
-        public_dir = File.expand_path(public_dir)
         # Decode the path the way Sinatra's static! and the router do: %XX only, so '+' stays a plus.
-        path = "#{public_dir}#{Rack::Utils.unescape_path(path_info.b).force_encoding(Encoding::UTF_8)}"
-        return unless Rack::Utils.valid_path?(path)
-        path = File.expand_path(path)
-        return unless path.start_with?("#{public_dir}/")
-        return unless File.file?(path)
-        path
+        file = Rack::Utils.unescape_path(path_info.b).force_encoding(Encoding::UTF_8)
+        [File.expand_path(public_dir), settings.shared_public_folder].compact.each do |dir|
+          path = "#{dir}#{file}"
+          next unless Rack::Utils.valid_path?(path)
+          path = File.expand_path(path)
+          return path if path.start_with?("#{dir}/") && File.file?(path)
+        end
+        nil
       end
 
       #

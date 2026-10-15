@@ -349,6 +349,10 @@ module Padrino
         public_path = self.class.public_folder if self.class.respond_to?(:public_folder)
         public_path ||= Padrino.root('public') if Padrino.respond_to?(:root)
         public_file_path = File.join(public_path, file_path) if public_path
+        unless public_file_path && File.exist?(public_file_path)
+          shared_path = self.class.shared_public_folder if self.class.respond_to?(:shared_public_folder)
+          public_file_path = File.join(shared_path, file_path) if shared_path
+        end
         stamp = File.mtime(public_file_path).to_i if public_file_path && File.exist?(public_file_path)
         stamp ||= Time.now.to_i
         "?#{stamp}"

@@ -254,6 +254,93 @@ describe 'Mounter' do
       assert_equal File.read(__FILE__), res.body
     end
 
+    describe 'serving static assets under a sub-path' do
+      def with_public_files(*files, &block)
+        Dir.mktmpdir do |root|
+          files.each do |file|
+            path = File.join(root, 'public', file)
+            FileUtils.mkdir_p(File.dirname(path))
+            File.write(path, file)
+          end
+          Padrino.stub(:root, proc { |*args| File.expand_path(File.join(root, *args)) }, &block)
+        end
+      end
+
+      it 'should serve assets from the project public folder' do
+        class ::StaticSubApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css') do
+          Padrino.mount('static_sub_app').to('/myapp')
+          res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+          assert res.ok?
+          assert_equal 'stylesheets/site.css', res.body
+        end
+      end
+
+      it 'should serve assets from a public folder named after the uri root' do
+        class ::StaticOwnApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css', 'myapp/stylesheets/site.css') do
+          Padrino.mount('static_own_app').to('/myapp')
+          res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+          assert res.ok?
+          assert_equal 'myapp/stylesheets/site.css', res.body
+        end
+      end
+
+      it 'should fall back to the project public folder for files missing from the uri root folder' do
+        class ::StaticPartialApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css', 'myapp/.keep') do
+          Padrino.mount('static_partial_app').to('/myapp')
+          res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+          assert res.ok?
+          assert_equal 'stylesheets/site.css', res.body
+        end
+      end
+
+      it 'should keep serving shared assets when the application is built again' do
+        class ::StaticRebuiltApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css') do
+          Padrino.mount('static_rebuilt_app').to('/myapp')
+          3.times do
+            res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+            assert res.ok?
+            assert_equal 'stylesheets/site.css', res.body
+          end
+        end
+      end
+
+      it 'should serve assets and routes when the app has a helper named like an internal method' do
+        class ::StaticHelperApp < Padrino::Application
+          helpers(Module.new { define_method(:public_file) { |name| "/files/#{name}" } })
+          get('/page') { public_file('a') }
+        end
+        with_public_files('stylesheets/site.css') do
+          Padrino.mount('static_helper_app').to('/myapp')
+          assert_equal 'stylesheets/site.css', Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css').body
+          assert_equal '/files/a', Rack::MockRequest.new(Padrino.application).get('/myapp/page').body
+        end
+      end
+
+      it 'should not fall back from a custom public folder' do
+        class ::StaticCustomApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css', 'custom/.keep') do
+          StaticCustomApp.set :public_folder, Padrino.root('public', 'custom')
+          Padrino.mount('static_custom_app').to('/myapp')
+          res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+          assert_equal 404, res.status
+        end
+      end
+
+      it 'should serve assets for an app mounted at the root' do
+        class ::StaticRootApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css') do
+          Padrino.mount('static_root_app').to('/')
+          res = Rack::MockRequest.new(Padrino.application).get('/stylesheets/site.css')
+          assert res.ok?
+          assert_equal 'stylesheets/site.css', res.body
+        end
+      end
+    end
+
     it 'should load apps from gems' do
       spec_file = Padrino.root('fixtures', 'app_gem', 'app_gem.gemspec')
       spec = Gem::Specification.load(spec_file)
