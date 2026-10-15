@@ -95,13 +95,52 @@ describe 'PluginGenerator' do
       capture_io { project_gen.invoke_all }
     end
 
-    it 'should resolve gist url properly' do
-      stub_request(:get, 'https://gist.github.com/357045').to_return(body: '<a href="/raw/357045/4356/blog_template.rb">raw</a>')
-      template_file = 'https://gist.github.com/357045'
-      resolved_path = 'https://gist.github.com/raw/357045/4356/blog_template.rb'
+    def expect_template_applied(template_file, resolved_path)
       project_gen = Padrino::Generators::Project.new(['sample_project'], ["-p=#{template_file}", "-r=#{@apptmp}"], {})
       project_gen.expects(:apply).with(resolved_path).returns(true).once
       capture_io { project_gen.invoke_all }
+    end
+
+    it 'should resolve a gist page url to its raw file without scraping the page' do
+      # The gist page as GitHub serves it today: its raw button doesn't match the old scraping regex.
+      stub_request(:get, 'https://gist.github.com/357045')
+        .to_return(body: '<a href="/achiurizo/357045/raw/8f73/blog_template.rb" class="Button">Raw</a>')
+      expect_template_applied('https://gist.github.com/357045', 'https://gist.github.com/357045/raw')
+    end
+
+    it 'should resolve a gist page url that names the user' do
+      expect_template_applied('https://gist.github.com/achiurizo/357045/', 'https://gist.github.com/achiurizo/357045/raw')
+    end
+
+    it 'should drop the fragment and query of a gist page url' do
+      expect_template_applied('https://gist.github.com/achiurizo/357045?a=1#file-blog_template-rb', 'https://gist.github.com/achiurizo/357045/raw')
+    end
+
+    it 'should apply a raw gist url without a file name as given' do
+      expect_template_applied('https://gist.github.com/achiurizo/357045/raw', 'https://gist.github.com/achiurizo/357045/raw')
+    end
+
+    it 'should apply a raw gist file url as given' do
+      template_file = 'https://gist.githubusercontent.com/achiurizo/357045/raw/8f73/blog_template.rb'
+      expect_template_applied(template_file, template_file)
+    end
+
+    it 'should apply any https url ending in .rb as remote' do
+      expect_template_applied('https://example.com/templates/blog_template.rb', 'https://example.com/templates/blog_template.rb')
+    end
+
+    it 'should resolve a local file whose path mentions gist' do
+      expect_template_applied('templates/gist_template.rb', File.expand_path('templates/gist_template.rb'))
+    end
+
+    it 'should run a gist template through the redirect to its raw host' do
+      stub_request(:get, 'https://gist.github.com/achiurizo/357045/raw')
+        .to_return(status: 301, headers: { 'Location' => 'https://gist.githubusercontent.com/achiurizo/357045/raw' })
+      stub_request(:get, 'https://gist.githubusercontent.com/achiurizo/357045/raw')
+        .to_return(body: "create_file 'from_gist.txt', 'hello'\n")
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-p=https://gist.github.com/achiurizo/357045') }
+      refute_match(/could not be loaded/, out)
+      assert_match_in_file(/hello/, "#{@apptmp}/sample_project/from_gist.txt")
     end
 
     it 'should resolve official template' do
@@ -127,6 +166,13 @@ describe 'PluginGenerator' do
       plugin_gen = Padrino::Generators::Plugin.new([template_file], ["-r=#{@apptmp}/sample_project"], {})
       plugin_gen.expects(:in_app_root?).returns(true).once
       plugin_gen.expects(:apply).with(resolved_path).returns(true).once
+      capture_io { plugin_gen.invoke_all }
+    end
+
+    it 'should resolve a gist page url given to the plugin generator' do
+      plugin_gen = Padrino::Generators::Plugin.new(['https://gist.github.com/357045'], ["-r=#{@apptmp}/sample_project"], {})
+      plugin_gen.expects(:in_app_root?).returns(true).once
+      plugin_gen.expects(:apply).with('https://gist.github.com/357045/raw').returns(true).once
       capture_io { plugin_gen.invoke_all }
     end
 

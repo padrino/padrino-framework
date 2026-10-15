@@ -123,11 +123,11 @@ module Padrino
         # Determine resolved template path
         template_file = template_file.to_s
         template_path =
-          if template_file =~ %r{^https?://} && template_file !~ /gist/
+          if template_file =~ %r{\Ahttps?://gist\.github\.com/} && template_file !~ %r{/raw(/|\z)}
+            # gist page: GitHub redirects /raw to the gist's raw file
+            "#{template_file.sub(/[?#].*\z/m, '').chomp('/')}/raw"
+          elsif template_file =~ %r{\Ahttps?://}
             template_file
-          elsif template_file =~ /gist/ && template_file !~ /raw/
-            raw_link, = *URI.open(template_file) { |io| io.read.scan(/<a\s+href\s?="(.*?)">raw/) }
-            raw_link ? "https://gist.github.com#{raw_link[0]}" : template_file
           elsif File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
             "https://raw.githubusercontent.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
           else # local file on system
