@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- NEW #XXXX Padrino apps apply Sinatra's host_authorization setting when the app sets it (`set :host_authorization, permitted_hosts: [...]`, Sinatra 4.1+), so a request for a host that isn't listed gets 403. Apps that don't set it keep answering any host, in every environment (@nesquena)
+- NEW #2399 Padrino apps apply Sinatra's host_authorization setting when the app sets it (`set :host_authorization, permitted_hosts: [...]`, Sinatra 4.1+), so a request for a host that isn't listed gets 403. Apps that don't set it keep answering any host, in every environment (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
