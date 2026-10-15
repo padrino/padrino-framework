@@ -21,7 +21,7 @@ jobs:
           - ruby: '4.0'
             haml_version: '5'
         include:
-          # Ruby 2.7 to 3.1 resolve haml 6, since haml 7 needs Ruby 3.2
+          # HAML 6 is what Ruby 2.7 to 3.1 apps get without a pin (haml 7 needs Ruby 3.2)
           - os: ubuntu-latest
             ruby: '3.1'
             haml_version: '6'
