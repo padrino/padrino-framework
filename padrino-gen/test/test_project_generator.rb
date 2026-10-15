@@ -553,8 +553,36 @@ describe 'ProjectGenerator' do
     it 'should re-ask after an invalid adapter and name the answer given' do
       Thor::LineEditor.stubs(:readline).returns('nope').then.returns('sqlite')
       out, = capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=bogus') } }
-      assert_match(/for ORM adapter `nope`/, out)
+      assert_match(/--adapter 'nope' is not available/, out)
       assert_match_in_file(%r{sqlite://}, "#{@apptmp}/sample_project/config/database.rb")
+    end
+
+    %w[--orm=bogus --renderer=bogus --test=bogus --stylesheet=bogus --adapter=bogus].each do |option|
+      it "should write nothing when #{option} has no valid answer at the end of input" do
+        assert_raises(RuntimeError) { generate_at_end_of_input('--orm=sequel', '--test=minitest', option) }
+        assert_no_dir_exists("#{@apptmp}/sample_project")
+      end
+    end
+
+    it 'should write nothing for an invalid choice in a tiny project at the end of input' do
+      assert_raises(RuntimeError) { generate_at_end_of_input('--tiny', '--renderer=bogus') }
+      assert_no_dir_exists("#{@apptmp}/sample_project")
+    end
+
+    it 'should ask for a valid choice before writing the project' do
+      project = "#{@apptmp}/sample_project"
+      Thor::LineEditor.stubs(:readline).with { refute File.exist?(project); true }.returns('haml')
+      capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--renderer=bogus') } }
+      assert_match_in_file(/Sequel.connect/, "#{project}/config/database.rb")
+      assert_match_in_file(/gem 'haml'/, "#{project}/Gemfile")
+      assert_equal 'haml', YAML.load_file("#{project}/.components")[:renderer]
+    end
+
+    it 'should ask for a valid adapter before writing the project' do
+      project = "#{@apptmp}/sample_project"
+      Thor::LineEditor.stubs(:readline).with { refute File.exist?(project); true }.returns('postgres')
+      capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=bogus') } }
+      assert_match_in_file(/gem 'pg'/, "#{project}/Gemfile")
     end
 
     it 'should re-ask after an invalid answer and take a piped one' do
