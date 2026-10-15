@@ -94,11 +94,20 @@ task push: :pull do
   raise "#{branch} has version #{committed}, not #{Padrino.version}; run rake bump on #{branch}" unless committed == Padrino.version
   remote_tag = `git ls-remote --tags origin refs/tags/#{Padrino.version}`
   raise 'Could not list the tags on origin' unless $CHILD_STATUS.success?
-  raise "Tag #{Padrino.version} already exists on origin" unless remote_tag.empty?
-  say 'Pushing to github...'
-  sh "git tag #{Padrino.version}"
-  sh "git push origin #{branch}"
-  sh "git push origin #{Padrino.version}"
+  if remote_tag.empty?
+    say 'Pushing to github...'
+    sh "git tag #{Padrino.version}"
+    sh "git push origin #{branch}"
+    sh "git push origin #{Padrino.version}"
+  else
+    # A publish that failed after tagging (say, rubygems rejected the API key) resumes from here.
+    tagged = remote_tag.split.first
+    local = `git rev-parse -q --verify refs/tags/#{Padrino.version}`.strip
+    raise "Tag #{Padrino.version} on origin (#{tagged[0, 8]}) differs from the local tag (#{local[0, 8]})" unless local.empty? || local == tagged
+    raise "Tag #{Padrino.version} on origin (#{tagged[0, 8]}) is not on #{branch}" unless system("git merge-base --is-ancestor #{tagged} HEAD")
+    say "Tag #{Padrino.version} is already on origin; resuming the release"
+    sh "git push origin #{branch}"
+  end
 end
 
 desc 'Release all padrino gems'
