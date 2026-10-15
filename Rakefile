@@ -1,5 +1,6 @@
 # On master, or on a maintenance branch such as 0.16-stable: rake bump[X.Y.Z], then rake publish
 
+require 'English'
 require 'fileutils'
 require 'rake'
 require File.expand_path('padrino-core/lib/padrino-core/version.rb', __dir__)
@@ -53,16 +54,20 @@ end
 desc 'Bumps the version number based on given version'
 task :bump, [:version] do |_t, args|
   raise 'Please specify version=x.x.x !' unless args.version
+  raise "#{args.version} is not a version like 1.2.3 or 1.2.3.rc1" unless args.version =~ /\A\d+\.\d+\.\d+(\.[a-z0-9]+)?\z/
   branch = release_branch
   series = branch[/\A(\d+\.\d+)-stable\z/, 1]
   raise "#{branch} releases #{series}.x versions, not #{args.version}" if series && !args.version.start_with?("#{series}.")
+  # A submodule left at another branch's commit shows up here too.
+  raise 'Commit or stash local changes, and run git submodule update --init, before bumping' unless system('git diff --quiet && git diff --cached --quiet')
   say "Updating Padrino to version #{args.version}"
-  %w[padrino-core/lib/padrino-core/version.rb padrino-performance/lib/padrino-performance/version.rb].each do |path|
+  version_paths = %w[padrino-core/lib/padrino-core/version.rb padrino-performance/lib/padrino-performance/version.rb]
+  version_paths.each do |path|
     version_path = File.join(__dir__, path)
     version_text = File.read(version_path).sub(/VERSION = '[a-z0-9.]+'/, "VERSION = '#{args.version}'")
     File.open(version_path, 'w') { |f| f.write version_text }
   end
-  sh(format('git commit -am "Bumped version to %s"', args.version))
+  sh(format('git commit -m "Bumped version to %s" -- %s', args.version, version_paths.join(' ')))
 end
 
 desc 'Executes a fresh install removing all padrino version and then reinstall all gems'
@@ -72,7 +77,7 @@ desc 'Pulls latest commits and updates submodules'
 task :pull do
   say 'Pulling latest commits'
   branch = release_branch
-  sh "git pull origin #{branch}"
+  sh "git pull --ff-only origin #{branch}"
   say 'Updating submodules'
   sh 'git submodule sync'
   sh 'git submodule update --init'
@@ -87,6 +92,9 @@ task push: :pull do
   committed = File.read(File.join(__dir__, 'padrino-core/lib/padrino-core/version.rb'))[/VERSION = '([^']+)'/, 1]
   branch = release_branch
   raise "#{branch} has version #{committed}, not #{Padrino.version}; run rake bump on #{branch}" unless committed == Padrino.version
+  remote_tag = `git ls-remote --tags origin refs/tags/#{Padrino.version}`
+  raise 'Could not list the tags on origin' unless $CHILD_STATUS.success?
+  raise "Tag #{Padrino.version} already exists on origin" unless remote_tag.empty?
   say 'Pushing to github...'
   sh "git tag #{Padrino.version}"
   sh "git push origin #{branch}"
