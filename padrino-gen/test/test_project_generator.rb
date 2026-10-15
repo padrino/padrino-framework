@@ -88,9 +88,12 @@ describe 'ProjectGenerator' do
     it "should bundle with the project's Gemfile and without the caller's Bundler setup" do
       saved = ENV.to_h
       # ENV when Bundler loaded, and what the caller's `bundle exec` or binstub exported to its children
-      Bundler.stubs(:original_env).returns('PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'BUNDLE_PATH' => 'vendor/bundle')
+      Bundler.stubs(:original_env).returns('PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'BUNDLE_PATH' => 'vendor/bundle',
+                                           'RUBYLIB' => '/user/lib')
       ENV.update('BUNDLE_GEMFILE' => '/caller/Gemfile', 'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'RUBYOPT' => '-rbundler/setup -W0',
-                 'BUNDLER_SETUP' => '/caller/bundler/setup', 'BUNDLE_PATH' => 'vendor/bundle')
+                 'BUNDLER_SETUP' => '/caller/bundler/setup', 'BUNDLE_PATH' => 'vendor/bundle',
+                 'PATH' => "/caller/vendor/bundle/bin:#{ENV['PATH']}", 'GEM_HOME' => '/caller/vendor/bundle/ruby', 'GEM_PATH' => '',
+                 'RUBYLIB' => '/caller/bundler/lib:/user/lib')
       seen = {}
       Padrino::Generators::Project.any_instance.stubs(:run).with do |command, config = {}|
         seen[command] = ENV.to_h.merge(config[:env] || {})
@@ -98,9 +101,9 @@ describe 'ProjectGenerator' do
       end
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--bundle') }
       assert_equal ['bundle install', 'bundle binstubs --all'], seen.keys
-      expected = { 'PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'BUNDLE_PATH' => 'vendor/bundle',
+      expected = { 'PATH' => saved['PATH'], 'RUBYOPT' => '-W0', 'BUNDLE_PATH' => 'vendor/bundle', 'RUBYLIB' => '/user/lib',
                    'BUNDLE_GEMFILE' => "#{@apptmp}/sample_project/Gemfile", 'BUNDLE_LOCKFILE' => "#{@apptmp}/sample_project/Gemfile.lock" }
-      seen.each_value { |env| assert_equal expected, env.slice(*expected.keys, 'BUNDLER_SETUP') }
+      seen.each_value { |env| assert_equal expected, env.slice(*expected.keys, 'BUNDLER_SETUP', 'GEM_HOME', 'GEM_PATH') }
       assert_equal '/caller/Gemfile', ENV['BUNDLE_GEMFILE']
       assert_equal '-rbundler/setup -W0', ENV['RUBYOPT']
     ensure
