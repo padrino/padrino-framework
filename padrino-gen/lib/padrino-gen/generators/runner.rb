@@ -129,7 +129,7 @@ module Padrino
             raw_link, = *URI.open(template_file) { |io| io.read.scan(/<a\s+href\s?="(.*?)">raw/) }
             raw_link ? "https://gist.github.com#{raw_link[0]}" : template_file
           elsif File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
-            "https://raw.github.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
+            "https://raw.githubusercontent.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
           else # local file on system
             File.expand_path(template_file)
           end
