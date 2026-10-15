@@ -28,6 +28,15 @@ describe 'MigrationGenerator' do
       assert_match(/You need an ORM adapter/, out)
     end
 
+    it 'should fail with a message if the orm in .components is no longer available' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':orm: activerecord', ':orm: dynamoid'))
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/The dynamoid orm component is no longer available in Padrino/, out)
+      assert_empty Dir["#{@apptmp}/sample_project/db/migrate/*"]
+    end
+
     it 'should generate migration inside app root' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
       capture_io { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }

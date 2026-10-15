@@ -41,6 +41,11 @@ module Padrino
       def create_controller
         self.destination_root = options[:root]
         if in_app_root?
+          unless supported_orm.include?(orm)
+            say "<= At the moment, Padrino only supports #{supported_orm.join(' or ')}. Sorry!", :yellow
+            exit 1
+          end
+
           @app_name = fetch_app_name
           @admin_name = options[:admin_name].classify
           @admin_path = options[:admin_name].underscore
