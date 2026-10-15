@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2378 Project templates and plugins load from gists again: a gist page URL applies the gist's raw file instead of scraping the page, and a raw gist URL is downloaded instead of being looked up as a local file (@nesquena)
 - FIX #2377 Script components and official plugins and templates fetched by name download from raw.githubusercontent.com instead of the old raw.github.com redirect (@nesquena)
 - FIX #2375 `--script jquery` copies jQuery 3.7.1 and the updated UJS adapter (the method form uses the link's href verbatim; X-CSRF-Token goes only on same-origin requests that change data) (@nesquena)
 - FIX #2373 padrino-gen gives back the caller's BUNDLE_GEMFILE and PADRINO_LOG_LEVEL after loading the project, so the generators a project template runs work from a checkout, and `--bundle` bundles the new project with its own Gemfile and Gemfile.lock instead of the caller's (@nesquena)
