@@ -876,19 +876,15 @@ module Padrino
       #
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
-        public_dir = File.expand_path(public_dir)
-        public_file(public_dir, path_info) ||
-          ((shared_dir = settings.shared_public_folder) && public_file(shared_dir, path_info))
-      end
-
-      def public_file(public_dir, path_info)
         # Decode the path the way Sinatra's static! and the router do: %XX only, so '+' stays a plus.
-        path = "#{public_dir}#{Rack::Utils.unescape_path(path_info.b).force_encoding(Encoding::UTF_8)}"
-        return unless Rack::Utils.valid_path?(path)
-        path = File.expand_path(path)
-        return unless path.start_with?("#{public_dir}/")
-        return unless File.file?(path)
-        path
+        file = Rack::Utils.unescape_path(path_info.b).force_encoding(Encoding::UTF_8)
+        [File.expand_path(public_dir), settings.shared_public_folder].compact.each do |dir|
+          path = "#{dir}#{file}"
+          next unless Rack::Utils.valid_path?(path)
+          path = File.expand_path(path)
+          return path if path.start_with?("#{dir}/") && File.file?(path)
+        end
+        nil
       end
 
       #

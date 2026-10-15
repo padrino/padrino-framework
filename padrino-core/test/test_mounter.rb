@@ -308,6 +308,18 @@ describe 'Mounter' do
         end
       end
 
+      it 'should serve assets and routes when the app has a helper named like an internal method' do
+        class ::StaticHelperApp < Padrino::Application
+          helpers(Module.new { define_method(:public_file) { |name| "/files/#{name}" } })
+          get('/page') { public_file('a') }
+        end
+        with_public_files('stylesheets/site.css') do
+          Padrino.mount('static_helper_app').to('/myapp')
+          assert_equal 'stylesheets/site.css', Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css').body
+          assert_equal '/files/a', Rack::MockRequest.new(Padrino.application).get('/myapp/page').body
+        end
+      end
+
       it 'should not fall back from a custom public folder' do
         class ::StaticCustomApp < Padrino::Application; end
         with_public_files('stylesheets/site.css', 'custom/.keep') do
