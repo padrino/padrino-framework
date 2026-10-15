@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #XXXX `padrino g admin_page <model> -d` removes the admin page even after its model was deleted, instead of exiting with "Model could not be found" (@nesquena)
+- FIX #2413 `padrino g admin_page <model> -d` removes the admin page even after its model was deleted, instead of exiting with "Model could not be found" (@nesquena)
 - FIX #2412 A request whose path has a malformed or non-UTF-8 percent-escape (such as `/%ff.txt` or `/a%zz`) now gets the app's 404 instead of a 500 error, and padrino-admin's `allowed?` no longer raises on such a path when an access rule is a Regexp (@nesquena)
 - FIX #2339 Apps mounted under a sub-path serve a static asset from the shared `public/` when `public/<uri_root>` does not have the file, so the empty `public/<app>` that `padrino g app` creates no longer hides shared assets, and `stylesheet_link_tag`, `javascript_include_tag` and `image_tag` stamp those assets with their modification time instead of the current time (#2215) (@achiurizo)
 - WARN #2339 An app mounted under a sub-path (e.g. `/admin`) now serves files from the shared `public/` under its prefix when `public/admin` doesn't have them, and without running the app's filters. Static files are served before routes, so such a file now answers instead of the app's own route or not_found page for that path (an app's `get '/robots.txt'` now serves `public/robots.txt`), and with `cascade:` the request no longer falls through to the next mounted app. When `public/admin` doesn't exist, the app's `public_folder` is now `public/` itself. To keep a route, remove or rename the shared file, or set the app's `public_folder` to another directory
