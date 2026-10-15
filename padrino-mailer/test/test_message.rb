@@ -167,6 +167,29 @@ describe 'Message' do
     end
   end
 
+  describe 'template engine settings' do
+    it 'should escape output in the message and its parts' do
+      message = Mail::Message.new { body erb('<%= "<b>" %>') }
+      part = Mail::Part.new { body erb('<%= "<i>" %>') }
+      haml_message = Mail::Message.new { body haml('%p= "<b>"') }
+      slim_message = Mail::Message.new { body slim('p = "<b>"') }
+
+      assert_equal '&lt;b&gt;', message.body.to_s.chomp
+      assert_equal '&lt;i&gt;', part.body.to_s.chomp
+      assert_equal '<p>&lt;b&gt;</p>', haml_message.body.to_s.chomp
+      assert_equal '<p>&lt;b&gt;</p>', slim_message.body.to_s.chomp
+    end
+
+    it 'should not leak onto other classes' do
+      Mail::Message.new { body 'sent' }
+
+      refute_respond_to String, :erb
+      refute_respond_to Class, :haml
+      plain = Sinatra.new(Sinatra::Base) { get('/') { erb '<%= "<b>" %>' } }
+      assert_equal '<b>', Rack::MockRequest.new(plain).get('/').body
+    end
+  end
+
   describe 'Mail::Message.set' do
     it 'should define accessor methods for settings' do
       Mail::Message.set(:_test_custom_setting, 'custom_value')
