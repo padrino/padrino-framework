@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #XXXX `padrino-gen project NAME -p TEMPLATE --dev` generates the template's project with `--dev`, so its Gemfile uses the checkout instead of the released gems, unless the template sets `dev:` itself (@nesquena)
+- FIX #2407 `padrino-gen project NAME -p TEMPLATE --dev` generates the template's project with `--dev`, so its Gemfile uses the checkout instead of the released gems, unless the template sets `dev:` itself (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
