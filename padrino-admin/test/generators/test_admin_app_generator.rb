@@ -123,7 +123,7 @@ describe 'AdminAppGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/application.css")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/stylesheets/bootstrap.css")
       assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/application.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/jquery-1.11.0.min.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/admin/javascripts/jquery-3.7.1.min.js")
       assert_file_exists("#{@apptmp}/sample_project/models/account.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/seeds.rb")
       assert_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_accounts.rb")
@@ -208,6 +208,49 @@ describe 'AdminAppGenerator' do
         assert_file_exists("#{@apptmp}/sample_project/admin/views/base/index.slim")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/layouts/application.slim")
         assert_file_exists("#{@apptmp}/sample_project/admin/views/sessions/new.slim")
+      end
+
+      %w[haml erb slim].each do |engine|
+        it "should serve every script the #{engine} admin pages include" do
+          skip 'the sqlite3 gem is only bundled on MRI' if RUBY_ENGINE == 'jruby'
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{engine}") }
+          capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+          script = <<~'RUBY'
+            ENV['RACK_ENV'] = 'test'
+            %w[sequel haml slim erubi nokogiri rack/test].each { |lib| require lib }
+            Sequel.extension :migration
+            Sequel.sqlite('db/sample_project_test.db') { |db| Sequel::Migrator.run(db, 'db/migrate') }
+            require File.expand_path('config/boot')
+            account_id = Account.dataset.insert(email: 'admin@example.com', role: 'admin', crypted_password: 'unused')
+
+            browser = Rack::Test::Session.new(Padrino.application)
+            check = lambda do |page|
+              browser.get(page)
+              puts "PAGE #{page} #{browser.last_response.status}"
+              srcs = Nokogiri::HTML(browser.last_response.body).css('script[src]').map { |tag| tag['src'] }
+              srcs.select { |src| src.start_with?('/') }.each do |src|
+                puts "SCRIPT #{page} #{src} #{browser.get(src).status}"
+              end
+            end
+            check.call('/admin/sessions/new')
+            browser.env('rack.session', SampleProject::Admin.session_id => account_id)
+            check.call('/admin/')
+            check.call('/admin/accounts')
+          RUBY
+          env = { 'BUNDLE_GEMFILE' => File.expand_path('../../../Gemfile', __dir__) }
+          out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: "#{@apptmp}/sample_project")
+          assert status.success?, err
+          pages = out.lines.grep(/\APAGE /).map(&:split)
+          scripts = out.lines.grep(/\ASCRIPT /).map(&:split)
+          statuses = pages.map { |line| line[1, 2] }
+          assert_equal [['/admin/sessions/new', '200'], ['/admin/', '200'], ['/admin/accounts', '200']], statuses
+          pages.each do |(_, page)|
+            refute_empty scripts.select { |line| line[1] == page }, "#{page} includes no local scripts"
+          end
+          scripts.each do |(_, page, src, code)|
+            assert_equal '200', code, "#{page} includes #{src}, which is not served"
+          end
+        end
       end
     end
 
