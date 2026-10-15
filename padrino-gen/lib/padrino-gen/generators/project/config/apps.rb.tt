@@ -27,7 +27,9 @@
 #
 Padrino.configure_apps do
   # enable :sessions
-  set :session_secret, '<%= SecureRandom.hex(32) %>'
+  # The session secret comes from SESSION_SECRET (64 characters or more; `padrino rake secret`
+  # prints one). The generated value below is only a fallback, so set it in production.
+  set :session_secret, ENV.fetch('SESSION_SECRET') { '<%= SecureRandom.hex(32) %>' }
   set :protection, except: :path_traversal
   # CSRF protection is off in the test environment so test requests don't need a
   # token. To test it, `enable :protect_from_csrf` in an app.

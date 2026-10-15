@@ -1,5 +1,9 @@
 = CHANGES
 
+== Unreleased
+
+- NEW #XXXX Generated projects read the session secret from the SESSION_SECRET environment variable, falling back to the random value written into `config/apps.rb`, so production can use its own secret without editing the file. Existing projects are unchanged (@nesquena)
+
 == 0.17.0 (2026-10-15)
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
