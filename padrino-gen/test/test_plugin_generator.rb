@@ -69,6 +69,21 @@ describe 'PluginGenerator' do
       assert_match_in_file(/class Post < Sequel::Model/, "#{@apptmp}/sample_project/models/post.rb")
     end
 
+    it 'should pass --dev on to the project a template generates' do
+      template_path = "#{@apptmp}/dev_template.rb"
+      File.write(template_path, "project orm: :none\n")
+      capture_subprocess_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{template_path}", '--dev') }
+      assert_match_in_file(%r{gem 'padrino-' \+ g, path: '#{Regexp.escape(Padrino::Generators::DEV_PATH)}/padrino-' \+ g}, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/^# gem 'padrino', '#{Regexp.escape(Padrino.version)}'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should keep the dev setting a template gives its project' do
+      template_path = "#{@apptmp}/no_dev_template.rb"
+      File.write(template_path, "project orm: :none, dev: false\n")
+      capture_subprocess_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "-p=#{template_path}", '--dev') }
+      assert_match_in_file(/^gem 'padrino', '#{Regexp.escape(Padrino.version)}'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
     it 'should let a template check whether app succeeded' do
       template_path = "#{@apptmp}/app_result_template.rb"
       File.write(template_path, "project orm: :none\nputs(app(:blog) ? 'FIRST OK' : 'FIRST FAILED')\nputs(app(:blog) ? 'AGAIN OK' : 'AGAIN FAILED')\n")
