@@ -382,6 +382,17 @@ module Padrino
       end
 
       ##
+      # The project's shared public/ for an app mounted under a sub-path whose
+      # public folder is the default public/<uri_root>. Static files and asset
+      # stamps fall back to it for files public/<uri_root> doesn't have.
+      #
+      def shared_public_folder
+        return if uri_root == '/' || !public_folder
+
+        Padrino.root('public') if File.expand_path(public_folder) == Padrino.root('public', uri_root)
+      end
+
+      ##
       # Processes the existing path and prepends the 'parent' parameters onto the route
       # Used for calculating path in route method.
       #
@@ -864,7 +875,7 @@ module Padrino
         return unless (public_dir = settings.public_folder)
         public_dir = File.expand_path(public_dir)
         public_file(public_dir, path_info) ||
-          (public_dir == Padrino.root('public', settings.uri_root) && public_file(Padrino.root('public'), path_info))
+          ((shared_dir = settings.shared_public_folder) && public_file(shared_dir, path_info))
       end
 
       def public_file(public_dir, path_info)

@@ -296,6 +296,18 @@ describe 'Mounter' do
         end
       end
 
+      it 'should keep serving shared assets when the application is built again' do
+        class ::StaticRebuiltApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css') do
+          Padrino.mount('static_rebuilt_app').to('/myapp')
+          3.times do
+            res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+            assert res.ok?
+            assert_equal 'stylesheets/site.css', res.body
+          end
+        end
+      end
+
       it 'should not fall back from a custom public folder' do
         class ::StaticCustomApp < Padrino::Application; end
         with_public_files('stylesheets/site.css', 'custom/.keep') do
