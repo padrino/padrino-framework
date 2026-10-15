@@ -237,7 +237,7 @@ describe 'ProjectGenerator' do
     end
 
     it 'should create components file containing options chosen' do
-      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=less']
+      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=sass']
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *component_options) }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'sequel', components_chosen[:orm]
@@ -245,18 +245,18 @@ describe 'ProjectGenerator' do
       assert_equal 'mocha',      components_chosen[:mock]
       assert_equal 'prototype',  components_chosen[:script]
       assert_equal 'erb',        components_chosen[:renderer]
-      assert_equal 'less',       components_chosen[:stylesheet]
+      assert_equal 'sass',       components_chosen[:stylesheet]
     end
 
     it 'should output to log components being applied' do
-      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=less']
+      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=sass']
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *component_options) }
       assert_match(/applying.*?sequel.*?orm/, out)
       assert_match(/applying.*?rspec.*?test/, out)
       assert_match(/applying.*?mocha.*?mock/, out)
       assert_match(/applying.*?prototype.*?script/, out)
       assert_match(/applying.*?erb.*?renderer/, out)
-      assert_match(/applying.*?less.*?stylesheet/, out)
+      assert_match(/applying.*?sass.*?stylesheet/, out)
     end
 
     it 'should output gem files for base app' do
@@ -369,16 +369,6 @@ describe 'ProjectGenerator' do
 
     it 'should not enable fiber isolation for activerecord on other servers' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma', '--orm=activerecord') }
-      assert_no_match_in_file(/isolation_level/, "#{@apptmp}/sample_project/config/database.rb")
-    end
-
-    it 'should enable fiber isolation for minirecord on falcon' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=falcon', '--orm=minirecord') }
-      assert_match_in_file(/\A# Falcon serves each request in a fiber.*\nActiveSupport::IsolatedExecutionState\.isolation_level = :fiber\n\n/, "#{@apptmp}/sample_project/config/database.rb")
-    end
-
-    it 'should not enable fiber isolation for minirecord on other servers' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma', '--orm=minirecord') }
       assert_no_match_in_file(/isolation_level/, "#{@apptmp}/sample_project/config/database.rb")
     end
 
@@ -521,15 +511,6 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'ohm'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Ohm.connect/, "#{@apptmp}/sample_project/config/database.rb")
     end
-
-    it 'should properly generate for dynamoid' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=dynamoid', '--script=none') }
-      assert_match(/applying.*?dynamoid.*?orm/, out)
-      assert_match_in_file(/gem 'aws-sdk'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'dynamoid', '~>0.7.1'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/AWS.config/, "#{@apptmp}/sample_project/config/database.rb")
-      assert_match_in_file(/Dynamoid.configure/, "#{@apptmp}/sample_project/config/database.rb")
-    end
   end
 
   describe 'an invalid component option' do
@@ -543,7 +524,7 @@ describe 'ProjectGenerator' do
       assert_match(/--orm; pass one of: .*\bsequel\b/, error.message)
     end
 
-    %w[sequel activerecord minirecord].each do |orm|
+    %w[sequel activerecord].each do |orm|
       it "should stop with the valid #{orm} adapters at the end of input" do
         error = assert_raises(RuntimeError) { generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus') }
         assert_match(/--adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite/, error.message)
@@ -784,14 +765,6 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'sass'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/sass.rb")
       assert_match_in_file(/register SassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
-    end
-
-    it 'should properly generate for less' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=less') }
-      assert_match_in_file(/gem 'rack-less'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module LessInitializer.*Rack::Less/m, "#{@apptmp}/sample_project/config/initializers/less.rb")
-      assert_match_in_file(/register LessInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
       assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
     end
 
