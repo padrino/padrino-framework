@@ -21,8 +21,8 @@ module Padrino
     if File.file?(binstub)
       exec Gem.ruby, binstub, *ARGV
     else
-      # exit! skips the flush of buffered output, so write to the unbuffered stderr.
-      warn 'Please run `bundle install && bundle binstubs --all` from your project root to generate bundle-specific executables'
+      # exit! skips the flush of buffered output, so write to the unbuffered stderr. Not warn: -W0 silences it.
+      $stderr.puts 'Please run `bundle install && bundle binstubs --all` from your project root to generate bundle-specific executables'
       exit!
     end
   end

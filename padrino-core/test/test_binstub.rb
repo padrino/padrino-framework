@@ -21,11 +21,11 @@ describe 'Padrino.replace_with_binstub' do
   end
 
   # Runs the executable outside any bundle in a project without bin/, with its output piped.
-  def run_without_binstubs(bin)
+  def run_without_binstubs(bin, env = {})
     Dir.mktmpdir do |dir|
       File.write(File.join(dir, 'Gemfile'), '')
       File.write(File.join(dir, '.components'), '')
-      run = -> { Open3.capture3(RbConfig.ruby, '-I', File.expand_path('../lib', __dir__), bin, 'version', chdir: dir) }
+      run = -> { Open3.capture3(env, RbConfig.ruby, '-I', File.expand_path('../lib', __dir__), bin, 'version', chdir: dir) }
       defined?(Bundler) ? Bundler.with_unbundled_env(&run) : run.call
     end
   end
@@ -37,5 +37,11 @@ describe 'Padrino.replace_with_binstub' do
       assert_includes err, 'bundle install && bundle binstubs --all'
       refute_includes out, 'bundle binstubs'
     end
+  end
+
+  it 'should show the binstubs hint with warnings turned off' do
+    _, err, status = run_without_binstubs(File.expand_path('../../padrino-core/bin/padrino', __dir__), 'RUBYOPT' => '-W0')
+    assert_equal 1, status.exitstatus
+    assert_includes err, 'bundle install && bundle binstubs --all'
   end
 end
