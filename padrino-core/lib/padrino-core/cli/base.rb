@@ -37,7 +37,9 @@ module Padrino
         else
           begin
             require 'irb'
-          rescue LoadError
+          rescue LoadError => e
+            raise unless e.path == 'irb'
+
             abort "<= padrino console needs irb. Since Ruby 4.0 it is a bundled gem: add gem 'irb' to your Gemfile and run bundle install."
           end
           begin

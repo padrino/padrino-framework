@@ -28,7 +28,11 @@ describe 'Padrino::Cli' do
       module Kernel
         alias_method :require_before_test, :require
         def require(name)
-          raise LoadError, 'cannot load such file -- irb' if name == 'irb'
+          if name == 'irb'
+            error = LoadError.new('cannot load such file -- irb')
+            error.define_singleton_method(:path) { 'irb' }
+            raise error
+          end
 
           require_before_test(name)
         end
@@ -38,5 +42,21 @@ describe 'Padrino::Cli' do
     RUBY
     assert_equal 1, status.exitstatus
     assert_includes err, "add gem 'irb' to your Gemfile"
+  end
+
+  it 'should not hide a LoadError from inside irb in padrino console' do
+    _, err, status = run_in_project(<<~RUBY)
+      module Kernel
+        alias_method :require_before_test, :require
+        def require(name)
+          require_before_test(name == 'irb' ? 'padrino_missing_irb_dependency' : name)
+        end
+      end
+      require 'padrino-core/cli/base'
+      Padrino::Cli::Base.start(['console'])
+    RUBY
+    refute status.success?
+    assert_includes err, 'padrino_missing_irb_dependency'
+    refute_includes err, "add gem 'irb'"
   end
 end
