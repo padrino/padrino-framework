@@ -89,6 +89,52 @@ describe 'Routing' do
     end
   end
 
+  it 'should keep a plus sign in static file paths' do
+    Dir.mktmpdir do |tmp|
+      dir = "#{tmp}/\u00fcber"
+      FileUtils.mkdir_p(["#{dir}/public", "#{dir}/public_bak"])
+      File.write("#{dir}/public/a+b.txt", 'plus')
+      File.write("#{dir}/public/c d.txt", 'space')
+      File.write("#{dir}/public/caf\u00e9.txt", 'cafe')
+      File.write("#{dir}/public_bak/secret.txt", 'secret')
+      mock_app do
+        set :public_folder, "#{dir}/public"
+        get('/*') { 'not found' }
+      end
+      get '/a+b.txt'
+      assert_equal 'plus', body
+      get '/a%2Bb.txt'
+      assert_equal 'plus', body
+      get '/c%20d.txt'
+      assert_equal 'space', body
+      get '/c+d.txt'
+      assert_equal 'not found', body
+      get '/caf%C3%A9.txt'
+      assert_equal 'cafe', body
+      get '/%2e%2e/public_bak/secret.txt'
+      assert_equal 'not found', body
+      get '/a+b.txt%00.png'
+      assert_equal 'not found', body
+    end
+  end
+
+  it 'should keep a plus sign in static file paths of an app mounted under a sub-path' do
+    Dir.mktmpdir do |dir|
+      FileUtils.mkdir_p("#{dir}/public")
+      File.write("#{dir}/public/a+b.txt", 'plus')
+      File.write("#{dir}/public/c d.txt", 'space')
+      mock_app do
+        set :public_folder, "#{dir}/public"
+        get('/*') { 'not found' }
+      end
+      mounted = Rack::Builder.app(@app) { |inner| map('/blog') { run inner } }
+      request = Rack::MockRequest.new(mounted)
+      assert_equal 'plus', request.get('/blog/a+b.txt').body
+      assert_equal 'not found', request.get('/blog/c+d.txt').body
+      assert_equal 'space', request.get('/blog/c%20d.txt').body
+    end
+  end
+
   it 'should ignore trailing delimiters for basic route' do
     mock_app do
       get('/foo') { 'okey' }
