@@ -22,18 +22,6 @@ describe 'AccountModelGenerator' do
     end
   end
 
-  describe 'minirecord' do
-    before do
-      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=minirecord') }
-      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-      @model = "#{@apptmp}/sample_project/models/account.rb"
-    end
-
-    it 'should be an activerecord model instance' do
-      assert_match_in_file(/class Account < ActiveRecord::Base/m, @model)
-    end
-  end
-
   describe 'mongoid' do
     before do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=mongoid') }

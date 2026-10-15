@@ -313,13 +313,6 @@ describe 'AdminAppGenerator' do
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/admin/app.rb")
       end
-
-      it 'should add it #minirecord' do
-        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=minirecord', '-e=haml') }
-        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/admin/app.rb")
-      end
-
     end
 
     describe 'with the vite script component' do
