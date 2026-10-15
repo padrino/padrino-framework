@@ -488,18 +488,26 @@ module Padrino
         end
       end
 
+      # The variables Bundler sets up for its children (Bundler::EnvironmentPreserver::BUNDLER_KEYS).
+      BUNDLER_ENV_KEYS = %w[BUNDLE_BIN_PATH BUNDLE_GEMFILE BUNDLE_LOCKFILE BUNDLER_VERSION BUNDLER_SETUP GEM_HOME
+                            GEM_PATH MANPATH PATH RB_USER_INSTALL RUBYLIB RUBYOPT].freeze
+
       ##
       # Runs the block with the environment for a command run on the project: the project's Gemfile
       # and lockfile, and none of the Bundler setup (RUBYOPT=-rbundler/setup, BUNDLE_GEMFILE...) that a
-      # caller's `bundle exec` or binstub exported. With +setup+, the command loads the project's
-      # bundle first, as `bundle exec` would in the project.
+      # caller's `bundle exec` or binstub exported. Other variables are passed on as they are. With
+      # +setup+, the command loads the project's bundle first, as `bundle exec` would in the project.
       #
       # @param [Boolean] setup
       #   Whether the command requires bundler/setup.
       #
       def with_project_bundle_env(setup: false)
         saved = ENV.to_h
-        ENV.replace(Bundler.original_env) if defined?(Bundler) && Bundler.respond_to?(:original_env)
+        if defined?(Bundler) && Bundler.respond_to?(:original_env)
+          original = Bundler.original_env
+          BUNDLER_ENV_KEYS.each { |key| original.key?(key) ? ENV[key] = original[key] : ENV.delete(key) }
+          ENV.keys.grep(/\ABUNDLER_ORIG_/).each { |key| ENV.delete(key) }
+        end
         ENV['BUNDLE_GEMFILE'] = destination_root('Gemfile')
         ENV['BUNDLE_LOCKFILE'] = destination_root('Gemfile.lock')
         ENV['RUBYOPT'] = ['-rbundler/setup', ENV['RUBYOPT']].compact.join(' ') if setup

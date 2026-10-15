@@ -87,9 +87,10 @@ describe 'ProjectGenerator' do
 
     it "should bundle with the project's Gemfile and without the caller's Bundler setup" do
       saved = ENV.to_h
-      # The environment before the caller's `bundle exec` or binstub, and what that exported to its children
+      # ENV when Bundler loaded, and what the caller's `bundle exec` or binstub exported to its children
       Bundler.stubs(:original_env).returns('PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'BUNDLE_PATH' => 'vendor/bundle')
-      ENV.update('BUNDLE_GEMFILE' => '/caller/Gemfile', 'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'RUBYOPT' => '-rbundler/setup -W0', 'BUNDLER_SETUP' => '/caller/bundler/setup')
+      ENV.update('BUNDLE_GEMFILE' => '/caller/Gemfile', 'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'RUBYOPT' => '-rbundler/setup -W0',
+                 'BUNDLER_SETUP' => '/caller/bundler/setup', 'BUNDLE_PATH' => 'vendor/bundle')
       seen = {}
       Padrino::Generators::Project.any_instance.stubs(:run).with do |command, config = {}|
         seen[command] = ENV.to_h.merge(config[:env] || {})

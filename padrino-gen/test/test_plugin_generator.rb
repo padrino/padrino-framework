@@ -253,11 +253,15 @@ describe 'PluginGenerator' do
   describe 'with the environment of the steps' do
     def run_steps_under_caller_bundle(project)
       saved = ENV.to_h
-      # The environment before the caller's `bundle exec`, and what that exported to its children
-      Bundler.stubs(:original_env).returns('PATH' => ENV['PATH'], 'RUBYOPT' => '-W0')
-      ENV.update('BUNDLE_GEMFILE' => '/caller/Gemfile', 'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'RUBYOPT' => '-rbundler/setup -W0', 'BUNDLER_SETUP' => '/caller/bundler/setup')
+      # ENV when Bundler loaded, and what the caller's `bundle exec` exported to its children
+      # (PADRINO_LOG_LEVEL was set before Bundler loaded and cleared since; a template set MY_TEMPLATE_VAR)
+      Bundler.stubs(:original_env).returns('PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'PADRINO_LOG_LEVEL' => 'test')
+      ENV.delete('PADRINO_LOG_LEVEL')
+      ENV.update('BUNDLE_GEMFILE' => '/caller/Gemfile', 'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'RUBYOPT' => '-rbundler/setup -W0',
+                 'BUNDLER_SETUP' => '/caller/bundler/setup', 'BUNDLER_ORIG_PATH' => ENV['PATH'], 'MY_TEMPLATE_VAR' => 'x')
       seen = {}
-      record = ->(step) { seen[step] = ENV.to_h.slice('PATH', 'RUBYOPT', 'BUNDLE_GEMFILE', 'BUNDLE_LOCKFILE', 'BUNDLER_SETUP') }
+      keys = %w[PATH RUBYOPT BUNDLE_GEMFILE BUNDLE_LOCKFILE BUNDLER_SETUP BUNDLER_ORIG_PATH MY_TEMPLATE_VAR PADRINO_LOG_LEVEL]
+      record = ->(step) { seen[step] = ENV.to_h.slice(*keys) }
       Padrino.stubs(:bin).with { |*args| record.call(args.first) }.returns(true)
       Padrino.stubs(:bin_gen).with { |*args| record.call(args.first.to_s) }.returns(true)
       path = "#{@apptmp}/steps_plugin.rb"
@@ -275,7 +279,8 @@ describe 'PluginGenerator' do
       project = "#{@apptmp}/sample_project"
       File.write("#{project}/Gemfile.lock", '')
       seen = run_steps_under_caller_bundle(project)
-      expected = { 'PATH' => ENV['PATH'], 'RUBYOPT' => '-rbundler/setup -W0', 'BUNDLE_GEMFILE' => "#{project}/Gemfile", 'BUNDLE_LOCKFILE' => "#{project}/Gemfile.lock" }
+      expected = { 'PATH' => ENV['PATH'], 'RUBYOPT' => '-rbundler/setup -W0', 'BUNDLE_GEMFILE' => "#{project}/Gemfile",
+                   'BUNDLE_LOCKFILE' => "#{project}/Gemfile.lock", 'MY_TEMPLATE_VAR' => 'x' }
       assert_equal({ 'rake' => expected, 'model' => expected, 'app' => expected }, seen)
     end
 
@@ -283,7 +288,8 @@ describe 'PluginGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       seen = run_steps_under_caller_bundle("#{@apptmp}/sample_project")
       expected = { 'PATH' => ENV['PATH'], 'RUBYOPT' => '-rbundler/setup -W0', 'BUNDLE_GEMFILE' => '/caller/Gemfile',
-                   'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'BUNDLER_SETUP' => '/caller/bundler/setup' }
+                   'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'BUNDLER_SETUP' => '/caller/bundler/setup',
+                   'BUNDLER_ORIG_PATH' => ENV['PATH'], 'MY_TEMPLATE_VAR' => 'x' }
       assert_equal({ 'rake' => expected, 'model' => expected, 'app' => expected }, seen)
     end
   end
