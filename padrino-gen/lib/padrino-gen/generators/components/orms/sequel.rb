@@ -99,11 +99,19 @@ SQ_CHANGE_MG = <<~MIGRATION.gsub(/^/, '    ') unless defined?(SQ_CHANGE_MG)
   end
 MIGRATION
 
+# Sequel's generic Ruby types. add_column takes any other kind, such as text or boolean, as a type name.
+SQ_GENERIC_TYPES = %w[String Integer Float Numeric BigDecimal Date DateTime Time File TrueClass FalseClass].freeze unless defined?(SQ_GENERIC_TYPES)
+
+def sq_column_type(kind)
+  type = kind.underscore.camelize
+  SQ_GENERIC_TYPES.include?(type) ? type : ":#{kind.underscore}"
+end
+
 def create_migration_file(migration_name, name, columns)
   output_migration_file(
     migration_name, name, columns,
     base: SQ_MIGRATION, change_format: SQ_CHANGE_MG,
-    add: proc { |field, kind| "add_column :#{field}, #{kind.underscore.camelize}" },
+    add: proc { |field, kind| "add_column :#{field}, #{sq_column_type(kind)}" },
     remove: proc { |field, _kind| "drop_column :#{field}" }
   )
 end

@@ -206,6 +206,15 @@ describe 'MigrationGenerator' do
       assert_match_in_file(/drop_column :age/m, migration_file_path)
     end
 
+    it 'should pass kinds that are not Sequel generic types as type names' do
+      kinds = %w[body:text active:boolean price:decimal seen_at:timestamp views:bigint published_at:datetime cost:big_decimal]
+      capture_io { generate(:migration, 'AddBodyToPosts', *kinds, "-r=#{@apptmp}/sample_project") }
+      migration = File.read("#{@apptmp}/sample_project/db/migrate/001_add_body_to_posts.rb")
+      ['add_column :body, :text', 'add_column :active, :boolean', 'add_column :price, :decimal',
+       'add_column :seen_at, :timestamp', 'add_column :views, :bigint', 'add_column :published_at, DateTime',
+       'add_column :cost, BigDecimal'].each { |line| assert_includes migration, "#{line}\n" }
+    end
+
     it 'should generate migration for removing columns' do
       migration_params = ['RemoveEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
       capture_io { generate(:migration, *migration_params) }
