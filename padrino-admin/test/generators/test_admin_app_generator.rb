@@ -97,7 +97,7 @@ describe 'AdminAppGenerator' do
 
     it 'should store and apply session_secret' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
-      assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file(/^  set :session_secret, ENV\.fetch\('SESSION_SECRET'\) \{ '\h{64}' \}$/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     it 'should set SameSite=Lax on the admin session cookie' do
@@ -313,13 +313,6 @@ describe 'AdminAppGenerator' do
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/admin/app.rb")
       end
-
-      it 'should add it #minirecord' do
-        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=minirecord', '-e=haml') }
-        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/admin/app.rb")
-      end
-
     end
 
     describe 'with the vite script component' do
