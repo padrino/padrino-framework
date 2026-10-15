@@ -25,6 +25,18 @@ describe 'AdminPageGenerator' do
       assert_no_dir_exists("#{@apptmp}/sample_project/admin")
     end
 
+    %w[minirecord ohm].each do |removed_orm|
+      it "should fail without writing anything when the project orm is no longer supported (#{removed_orm})" do
+        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
+        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+        components = "#{@apptmp}/sample_project/.components"
+        File.write(components, File.read(components).sub(':orm: activerecord', ":orm: #{removed_orm}"))
+        out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project") }.status }
+        assert_match(/only supports activerecord or mongoid or sequel\. Sorry!/, out)
+        assert_no_dir_exists("#{@apptmp}/sample_project/admin/views/friends")
+      end
+    end
+
     it 'should fail without an existent model' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }

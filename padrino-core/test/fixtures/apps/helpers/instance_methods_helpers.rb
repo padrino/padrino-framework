@@ -1,5 +1,5 @@
 begin
-  require '/tmp/padrino_instance_demo'
+  require 'padrino_instance_demo'
 rescue LoadError
   # do nothing
 end

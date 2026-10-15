@@ -30,15 +30,14 @@ describe 'Padrino::Reloader::Storage' do
     end
 
     it 'should return list of new classes' do
-      skip
       class OSTest; end
       module OSTestModule; class B; end; end
 
       new_classes = Padrino::Reloader::Storage.send(:new_classes, @snapshot)
 
-      assert_equal new_classes.size, 3
-      assert_equal new_classes.include?(OSTest), true
-      assert_equal new_classes.include?(OSTestModule::B), true
+      assert_includes new_classes, OSTest
+      assert_includes new_classes, OSTestModule::B
+      refute_includes new_classes, Padrino::Logger
     end
 
     it 'should return a Set object' do

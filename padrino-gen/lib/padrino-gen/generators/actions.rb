@@ -11,6 +11,12 @@ module Padrino
     DEFAULT_HELPER_NAME = 'Helper'.freeze
 
     ##
+    # The SQL adapters for --adapter, and the ORM components that set up their database with one.
+    #
+    SQL_ADAPTERS = %w[mysql mysql2 mysql-gem postgres sqlite].freeze
+    SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
+
+    ##
     # Common actions needed to support project and component generation.
     #
     module Actions
@@ -59,6 +65,16 @@ module Padrino
       def apply_component_for(choice, component)
         # I need to override Thor#apply because for unknown reason verbose: false break tasks.
         path = File.expand_path(__dir__ + "/components/#{component.to_s.pluralize}/#{choice}.rb")
+        unless File.exist?(path)
+          # An existing project's .components can name a component that has since been removed.
+          available = Dir["#{__dir__}/components/#{component.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb') }.sort
+          if choice.to_s.empty?
+            say "The project's .components sets no #{component} component (available: #{available.join(', ')})."
+          else
+            say "The #{choice} #{component} component is no longer available in Padrino (available: #{available.join(', ')})."
+          end
+          exit 1
+        end
         say_status :apply, "#{component.to_s.pluralize}/#{choice}"
         shell.padding += 1
         instance_eval(File.read(path, encoding: 'UTF-8'))
@@ -155,6 +171,25 @@ module Padrino
           choice = ask_valid_option(component, choices, "Please enter a valid option for #{component}:")
         end
         choice
+      end
+
+      ##
+      # Prompts the user if necessary until options[:adapter] or the answer is a valid SQL adapter, and keeps it.
+      #
+      # @return [String] Name of the SQL adapter.
+      #
+      # @example
+      #   resolve_valid_adapter # => 'sqlite'
+      #
+      def resolve_valid_adapter
+        @_adapter ||= begin
+          adapter = options[:adapter]
+          until SQL_ADAPTERS.include?(adapter)
+            say("Option for --adapter '#{adapter}' is not available.", :red)
+            adapter = ask_valid_option(:adapter, SQL_ADAPTERS, 'Please enter a valid option for adapter:')
+          end
+          adapter
+        end
       end
 
       ##
@@ -505,6 +540,8 @@ module Padrino
         saved = ENV.to_h
         if defined?(Bundler) && Bundler.respond_to?(:original_env)
           original = Bundler.original_env
+          # ceiling: a template's own changes to Bundler's keys (PATH, RUBYOPT, GEM_PATH...) made after Bundler loaded
+          # don't reach its steps; upgrade: re-apply the diff from a snapshot taken when the runner starts.
           BUNDLER_ENV_KEYS.each { |key| original.key?(key) ? ENV[key] = original[key] : ENV.delete(key) }
           ENV.keys.grep(/\ABUNDLER_ORIG_/).each { |key| ENV.delete(key) }
         end

@@ -76,7 +76,7 @@ module Padrino
           RUBY
 
           unless options[:destroy]
-            insert_middleware 'ConnectionPoolManagement', @admin_path if %i[minirecord activerecord].include?(orm)
+            insert_middleware 'ConnectionPoolManagement', @admin_path if orm == :activerecord
           end
 
           params = [
@@ -150,7 +150,6 @@ module Padrino
             instructions << "Run 'bundle exec rake db:create' if you have not created a database yet"
             instructions << "Run 'bundle exec rake db:migrate'"
           end
-          instructions << "Now repeat after me... 'ohm mani padme hum', 'ohm mani padme hum'... :)" if orm == :ohm
           instructions << "Run 'bundle exec rake db:seed'"
           instructions << "Visit the admin panel in the browser at '/#{@admin_path}'"
           instructions.map! { |i| "  #{instructions.index(i) + 1}) #{i}" }

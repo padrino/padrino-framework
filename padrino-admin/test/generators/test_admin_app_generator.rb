@@ -28,6 +28,16 @@ describe 'AdminAppGenerator' do
       assert_match(/Padrino only supports/, out)
     end
 
+    it 'should fail without writing anything when the project orm is no longer supported' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':orm: sequel', ':orm: ohm'))
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/only supports activerecord or mongoid or sequel\. Sorry!/, out)
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin")
+      assert_no_file_exists("#{@apptmp}/sample_project/models/account.rb")
+    end
+
     it 'should fail with an unsupported renderer' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}/sample_project", '-e=liquid') }.status }
@@ -97,7 +107,7 @@ describe 'AdminAppGenerator' do
 
     it 'should store and apply session_secret' do
       capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel', '-e=haml') }
-      assert_match_in_file(/set :session_secret, '[0-9A-z]*'/, "#{@apptmp}/sample_project/config/apps.rb")
+      assert_match_in_file(/^  set :session_secret, ENV\.fetch\('SESSION_SECRET'\) \{ '\h{64}' \}$/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
     it 'should set SameSite=Lax on the admin session cookie' do
@@ -313,13 +323,6 @@ describe 'AdminAppGenerator' do
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
         assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/admin/app.rb")
       end
-
-      it 'should add it #minirecord' do
-        capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=minirecord', '-e=haml') }
-        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
-        assert_match_in_file(/  use ConnectionPoolManagement/m, "#{@apptmp}/sample_project/admin/app.rb")
-      end
-
     end
 
     describe 'with the vite script component' do

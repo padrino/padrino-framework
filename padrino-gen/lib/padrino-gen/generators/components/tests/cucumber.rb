@@ -15,8 +15,10 @@ CUCUMBER_SETUP = <<~TEST unless defined?(CUCUMBER_SETUP)
 TEST
 
 CUCUMBER_YML = <<~TEST unless defined?(CUCUMBER_YML)
-  default: --tags ~@wip --strict features
-  html_report: --tags ~@wip --strict --format html --out=features_report.html features
+  # Cucumber 12 always fails on undefined and pending steps; older versions need --strict for that.
+  <% strict = Gem::Version.new(Cucumber::VERSION) < Gem::Version.new('12') ? '--strict ' : '' %>
+  default: <%= strict %>--tags 'not @wip' features
+  html_report: <%= strict %>--tags 'not @wip' --format html --out=features_report.html features
 TEST
 
 CUCUMBER_FEATURE = <<~TEST unless defined?(CUCUMBER_FEATURE)
@@ -73,7 +75,7 @@ TEST
 
 def setup_test
   require_dependencies 'rack-test', require: 'rack/test', group: 'test'
-  require_dependencies 'cucumber', group: 'test'
+  require_dependencies 'cucumber', version: '>= 3.0', group: 'test'
   require_dependencies 'capybara', group: 'test'
   insert_test_suite_setup CUCUMBER_SETUP, path: 'features/support/env.rb'
   create_file destination_root('features/support/url.rb'), CUCUMBER_URL
