@@ -77,19 +77,23 @@ module Padrino
         end
 
         FileUtils.mkdir_p(File.dirname(file))
+        renamed = false
         begin
-          pid = Process.spawn(environment, binary, *arguments, options)
-        rescue Errno::ENOENT
-          FileUtils.rm_f(partial) # spawn creates the out: file before exec fails
-          raise "#{binary} not found on PATH"
+          begin
+            pid = Process.spawn(environment, binary, *arguments, options)
+          rescue Errno::ENOENT
+            raise "#{binary} not found on PATH"
+          end
+          _, status = Process.wait2(pid)
+          raise "Error dumping database #{database}" unless status.success?
+
+          File.rename(partial, file)
+          renamed = true
+          file
+        ensure
+          # spawn may create the out: file before exec fails; an interrupt leaves it too
+          FileUtils.rm_f(partial) unless renamed
         end
-        _, status = Process.wait2(pid)
-        unless status.success?
-          FileUtils.rm_f(partial)
-          raise "Error dumping database #{database}"
-        end
-        File.rename(partial, file)
-        file
       end
 
       # Like createdb and dropdb, Postgres connects to postgres and then template1, but never to the

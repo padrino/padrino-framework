@@ -127,5 +127,16 @@ describe 'SqlHelpers.dump_db' do
       assert_equal 'previous dump', File.read(@file)
       refute File.exist?("#{@file}.tmp")
     end
+
+    it 'removes the temp file when the wait is interrupted' do
+      Process.expects(:spawn).with do |*args|
+        target = args.grep(String).find { |arg| arg.start_with?('--file=') }.sub('--file=', '')
+        File.write(target, 'partial')
+        true
+      end.returns(42)
+      Process.expects(:wait2).with(42).raises(Interrupt)
+      assert_raises(Interrupt) { dump('postgres') }
+      refute File.exist?("#{@file}.tmp")
+    end
   end
 end
