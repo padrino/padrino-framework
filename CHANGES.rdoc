@@ -1,5 +1,10 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #XXXX The admin uses Bootstrap 3.4.1 (was 3.1.0) for its CSS and JavaScript. Font Awesome and the wider containers on large screens move from `bootstrap.css` to the admin's `application.css`, so `bootstrap.css` is the unmodified Bootstrap file. Bootstrap 3.4.1's alert close button works with a bare `href="#"`; collapse, tab and modal still need a `data-target` (@nesquena)
+- REMOVE #XXXX padrino-admin's Bootstrap 3.1 LESS sources and its `bootstrap:css` rake task, which built the old `bootstrap.css` (@nesquena)
+
 == 0.17.0 (2026-10-15)
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
