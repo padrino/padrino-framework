@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #XXXX The cucumber.yml of projects generated with `-t cucumber` uses `--tags 'not @wip'`, and passes `--strict` only to cucumber versions before 12, so `bundle exec cucumber` runs instead of failing on the removed `~@wip` syntax or the removed `--strict` option. The generated Gemfile asks for cucumber 3.0 or later (@nesquena)
+- FIX #2405 The cucumber.yml of projects generated with `-t cucumber` uses `--tags 'not @wip'`, and passes `--strict` only to cucumber versions before 12, so `bundle exec cucumber` runs instead of failing on the removed `~@wip` syntax or the removed `--strict` option. The generated Gemfile asks for cucumber 3.0 or later (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
