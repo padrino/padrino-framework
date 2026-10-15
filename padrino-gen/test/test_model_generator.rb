@@ -47,13 +47,15 @@ describe 'ModelGenerator' do
       assert_match(/You need an ORM adapter/, out)
     end
 
-    it 'should fail with a message if the orm in .components is no longer available' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
-      components = "#{@apptmp}/sample_project/.components"
-      File.write(components, File.read(components).sub(':orm: sequel', ':orm: minirecord'))
-      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }.status }
-      assert_match(/The minirecord orm component is no longer available in Padrino \(available: .*\bsequel\b/, out)
-      assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
+    %w[minirecord ohm].each do |removed_orm|
+      it "should fail with a message if the orm in .components is no longer available (#{removed_orm})" do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        components = "#{@apptmp}/sample_project/.components"
+        File.write(components, File.read(components).sub(':orm: sequel', ":orm: #{removed_orm}"))
+        out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }.status }
+        assert_match(/The #{removed_orm} orm component is no longer available in Padrino \(available: .*\bsequel\b/, out)
+        assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
+      end
     end
 
     it 'should not fail if we do not have test component' do
@@ -235,26 +237,6 @@ describe 'ModelGenerator' do
       assert_match_in_file(/field :name, type: String/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/field :age, type: Integer/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/field :email, type: String/m, "#{@apptmp}/sample_project/models/user.rb")
-    end
-  end
-
-  # REDIS
-  describe 'model generator using ohm' do
-    it 'should generate model file with no properties' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=ohm') }
-      capture_io { generate(:model, 'person', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class Person < Ohm::Model/, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/# attribute :name/m, "#{@apptmp}/sample_project/models/person.rb")
-      assert_match_in_file(/# reference :venue, Venue/m, "#{@apptmp}/sample_project/models/person.rb")
-    end
-
-    it 'should generate model file with given fields' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=ohm') }
-      capture_io { generate(:model, 'user', 'name:string', 'age:integer', 'email:string', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class User < Ohm::Model/, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/attribute :name/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/attribute :age/m, "#{@apptmp}/sample_project/models/user.rb")
-      assert_match_in_file(/attribute :email/m, "#{@apptmp}/sample_project/models/user.rb")
     end
   end
 

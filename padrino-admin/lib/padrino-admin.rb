@@ -8,7 +8,7 @@ module Padrino
   ##
   # Padrino::Admin is beautiful Ajax Admin, with these features:
   #
-  # Orm Agnostic:: Adapters for activerecord, sequel, mongoid, ohm, and more
+  # Orm Agnostic:: Adapters for activerecord, sequel and mongoid
   # Authentication:: Support for Account authentication, Account Permission management
   # Scaffold:: You can simply create a new "admin interface" simply providing a Model
   # Ajax Uploads:: You can upload file, manage them and attach them to any model in a quick and simple way (coming soon)

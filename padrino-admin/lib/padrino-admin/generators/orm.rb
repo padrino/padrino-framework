@@ -13,8 +13,7 @@ module Padrino
         MODEL_BASES = {
           activerecord: 'ActiveRecord::Base',
           mongoid: 'Mongoid::Document',
-          sequel: 'Sequel::Model',
-          ohm: 'Ohm::Model'
+          sequel: 'Sequel::Model'
         }.freeze
 
         attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm, :name_param
@@ -68,7 +67,6 @@ module Padrino
             when :activerecord then @klass.columns
             when :mongoid      then @klass.fields.values.reject { |col| %w[_id _type].include?(col.name) }
             when :sequel       then @klass.db_schema.map { |k, v| v[:type] = :text if v[:db_type] =~ /^text/i; Column.new(k, v[:type]) }
-            when :ohm          then @klass.attributes.map { |a| Column.new(a.to_s, :string) } # ohm has strings
             else raise OrmError, "Adapter #{orm} is not yet supported!"
             end
         end
@@ -89,7 +87,7 @@ module Padrino
         def find(params = nil)
           case orm
           when :activerecord, :mongoid then "#{klass_name}.find(#{params})"
-          when :sequel, :ohm then "#{klass_name}[#{params}]"
+          when :sequel then "#{klass_name}[#{params}]"
           else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
@@ -109,19 +107,18 @@ module Padrino
         def update_attributes(params = nil)
           case orm
           when :mongoid then "@#{name_singular}.update_attributes(#{params})"
-          when :activerecord, :ohm then "@#{name_singular}.update(#{params})"
+          when :activerecord then "@#{name_singular}.update(#{params})"
           when :sequel then "@#{name_singular}.modified! && @#{name_singular}.update(#{params})"
           else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
 
         def destroy
-          orm == :ohm ? "#{name_singular}.delete" : "#{name_singular}.destroy"
+          "#{name_singular}.destroy"
         end
 
         def find_by_ids(params = nil)
           case orm
-          when :ohm then "#{klass_name}.fetch(#{params})"
           when :sequel then "#{klass_name}.where(id: #{params})"
           when :mongoid then "#{klass_name}.find(#{params})"
           else find(params)
@@ -130,7 +127,6 @@ module Padrino
 
         def multiple_destroy(params = nil)
           case orm
-          when :ohm then "#{params}.each(&:delete)"
           when :sequel then "#{params}.destroy"
           when :mongoid then "#{params}.each(&:destroy)"
           else "#{klass_name}.destroy #{params}"
@@ -139,7 +135,7 @@ module Padrino
 
         def has_error(field)
           case orm
-          when :ohm, :sequel then "@#{name_singular}.errors.key?(:#{field}) && @#{name_singular}.errors[:#{field}].count > 0"
+          when :sequel then "@#{name_singular}.errors.key?(:#{field}) && @#{name_singular}.errors[:#{field}].count > 0"
           else "@#{name_singular}.errors.include?(:#{field})"
           end
         end
