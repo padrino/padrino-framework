@@ -600,6 +600,16 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/gem 'liquid'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
+    it 'should require a liquid that Tilt renders with, and not liquify' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=liquid', '--script=none') }
+      gemfile = File.read("#{@apptmp}/sample_project/Gemfile")
+      requirement = gemfile[/^gem 'liquid', '([^']+)'/, 1]
+      require 'tilt/liquid'
+      assert Gem::Requirement.new(requirement).satisfied_by?(Gem::Version.new(Liquid::VERSION)), "liquid #{Liquid::VERSION} is outside #{requirement}"
+      assert_equal 'Hello PADRINO', Tilt::LiquidTemplate.new { 'Hello {{ name | upcase }}' }.render(nil, name: 'padrino')
+      refute_match(/gem 'liquify'/, gemfile)
+    end
+
     it 'should properly generate for slim' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=slim', '--script=none') }
       assert_match(/applying.*?slim.*?renderer/, out)
