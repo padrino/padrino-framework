@@ -238,6 +238,43 @@ describe 'ModelGenerator' do
       assert_match_in_file(/field :age, type: Integer/m, "#{@apptmp}/sample_project/models/user.rb")
       assert_match_in_file(/field :email, type: String/m, "#{@apptmp}/sample_project/models/user.rb")
     end
+
+    it 'should map SQL field kinds to Mongoid types' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
+      kinds = %w[body:text token:uuid views:bigint price:decimal published_at:datetime seen_at:timestamp
+                 data:binary meta:json ref:object_id note:Text]
+      capture_io { generate(:model, 'post', *kinds, "-r=#{@apptmp}/sample_project") }
+      model = File.read("#{@apptmp}/sample_project/models/post.rb")
+      expected = [
+        'field :body, type: String', 'field :token, type: String', 'field :views, type: Integer',
+        'field :price, type: BigDecimal', 'field :published_at, type: Time', 'field :seen_at, type: Time',
+        'field :data, type: BSON::Binary', 'field :meta, type: Object', 'field :ref, type: BSON::ObjectId',
+        'field :note, type: String'
+      ]
+      expected.each { |line| assert_includes model, "  #{line}\n" }
+    end
+
+    it 'should keep field kinds that already name a Mongoid type' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
+      kinds = %w[a:boolean b:date c:time d:date_time e:DateTime f:big_decimal g:float h:array i:hash j:symbol k:money]
+      capture_io { generate(:model, 'post', *kinds, "-r=#{@apptmp}/sample_project") }
+      model = File.read("#{@apptmp}/sample_project/models/post.rb")
+      %w[a:Boolean b:Date c:Time d:DateTime e:DateTime f:BigDecimal g:Float h:Array i:Hash j:Symbol k:Money].each do |pair|
+        field, type = pair.split(':')
+        assert_includes model, "  field :#{field}, type: #{type}\n"
+      end
+    end
+
+    it 'should generate belongs_to for references' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
+      kinds = %w[account:references author:belongs_to:index commentable:references:polymorphic]
+      capture_io { generate(:model, 'post', *kinds, "-r=#{@apptmp}/sample_project") }
+      model = File.read("#{@apptmp}/sample_project/models/post.rb")
+      assert_includes model, "  belongs_to :account\n"
+      assert_includes model, "  belongs_to :author\n"
+      assert_includes model, "  belongs_to :commentable, polymorphic: true\n"
+      refute_match(/field :(account|author|commentable)/, model)
+    end
   end
 
   describe 'model generator testing files' do
