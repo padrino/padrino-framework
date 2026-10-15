@@ -12,7 +12,7 @@ describe 'AppGenerator' do
 
   describe 'the app generator' do
     it 'should fail outside app root' do
-      out, = capture_io { generate(:app, 'demo_root', "-r=#{@apptmp}") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:app, 'demo_root', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
       assert_no_file_exists("#{@apptmp}/demo_root")
     end
@@ -101,7 +101,7 @@ describe 'AppGenerator' do
 
     it 'should abort if app name already exists' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      out, = capture_io { generate(:app, 'kernel', "--root=#{@apptmp}/sample_project") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:app, 'kernel', "--root=#{@apptmp}/sample_project") }.status }
       assert_match(/Kernel already exists/, out)
       assert_no_dir_exists("#{@apptmp}/sample_project/public/kernel")
       assert_no_dir_exists("#{@apptmp}/sample_project/kernel/controllers")
@@ -112,7 +112,7 @@ describe 'AppGenerator' do
     it 'should abort if app name already exists in root' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'subapp', "--root=#{@apptmp}/sample_project") }
-      out, = capture_io { generate_with_parts(:app, 'subapp', "--root=#{@apptmp}/sample_project", apps: 'subapp') }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate_with_parts(:app, 'subapp', "--root=#{@apptmp}/sample_project", apps: 'subapp') }.status }
       assert_dir_exists("#{@apptmp}/sample_project/public/subapp")
       assert_dir_exists("#{@apptmp}/sample_project/subapp/controllers")
       assert_dir_exists("#{@apptmp}/sample_project/subapp/helpers")

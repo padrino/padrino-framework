@@ -32,7 +32,7 @@ module Padrino
       class_option :gem,              desc: 'Generate project as a gem',                                        aliases: '-g', default: false,       type: :boolean
       class_option :migration_format, desc: 'Filename format for migrations (number, timestamp)',                              default: 'number',    type: :string
       class_option :adapter,          desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: 'sqlite',    type: :string
-      class_option :server,           desc: 'HTTP server to use (webrick, thin, puma, falcon)',                 aliases: '-s', default: 'webrick',   type: :string
+      class_option :server,           desc: 'HTTP server to use (webrick, thin, puma, falcon)', default: 'webrick', type: :string
 
       # Definitions for the available customizable components.
       defines_component_options
@@ -45,6 +45,10 @@ module Padrino
       #
       def setup_project
         valid_constant? name
+        # In 0.16.0 and 0.16.1 -s meant --server; stop before prompting for a script named after a server.
+        if %w[webrick thin puma falcon trinidad mongrel spider-gazelle].include?(options[:script].to_s)
+          raise "-s selects the javascript library (--script); use --server=#{options[:script]} to choose the HTTP server"
+        end
         app = options[:app] || 'App'
 
         @project_name = name.gsub(/\W/, '_').underscore.camelize
@@ -119,8 +123,6 @@ module Padrino
         base_path      = File.join(directory_name, 'app')
         create_file destination_root("#{base_path}/controllers/controllers_#{directory_name}.rb"), controller_content, skip: true
         create_file destination_root("#{base_path}/helpers/helpers_#{directory_name}.rb"),         helper_content,     skip: true
-        helper_path = destination_root(File.join(directory_name, "#{directory_name == 'spec' ? 'spec_helper' : 'test_config'}.rb"))
-        gsub_file helper_path, %r{helpers/\*\*/\*\.rb}, 'helpers.rb'
       end
 
       ##
@@ -139,7 +141,7 @@ module Padrino
         say "#{name} is ready for development!", :green
         say '=' * 65, :green
         say "$ cd #{options[:root]}/#{name}"
-        say '$ bundle --binstubs' unless options[:bundle]
+        say '$ bundle install && bundle binstubs --all' unless options[:bundle]
         say '=' * 65, :green
         say
       end

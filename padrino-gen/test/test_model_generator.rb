@@ -12,9 +12,14 @@ describe 'ModelGenerator' do
 
   describe 'the model generator' do
     it 'should fail outside app root' do
-      out, = capture_io { generate(:model, 'user', "-r=#{@apptmp}") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
       assert_no_file_exists('/tmp/models/user.rb')
+    end
+
+    it 'should fail if the name is missing' do
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, "-r=#{@apptmp}") }.status }
+      assert_match(/No value provided for required arguments 'name'/, err)
     end
 
     it 'should generate filename properly' do
@@ -25,7 +30,8 @@ describe 'ModelGenerator' do
 
     it 'should fail if field name is not acceptable' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
-      out, = capture_io { generate(:model, 'DemoItem', 're@l$ly:string', 'display-name:string', 'age&year:datetime', 'email_two:string', "-r=#{@apptmp}/sample_project") }
+      fields = ['re@l$ly:string', 'display-name:string', 'age&year:datetime', 'email_two:string']
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'DemoItem', *fields, "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/Invalid field name:/, out)
       assert_match(/display-name:string/, out)
       assert_match(/age&year:datetime/, out)
@@ -37,7 +43,8 @@ describe 'ModelGenerator' do
 
     it 'should fail if we do not use an adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
-      assert_raises(SystemExit) { capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") } }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/You need an ORM adapter/, out)
     end
 
     it 'should not fail if we do not have test component' do
@@ -88,7 +95,7 @@ describe 'ModelGenerator' do
 
     it 'should abort if model name already exists' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
-      out, = capture_io { generate(:model, 'kernel', "--root=#{@apptmp}/sample_project") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'kernel', "--root=#{@apptmp}/sample_project") }.status }
       assert_match(/Kernel already exists/, out)
       assert_no_file_exists("#{@apptmp}/sample_project/db/migrate/001_create_kernel.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/models/kernel.rb")
@@ -97,7 +104,7 @@ describe 'ModelGenerator' do
     it 'should abort if model name already exists in root' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord') }
       capture_io { generate(:app, 'user', "--root=#{@apptmp}/sample_project") }
-      out, = capture_io { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", apps: 'user') }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate_with_parts(:model, 'user', "--root=#{@apptmp}/sample_project", apps: 'user') }.status }
       assert_file_exists("#{@apptmp}/sample_project/user/app.rb")
       assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
       assert_match(/User already exists/, out)
@@ -154,6 +161,15 @@ describe 'ModelGenerator' do
       assert_match_in_file(/      t.integer :age/m,   migration_file_path)
       assert_match_in_file(/      t.string :email/m,  migration_file_path)
       assert_match_in_file(/    drop_table :friends/m, migration_file_path)
+    end
+
+    it 'should generate migration file with references and indexed fields' do
+      stop_time_for_test
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:model, 'order', 'user:belongs_to', 'code:string:uniq', 'state:string:index', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_orders.rb"
+      fields = /create_table :orders do \|t\|\s+t\.belongs_to :user\s+t\.string :code\s+t\.index :code, unique: true\s+t\.string :state\s+t\.index :state\s+t\.timestamps/m
+      assert_match_in_file(fields, migration_file_path)
     end
   end
 

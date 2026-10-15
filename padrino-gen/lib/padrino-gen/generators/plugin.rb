@@ -41,7 +41,7 @@ module Padrino
             self.behavior = :revoke if options[:destroy]
             execute_runner(:plugin, plugin_file)
           else
-            say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+            exit_outside_app_root!
           end
         end
       end
@@ -52,7 +52,6 @@ module Padrino
           uri = URI.parse(PLUGIN_URL)
           http = Net::HTTP.new(uri.host, uri.port)
           http.use_ssl = true if uri.scheme == 'https'
-          http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           http.start do
             http.request_get(uri.path) do |res|
               plugins = res.body.scan(%r{/plugins/([-\w]+)_plugin.rb}).flatten.uniq

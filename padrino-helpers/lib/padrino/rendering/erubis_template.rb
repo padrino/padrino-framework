@@ -53,7 +53,7 @@ module Padrino
       def precompiled_preamble(locals)
         original = super
         return original unless @is_padrino_app
-        "__in_erb_template = true\n" << original.rpartition("\n").first << "#{@outvar} = _buf = SafeBuffer.new\n"
+        "__in_erb_template = true\n#{original.rpartition("\n").first}#{@outvar} = _buf = SafeBuffer.new\n"
       end
     end
   end

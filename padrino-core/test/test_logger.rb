@@ -72,6 +72,26 @@ describe 'PadrinoLogger' do
       assert_match(/Yep this can be logged/, @log.string)
     end
 
+    it 'should not mutate the message passed to #<<' do
+      setup_logger(log_level: :error)
+      message = +'not mutated'
+      @logger << message
+      assert_equal 'not mutated', message
+      assert_match(/not mutated\n/, @log.string)
+    end
+
+    it 'should not mutate or choke on a frozen message that already ends in a newline' do
+      setup_logger(log_level: :error, sanitize_encoding: 'windows-1251')
+      message = "ends in newline\n".b.freeze
+      unfrozen = "unfrozen\n".b
+      @logger << message
+      @logger << unfrozen
+      @logger << 'still logging'
+      assert_equal Encoding::BINARY, unfrozen.encoding
+      assert_match(/ends in newline\n/, @log.string)
+      assert_match(/still logging\n/, @log.string)
+    end
+
     it 'should respond to #write for Rack::CommonLogger' do
       setup_logger(log_level: :error)
       @logger.error 'Error message'
@@ -82,9 +102,22 @@ describe 'PadrinoLogger' do
       assert_match(/log via alias/, @log.string)
     end
 
+    it 'should not warn about an empty datetime format' do
+      setup_logger(log_level: :error, colorize_logging: false, format_datetime: '')
+      verbose = $VERBOSE
+      begin
+        $VERBOSE = true
+        _, err = capture_io { @logger.error 'no timestamp' }
+      ensure
+        $VERBOSE = verbose
+      end
+      assert_equal "  ERROR -  no timestamp\n", @log.string
+      assert_empty err
+    end
+
     it 'should not blow up on mixed or broken encodings' do
       setup_logger(log_level: :error, auto_flush: false)
-      binary_data = "\xD0".force_encoding('BINARY')
+      binary_data = "\xD0".b
       utf8_data = 'фыв'
       @logger.error binary_data
       @logger.error utf8_data
@@ -97,7 +130,7 @@ describe 'PadrinoLogger' do
       encoding = 'windows-1251'
       setup_logger(log_level: :error, auto_flush: false, sanitize_encoding: encoding)
       @log.string.encode! encoding
-      binary_data = "\xD0".force_encoding('BINARY')
+      binary_data = "\xD0".b
       utf8_data = 'фыв'
       @logger.error binary_data
       @logger.error utf8_data
@@ -245,6 +278,88 @@ describe 'binary logger' do
   end
 end
 
+describe 'stdlib logger without Padrino::Logger::Extensions' do
+  before do
+    @save_logger = Padrino.logger
+    @log = StringIO.new
+    new_logger = Logger.new(@log)
+    new_logger.formatter = proc { |_, _, _, message| "#{message}\n" }
+    capture_io { Padrino.logger = new_logger }
+  end
+
+  after do
+    Padrino.logger = @save_logger
+  end
+
+  it 'should accept devel messages without logging them' do
+    Padrino.logger.devel('Devel message')
+    Padrino.logger.devel(:setup, Time.now, 'Devel bench')
+    assert_equal '', @log.string
+    refute_predicate Padrino.logger, :devel?
+  end
+
+  it 'should log an exception' do
+    Padrino.logger.exception(Exception.new('scary message'))
+    assert_match(/Exception - scary message/, @log.string)
+  end
+
+  it 'should log a benchmarked action' do
+    Padrino.logger.bench('GET', Time.now, '/blog')
+    assert_match(%r{GET \(\d+\.\d+s\) /blog}, @log.string)
+  end
+
+  it 'should log requests' do
+    mock_app do
+      enable :logging
+      get('/') { 'Foo' }
+    end
+    get '/'
+
+    assert_equal 200, status
+    assert_match(%r{GET \(\d+\.\d+s\) / - 200 OK}, @log.string)
+  end
+
+  it 'should warn about a frozen logger instead of raising' do
+    frozen = Logger.new(@log).freeze
+    _, err = capture_io { Padrino.logger = frozen }
+    assert_match(/frozen and lacks .*devel/, err)
+    assert_same frozen, Padrino.logger
+  end
+
+  it 'should keep the methods a logger already defines' do
+    custom = Class.new(Logger) { define_method(:exception) { |*| add(Logger::ERROR, 'custom exception') } }.new(@log)
+    custom.formatter = proc { |_, _, _, message| message }
+    capture_io { Padrino.logger = custom }
+    Padrino.logger.exception(Exception.new('scary message'))
+    assert_equal 'custom exception', @log.string
+  end
+
+  it 'should use Padrino formatting when the logger is extended after being assigned' do
+    Padrino.logger.extend(Padrino::Logger::Extensions)
+    Padrino.logger.colorize!
+    Padrino.logger.bench('GET', Time.now, '/blog')
+    assert_match(%r{\e\[0;33m +GET\e\[0m}, @log.string)
+  end
+
+  it 'should add a public fallback when the logger only has a private one' do
+    custom = Class.new(Logger) do
+      def bench(*)
+        raise 'private bench called'
+      end
+      private :bench
+    end.new(@log)
+    custom.formatter = proc { |_, _, _, message| "#{message}\n" }
+    capture_io { Padrino.logger = custom }
+    Padrino.logger.bench('GET', Time.now, '/blog')
+    assert_match(%r{GET \(\d+\.\d+s\) /blog}, @log.string)
+  end
+
+  it 'should not warn when the logger is reset to the default' do
+    _, err = capture_io { Padrino.logger = nil }
+    assert_empty err
+  end
+end
+
 describe 'alternate logger: stdlib logger' do
   before do
     @log = StringIO.new
@@ -334,7 +449,21 @@ describe 'options :source_location' do
 
   it 'should output source_location if :source_location is set to true' do
     stub_root { Padrino.logger.debug('hello world') }
-    assert_match(/hello world/, Padrino.logger.log.string)
+    assert_match(%r{\[test/test_logger\.rb:\d+\] hello world}, Padrino.logger.log.string)
+  end
+
+  it 'should output source_location from Ruby 3.4 style backtraces' do
+    stub_message = "test/test_logger.rb:269:in 'Kernel#test'"
+    Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root { Padrino.logger.debug('hello new format') } }
+    assert_match(%r{\[test/test_logger\.rb:269\] hello new format}, Padrino.logger.log.string)
+  end
+
+  it 'should log without source_location from code that has no file' do
+    ['(irb):1:in `<main>\'', "(eval at #{__FILE__}:1):1:in 'block'", "-e:1:in '<main>'"].each do |stub_message|
+      Padrino::Logger.logger.stub(:caller, [stub_message]) { stub_root { Padrino.logger.debug('hello console') } }
+    end
+    assert_equal 3, Padrino.logger.log.string.scan('hello console').size
+    refute_match(/\] hello console/, Padrino.logger.log.string)
   end
 
   it 'should output source_location if file path is relative' do
@@ -346,6 +475,8 @@ describe 'options :source_location' do
   it 'should not output source_location if :source_location is set to false' do
     Padrino::Logger::Config[:test][:source_location] = false
     Padrino::Logger.setup!
+    Padrino::Logger.logger.stub(:caller, ['(irb):1:in `<main>\'']) { stub_root { Padrino.logger.debug('hello irb') } }
+    assert_match(/hello irb/, Padrino.logger.log.string)
     stub_root { Padrino.logger.debug('hello world') }
     assert_match(/hello world/, Padrino.logger.log.string)
     refute_match(/\[.+?\] hello world/, Padrino.logger.log.string)

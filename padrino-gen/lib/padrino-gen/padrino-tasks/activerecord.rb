@@ -131,8 +131,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         migration_context.migrate(env_migration_version)
       end
 
-      format_source = ActiveRecord.respond_to?(:schema_format) ? ActiveRecord : ActiveRecord::Base
-      Rake::Task['ar:schema:dump'].invoke if format_source.schema_format == :ruby
+      dump_schema
     end
 
     namespace :migrate do
@@ -228,7 +227,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       task dump: :skeleton do
         require 'active_record/schema_dumper'
         File.open(ENV['SCHEMA'] || Padrino.root('db', 'schema.rb'), 'w') do |file|
-          ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
+          ActiveRecord::SchemaDumper.dump(schema_dumper_source, file)
         end
         Rake::Task['ar:schema:dump'].reenable
       end
@@ -275,8 +274,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           end
         end
 
-        if !ActiveRecord::Base.connection.respond_to?(:supports_migrations?) || ActiveRecord::Base.connection.supports_migrations?
-          File.open(resolve_structure_sql, 'a') { |f| f << ActiveRecord::Base.connection.dump_schema_information }
+        connection = ActiveRecord::Base.connection
+        if !connection.respond_to?(:supports_migrations?) || connection.supports_migrations?
+          versions_sql = connection.respond_to?(:dump_schema_versions) ? connection.dump_schema_versions : connection.dump_schema_information
+          File.open(resolve_structure_sql, 'a') { |f| f << versions_sql }
         end
       end
     end
@@ -328,8 +329,6 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
 
     task seed: :environment do
-      missing_model_features = Padrino.send(:default_dependency_paths) - Padrino.send(:dependency_paths)
-      Padrino.require_dependencies(missing_model_features)
       Rake::Task['db:seed'].invoke
     end
   end
@@ -397,7 +396,17 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   end
 
   def dump_schema
-    Rake::Task['ar:schema:dump'].invoke if ActiveRecord::Base.schema_format == :ruby
+    Rake::Task['ar:schema:dump'].invoke if schema_format_ruby?
+  end
+
+  def schema_format_ruby?
+    format_source = ActiveRecord.respond_to?(:schema_format) ? ActiveRecord : ActiveRecord::Base
+    format_source.schema_format == :ruby
+  end
+
+  # Active Record 7.2+ dumps the schema from a connection pool; older versions take a connection.
+  def schema_dumper_source
+    ActiveRecord::Base.respond_to?(:lease_connection) ? ActiveRecord::Base.connection_pool : ActiveRecord::Base.connection
   end
 
   def resolve_structure_sql

@@ -61,7 +61,7 @@ module Padrino
         path = File.expand_path(__dir__ + "/components/#{component.to_s.pluralize}/#{choice}.rb")
         say_status :apply, "#{component.to_s.pluralize}/#{choice}"
         shell.padding += 1
-        instance_eval(File.read(path))
+        instance_eval(File.read(path, encoding: 'UTF-8'))
         shell.padding -= 1
       end
 
@@ -152,9 +152,33 @@ module Padrino
         choice = options[component]
         until valid_choice?(component, choice)
           say("Option for --#{component} '#{choice}' is not available.", :red)
-          choice = ask("Please enter a valid option for #{component}:", limited_to: choices)
+          choice = ask_valid_option(component, choices, "Please enter a valid option for #{component}:")
         end
         choice
+      end
+
+      ##
+      # Asks once for one of the valid choices of an option; callers re-ask while the answer is invalid.
+      # Thor's limited_to: would repeat the prompt forever at the end of input (no terminal, empty pipe),
+      # so that case raises instead.
+      #
+      # @param [Symbol] option
+      #   The name of the option.
+      # @param [Array<String>] choices
+      #   The valid choices for the option.
+      # @param [String] statement
+      #   The prompt to show.
+      #
+      # @return [String] The answer entered.
+      #
+      # @example
+      #   ask_valid_option(:adapter, %w[mysql sqlite], 'Please, choose a proper adapter:')
+      #
+      def ask_valid_option(option, choices, statement)
+        answer = ask("#{statement} [#{choices.join(', ')}]")
+        raise "No input left to choose a valid --#{option}; pass one of: #{choices.join(', ')}" if answer.nil?
+
+        answer
       end
 
       ##
@@ -213,6 +237,14 @@ module Padrino
       #
       def in_app_root?
         File.exist?(destination_root('config/boot.rb'))
+      end
+
+      ##
+      # Says that the generator must run at the root of a Padrino application and exits with status 1.
+      #
+      def exit_outside_app_root!
+        say 'You are not at the root of a Padrino application! (config/boot.rb not found)'
+        exit 1
       end
 
       ##
@@ -448,11 +480,44 @@ module Padrino
       #
       def run_bundler
         say 'Bundling application dependencies using bundler...', :yellow
-        in_root { run 'bundle install --binstubs' }
+        in_root do
+          with_project_bundle_env do
+            run 'bundle install'
+            run 'bundle binstubs --all'
+          end
+        end
+      end
+
+      # The variables Bundler sets up for its children (Bundler::EnvironmentPreserver::BUNDLER_KEYS).
+      BUNDLER_ENV_KEYS = %w[BUNDLE_BIN_PATH BUNDLE_GEMFILE BUNDLE_LOCKFILE BUNDLER_VERSION BUNDLER_SETUP GEM_HOME
+                            GEM_PATH MANPATH PATH RB_USER_INSTALL RUBYLIB RUBYOPT].freeze
+
+      ##
+      # Runs the block with the environment for a command run on the project: the project's Gemfile
+      # and lockfile, and none of the Bundler setup (RUBYOPT=-rbundler/setup, BUNDLE_GEMFILE...) that a
+      # caller's `bundle exec` or binstub exported. Other variables are passed on as they are. With
+      # +setup+, the command loads the project's bundle first, as `bundle exec` would in the project.
+      #
+      # @param [Boolean] setup
+      #   Whether the command requires bundler/setup.
+      #
+      def with_project_bundle_env(setup: false)
+        saved = ENV.to_h
+        if defined?(Bundler) && Bundler.respond_to?(:original_env)
+          original = Bundler.original_env
+          BUNDLER_ENV_KEYS.each { |key| original.key?(key) ? ENV[key] = original[key] : ENV.delete(key) }
+          ENV.keys.grep(/\ABUNDLER_ORIG_/).each { |key| ENV.delete(key) }
+        end
+        ENV['BUNDLE_GEMFILE'] = destination_root('Gemfile')
+        ENV['BUNDLE_LOCKFILE'] = destination_root('Gemfile.lock')
+        ENV['RUBYOPT'] = ['-rbundler/setup', ENV['RUBYOPT']].compact.join(' ') if setup
+        yield
+      ensure
+        ENV.replace(saved) if saved
       end
 
       ##
-      # Raise SystemExit if the app does not exist.
+      # Exits with status 1 if the app does not exist.
       #
       # @param [String] app
       #   Directory name of application.
@@ -468,7 +533,7 @@ module Padrino
         say "Unable to locate '#{app.underscore.camelize}' application        "
         say '================================================================='
         say
-        raise SystemExit
+        exit 1
       end
 
       ##
@@ -608,6 +673,13 @@ module Padrino
         #
         def require_arguments?
           @require_arguments
+        end
+
+        ##
+        # Tells Thor to exit with status 1 when it rejects the arguments, e.g. a missing required argument.
+        #
+        def exit_on_failure?
+          true
         end
 
         ##

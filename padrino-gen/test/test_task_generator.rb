@@ -12,7 +12,7 @@ describe 'TaskGenerator' do
 
   describe 'the task generator' do
     it 'should fail outside app root' do
-      out, = capture_io { generate(:task, 'foo', "-r=#{@apptmp}") }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:task, 'foo', "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)
       assert_no_file_exists('/tmp/tasks/foo.rake')
     end
@@ -57,7 +57,10 @@ describe 'TaskGenerator' do
 
     it 'should preserve spaces' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      Padrino.bin_gen('task', 'DemoTask', '--namespace=Sample', '--description=This is a sample', "-r=#{@apptmp}/sample_project", out: File::NULL)
+      out, = capture_subprocess_io do
+        Padrino.bin_gen('task', 'DemoTask', '--namespace=Sample', '--description=This is a sample', "-r=#{@apptmp}/sample_project", out: File::NULL)
+      end
+      assert_empty out
       file_path = "#{@apptmp}/sample_project/tasks/sample_demo_task.rake"
       assert_match_in_file(/desc 'This is a sample'/, file_path)
     end

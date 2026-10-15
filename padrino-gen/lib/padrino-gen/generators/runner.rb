@@ -40,7 +40,7 @@ module Padrino
         params = arguments.split(' ').push("-r=#{destination_root}")
         params.push("--app=#{@_app_name}") if @_app_name
         say "=> Executing: padrino-gen #{type} #{params.join(' ')}", :magenta
-        Padrino.bin_gen(*params.unshift(type))
+        in_project_bundle { Padrino.bin_gen(*params.unshift(type)) }
       end
 
       ##
@@ -53,7 +53,7 @@ module Padrino
       #   rake "custom task1 task2"
       #
       def rake(command)
-        Padrino.bin('rake', command, "-c=#{destination_root}")
+        in_project_bundle { Padrino.bin('rake', command, "-c=#{destination_root}") }
       end
 
       ##
@@ -72,8 +72,8 @@ module Padrino
       #
       def app(name)
         say "=> Executing: padrino-gen app #{name} -r=#{destination_root}", :magenta
-        Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}")
-        return unless block_given?
+        created = in_project_bundle { Padrino.bin_gen(:app, name.to_s, "-r=#{destination_root}") }
+        return created unless block_given?
 
         @_app_name = name
         yield
@@ -105,6 +105,19 @@ module Padrino
       private
 
       ##
+      # Runs a step that loads the project (rake, or a generator, which loads config/boot.rb) under the
+      # project's bundle, as `bundle exec` in the project would. It would otherwise inherit the bundle this
+      # process runs under, such as a checkout's for `bundle exec padrino-gen project -p ...`. Until the
+      # project is bundled (no Gemfile.lock), the step keeps this process's bundle, which is the one that
+      # can load padrino-gen from a checkout.
+      #
+      def in_project_bundle(&block)
+        return yield unless defined?(Bundler) && File.exist?(destination_root('Gemfile.lock'))
+
+        with_project_bundle_env(setup: true, &block)
+      end
+
+      ##
       # Resolves the path to the plugin template
       # given the project_name and the template_file.
       #
@@ -122,14 +135,15 @@ module Padrino
       def execute_runner(kind, template_file)
         # Determine resolved template path
         template_file = template_file.to_s
+        page = template_file.sub(/[?#].*\z/m, '').chomp('/')
         template_path =
-          if template_file =~ %r{^https?://} && template_file !~ /gist/
+          if page =~ %r{\Ahttps?://gist\.github\.com/} && page !~ %r{/raw(/|\z)}
+            # gist page: GitHub redirects <user>/<id>/raw to the gist's raw file
+            "#{gist_page_with_user(page)}/raw"
+          elsif template_file =~ %r{\Ahttps?://}
             template_file
-          elsif template_file =~ /gist/ && template_file !~ /raw/
-            raw_link, = *URI.open(template_file) { |io| io.read.scan(/<a\s+href\s?="(.*?)">raw/) }
-            raw_link ? "https://gist.github.com#{raw_link[0]}" : template_file
           elsif File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
-            "https://raw.github.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
+            "https://raw.githubusercontent.com/padrino/padrino-recipes/master/#{kind.to_s.pluralize}/#{template_file}_#{kind}.rb"
           else # local file on system
             File.expand_path(template_file)
           end
@@ -138,7 +152,18 @@ module Padrino
           self.apply(template_path)
         rescue StandardError => e
           say("The template at #{template_path} could not be loaded: #{e.message}", :red)
+          exit 1
         end
+      end
+
+      ##
+      # A gist page URL without the user (gist.github.com/<id>) redirects to the user's page.
+      # Follow it, so /raw is asked for on the path GitHub serves the raw file from.
+      def gist_page_with_user(page)
+        return page unless page =~ %r{\Ahttps?://gist\.github\.com/[^/]+\z}
+        URI.parse(page).open(&:base_uri).to_s.sub(/[?#].*\z/m, '').chomp('/')
+      rescue StandardError
+        page
       end
     end
   end

@@ -35,7 +35,13 @@ module Padrino
         if defined? Pry
           Pry.start
         else
-          require 'irb'
+          begin
+            require 'irb'
+          rescue LoadError => e
+            raise unless e.path == 'irb'
+
+            abort "<= padrino console needs irb. Since Ruby 4.0 it is a bundled gem: add gem 'irb' to your Gemfile and run bundle install."
+          end
           begin
             require 'irb/completion'
           rescue LoadError
@@ -55,7 +61,7 @@ module Padrino
         require 'padrino-gen/command'
         ARGV.shift
         ARGV << 'help' if ARGV.empty?
-        Padrino.bin_gen(*ARGV)
+        exit 1 unless Padrino.bin_gen(*ARGV)
       rescue StandardError
         puts '<= You need padrino-gen! Run: gem install padrino-gen'
       end
@@ -76,6 +82,7 @@ module Padrino
         abort 'Please specify code or file' if code_or_file.nil?
 
         require File.expand_path('config/boot.rb')
+        Padrino.mounted_apps.each(&:setup_application!)
 
         if File.exist?(code_or_file)
           eval(File.read(code_or_file), nil, code_or_file)

@@ -109,7 +109,7 @@ CONNECTION_POOL_MIDDLEWARE = <<~MIDDLEWARE
 MIDDLEWARE
 
 def setup_orm
-  ar = MR
+  ar = MR.dup
   db = @project_name.underscore
 
   begin
@@ -135,11 +135,11 @@ def setup_orm
       ar.gsub!(/!DB_TEST!/, SQLITE.gsub(/!DB_NAME!/, "Padrino.root('db', '#{db}_test.db')"))
       require_dependencies 'sqlite3'
     else
-      say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
+      say "Failed to generate `config/database.rb` for ORM adapter `#{adapter}`", :red
       raise ArgumentError
     end
   rescue ArgumentError
-    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask_valid_option(:adapter, %w[mysql mysql2 mysql-gem postgres sqlite], 'Please, choose a proper adapter:')
     retry
   end
 

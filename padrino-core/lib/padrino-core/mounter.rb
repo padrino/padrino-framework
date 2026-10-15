@@ -87,17 +87,13 @@ module Padrino
     end
 
     ##
-    # Maps Padrino application onto a Padrino::Router.
-    # For use in constructing a Rack application.
-    #
-    # @param [Padrino::Router]
-    #
-    # @return [Padrino::Router]
+    # Applies the mount settings (uri_root, root, public folder, cascade) to the
+    # application and sets it up, so its routes, controllers and mailers are loaded.
     #
     # @example
-    #   @app.map_onto(router)
+    #   @app.setup_application!
     #
-    def map_onto(router)
+    def setup_application!
       app_data = self
       app_obj = @app_obj
 
@@ -117,7 +113,22 @@ module Padrino
         app_obj.public_folder = Padrino.root('public', uri_root) unless public_folder_exists
       end
       app_obj.setup_application! # Initializes the app here with above settings.
-      router.map(to: app_obj, path: uri_root, host: app_data.app_host)
+    end
+
+    ##
+    # Maps Padrino application onto a Padrino::Router.
+    # For use in constructing a Rack application.
+    #
+    # @param [Padrino::Router]
+    #
+    # @return [Padrino::Router]
+    #
+    # @example
+    #   @app.map_onto(router)
+    #
+    def map_onto(router)
+      setup_application!
+      router.map(to: app_obj, path: uri_root, host: app_host)
     end
 
     ###

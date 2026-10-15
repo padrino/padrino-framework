@@ -8,7 +8,7 @@ SEQUEL = <<~SEQUEL unless defined?(SEQUEL)
 SEQUEL
 
 def setup_orm
-  sequel = SEQUEL
+  sequel = SEQUEL.dup
   db = @project_name.underscore
   require_dependencies 'sequel'
 
@@ -35,11 +35,11 @@ def setup_orm
       sequel.gsub!(/!DB_TEST!/,       "\"sqlite://db/#{db}_test.db\"")
       require_dependencies 'sqlite3'
     else
-      say "Failed to generate `config/database.rb` for ORM adapter `#{options[:adapter]}`", :red
+      say "Failed to generate `config/database.rb` for ORM adapter `#{adapter}`", :red
       raise ArgumentError
     end
   rescue ArgumentError
-    adapter = ask('Please, choose a proper adapter:', limited_to: %w[mysql mysql2 mysql-gem postgres sqlite])
+    adapter = ask_valid_option(:adapter, %w[mysql mysql2 mysql-gem postgres sqlite], 'Please, choose a proper adapter:')
     retry
   end
 

@@ -44,6 +44,25 @@ describe 'SimpleReloader' do
       assert_equal 200, status
       assert_match(%r{image/png}, response['Content-Type'])
     end
+
+    it 'should only serve its own images from the development sinatra route' do
+      Dir.mktmpdir do |dir|
+        File.binwrite("#{dir}/outside.png", 'not a padrino image')
+        images = File.expand_path('../lib/padrino-core/images', __dir__)
+        relative = Pathname.new("#{dir}/outside").relative_path_from(Pathname.new(images)).to_s
+        mock_app do
+          set :environment, :development
+          get('/') { 'ok' }
+        end
+        get "/__sinatra__/#{relative.gsub('/', '%2F')}.png"
+        refute_equal 'not a padrino image', body
+        assert_equal 404, status
+        get '/__sinatra__/0404.png'
+        assert_equal 404, status
+        get '/__sinatra__/500.png'
+        assert_equal 200, status
+      end
+    end
   end
 
   describe 'for simple reload functionality' do
@@ -134,6 +153,19 @@ describe 'SimpleReloader' do
         refute Padrino::Reloader.send(:constant_excluded?, ExcludedPrefixed)
         Padrino::Reloader.exclude_constants.delete(excluded)
       end
+    end
+  end
+
+  describe 'for removing constants' do
+    it 'should remove a namespaced constant without String inflections' do
+      module ::ReloaderNamespace
+        class Inner; end
+      end
+
+      without_string_inflections { Padrino::Reloader.remove_constant(ReloaderNamespace::Inner) }
+      refute ReloaderNamespace.const_defined?(:Inner, false)
+    ensure
+      Object.send(:remove_const, :ReloaderNamespace)
     end
   end
 end

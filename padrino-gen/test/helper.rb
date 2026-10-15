@@ -22,7 +22,7 @@ class Minitest::Spec
 
   def stub_static_files
     # register fake URL to avoid downloading static files every time tests run
-    fake_uri_base = 'https://raw.github.com/padrino/padrino-static/master/'
+    fake_uri_base = 'https://raw.githubusercontent.com/padrino/padrino-static/master/'
     %w[
       js/dojo.js
       js/jquery.js
@@ -63,6 +63,7 @@ class Minitest::Spec
     end
 
     "Padrino::Generators::#{name.to_s.camelize}".constantize.start(params)
+  ensure
     ($LOADED_FEATURES - features).each { |x| $LOADED_FEATURES.delete(x) }
     (Object.constants - constants).each { |constant| Object.instance_eval { remove_const(constant) } }
   end

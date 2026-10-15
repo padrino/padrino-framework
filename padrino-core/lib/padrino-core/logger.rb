@@ -30,6 +30,10 @@ module Padrino
   #
   # @example using ruby default logger
   #   require 'logger'
+  #   Padrino.logger = ::Logger.new(STDOUT)
+  #
+  # @example using ruby default logger with Padrino formatting and #colorize!
+  #   require 'logger'
   #   new_logger = ::Logger.new(STDOUT)
   #   new_logger.extend(Padrino::Logger::Extensions)
   #   Padrino.logger = new_logger
@@ -85,8 +89,8 @@ module Padrino
           if args.size > 1
             bench(args[0], args[1], args[2], name)
           else
-            location = resolve_source_location(caller(1).shift)
-            args.unshift(location) if location && enable_source_location?
+            location = resolve_source_location(caller(1).shift) if enable_source_location?
+            args.unshift(location) if location
             push(args * '', name)
           end
         end
@@ -94,7 +98,7 @@ module Padrino
         define_method(:"#{name}?") { number >= level }
       end
 
-      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in `.+?')?$/
+      SOURCE_LOCATION_REGEXP = /^(.*?):(\d+?)(?::in [`'].+?')?$/
 
       ##
       # Returns true if :source_location is set to true.
@@ -111,7 +115,11 @@ module Padrino
         return unless path && line
 
         root = Padrino.root
-        path = File.realpath(path) if Pathname.new(path).relative?
+        if Pathname.new(path).relative?
+          return unless File.exist?(path) # code from irb, eval or ruby -e has no file
+
+          path = File.realpath(path)
+        end
         return unless path.start_with?(root) && !path.start_with?(Padrino.root('vendor'))
 
         "[#{path.gsub("#{root}/", '')}:#{line}] "
@@ -240,6 +248,33 @@ module Padrino
       end
     end
 
+    ##
+    # Plain versions of the Padrino-specific methods of {Extensions}. A logger assigned
+    # without {Extensions} gets the ones it lacks, so Padrino can log to it while its
+    # standard logging methods stay untouched.
+    #
+    module Fallbacks
+      def devel(*); end
+
+      def devel?
+        false
+      end
+
+      def bench(action, began_at, message, level = :debug, _color = :yellow)
+        return unless Levels.key?(level)
+
+        public_send level, "#{action.to_s.upcase} (#{Kernel.format('%0.4fs', Time.now - began_at)}) #{message}"
+      end
+
+      def exception(boom, verbosity = :long, level = :error)
+        Extensions.instance_method(:exception).bind(self).call(boom, verbosity, level)
+      end
+
+      def colorize(string, *_colors)
+        string
+      end
+    end
+
     module Colorize
       # Colors for levels
       unless defined?(ColoredLevels)
@@ -332,14 +367,23 @@ module Padrino
     end
 
     def self.logger=(logger)
-      unless logger.class.ancestors.include?(Padrino::Logger::Extensions)
-        warn <<~MESSAGE
-          WARNING! `Padrino.logger = new_logger` no longer extends it with #colorize! and other features.
-                    To do it with a custom logger you have to manually `new_logger.extend(Padrino::Logger::Extensions)`
-                    before passing to `Padrino.logger = new_logger`.
-        MESSAGE
-      end
+      add_fallbacks(logger) unless logger.is_a?(Padrino::Logger::Extensions)
       @_logger = logger
+    end
+
+    ##
+    # Defines the {Fallbacks} methods a logger does not have yet.
+    #
+    def self.add_fallbacks(logger)
+      return if logger.nil?
+
+      missing = Fallbacks.instance_methods.reject { |name| logger.respond_to?(name) }
+      return if missing.empty?
+      return warn("WARNING! Padrino.logger is frozen and lacks #{missing.join(', ')}, logging from Padrino will fail.") if logger.frozen?
+
+      fallbacks = ::Module.new
+      missing.each { |name| fallbacks.send(:define_method, name, Fallbacks.instance_method(name)) }
+      logger.extend(fallbacks)
     end
 
     ##
@@ -444,9 +488,9 @@ module Padrino
       self.class.mutex.synchronize do
         @buffer.each do |line|
           if @sanitize_encoding
-            line.encode!(@sanitize_encoding, invalid: :replace, undef: :replace)
-          else
-            line.encode!(@log.external_encoding || Encoding::UTF_8, invalid: :replace, undef: :replace) unless line.encoding == Encoding::UTF_8
+            line = line.encode(@sanitize_encoding, invalid: :replace, undef: :replace)
+          elsif line.encoding != Encoding::UTF_8
+            line = line.encode(@log.external_encoding || Encoding::UTF_8, invalid: :replace, undef: :replace)
           end
           @log.write(line)
         end
@@ -479,7 +523,7 @@ module Padrino
     #   The message
     #
     def <<(message = nil)
-      message << "\n" unless message[-1] == "\n"
+      message += "\n" unless message[-1] == "\n"
       self.class.mutex.synchronize { @buffer << message }
       flush if @auto_flush
       message
@@ -487,7 +531,8 @@ module Padrino
     alias write <<
 
     def format(message, level)
-      Kernel.format(@format_message, stylized_level(level), colorize(Time.now.strftime(@format_datetime), :yellow), message.to_s.strip)
+      datetime = @format_datetime.empty? ? '' : Time.now.strftime(@format_datetime)
+      Kernel.format(@format_message, stylized_level(level), colorize(datetime, :yellow), message.to_s.strip)
     end
 
     ##

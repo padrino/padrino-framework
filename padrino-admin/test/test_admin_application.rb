@@ -180,6 +180,83 @@ describe 'AdminApplication' do
     refute @app.access_control.allowed?(nil, '/accountsXjson')
   end
 
+  it 'should not allow paths that merely start with an allowed path' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/sessions'
+      end
+
+      access_control.roles_for :editor do |role|
+        role.project_module :posts, '/posts'
+      end
+
+      access_control.roles_for :admin do |role|
+        role.project_module :post_admin, '/posts_admin'
+      end
+    end
+
+    assert @app.access_control.allowed?(nil, '/sessions')
+    assert @app.access_control.allowed?(nil, '/sessions/new')
+    assert @app.access_control.allowed?(nil, '/sessions.json')
+    refute @app.access_control.allowed?(nil, '/sessions_admin')
+    refute @app.access_control.allowed?(nil, '/sessionsX')
+
+    # An editor's '/posts' must not reach the admin-only '/posts_admin' module.
+    assert @app.access_control.allowed?(Account.editor, '/posts')
+    assert @app.access_control.allowed?(Account.editor, '/posts/1/edit')
+    refute @app.access_control.allowed?(Account.editor, '/posts_admin')
+    assert @app.access_control.allowed?(Account.admin, '/posts_admin')
+
+    # Paths are compared after percent-decoding.
+    refute @app.access_control.allowed?(Account.editor, '/%70osts_admin')
+    assert @app.access_control.allowed?(Account.editor, '/%70osts')
+  end
+
+  it 'should allow decoded non-ASCII paths and prefixes ending in a dot' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/café'
+        role.allow '/v1.'
+      end
+    end
+
+    assert @app.access_control.allowed?(nil, '/caf%C3%A9'.b)
+    assert @app.access_control.allowed?(nil, '/café')
+    assert @app.access_control.allowed?(nil, '/v1.json')
+    refute @app.access_control.allowed?(nil, '/v2.json')
+  end
+
+  it 'should match Regexp paths at the start of the path' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect %r{\A/secret}
+        role.allow %r{\A/reports/\d+\z}
+      end
+
+      access_control.roles_for :admin do |role|
+        role.allow %r{\A/stats}
+        role.project_module :posts, '/posts'
+      end
+    end
+
+    assert @app.access_control.allowed?(nil, '/reports/1')
+    refute @app.access_control.allowed?(nil, '/secret/x')
+    assert @app.access_control.allowed?(Account.admin, '/stats/today')
+    assert @app.access_control.allowed?(Account.admin, '/posts')
+    refute @app.access_control.allowed?(Account.editor, '/stats')
+  end
+
   it 'should emulate an ecommerce app' do
     mock_app do
       register Padrino::Admin::AccessControl
@@ -298,5 +375,12 @@ describe 'AdminApplication' do
     end
     assert_equal '/foo', app1.access_control.project_modules(:any).first.path
     assert_equal '/bar', app2.access_control.project_modules(:any).first.path
+  end
+
+  it 'should raise AccessControlError for invalid roles' do
+    access_control = Padrino::Admin::AccessControl::Base.new
+    error = assert_raises(Padrino::Admin::AccessControlError) { access_control.roles_for('admin') }
+    assert_match(/"admin"/, error.message)
+    assert_raises(Padrino::Admin::AccessControlError) { access_control.roles_for }
   end
 end
