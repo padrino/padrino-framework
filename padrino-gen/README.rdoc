@@ -56,9 +56,9 @@ To learn more about the project generator, check out the guide to
 
 Padrino provides support for plugins to be executed within your application. For example:
 
-  $ padrino-gen plugin hoptoad
+  $ padrino-gen plugin bulma
 
-would install the hoptoad middleware into your application automatically.
+would download the Bulma stylesheet into your application's public/stylesheets.
 
 To learn more about the plugin system, check out the guide to
 {Padrino Generators}[http://padrinorb.com/guides/generators/plugins/].
