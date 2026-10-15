@@ -122,10 +122,11 @@ module Padrino
       def execute_runner(kind, template_file)
         # Determine resolved template path
         template_file = template_file.to_s
+        page = template_file.sub(/[?#].*\z/m, '').chomp('/')
         template_path =
-          if template_file =~ %r{\Ahttps?://gist\.github\.com/} && template_file !~ %r{/raw(/|\z)}
-            # gist page: GitHub redirects /raw to the gist's raw file
-            "#{template_file.sub(/[?#].*\z/m, '').chomp('/')}/raw"
+          if page =~ %r{\Ahttps?://gist\.github\.com/} && page !~ %r{/raw(/|\z)}
+            # gist page: GitHub redirects <user>/<id>/raw to the gist's raw file
+            "#{gist_page_with_user(page)}/raw"
           elsif template_file =~ %r{\Ahttps?://}
             template_file
           elsif File.extname(template_file).empty? # referencing official plugin (i.e hoptoad)
@@ -140,6 +141,16 @@ module Padrino
           say("The template at #{template_path} could not be loaded: #{e.message}", :red)
           exit 1
         end
+      end
+
+      ##
+      # A gist page URL without the user (gist.github.com/<id>) redirects to the user's page.
+      # Follow it, so /raw is asked for on the path GitHub serves the raw file from.
+      def gist_page_with_user(page)
+        return page unless page =~ %r{\Ahttps?://gist\.github\.com/[^/]+\z}
+        URI.parse(page).open(&:base_uri).to_s.sub(/[?#].*\z/m, '').chomp('/')
+      rescue StandardError
+        page
       end
     end
   end

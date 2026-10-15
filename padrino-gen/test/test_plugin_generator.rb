@@ -101,11 +101,27 @@ describe 'PluginGenerator' do
       capture_io { project_gen.invoke_all }
     end
 
-    it 'should resolve a gist page url to its raw file without scraping the page' do
-      # The gist page as GitHub serves it today: its raw button doesn't match the old scraping regex.
+    def stub_gist_page_without_user
+      # GitHub redirects a gist page without the user to the user's page. Its raw button doesn't match
+      # the old scraping regex.
       stub_request(:get, 'https://gist.github.com/357045')
+        .to_return(status: 302, headers: { 'Location' => 'https://gist.github.com/achiurizo/357045' })
+      stub_request(:get, 'https://gist.github.com/achiurizo/357045')
         .to_return(body: '<a href="/achiurizo/357045/raw/8f73/blog_template.rb" class="Button">Raw</a>')
+    end
+
+    it 'should resolve a gist page url without the user to the raw file on the user\'s path' do
+      stub_gist_page_without_user
+      expect_template_applied('https://gist.github.com/357045', 'https://gist.github.com/achiurizo/357045/raw')
+    end
+
+    it 'should fall back to the gist page url when the user lookup fails' do
+      stub_request(:get, 'https://gist.github.com/357045').to_return(status: 404)
       expect_template_applied('https://gist.github.com/357045', 'https://gist.github.com/357045/raw')
+    end
+
+    it 'should not take a /raw in the query of a gist page url for a raw url' do
+      expect_template_applied('https://gist.github.com/achiurizo/357045?x=/raw', 'https://gist.github.com/achiurizo/357045/raw')
     end
 
     it 'should resolve a gist page url that names the user' do
@@ -172,7 +188,8 @@ describe 'PluginGenerator' do
     it 'should resolve a gist page url given to the plugin generator' do
       plugin_gen = Padrino::Generators::Plugin.new(['https://gist.github.com/357045'], ["-r=#{@apptmp}/sample_project"], {})
       plugin_gen.expects(:in_app_root?).returns(true).once
-      plugin_gen.expects(:apply).with('https://gist.github.com/357045/raw').returns(true).once
+      stub_gist_page_without_user
+      plugin_gen.expects(:apply).with('https://gist.github.com/achiurizo/357045/raw').returns(true).once
       capture_io { plugin_gen.invoke_all }
     end
 
