@@ -80,10 +80,31 @@ describe 'ProjectGenerator' do
     it 'should run bundle install then bundle binstubs --all with --bundle' do
       generator = Padrino::Generators::Project.any_instance
       generator.stubs(:run)
-      env = { env: { 'BUNDLE_GEMFILE' => "#{@apptmp}/sample_project/Gemfile", 'BUNDLE_LOCKFILE' => "#{@apptmp}/sample_project/Gemfile.lock" } }
-      generator.expects(:run).with('bundle install', env).once
-      generator.expects(:run).with('bundle binstubs --all', env).once
+      generator.expects(:run).with { |command, *| command == 'bundle install' }.once
+      generator.expects(:run).with { |command, *| command == 'bundle binstubs --all' }.once
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--bundle') }
+    end
+
+    it "should bundle with the project's Gemfile and without the caller's Bundler setup" do
+      saved = ENV.to_h
+      # ENV when Bundler loaded, and what the caller's `bundle exec` or binstub exported to its children
+      Bundler.stubs(:original_env).returns('PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'BUNDLE_PATH' => 'vendor/bundle')
+      ENV.update('BUNDLE_GEMFILE' => '/caller/Gemfile', 'BUNDLE_LOCKFILE' => '/caller/Gemfile.lock', 'RUBYOPT' => '-rbundler/setup -W0',
+                 'BUNDLER_SETUP' => '/caller/bundler/setup', 'BUNDLE_PATH' => 'vendor/bundle')
+      seen = {}
+      Padrino::Generators::Project.any_instance.stubs(:run).with do |command, config = {}|
+        seen[command] = ENV.to_h.merge(config[:env] || {})
+        true
+      end
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--bundle') }
+      assert_equal ['bundle install', 'bundle binstubs --all'], seen.keys
+      expected = { 'PATH' => ENV['PATH'], 'RUBYOPT' => '-W0', 'BUNDLE_PATH' => 'vendor/bundle',
+                   'BUNDLE_GEMFILE' => "#{@apptmp}/sample_project/Gemfile", 'BUNDLE_LOCKFILE' => "#{@apptmp}/sample_project/Gemfile.lock" }
+      seen.each_value { |env| assert_equal expected, env.slice(*expected.keys, 'BUNDLER_SETUP') }
+      assert_equal '/caller/Gemfile', ENV['BUNDLE_GEMFILE']
+      assert_equal '-rbundler/setup -W0', ENV['RUBYOPT']
+    ensure
+      ENV.replace(saved)
     end
 
     it 'should tell the user to run bundle binstubs --all without --bundle' do

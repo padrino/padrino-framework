@@ -3,6 +3,8 @@
 == Unreleased
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
+- FIX #2381 The `rake`, `generate` and `app` steps of a project template or plugin run under the project's own bundle once the project is bundled, instead of inheriting the bundle of the caller's `bundle exec` or binstub, so a template run from a checkout can migrate and seed (`rake 'sq:migrate'` failed with an uninitialized constant) and its generators load the project (@nesquena)
+- FIX #2381 `run_bundler` in a plugin or project template bundles the project without the Bundler setup of the caller's `bundle exec` or binstub, so a plugin run with `bundle exec padrino g plugin` (or `padrino-gen plugin -r` from a checkout) installs the gems it adds instead of failing with Bundler::GemNotFound (@nesquena)
 - FIX #2380 Admins generated with `padrino g admin` use jQuery 3.7.1. With it, Bootstrap 3.1's collapse, tab, modal and alert data attributes in custom admin pages need a `data-target` instead of a bare `href="#"` (@nesquena)
 - FIX #2378 Project templates and plugins load from gists again: a gist page URL applies the gist's raw file instead of scraping the page, and a raw gist URL is downloaded instead of being looked up as a local file (@nesquena)
 - FIX #2377 Script components and official plugins and templates fetched by name download from raw.githubusercontent.com instead of the old raw.github.com redirect (@nesquena)
