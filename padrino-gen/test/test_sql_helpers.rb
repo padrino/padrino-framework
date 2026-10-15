@@ -107,6 +107,21 @@ describe 'SqlHelpers' do
         refute(call[:args].any? { |arg| arg.start_with?('--port') })
       end
 
+      it 'uses the local socket for localhost without a port' do
+        create('mysql', host: 'localhost')
+        assert_equal ['--user=admin', '-e'], call[:args].first(2)
+      end
+
+      it 'connects to the host when localhost has a port, since the socket would ignore it' do
+        create('mysql', host: '127.0.0.1', port: 3307)
+        assert_equal ['--user=admin', '--host=127.0.0.1', '--port=3307', '-e'], call[:args].first(4)
+      end
+
+      it 'uses TCP when only a port is configured' do
+        create('mysql', port: 3307)
+        assert_equal ['--user=admin', '--protocol=TCP', '--port=3307', '-e'], call[:args].first(4)
+      end
+
       it 'does not set MYSQL_PWD when password is nil' do
         create('mysql')
         assert_equal 'unset', call[:env]['MYSQL_PWD']
@@ -152,7 +167,7 @@ describe 'SqlHelpers' do
       it 'runs dropdb with the host, port, user and database' do
         drop('postgres', host: 'db.example', port: 5433)
         assert_equal ['dropdb'], call[:client]
-        assert_equal ['--host=db.example', '--port=5433', '--username=admin', 'app_db'], call[:args]
+        assert_equal ['--if-exists', '--host=db.example', '--port=5433', '--username=admin', 'app_db'], call[:args]
       end
 
       it 'does not set PGPASSWORD when password is nil' do

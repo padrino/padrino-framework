@@ -45,6 +45,14 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       collation = config[:collation] || ENV['COLLATION'] || 'utf8_unicode_ci'
 
       puts "=> Creating database '#{database}'"
+      begin
+        # The boot connects, so a database it can reach exists already; like Rails, that isn't an error.
+        Sequel::Model.db.test_connection
+        puts "<= Database '#{database}' already exists"
+        next
+      rescue Sequel::DatabaseConnectionError
+        nil
+      end
       require 'padrino-gen/padrino-tasks/sql-helpers'
       Padrino::Generators::SqlHelpers.create_db(config[:adapter], user, password, host, database, charset, collation, port: config[:port])
       puts '<= sq:create executed'

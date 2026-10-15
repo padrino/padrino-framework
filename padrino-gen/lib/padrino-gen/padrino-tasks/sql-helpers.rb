@@ -23,8 +23,7 @@ module Padrino
 
           arguments = []
           arguments << "--user=#{user}" if user
-          arguments << "--host=#{host}" unless %w[127.0.0.1 localhost].include?(host)
-          arguments << "--port=#{port}" if port
+          arguments.concat(mysql_host_arguments(host, port))
 
           arguments << '-e'
           arguments << "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}"
@@ -45,7 +44,7 @@ module Padrino
           environment = {}
           environment['PGPASSWORD'] = password unless password.nil? || password.empty?
 
-          arguments = []
+          arguments = ['--if-exists']
           arguments << "--host=#{host}" if host
           arguments << "--port=#{port}" if port
           arguments << "--username=#{user}" if user
@@ -58,8 +57,7 @@ module Padrino
 
           arguments = []
           arguments << "--user=#{user}" if user
-          arguments << "--host=#{host}" unless %w[127.0.0.1 localhost].include?(host)
-          arguments << "--port=#{port}" if port
+          arguments.concat(mysql_host_arguments(host, port))
 
           arguments << '-e'
           arguments << "DROP DATABASE IF EXISTS #{database}"
@@ -72,10 +70,24 @@ module Padrino
         end
       end
 
+      # The mysql client talks to the local socket for localhost and ignores --port there,
+      # so a configured port also needs the host (or TCP) to reach that server.
+      def self.mysql_host_arguments(host, port)
+        arguments = []
+        arguments << "--host=#{host}" if host && (port || !%w[127.0.0.1 localhost].include?(host))
+        arguments << '--protocol=TCP' if port && host.nil?
+        arguments << "--port=#{port}" if port
+        arguments
+      end
+      private_class_method :mysql_host_arguments
+
       # Runs a database client without a shell and raises if it fails.
       def self.run_client(environment, command, arguments, action)
         _, status = Process.wait2(Process.spawn(environment, command, *arguments))
-        raise "Failed #{action}: #{command} exited with status #{status.exitstatus}" unless status.success?
+        return if status.success?
+
+        reason = status.exitstatus ? "exited with status #{status.exitstatus}" : "was stopped (#{status.inspect})"
+        raise "Failed #{action}: #{command} #{reason}"
       end
       private_class_method :run_client
     end
