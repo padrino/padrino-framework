@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #XXXX `rake sq:create` (`db:create`) with Sequel and SQLite no longer fails with "already exists" for the database file that connecting at boot creates, `sq:create` and `sq:drop` pass a configured port to `createdb`, `dropdb` and `mysql` and accept the `postgresql://` scheme, and they stop with an error naming the client's exit status when the client fails, instead of reporting success (@nesquena)
+- FIX #2398 `rake sq:create` (`db:create`) with Sequel and SQLite no longer fails with "already exists" for the database file that connecting at boot creates, `sq:create` and `sq:drop` pass a configured port to `createdb`, `dropdb` and `mysql` and accept the `postgresql://` scheme, and they stop with an error naming the client's exit status when the client fails, instead of reporting success (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
