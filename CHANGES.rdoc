@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #XXXX Sending an email no longer gives every class in the process `erb`, `haml` and `slim` methods returning Padrino's engine settings, which made plain Sinatra apps in the same process escape their template output (@nesquena)
+- FIX #2393 Sending an email no longer gives every class in the process `erb`, `haml` and `slim` methods returning Padrino's engine settings, which made plain Sinatra apps in the same process escape their template output (@nesquena)
 
 == 0.17.0 (2026-10-15)
 
