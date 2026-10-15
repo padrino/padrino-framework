@@ -62,7 +62,11 @@ module Padrino
         unless File.exist?(path)
           # An existing project's .components can name a component that has since been removed.
           available = Dir["#{__dir__}/components/#{component.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb') }.sort
-          say "The #{choice} #{component} component is no longer available in Padrino (available: #{available.join(', ')})."
+          if choice.to_s.empty?
+            say "The project's .components sets no #{component} component (available: #{available.join(', ')})."
+          else
+            say "The #{choice} #{component} component is no longer available in Padrino (available: #{available.join(', ')})."
+          end
           exit 1
         end
         say_status :apply, "#{component.to_s.pluralize}/#{choice}"
