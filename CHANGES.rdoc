@@ -1,5 +1,9 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #XXXX Projects generated with `-e liquid` use a current liquid (4.0.4 or later) instead of liquid 2.1.2 and liquify, so liquid views render instead of failing with an ArgumentError from Tilt (@nesquena)
+
 == 0.17.0 (2026-10-15)
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
