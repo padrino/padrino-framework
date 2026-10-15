@@ -286,6 +286,26 @@ describe 'Mounter' do
         end
       end
 
+      it 'should fall back to the project public folder for files missing from the uri root folder' do
+        class ::StaticPartialApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css', 'myapp/.keep') do
+          Padrino.mount('static_partial_app').to('/myapp')
+          res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+          assert res.ok?
+          assert_equal 'stylesheets/site.css', res.body
+        end
+      end
+
+      it 'should not fall back from a custom public folder' do
+        class ::StaticCustomApp < Padrino::Application; end
+        with_public_files('stylesheets/site.css', 'custom/.keep') do
+          StaticCustomApp.set :public_folder, Padrino.root('public', 'custom')
+          Padrino.mount('static_custom_app').to('/myapp')
+          res = Rack::MockRequest.new(Padrino.application).get('/myapp/stylesheets/site.css')
+          assert_equal 404, res.status
+        end
+      end
+
       it 'should serve assets for an app mounted at the root' do
         class ::StaticRootApp < Padrino::Application; end
         with_public_files('stylesheets/site.css') do

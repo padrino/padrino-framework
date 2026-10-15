@@ -857,11 +857,17 @@ module Padrino
 
       ##
       # This is mostly just a helper so request.path_info isn't changed when
-      # serving files from the public directory.
+      # serving files from the public directory. An app mounted under a sub-path
+      # falls back to the shared public/ for files missing from public/<uri_root>.
       #
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
         public_dir = File.expand_path(public_dir)
+        public_file(public_dir, path_info) ||
+          (public_dir == Padrino.root('public', settings.uri_root) && public_file(Padrino.root('public'), path_info))
+      end
+
+      def public_file(public_dir, path_info)
         path = "#{public_dir}#{unescape(path_info)}"
         return unless Rack::Utils.valid_path?(path)
         path = File.expand_path(path)

@@ -2,8 +2,8 @@
 
 == Unreleased
 
-- FIX #2215 Apps mounted under a sub-path serve static assets from `public/` when `public/<uri_root>` does not exist (@achiurizo)
-- WARN #2215 An app mounted at e.g. `/admin` without `public/admin` now serves the shared `public/` under `/admin`, where those requests used to fall through to the next mounted app
+- FIX #2339 Apps mounted under a sub-path serve a static asset from the shared `public/` when `public/<uri_root>` does not have the file, so the empty `public/<app>` that `padrino g app` creates no longer hides shared assets (#2215) (@achiurizo)
+- WARN #2339 An app mounted at e.g. `/admin` now serves files from the shared `public/` under `/admin` when `public/admin` does not have them, where those requests used to fall through to the next mounted app
 
 == 0.17.0 (2026-10-15)
 
