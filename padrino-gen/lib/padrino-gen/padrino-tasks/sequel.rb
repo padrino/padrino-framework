@@ -67,6 +67,17 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       puts '<= sq:drop executed'
     end
 
+    desc 'Dump the database data to a SQL file (FILE=path, default tmp/<env>_dump.sql)'
+    task dump: :skeleton do
+      require 'padrino-gen/padrino-tasks/sql-helpers'
+      config = ::Sequel::Model.db.opts
+      file = ENV['FILE'] || Padrino.root('tmp', "#{Padrino.env}_dump.sql")
+
+      puts "=> Dumping database '#{config[:database]}' to #{file}"
+      Padrino::Generators::SqlHelpers.dump_db(config[:adapter], config[:user], config[:password], config[:host], config[:port], config[:socket], config[:database], file)
+      puts '<= sq:dump executed'
+    end
+
     desc 'Drop the database, migrate from scratch and initialize with the seed data'
     task reset: %w[drop create migrate seed]
 
@@ -78,4 +89,5 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
   task 'db:create' => 'sq:create'
   task 'db:migrate' => 'sq:migrate'
   task 'db:reset' => 'sq:reset'
+  task 'db:dump' => 'sq:dump'
 end
