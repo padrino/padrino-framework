@@ -1,5 +1,9 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #XXXX `padrino g model` and `padrino g migration` with Active Record turn a third `polymorphic` segment on a reference (`commentable:references:polymorphic`) into `polymorphic: true` on both `t.references` and `t.remove_references`, instead of silently dropping it (@nesquena)
+
 == 0.17.0 (2026-10-15)
 
 - FIX #2384 `padrino console` on Ruby 4.0, where irb is a bundled gem, says to add `gem 'irb'` to the Gemfile instead of failing with a LoadError (@nesquena)
