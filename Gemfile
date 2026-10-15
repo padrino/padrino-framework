@@ -27,8 +27,11 @@ group :development do
   if ENV['HAML_ENGINE'] == 'hamlit'
     puts '=> Using Hamlit Haml engine'
     gem 'hamlit'
+  elsif ENV['HAML_VERSION']
+    puts "=> Using Haml version ~> #{ENV['HAML_VERSION']}"
+    gem 'haml', "~> #{ENV['HAML_VERSION']}"
   else
-    gem 'haml', '~> 5'
+    gem 'haml', '>= 5'
   end
 
   case ENV['ERB_ENGINE']
@@ -42,7 +45,7 @@ group :development do
   end
 
   gem 'builder',          '>= 2.1.2'
-  gem 'minitest',         '>= 4.0'
+  gem 'minitest',         '>= 4.0', '< 6'
   gem 'mocha',            '>= 2.0'
   gem 'oga',              '>= 2.5', '< 3'
   gem 'rack',             '~> 3'

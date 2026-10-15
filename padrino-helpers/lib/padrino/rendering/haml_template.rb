@@ -1,5 +1,4 @@
 begin
-  using_modern_haml = false
   require 'haml/helpers/xss_mods'
   require 'haml/helpers/action_view_extensions'
 
@@ -12,11 +11,29 @@ begin
     end
   end
 rescue LoadError
-  using_modern_haml = true
+  # Haml 6+ does not have these modules
 end
 
 module Padrino
   module Rendering
+    if defined?(Haml::VERSION) && Gem::Version.new(Haml::VERSION) >= Gem::Version.new('6')
+      class HamlOutputBuffer < Temple::Generators::StringBuffer
+        define_options buffer_class: 'SafeBuffer'
+
+        def call(exp)
+          [preamble, compile(exp), postamble].flatten.compact.join('; '.freeze)
+        end
+
+        def create_buffer
+          "__in_hamlit_template = true; #{buffer} = #{options[:buffer_class]}.new"
+        end
+
+        def concat(str)
+          "#{buffer}.safe_concat((#{str}))"
+        end
+      end
+    end
+
     class HamlTemplate < Tilt::HamlTemplate
       include SafeTemplate
     end
@@ -26,9 +43,10 @@ end
 Tilt.prefer(Padrino::Rendering::HamlTemplate, :haml)
 
 Padrino::Rendering.engine_configurations[:haml] =
-  if using_modern_haml
+  if defined?(Haml::VERSION) && Gem::Version.new(Haml::VERSION) >= Gem::Version.new('6')
     {
-      buffer_class: 'SafeBuffer.new',
+      generator: Padrino::Rendering::HamlOutputBuffer,
+      buffer: '@_out_buf',
       use_html_safe: true,
       disable_capture: true
     }
