@@ -1,9 +1,10 @@
 SEQUEL = <<~SEQUEL unless defined?(SEQUEL)
   Sequel::Model.raise_on_save_failure = false # Do not throw exceptions on failure
+  # test: false connects on first use, so the app boots and rake sq:create runs before the database exists.
   Sequel::Model.db = case Padrino.env
-    when :development then Sequel.connect(!DB_DEVELOPMENT!, loggers: [logger])
-    when :production  then Sequel.connect(!DB_PRODUCTION!,  loggers: [logger])
-    when :test        then Sequel.connect(!DB_TEST!,        loggers: [logger])
+    when :development then Sequel.connect(!DB_DEVELOPMENT!, loggers: [logger], test: false)
+    when :production  then Sequel.connect(!DB_PRODUCTION!,  loggers: [logger], test: false)
+    when :test        then Sequel.connect(!DB_TEST!,        loggers: [logger], test: false)
   end
 SEQUEL
 
