@@ -128,8 +128,9 @@ module Padrino
 
         # An allowed path covers itself, its sub-paths and its formats ('/posts' allows '/posts',
         # '/posts/1' and '/posts.json'), but not unrelated paths that merely start with it ('/posts_admin').
+        # A Regexp matches at the start of the path, as on the deny side.
         def path_within?(path, prefix)
-          return path.start_with?(prefix) if prefix.end_with?('/', '.')
+          return path.start_with?(prefix) if prefix.is_a?(Regexp) || prefix.end_with?('/', '.')
 
           path == prefix || path.start_with?("#{prefix}/", "#{prefix}.")
         end

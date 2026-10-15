@@ -74,7 +74,7 @@
 - SEC #2319 `link_to` and `form_tag` replace URLs with unsafe schemes (`javascript:`, `data:`, etc.) with `#`, including URLs passed in through the options hash (@achiurizo)
 - SEC #2319 Admin access control matches allowed and denied paths as literal prefixes instead of regular expressions (@achiurizo)
 - WARN #2319 Links and form actions with any scheme other than http, https, mailto, tel or ftp (e.g. `sms:` or a custom app scheme) now render as `#`
-- WARN #2319 Admin access control paths that relied on regular expression syntax no longer match
+- WARN #2319 Admin access control string paths that relied on regular expression syntax no longer match; pass a Regexp (`role.allow %r{\A/posts/\d+}`) to match a pattern, as before
 - FIX #2318 Send the `Allow` header (was `Allows`) in 405 responses (@achiurizo)
 - FIX #2318 `Mail::Message.set` checked for an `erb` method instead of the setting's own name, and defined the setting on every class instead of only the message (@achiurizo)
 - NEW #2317 HAML 6 and 7 compatibility (@achiurizo)
