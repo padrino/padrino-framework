@@ -279,25 +279,44 @@ describe 'ProjectGenerator' do
   end
 
   describe 'a generator for mock component' do
-    it 'should properly generate for rr and minitest' do
+    it 'should load rr after minitest for rr and minitest' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=minitest', '--script=none') }
       assert_match(/applying.*?rr.*?mock/, out)
-      assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/include RR::Adapters::MiniTest/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_match_in_file(/gem 'rr', require: false, group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_no_match_in_file(/test-unit-rr/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(%r{^require_relative '../config/boot'\nrequire 'rr'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_no_match_in_file(/RR::Adapters/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
-    it 'should properly generater for rr and bacon' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=bacon', '--script=none') }
-      assert_match(/applying.*?rr.*?mock/, out)
-      assert_match_in_file(/gem 'rr'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/include RR::Adapters::TestUnit/m, "#{@apptmp}/sample_project/test/test_config.rb")
-    end
-
-    it 'should properly generate for rr and rspec' do
+    it 'should use the rspec rr adapter for rr and rspec' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
       assert_match(/applying.*?rr.*?mock/, out)
-      assert_match_in_file(/gem 'rr', require: false/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/require 'rr'/m, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_match_in_file(/gem 'rr', require: false, group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/^RSpec.configure do \|conf\|\n  conf.mock_with :rr\n  conf.include RR::DSL\n/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+    end
+
+    it 'should load test-unit-rr for rr and testunit' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=testunit', '--mock=rr', '--script=none') }
+      assert_match_in_file(/gem 'test-unit-rr', require: false, group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(%r{^require_relative '../config/boot'\nrequire 'test/unit/rr'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_no_match_in_file(/RR::Adapters/, "#{@apptmp}/sample_project/test/test_config.rb")
+    end
+
+    it 'should load test-unit-rr after test/unit for rr and shoulda' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=shoulda', '--mock=rr', '--script=none') }
+      assert_match_in_file(/gem 'test-unit-rr', require: false, group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(%r{^require "test/unit"\nrequire 'test/unit/rr'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_no_match_in_file(/RR::Adapters/, "#{@apptmp}/sample_project/test/test_config.rb")
+    end
+
+    it 'should explain how to set up rr for test components without an rr integration' do
+      %w[bacon cucumber none].each do |test|
+        out, = capture_io { generate(:project, "project_#{test}", "--root=#{@apptmp}", "--test=#{test}", '--mock=rr', '--script=none') }
+        assert_match(/RR is in the Gemfile but not set up for the '#{test}' test component/, out)
+        assert_match_in_file(/gem 'rr'/, "#{@apptmp}/project_#{test}/Gemfile")
+      end
+      assert_no_match_in_file(/RR/, "#{@apptmp}/project_bacon/test/test_config.rb")
+      assert_no_match_in_file(/RR/, "#{@apptmp}/project_cucumber/spec/spec_helper.rb")
     end
 
     it 'should properly generate for mocha and rspec' do
