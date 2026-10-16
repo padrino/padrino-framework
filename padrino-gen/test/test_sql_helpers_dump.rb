@@ -40,7 +40,7 @@ describe 'SqlHelpers.dump_db' do
     ENV['PATH'] = "#{bin}#{File::PATH_SEPARATOR}#{saved_path}"
     yield
   ensure
-    ENV['PATH'] = saved_path
+    ENV['PATH'] = saved_path if saved_path
   end
 
   def write_earlier_dump
@@ -256,7 +256,7 @@ describe 'SqlHelpers.dump_db' do
       assert_equal 'sqlite3 not found on PATH', error.message
       assert_empty Dir["#{@file}*.tmp"]
     ensure
-      ENV['PATH'] = saved_path
+      ENV['PATH'] = saved_path if saved_path
     end
 
     it 'keeps an earlier dump and removes the temp file when the tool fails' do
@@ -322,7 +322,7 @@ describe 'SqlHelpers.dump_db' do
       assert_raises(Errno::ESRCH) { Process.kill(0, child) }
       assert_empty Dir["#{@file}*.tmp"]
     ensure
-      ENV['PATH'] = saved_path
+      ENV['PATH'] = saved_path if saved_path
     end
   end
 end
