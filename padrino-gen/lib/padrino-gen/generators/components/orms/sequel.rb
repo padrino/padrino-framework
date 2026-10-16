@@ -84,10 +84,39 @@ SQ_MODEL_DOWN_MG = <<~MIGRATION unless defined?(SQ_MODEL_DOWN_MG)
   drop_table :!TABLE!
 MIGRATION
 
+def sq_reference?(kind)
+  %w[references belongs_to].include?(kind.underscore)
+end
+
+# A references (or belongs_to) field is a foreign key to the pluralized table: user:references
+# becomes user_id, referencing users. A third segment adds an index (index, uniq) or makes it
+# polymorphic: an id and a type column with an index on both, and no foreign key constraint.
+def sq_reference_columns(field, option, alter)
+  if option == 'polymorphic'
+    index = "[:#{field}_type, :#{field}_id]"
+    return ["add_column :#{field}_id, Integer", "add_column :#{field}_type, String", "add_index #{index}"] if alter
+
+    return ["Integer :#{field}_id", "String :#{field}_type", "index #{index}"]
+  end
+
+  index_option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }' }[option]
+  "#{'add_' if alter}foreign_key :#{field}_id, :#{field.pluralize.underscore}#{index_option}"
+end
+
+# Dropping a column also drops its indexes.
+def sq_remove_column(field, kind, option)
+  return "drop_column :#{field}" unless sq_reference?(kind)
+  return ["drop_column :#{field}_id", "drop_column :#{field}_type"] if option == 'polymorphic'
+
+  "drop_foreign_key :#{field}_id"
+end
+
 def create_model_migration(migration_name, name, columns)
   output_model_migration(
     migration_name, name, columns,
-    column_format: proc { |field, kind| "#{kind.underscore.camelize} :#{field}" },
+    column_format: proc { |field, kind, option|
+      sq_reference?(kind) ? sq_reference_columns(field, option, false) : "#{kind.underscore.camelize} :#{field}"
+    },
     base: SQ_MIGRATION,
     up: SQ_MODEL_UP_MG,
     down: SQ_MODEL_DOWN_MG
@@ -112,7 +141,9 @@ def create_migration_file(migration_name, name, columns)
   output_migration_file(
     migration_name, name, columns,
     base: SQ_MIGRATION, change_format: SQ_CHANGE_MG,
-    add: proc { |field, kind| "add_column :#{field}, #{sq_column_type(kind)}" },
-    remove: proc { |field, _kind| "drop_column :#{field}" }
+    add: proc { |field, kind, option|
+      sq_reference?(kind) ? sq_reference_columns(field, option, true) : "add_column :#{field}, #{sq_column_type(kind)}"
+    },
+    remove: proc { |field, kind, option| sq_remove_column(field, kind, option) }
   )
 end
