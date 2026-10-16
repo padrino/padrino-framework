@@ -451,6 +451,20 @@ describe 'ProjectGenerator' do
         assert_match_in_file(%r{"postgres://}, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
       end
+
+      # Sequel tests a new connection by default, so a missing database would fail the boot
+      # before sq:create could create it.
+      %w[postgres mysql2 sqlite].each do |adapter|
+        it "should not test the #{adapter} connection at boot" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', "--adapter=#{adapter}") }
+          require 'sequel'
+          connections = []
+          Sequel.stubs(:connect).with { |_url, options| connections << options }
+          Object.new.tap { |config| def config.logger; end }.instance_eval(File.read("#{@apptmp}/sample_project/config/database.rb"))
+          assert_equal 1, connections.size
+          assert_equal({ test: false }, connections.first.slice(:test))
+        end
+      end
     end
 
     describe 'for activerecord' do

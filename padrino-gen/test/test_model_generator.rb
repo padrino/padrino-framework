@@ -220,6 +220,37 @@ describe 'ModelGenerator' do
       assert_match_in_file(/DateTime :created/m,     migration_file_path)
       assert_match_in_file(/drop_table :friends/m,   migration_file_path)
     end
+
+    it 'should generate foreign keys for references in the migration file' do
+      stop_time_for_test
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=sequel') }
+      fields = %w[title:string user:references author:belongs_to:index editor:References:uniq views:integer]
+      capture_io { generate(:model, 'post', *fields, "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_posts.rb"
+      lines = ['primary_key :id', 'String :title', 'foreign_key :user_id, :users, index: true', 'foreign_key :author_id, :authors, index: true',
+               'foreign_key :editor_id, :editors, index: { unique: true }', 'Integer :views']
+      columns = /create_table :posts do\s+#{lines.map { |line| Regexp.escape(line) }.join('\s+')}\s+end/m
+      assert_match_in_file(columns, migration_file_path)
+    end
+
+    it 'should index columns with an index or uniq segment in the migration file and ignore other segments' do
+      stop_time_for_test
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=sequel') }
+      fields = %w[name:string:index slug:String:uniq body:text:index age:integer code:string:foo]
+      capture_io { generate(:model, 'page', *fields, "-r=#{@apptmp}/sample_project") }
+      migration = File.read("#{@apptmp}/sample_project/db/migrate/001_create_pages.rb")
+      ['String :name, index: true', 'String :slug, index: { unique: true }', 'Text :body, index: true',
+       'Integer :age', 'String :code'].each { |line| assert_includes migration, "      #{line}\n" }
+    end
+
+    it 'should generate the id and type columns of a polymorphic reference in the migration file' do
+      stop_time_for_test
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=sequel') }
+      capture_io { generate(:model, 'comment', 'body:text', 'commentable:references:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_comments.rb"
+      columns = /create_table :comments do\s+primary_key :id\s+Text :body\s+Integer :commentable_id\s+String :commentable_type\s+index \[:commentable_type, :commentable_id\]\s+end/m
+      assert_match_in_file(columns, migration_file_path)
+    end
   end
 
   describe 'model generator using mongoid' do
