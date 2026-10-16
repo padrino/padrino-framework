@@ -32,15 +32,65 @@ describe 'ActiveRecord tasks' do
     FileUtils.rm_rf(@root) if @root
   end
 
-  def rake(*args)
+  def run_rake(*args)
     libs = %w[padrino-core padrino-gen].flat_map { |name| ['-I', File.expand_path("../../#{name}/lib", __dir__)] }
     env = { 'RACK_ENV' => 'development', 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
-    out, err, status = Open3.capture3(env, RbConfig.ruby, *libs, '-e', 'require "rake"; Rake.application.run(ARGV)', *args, chdir: @root)
+    Open3.capture3(env, RbConfig.ruby, *libs, '-e', 'require "rake"; Rake.application.run(ARGV)', *args, chdir: @root)
+  end
+
+  def rake(*args)
+    out, err, status = run_rake(*args)
     assert status.success?, "rake #{args.join(' ')} failed:\n#{out}\n#{err}"
+    [out, err]
   end
 
   def schema
     File.read(File.join(@root, 'db', 'schema.rb'))
+  end
+
+  def database
+    File.join(@root, 'db', 'development.db')
+  end
+
+  def use_database(path)
+    boot = File.join(@root, 'config', 'boot.rb')
+    File.write(boot, File.read(boot).sub("Padrino.root('db', 'development.db')", path.inspect))
+  end
+
+  it 'should create the database with ar:create, and report it as existing the second time' do
+    rake 'ar:create'
+    assert File.exist?(database), 'ar:create did not create the database'
+    _, err = rake 'ar:create'
+    assert_includes err, "#{database} already exists"
+  end
+
+  it 'should create and migrate the database in one run, twice' do
+    2.times { rake 'ar:create', 'ar:migrate' }
+    assert_match(/create_table "widgets"/, schema)
+  end
+
+  it 'should exit with an error when ar:create cannot create the database' do
+    blocker = File.join(@root, 'blocker')
+    File.write(blocker, '')
+    use_database(File.join(blocker, 'development.db'))
+    _, err, status = run_rake 'ar:create'
+    refute status.success?, "ar:create succeeded:\n#{err}"
+    assert_includes err, "Couldn't create database"
+  end
+
+  it 'should drop a database that does not exist without an error' do
+    rake 'ar:create'
+    rake 'ar:drop'
+    refute File.exist?(database)
+    _, err = rake 'ar:drop'
+    refute_includes err, "Couldn't drop"
+  end
+
+  it 'should exit with an error when ar:drop cannot drop the database' do
+    FileUtils.mkdir_p(database)
+    _, err, status = run_rake 'ar:drop'
+    refute status.success?, "ar:drop succeeded:\n#{err}"
+    assert_includes err, "Couldn't drop #{database}"
   end
 
   it 'should dump the schema after ar:migrate' do
