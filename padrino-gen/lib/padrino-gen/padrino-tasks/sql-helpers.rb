@@ -3,95 +3,68 @@ require 'fileutils'
 module Padrino
   module Generators
     module SqlHelpers
-      def self.create_db(adapter, user, password, host, database, charset, collation, port: nil)
-        case adapter.to_s
+      # Creates the database that +config+ (the app's Sequel connection options) names.
+      def self.create_db(config, charset, collation)
+        database = config[:database]
+        case config[:adapter].to_s
         when 'postgres', 'postgresql'
-          environment = {}
-          environment['PGPASSWORD'] = password unless password.nil? || password.empty?
-
-          arguments = []
-          arguments << "--encoding=#{charset}" if charset
-          arguments << "--host=#{host}" if host
-          arguments << "--port=#{port}" if port
-          arguments << "--username=#{user}" if user
-          arguments << database
-
-          run_client(environment, 'createdb', arguments, "creating database #{database}")
+          on_server(config, *postgres_maintenance_databases(database)) do |db|
+            db.run "CREATE DATABASE #{db.quote_identifier(database)} ENCODING #{db.literal(charset)}"
+          end
         when 'mysql', 'mysql2'
-          environment = {}
-          environment['MYSQL_PWD'] = password unless password.nil? || password.empty?
-
-          arguments = []
-          arguments << "--user=#{user}" if user
-          arguments.concat(mysql_host_arguments(host, port))
-
-          arguments << '-e'
-          arguments << "CREATE DATABASE #{database} DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}"
-
-          run_client(environment, 'mysql', arguments, "creating database #{database}")
+          on_server(config, nil) do |db|
+            db.run "CREATE DATABASE #{db.quote_identifier(database)} " \
+                   "DEFAULT CHARACTER SET #{db.literal(charset)} DEFAULT COLLATE #{db.literal(collation)}"
+          end
         when 'sqlite', 'sqlite3'
           # Connecting to a SQLite database creates its file, so it may exist already.
           FileUtils.mkdir_p(File.dirname(database))
           File.open(database, 'a') {}
         else
-          raise "Adapter #{adapter} not supported for creating databases yet."
+          raise "Adapter #{config[:adapter]} not supported for creating databases yet."
         end
       end
 
-      def self.drop_db(adapter, user, password, host, database, port: nil)
-        case adapter.to_s
+      # Drops the database that +config+ (the app's Sequel connection options) names.
+      def self.drop_db(config)
+        database = config[:database]
+        case config[:adapter].to_s
         when 'postgres', 'postgresql'
-          environment = {}
-          environment['PGPASSWORD'] = password unless password.nil? || password.empty?
-
-          arguments = ['--if-exists']
-          arguments << "--host=#{host}" if host
-          arguments << "--port=#{port}" if port
-          arguments << "--username=#{user}" if user
-          arguments << database
-
-          run_client(environment, 'dropdb', arguments, "dropping database #{database}")
+          on_server(config, *postgres_maintenance_databases(database)) { |db| db.run "DROP DATABASE IF EXISTS #{db.quote_identifier(database)}" }
         when 'mysql', 'mysql2'
-          environment = {}
-          environment['MYSQL_PWD'] = password unless password.nil? || password.empty?
-
-          arguments = []
-          arguments << "--user=#{user}" if user
-          arguments.concat(mysql_host_arguments(host, port))
-
-          arguments << '-e'
-          arguments << "DROP DATABASE IF EXISTS #{database}"
-
-          run_client(environment, 'mysql', arguments, "dropping database #{database}")
+          on_server(config, nil) { |db| db.run "DROP DATABASE IF EXISTS #{db.quote_identifier(database)}" }
         when 'sqlite', 'sqlite3'
           File.delete(database) if File.file?(database)
         else
-          raise "Adapter #{adapter} not supported for dropping databases yet."
+          raise "Adapter #{config[:adapter]} not supported for dropping databases yet."
         end
       end
 
-      # Reach the server the app connects to. mysql2 uses the local socket when the host is missing
-      # or localhost, and ignores the port there; the MariaDB client switches to TCP whenever it gets
-      # --port, so pass neither. Any other host is TCP to that host and port.
-      def self.mysql_host_arguments(host, port)
-        return [] if host.nil? || host == 'localhost'
-
-        arguments = []
-        arguments << "--host=#{host}" if port || host != '127.0.0.1'
-        arguments << "--port=#{port}" if port
-        arguments
+      # Like createdb and dropdb, Postgres connects to postgres and then template1, but never to the
+      # database being created or dropped: Postgres can't drop the database a connection is using.
+      def self.postgres_maintenance_databases(database)
+        %w[postgres template1] - [database]
       end
-      private_class_method :mysql_host_arguments
+      private_class_method :postgres_maintenance_databases
 
-      # Runs a database client without a shell and raises if it fails.
-      def self.run_client(environment, command, arguments, action)
-        _, status = Process.wait2(Process.spawn(environment, command, *arguments))
-        return if status.success?
+      # Options of the app connection that name or expect the app's own database.
+      APP_DATABASE_OPTIONS = %i[uri orig_opts after_connect connect_sqls extensions preconnect servers].freeze
+      private_constant :APP_DATABASE_OPTIONS
 
-        reason = status.exitstatus ? "exited with status #{status.exitstatus}" : "was stopped (#{status.inspect})"
-        raise "Failed #{action}: #{command} #{reason}"
+      # Connects to the app's server, but to the first of +databases+ that accepts the connection
+      # rather than the app's own database, which may not exist.
+      def self.on_server(config, *databases, &block)
+        options = config.reject { |key, _| APP_DATABASE_OPTIONS.include?(key) }
+        begin
+          Sequel.connect(options.merge(database: databases.first), &block)
+        rescue Sequel::DatabaseConnectionError
+          databases.shift
+          raise if databases.empty?
+
+          retry
+        end
       end
-      private_class_method :run_client
+      private_class_method :on_server
     end
   end
 end

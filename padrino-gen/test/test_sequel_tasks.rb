@@ -36,6 +36,7 @@ describe 'Sequel tasks' do
     env['PATH'] = "#{path}#{File::PATH_SEPARATOR}#{ENV['PATH']}" if path
     out, err, status = Open3.capture3(env, RbConfig.ruby, *libs, '-e', 'require "rake"; Rake.application.run(ARGV)', *args, chdir: @root)
     assert status.success?, "rake #{args.join(' ')} failed:\n#{out}\n#{err}"
+    @stderr = err
     out
   end
 
@@ -50,41 +51,60 @@ describe 'Sequel tasks' do
     assert_includes File.binread(database), 'widgets'
   end
 
-  it 'should leave a database the boot could reach alone, without running createdb' do
-    bin = File.join(@root, 'bin')
-    FileUtils.mkdir_p(bin)
-    File.write(File.join(bin, 'createdb'), "#!/bin/sh\ntouch #{File.join(@root, 'createdb.ran')}\nexit 1\n")
-    File.chmod(0o755, File.join(bin, 'createdb'))
+  # A Postgres config for the boot. The server connection sq:create and sq:drop open is a mock that
+  # logs its options and statements; with +reachable: false+ the app database doesn't exist yet.
+  def postgres_boot(reachable:)
+    log = File.join(@root, 'server.log')
     File.write(File.join(@root, 'config', 'boot.rb'), <<~RUBY)
       require 'padrino-core'
       require 'sequel'
       db = Sequel.connect('sqlite://db/development.db')
       db.opts.update(adapter: 'postgres', host: 'db.internal', port: 5433, user: 'app', database: 'app_db')
+      #{"def db.test_connection\n  raise Sequel::DatabaseConnectionError, 'database \"app_db\" does not exist'\nend" unless reachable}
       Sequel::Model.db = db
+      server = Sequel.mock(host: 'postgres')
+      Sequel.define_singleton_method(:connect) do |opts, &block|
+        block.call(server)
+        File.write(#{log.inspect}, [opts.values_at(:host, :port, :user, :database).inspect, *server.sqls].join("\n"))
+      end
     RUBY
-    assert_includes rake('sq:create', path: bin), "<= Database 'app_db' already exists"
-    refute File.exist?(File.join(@root, 'createdb.ran'))
+    log
   end
 
-  it 'should create a database the boot could not reach, with the configured port' do
+  it 'should leave a database the boot could reach alone, without connecting to the server' do
+    log = postgres_boot(reachable: true)
+    assert_includes rake('sq:create'), "<= Database 'app_db' already exists"
+    refute File.exist?(log)
+  end
+
+  it 'should create a database the boot could not reach through Sequel, without the createdb binary' do
+    log = postgres_boot(reachable: false)
+    assert_includes rake('sq:create', path: empty_bin), '<= sq:create executed'
+    assert_equal ['["db.internal", 5433, "app", "postgres"]', %(CREATE DATABASE "app_db" ENCODING 'utf8')], File.readlines(log, chomp: true)
+  end
+
+  it 'should load the SQL helpers once' do
+    postgres_boot(reachable: false)
+    rake 'sq:create'
+    refute_match(/already initialized constant/, @stderr)
+  end
+
+  it 'should drop a Postgres database through Sequel, without the dropdb binary' do
+    log = postgres_boot(reachable: true)
+    assert_includes rake('sq:drop', path: empty_bin), '<= sq:drop executed'
+    assert_equal ['["db.internal", 5433, "app", "postgres"]', 'DROP DATABASE IF EXISTS "app_db"'], File.readlines(log, chomp: true)
+  end
+
+  # A PATH entry that shadows createdb, dropdb and mysql with failing stand-ins, so a task that
+  # still shelled out to them would fail.
+  def empty_bin
     bin = File.join(@root, 'bin')
     FileUtils.mkdir_p(bin)
-    File.write(File.join(bin, 'createdb'), "#!/bin/sh\necho \"createdb $*\" > #{File.join(@root, 'createdb.log')}\n")
-    File.chmod(0o755, File.join(bin, 'createdb'))
-    # A Postgres config whose database doesn't exist yet: the connection test fails.
-    File.write(File.join(@root, 'config', 'boot.rb'), <<~RUBY)
-      require 'padrino-core'
-      require 'sequel'
-      db = Sequel.connect('sqlite://db/development.db')
-      db.opts.update(adapter: 'postgres', host: 'db.internal', port: 5433, user: 'app', database: 'app_db')
-      def db.test_connection
-        raise Sequel::DatabaseConnectionError, 'database "app_db" does not exist'
-      end
-      Sequel::Model.db = db
-    RUBY
-    out = rake('sq:create', path: bin)
-    assert_includes out, '<= sq:create executed'
-    assert_equal "createdb --encoding=utf8 --host=db.internal --port=5433 --username=app app_db\n", File.read(File.join(@root, 'createdb.log'))
+    %w[createdb dropdb mysql].each do |client|
+      File.write(File.join(bin, client), "#!/bin/sh\nexit 1\n")
+      File.chmod(0o755, File.join(bin, client))
+    end
+    bin
   end
 
   it 'should drop a SQLite database' do
