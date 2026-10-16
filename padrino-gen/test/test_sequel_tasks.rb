@@ -36,6 +36,7 @@ describe 'Sequel tasks' do
     env['PATH'] = "#{path}#{File::PATH_SEPARATOR}#{ENV['PATH']}" if path
     out, err, status = Open3.capture3(env, RbConfig.ruby, *libs, '-e', 'require "rake"; Rake.application.run(ARGV)', *args, chdir: @root)
     assert status.success?, "rake #{args.join(' ')} failed:\n#{out}\n#{err}"
+    @stderr = err
     out
   end
 
@@ -80,6 +81,12 @@ describe 'Sequel tasks' do
     log = postgres_boot(reachable: false)
     assert_includes rake('sq:create', path: empty_bin), '<= sq:create executed'
     assert_equal ['["db.internal", 5433, "app", "postgres"]', %(CREATE DATABASE "app_db" ENCODING 'utf8')], File.readlines(log, chomp: true)
+  end
+
+  it 'should load the SQL helpers once' do
+    postgres_boot(reachable: false)
+    rake 'sq:create'
+    refute_match(/already initialized constant/, @stderr)
   end
 
   it 'should drop a Postgres database through Sequel, without the dropdb binary' do

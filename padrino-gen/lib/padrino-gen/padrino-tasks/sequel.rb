@@ -52,7 +52,6 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       rescue Sequel::DatabaseConnectionError
         nil
       end
-      require 'padrino-gen/padrino-tasks/sql-helpers'
       Padrino::Generators::SqlHelpers.create_db(config, charset, collation)
       puts '<= sq:create executed'
     end
