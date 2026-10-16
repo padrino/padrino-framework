@@ -18,7 +18,8 @@ describe 'SqlHelpers.dump_db' do
   end
 
   def dump(adapter, password: nil, host: nil, port: nil, socket: nil, user: nil, database: 'app db')
-    Padrino::Generators::SqlHelpers.dump_db(adapter, user, password, host, port, socket, database, @file)
+    config = { adapter: adapter, user: user, password: password, host: host, port: port, socket: socket, database: database }
+    Padrino::Generators::SqlHelpers.dump_db(config, @file)
   end
 
   describe 'postgres' do

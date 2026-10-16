@@ -69,12 +69,11 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
 
     desc 'Dump the database data to a SQL file (FILE=path, default tmp/<env>_dump.sql)'
     task dump: :skeleton do
-      require 'padrino-gen/padrino-tasks/sql-helpers'
       config = ::Sequel::Model.db.opts
       file = ENV['FILE'] || Padrino.root('tmp', "#{Padrino.env}_dump.sql")
 
       puts "=> Dumping database '#{config[:database]}' to #{file}"
-      Padrino::Generators::SqlHelpers.dump_db(config[:adapter], config[:user], config[:password], config[:host], config[:port], config[:socket], config[:database], file)
+      Padrino::Generators::SqlHelpers.dump_db(config, file)
       puts '<= sq:dump executed'
     end
 

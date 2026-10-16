@@ -40,9 +40,11 @@ module Padrino
         end
       end
 
-      def self.dump_db(adapter, user, password, host, port, socket, database, file)
-        adapter = adapter.to_s
-        password = password.to_s
+      # Dumps the data of the database that +config+ (Sequel connection options) names into +file+.
+      def self.dump_db(config, file)
+        adapter = config[:adapter].to_s
+        user, host, port, socket, database = config.values_at(:user, :host, :port, :socket, :database)
+        password = config[:password].to_s
         partial = "#{file}.tmp"
         environment = {}
         options = {}

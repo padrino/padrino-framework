@@ -124,6 +124,7 @@ describe 'Sequel tasks' do
     seed_widget
     rake 'db:dump'
     assert_match(/INSERT INTO widgets VALUES\('sprocket'\)/, File.read(File.join(@root, 'tmp', 'development_dump.sql')))
+    refute_match(/already initialized constant/, @stderr)
   end
 
   it 'should dump the data to FILE when given' do

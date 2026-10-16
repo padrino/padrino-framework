@@ -284,17 +284,19 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
     desc 'Dump the database data to a SQL file (FILE=path, default tmp/<env>_dump.sql)'
     task dump: :skeleton do
-      require 'padrino-gen/padrino-tasks/sql-helpers'
       targets = dump_targets(Padrino.env)
       raise 'FILE= is ambiguous: more than one database is configured for this environment' if ENV['FILE'] && targets.size > 1
 
       targets.each do |config, name|
         suffix = targets.size > 1 ? "_#{name}" : ''
         file = ENV['FILE'] || Padrino.root('tmp', "#{Padrino.env}#{suffix}_dump.sql")
-        database = config[:database] || config[:dbfile]
+        options = {
+          adapter: config[:adapter], user: config[:username], password: config[:password],
+          host: config[:host], port: config[:port], socket: config[:socket], database: config[:database] || config[:dbfile]
+        }
 
-        puts "=> Dumping database '#{database}' to #{file}"
-        Padrino::Generators::SqlHelpers.dump_db(config[:adapter], config[:username], config[:password], config[:host], config[:port], config[:socket], database, file)
+        puts "=> Dumping database '#{options[:database]}' to #{file}"
+        Padrino::Generators::SqlHelpers.dump_db(options, file)
       end
       puts '<= ar:dump executed'
     end
