@@ -219,7 +219,7 @@ describe 'MigrationGenerator' do
       fields = %w[user:references author:belongs_to:index editor:References:uniq title:string]
       capture_io { generate(:migration, 'AddUserToPosts', *fields, "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_user_to_posts.rb"
-      added = ['add_foreign_key :user_id, :users', 'add_foreign_key :author_id, :authors, index: true',
+      added = ['add_foreign_key :user_id, :users, index: true', 'add_foreign_key :author_id, :authors, index: true',
                'add_foreign_key :editor_id, :editors, index: { unique: true }', 'add_column :title, String']
       up = /up do\s+alter_table :posts do\s+#{added.map { |line| Regexp.escape(line) }.join('\s+')}\s+end\s+end/m
       down = /down do\s+alter_table :posts do\s+drop_foreign_key :user_id\s+drop_foreign_key :author_id\s+drop_foreign_key :editor_id\s+drop_column :title\s+end\s+end/m
@@ -234,12 +234,42 @@ describe 'MigrationGenerator' do
       assert_match_in_file(/down do\s+alter_table :posts do\s+add_foreign_key :user_id, :users, index: true\s+end\s+end/m, migration_file_path)
     end
 
+    it 'should index a reference by default and drop the foreign key with its index' do
+      capture_io { generate(:migration, 'AddUserToPosts', 'user:references', "-r=#{@apptmp}/sample_project") }
+      capture_io { generate(:migration, 'RemoveUserFromPosts', 'user:belongs_to', "-r=#{@apptmp}/sample_project") }
+      add_path = "#{@apptmp}/sample_project/db/migrate/001_add_user_to_posts.rb"
+      remove_path = "#{@apptmp}/sample_project/db/migrate/002_remove_user_from_posts.rb"
+      assert_match_in_file(/up do\s+alter_table :posts do\s+add_foreign_key :user_id, :users, index: true\s+end\s+end/m, add_path)
+      assert_match_in_file(/down do\s+alter_table :posts do\s+drop_foreign_key :user_id\s+end\s+end/m, add_path)
+      assert_match_in_file(/up do\s+alter_table :posts do\s+drop_foreign_key :user_id\s+end\s+end/m, remove_path)
+      assert_match_in_file(/down do\s+alter_table :posts do\s+add_foreign_key :user_id, :users, index: true\s+end\s+end/m, remove_path)
+    end
+
+    it 'should index columns with an index or uniq segment and ignore other segments' do
+      fields = %w[name:string:index email:String:uniq body:text:uniq title:string code:string:foo]
+      capture_io { generate(:migration, 'AddNameToUsers', *fields, "-r=#{@apptmp}/sample_project") }
+      migration = File.read("#{@apptmp}/sample_project/db/migrate/001_add_name_to_users.rb")
+      ['add_column :name, String, index: true', 'add_column :email, String, index: { unique: true }',
+       'add_column :body, :text, index: { unique: true }', 'add_column :title, String', 'add_column :code, String',
+       'drop_column :name', 'drop_column :email', 'drop_column :body', 'drop_column :title', 'drop_column :code'].each do |line|
+        assert_includes migration, "      #{line}\n"
+      end
+    end
+
     it 'should add and drop the id and type columns of a polymorphic reference' do
       capture_io { generate(:migration, 'AddCommentableToComments', 'commentable:references:polymorphic', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_commentable_to_comments.rb"
       up = /up do\s+alter_table :comments do\s+add_column :commentable_id, Integer\s+add_column :commentable_type, String\s+add_index \[:commentable_type, :commentable_id\]\s+end\s+end/m
       assert_match_in_file(up, migration_file_path)
       assert_match_in_file(/down do\s+alter_table :comments do\s+drop_column :commentable_id\s+drop_column :commentable_type\s+end\s+end/m, migration_file_path)
+    end
+
+    it 'should add the id and type columns back when rolling back a migration removing a polymorphic reference' do
+      capture_io { generate(:migration, 'RemoveCommentableFromComments', 'commentable:references:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_remove_commentable_from_comments.rb"
+      assert_match_in_file(/up do\s+alter_table :comments do\s+drop_column :commentable_id\s+drop_column :commentable_type\s+end\s+end/m, migration_file_path)
+      down = /down do\s+alter_table :comments do\s+add_column :commentable_id, Integer\s+add_column :commentable_type, String\s+add_index \[:commentable_type, :commentable_id\]\s+end\s+end/m
+      assert_match_in_file(down, migration_file_path)
     end
 
     it 'should generate migration for removing columns' do

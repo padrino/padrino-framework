@@ -88,8 +88,13 @@ def sq_reference?(kind)
   %w[references belongs_to].include?(kind.underscore)
 end
 
-# A references (or belongs_to) field is a foreign key to the pluralized table: user:references
-# becomes user_id, referencing users. A third segment adds an index (index, uniq) or makes it
+# A third field segment, as in name:string:index or email:string:uniq, adds an index. Other values are ignored.
+def sq_index_option(option)
+  { 'index' => ', index: true', 'uniq' => ', index: { unique: true }' }[option]
+end
+
+# A references (or belongs_to) field is an indexed foreign key to the pluralized table: user:references
+# becomes user_id, referencing users. A third segment makes the index unique (uniq) or makes it
 # polymorphic: an id and a type column with an index on both, and no foreign key constraint.
 def sq_reference_columns(field, option, alter)
   if option == 'polymorphic'
@@ -99,8 +104,7 @@ def sq_reference_columns(field, option, alter)
     return ["Integer :#{field}_id", "String :#{field}_type", "index #{index}"]
   end
 
-  index_option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }' }[option]
-  "#{'add_' if alter}foreign_key :#{field}_id, :#{field.pluralize.underscore}#{index_option}"
+  "#{'add_' if alter}foreign_key :#{field}_id, :#{field.pluralize.underscore}#{sq_index_option(option) || ', index: true'}"
 end
 
 # Dropping a column also drops its indexes.
@@ -115,7 +119,9 @@ def create_model_migration(migration_name, name, columns)
   output_model_migration(
     migration_name, name, columns,
     column_format: proc { |field, kind, option|
-      sq_reference?(kind) ? sq_reference_columns(field, option, false) : "#{kind.underscore.camelize} :#{field}"
+      next sq_reference_columns(field, option, false) if sq_reference?(kind)
+
+      "#{kind.underscore.camelize} :#{field}#{sq_index_option(option)}"
     },
     base: SQ_MIGRATION,
     up: SQ_MODEL_UP_MG,
@@ -142,7 +148,9 @@ def create_migration_file(migration_name, name, columns)
     migration_name, name, columns,
     base: SQ_MIGRATION, change_format: SQ_CHANGE_MG,
     add: proc { |field, kind, option|
-      sq_reference?(kind) ? sq_reference_columns(field, option, true) : "add_column :#{field}, #{sq_column_type(kind)}"
+      next sq_reference_columns(field, option, true) if sq_reference?(kind)
+
+      "add_column :#{field}, #{sq_column_type(kind)}#{sq_index_option(option)}"
     },
     remove: proc { |field, kind, option| sq_remove_column(field, kind, option) }
   )
