@@ -205,8 +205,9 @@ describe 'ComponentGenerator' do
 
     it 'should load rr for the project test component, once when run again' do
       { 'minitest' => ['test/test_config.rb', "require 'rr'\n"],
-        'rspec' => ['spec/spec_helper.rb', "  conf.mock_with :rr\n  conf.include RR::DSL\n"],
-        'testunit' => ['test/test_config.rb', "require 'test/unit/rr'\n"] }.each do |test, (path, setup)|
+        'rspec' => ['spec/spec_helper.rb', "  conf.mock_with :rr\n"],
+        'testunit' => ['test/test_config.rb', "require 'test/unit/rr'\n"],
+        'shoulda' => ['test/test_config.rb', "require 'test/unit/rr'\n"] }.each do |test, (path, setup)|
         project = "#{@apptmp}/project_#{test}"
         capture_io { generate(:project, "project_#{test}", "--root=#{@apptmp}", "--test=#{test}", '--script=none') }
         2.times { capture_io { generate(:component, '--mock=rr', "-r=#{project}") } }
@@ -214,7 +215,10 @@ describe 'ComponentGenerator' do
         assert_no_match_in_file(/RR::Adapters/, "#{project}/#{path}")
         assert_equal 1, File.read("#{project}/Gemfile").scan(/^gem 'rr'/).size, test
       end
-      assert_equal 1, File.read("#{@apptmp}/project_testunit/Gemfile").scan(/^gem 'test-unit-rr'/).size
+      assert_equal 1, File.read("#{@apptmp}/project_rspec/spec/spec_helper.rb").scan('RSpec::Core::ExampleGroup.include RR::DSL').size
+      %w[testunit shoulda].each do |test|
+        assert_equal 1, File.read("#{@apptmp}/project_#{test}/Gemfile").scan(/^gem 'test-unit-rr'/).size, test
+      end
     end
 
     it 'should enable @app_name value' do

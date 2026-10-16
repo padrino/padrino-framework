@@ -292,7 +292,7 @@ describe 'ProjectGenerator' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
       assert_match(/applying.*?rr.*?mock/, out)
       assert_match_in_file(/gem 'rr', require: false, group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/^RSpec.configure do \|conf\|\n  conf.mock_with :rr\n  conf.include RR::DSL\n/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_match_in_file(/^RSpec.configure do \|conf\|\n  conf.mock_with :rr\n.*\n  RSpec::Core::ExampleGroup.include RR::DSL\n/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
     end
 
     it 'should load test-unit-rr for rr and testunit' do
