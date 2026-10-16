@@ -1,6 +1,8 @@
 def setup_mock
   require_dependencies 'rr', require: false, group: 'test'
-  case options[:test].to_s
+  test = options[:test].to_s
+  test = fetch_component_choice(:test).to_s if test.empty?
+  case test
   when 'rspec'
     inject_into_file 'spec/spec_helper.rb', "require 'rr'\n", after: "'../config/boot'\n"
   when 'minitest'
