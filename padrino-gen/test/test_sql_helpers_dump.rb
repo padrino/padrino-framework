@@ -21,9 +21,36 @@ describe 'SqlHelpers.dump_db' do
     File.expects(:rename).with(partial, @file)
   end
 
-  def dump(adapter, password: nil, host: nil, port: nil, socket: nil, user: nil, database: 'app db')
+  def dump(adapter, password: nil, host: nil, port: nil, socket: nil, user: nil, database: 'app db', **tls)
     config = { adapter: adapter, user: user, password: password, host: host, port: port, socket: socket, database: database }
-    Padrino::Generators::SqlHelpers.dump_db(config, @file)
+    Padrino::Generators::SqlHelpers.dump_db(config.merge(tls), @file)
+  end
+
+  def sqlite_cli?
+    system('sqlite3 -version', out: File::NULL, err: File::NULL)
+  end
+
+  # Puts a shell script named +name+ first on PATH for the block.
+  def with_binary(name, script)
+    saved_path = ENV['PATH']
+    bin = File.join(@dir, 'bin')
+    FileUtils.mkdir_p(bin)
+    File.write(File.join(bin, name), "#!/bin/sh\n#{script}\n")
+    File.chmod(0o755, File.join(bin, name))
+    ENV['PATH'] = "#{bin}#{File::PATH_SEPARATOR}#{saved_path}"
+    yield
+  ensure
+    ENV['PATH'] = saved_path
+  end
+
+  def write_earlier_dump
+    FileUtils.mkdir_p(File.dirname(@file))
+    File.write(@file, 'previous dump')
+  end
+
+  def assert_earlier_dump_kept
+    assert_equal 'previous dump', File.read(@file)
+    assert_empty Dir["#{@file}*.tmp"]
   end
 
   describe 'postgres' do
@@ -53,6 +80,15 @@ describe 'SqlHelpers.dump_db' do
       Process.expects(:spawn).with({}, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
       dump('postgres', password: '')
     end
+
+    it 'passes the TLS settings through the libpq environment, as Rails does' do
+      succeed
+      Process.expects(:spawn).with(
+        { 'PGSSLMODE' => 'verify-full', 'PGSSLCERT' => '/c.pem', 'PGSSLKEY' => '/k.pem', 'PGSSLROOTCERT' => '/ca.pem' },
+        'pg_dump', "--file=#{partial}", 'app db', {}
+      ).returns(42)
+      dump('postgres', sslmode: :'verify-full', sslcert: '/c.pem', sslkey: '/k.pem', sslrootcert: '/ca.pem')
+    end
   end
 
   describe 'mysql' do
@@ -65,23 +101,105 @@ describe 'SqlHelpers.dump_db' do
       dump('mysql2', password: 'hunter2', user: 'bob', host: 'localhost', port: 3307, socket: '/tmp/mysql.sock')
     end
 
-    it 'passes a remote host and port, and leaves 127.0.0.1 without a port to the client default' do
+    it 'passes a remote host and port' do
       succeed
       Process.expects(:spawn).with({}, 'mysqldump', "--result-file=#{partial}", '--host=db', '--port=3307', 'app db', {}).returns(42)
       dump('mysql', host: 'db', port: 3307)
+    end
+
+    it 'passes 127.0.0.1 without a port as the host, so the client uses TCP as mysql2 does' do
       succeed
-      Process.expects(:spawn).with({}, 'mysqldump', "--result-file=#{partial}", 'app db', {}).returns(42)
+      Process.expects(:spawn).with({}, 'mysqldump', "--result-file=#{partial}", '--host=127.0.0.1', 'app db', {}).returns(42)
       dump('mysql', host: '127.0.0.1')
+    end
+
+    it 'passes the TLS settings as mysqldump options, as Rails does' do
+      succeed
+      Process.expects(:spawn).with(
+        {}, 'mysqldump', "--result-file=#{partial}", '--ssl-ca=/ca.pem', '--ssl-cert=/c.pem', '--ssl-capath=/certs',
+        '--ssl-cipher=AES256-SHA', '--ssl-key=/k.pem', '--ssl-mode=VERIFY_IDENTITY', 'app db', {}
+      ).returns(42)
+      dump('mysql2', sslca: '/ca.pem', sslcert: '/c.pem', sslkey: '/k.pem', sslcapath: '/certs', sslcipher: 'AES256-SHA',
+                     ssl_mode: :VERIFY_IDENTITY)
     end
   end
 
   describe 'sqlite' do
-    it 'runs sqlite3 .dump with stdout redirected to the temp file' do
+    it 'runs sqlite3 .dump with a busy timeout, stdout redirected to the temp file and stderr captured' do
       db = File.join(@dir, 'app.db')
       File.write(db, '')
       succeed
-      Process.expects(:spawn).with({}, 'sqlite3', db, '.dump', { out: partial }).returns(42)
+      Process.expects(:spawn).with({}, 'sqlite3', '-cmd', '.timeout 5000', db, '.dump', has_entries(out: partial, err: instance_of(File))).returns(42)
       dump('sqlite', database: db)
+    end
+
+    # The sqlite3 shell exits 0 after a failed .dump, as with a locked database.
+    it 'fails and keeps the earlier dump when sqlite3 reports an error on stderr but exits 0' do
+      db = File.join(@dir, 'app.db')
+      File.write(db, '')
+      write_earlier_dump
+      script = "printf 'PRAGMA foreign_keys=OFF;\\nBEGIN TRANSACTION;\\n/**** ERROR: (5) database is locked *****/\\n" \
+               "ROLLBACK; -- due to errors\\n'\necho 'sql error: database is locked (5)' >&2"
+      with_binary('sqlite3', script) do
+        error = assert_raises(RuntimeError) { dump('sqlite3', database: db) }
+        assert_equal "Error dumping database #{db}: sql error: database is locked (5)", error.message
+      end
+      assert_earlier_dump_kept
+    end
+
+    it 'fails when the dump ends with the rollback sqlite3 writes after an error, even with nothing on stderr' do
+      db = File.join(@dir, 'app.db')
+      File.write(db, '')
+      write_earlier_dump
+      with_binary('sqlite3', "printf 'BEGIN TRANSACTION;\\n/****** CORRUPTION ERROR *******/\\nROLLBACK; -- due to errors\\n'") do
+        error = assert_raises(RuntimeError) { dump('sqlite3', database: db) }
+        assert_match(/ends with "ROLLBACK; -- due to errors"/, error.message)
+      end
+      assert_earlier_dump_kept
+    end
+
+    it 'includes the sqlite3 error when it exits non-zero' do
+      db = File.join(@dir, 'app.db')
+      File.write(db, '')
+      with_binary('sqlite3', "echo 'Error: unknown option: -cmd' >&2; exit 1") do
+        error = assert_raises(RuntimeError) { dump('sqlite3', database: db) }
+        assert_equal "Error dumping database #{db}: Error: unknown option: -cmd", error.message
+      end
+      assert_empty Dir["#{@file}*.tmp"]
+    end
+
+    it 'fails and keeps the earlier dump for a file that is not a database' do
+      skip 'sqlite3 CLI not on PATH' unless sqlite_cli?
+      db = File.join(@dir, 'notes.db')
+      File.write(db, 'these are notes, not a database; ' * 10)
+      write_earlier_dump
+      error = assert_raises(RuntimeError) { dump('sqlite3', database: db) }
+      assert_match(/file is not a database/, error.message)
+      assert_earlier_dump_kept
+    end
+
+    it 'waits for a lock held briefly by another connection' do
+      skip 'sqlite3 CLI not on PATH' unless sqlite_cli?
+      db = File.join(@dir, 'busy.db')
+      system('sqlite3', db, "CREATE TABLE widgets(name TEXT); INSERT INTO widgets VALUES('sprocket');")
+      IO.popen(['sqlite3', db], 'r+') do |holder|
+        holder.puts "BEGIN EXCLUSIVE; INSERT INTO widgets VALUES('pending');", '.print locked'
+        holder.flush
+        assert IO.select([holder], nil, nil, 10), 'the lock was never taken'
+        assert_equal "locked\n", holder.gets
+        releaser = Thread.new do
+          sleep 1
+          holder.puts 'ROLLBACK;', '.quit'
+          holder.flush
+        end
+        begin
+          assert_equal @file, dump('sqlite3', database: db)
+        ensure
+          releaser.join
+        end
+      end
+      assert_match(/INSERT INTO widgets VALUES\('sprocket'\);\nCOMMIT;\n\z/, File.read(@file))
+      refute_match(/pending/, File.read(@file))
     end
 
     it 'raises without spawning when the database file is missing' do
@@ -98,6 +216,20 @@ describe 'SqlHelpers.dump_db' do
       assert_equal @file, dump('sqlite3', database: db)
       assert_match(/INSERT INTO widgets VALUES\('sprocket'\)/, File.read(@file))
       assert_empty Dir["#{@file}*.tmp"]
+    end
+  end
+
+  describe 'permissions' do
+    it 'makes the dump readable by its owner only' do
+      skip 'POSIX file modes only' if Gem.win_platform?
+      saved_umask = File.umask(0o022)
+      with_binary('pg_dump', 'for arg; do case "$arg" in --file=*) echo data > "${arg#--file=}";; esac; done') do
+        dump('postgres')
+      end
+      assert_equal 'data', File.read(@file).strip
+      assert_equal 0o600, File.stat(@file).mode & 0o777
+    ensure
+      File.umask(saved_umask) if saved_umask
     end
   end
 
@@ -151,6 +283,19 @@ describe 'SqlHelpers.dump_db' do
       Process.expects(:wait2).with(42).raises(Interrupt)
       Process.expects(:kill).with('TERM', 42)
       Process.expects(:wait).with(42)
+      assert_raises(Interrupt) { dump('postgres') }
+      assert_empty Dir["#{@file}*.tmp"]
+    end
+
+    it 'removes the temp file when a second interrupt arrives while the dump is being stopped' do
+      Process.expects(:spawn).with do |*args|
+        target = args.grep(String).find { |arg| arg.start_with?('--file=') }.sub('--file=', '')
+        File.write(target, 'partial')
+        true
+      end.returns(42)
+      Process.expects(:wait2).with(42).raises(Interrupt)
+      Process.expects(:kill).with('TERM', 42)
+      Process.expects(:wait).with(42).raises(Interrupt)
       assert_raises(Interrupt) { dump('postgres') }
       assert_empty Dir["#{@file}*.tmp"]
     end

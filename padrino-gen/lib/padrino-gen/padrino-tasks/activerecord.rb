@@ -290,10 +290,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       targets.each do |config, name|
         suffix = targets.size > 1 ? "_#{name}" : ''
         file = ENV['FILE'] || Padrino.root('tmp', "#{Padrino.env}#{suffix}_dump.sql")
-        options = {
-          adapter: config[:adapter], user: config[:username], password: config[:password],
-          host: config[:host], port: config[:port], socket: config[:socket], database: config[:database] || config[:dbfile]
-        }
+        # The config under Sequel's names for the user and database; the rest, TLS included, match.
+        options = config.symbolize_keys.merge(user: config[:username], database: config[:database] || config[:dbfile])
 
         puts "=> Dumping database '#{options[:database]}' to #{file}"
         Padrino::Generators::SqlHelpers.dump_db(options, file)

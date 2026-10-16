@@ -90,6 +90,30 @@ describe 'ActiveRecord tasks' do
     assert_match(/INSERT INTO "?schema_migrations"? VALUES\('1'\)/, dump)
   end
 
+  it 'should pass the TLS settings of the config to the dump tool' do
+    File.write(File.join(@root, 'config', 'boot.rb'), <<~RUBY)
+      require 'padrino-core'
+      require 'active_record'
+      ActiveRecord::Base.configurations = { development: {
+        adapter: 'postgresql', database: 'app', username: 'bob', sslmode: 'verify-full', sslrootcert: '/ca.pem'
+      } }
+    RUBY
+    bin = File.join(@root, 'bin')
+    FileUtils.mkdir_p(bin)
+    File.write(File.join(bin, 'pg_dump'), <<~SH)
+      #!/bin/sh
+      for arg; do case "$arg" in --file=*) file="${arg#--file=}";; esac; done
+      echo "$PGSSLMODE $PGSSLROOTCERT $*" > "$file"
+    SH
+    File.chmod(0o755, File.join(bin, 'pg_dump'))
+    saved_path = ENV['PATH']
+    ENV['PATH'] = "#{bin}#{File::PATH_SEPARATOR}#{saved_path}"
+    rake 'ar:dump'
+    assert_match(%r{\Averify-full /ca\.pem .*--username=bob app$}, File.read(File.join(@root, 'tmp', 'development_dump.sql')))
+  ensure
+    ENV['PATH'] = saved_path if saved_path
+  end
+
   describe 'with two databases in one environment' do
     def setup
       super
