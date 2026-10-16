@@ -73,9 +73,12 @@ describe 'ActiveRecord tasks' do
     blocker = File.join(@root, 'blocker')
     File.write(blocker, '')
     use_database(File.join(blocker, 'development.db'))
+    boot = File.join(@root, 'config', 'boot.rb')
+    File.write(boot, File.read(boot).sub("adapter: 'sqlite3',", "adapter: 'sqlite3', password: 's3cret-pw',"))
     _, err, status = run_rake 'ar:create'
     refute status.success?, "ar:create succeeded:\n#{err}"
-    assert_includes err, "Couldn't create database"
+    assert_includes err, "Couldn't create database #{File.join(blocker, 'development.db')}"
+    refute_includes err, 's3cret-pw'
   end
 
   it 'should drop a database that does not exist without an error' do

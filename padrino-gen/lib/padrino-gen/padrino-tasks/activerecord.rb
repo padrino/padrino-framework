@@ -73,7 +73,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           ActiveRecord::Base.connection.create_database(config[:database], creation_options)
           ActiveRecord::Base.establish_connection(config)
         rescue StandardError
-          $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
+          $stderr.puts "Couldn't create database #{config[:database]}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
           $stderr.puts '(if you set the charset manually, make sure you have a matching collation)' if config[:charset]
           raise
         end
@@ -372,7 +372,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   def catch_error(type, error, config)
     case type
     when :create
-      $stderr.puts "Couldn't create database for #{config.inspect}"
+      $stderr.puts "Couldn't create database #{config[:database]}"
     when :drop
       $stderr.puts "Couldn't drop #{config[:database]}"
     end
