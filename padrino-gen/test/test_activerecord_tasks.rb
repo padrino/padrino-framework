@@ -96,6 +96,47 @@ describe 'ActiveRecord tasks' do
     assert_includes err, "Couldn't drop #{database}"
   end
 
+  # A boot for a server adapter whose connections are faked: connecting to a database named in
+  # +missing+ raises NoDatabaseError, and +probe_error+ is what verifying the app's connection raises.
+  def fake_server_boot(adapter, missing:, probe_error: nil, create_error: nil)
+    File.write(File.join(@root, 'config', 'boot.rb'), <<~RUBY)
+      require 'padrino-core'
+      require 'active_record'
+      ActiveRecord::Base.configurations = { development: { adapter: #{adapter.inspect}, database: 'app_db' } }
+      $calls = []
+      fake = Object.new
+      fake.define_singleton_method(:verify!) do
+        raise #{probe_error || 'ActiveRecord::NoDatabaseError'}, 'probe' if #{missing} || #{!probe_error.nil?}
+      end
+      fake.define_singleton_method(:drop_database) { |name| $calls << [:drop, name] }
+      fake.define_singleton_method(:create_database) do |name, *|
+        #{create_error ? "raise #{create_error}, 'create'" : '$calls << [:create, name]'}
+      end
+      ActiveRecord::Base.define_singleton_method(:establish_connection) do |config = nil|
+        db = config.is_a?(Hash) ? config[:database] : 'app_db'
+        raise ActiveRecord::NoDatabaseError, 'missing' if #{missing} && db == 'app_db' && $verifying.nil?
+        $calls << [:connect, db]
+      end
+      ActiveRecord::Base.define_singleton_method(:connection) { fake }
+      at_exit { $stdout.puts "CALLS \#{$calls.inspect}" }
+    RUBY
+  end
+
+  it 'should drop a missing mysql database without connecting to it' do
+    fake_server_boot('mysql2', missing: true)
+    out, err = rake 'ar:drop'
+    refute_includes err, "Couldn't drop"
+    assert_includes out, '[:connect, nil], [:drop, "app_db"]'
+  end
+
+  it 'should report why the connection failed when the database turns out to exist' do
+    fake_server_boot('postgresql', missing: false, probe_error: 'ActiveRecord::ConnectionNotEstablished',
+                                   create_error: 'ActiveRecord::DatabaseAlreadyExists')
+    _, err, status = run_rake 'ar:create'
+    refute status.success?
+    assert_match(/rake aborted!\nActiveRecord::ConnectionNotEstablished: probe/, err)
+  end
+
   it 'should dump the schema after ar:migrate' do
     rake 'ar:migrate'
     assert_match(/create_table "widgets"/, schema)

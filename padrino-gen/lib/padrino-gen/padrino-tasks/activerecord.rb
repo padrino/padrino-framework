@@ -72,7 +72,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           ActiveRecord::Base.establish_connection(config.merge(database: nil))
           ActiveRecord::Base.connection.create_database(config[:database], creation_options)
           ActiveRecord::Base.establish_connection(config)
-        rescue StandardError
+        rescue StandardError => e
+          catch_error(:create, connection_error, config) if probe_error?(e)
           $stderr.puts "Couldn't create database #{config[:database]}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
           $stderr.puts '(if you set the charset manually, make sure you have a matching collation)' if config[:charset]
           raise
@@ -84,7 +85,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           ActiveRecord::Base.connection.create_database(config[:database], config.merge(encoding: @encoding))
           ActiveRecord::Base.establish_connection(config)
         rescue StandardError => e
-          catch_error(:create, e, config)
+          catch_error(:create, probe_error?(e) ? connection_error : e, config)
         end
       else
         catch_error(:create, connection_error, config)
@@ -95,6 +96,12 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     def connect_to_database(config)
       ActiveRecord::Base.establish_connection(config)
       ActiveRecord::Base.connection.verify!
+    end
+
+    # A create that finds the database already there means the connection failed for another reason
+    # (no access to that database, bad settings), which is the error to report.
+    def probe_error?(error)
+      defined?(ActiveRecord::DatabaseAlreadyExists) && error.is_a?(ActiveRecord::DatabaseAlreadyExists)
     end
 
     namespace :drop do
@@ -345,7 +352,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   def drop_database(config)
     case config[:adapter]
     when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
-      ActiveRecord::Base.establish_connection(config)
+      # Connect without the database, which may not exist; DROP DATABASE IF EXISTS doesn't need it.
+      ActiveRecord::Base.establish_connection(config.merge(database: nil))
       ActiveRecord::Base.connection.drop_database config[:database]
     when /^sqlite/
       require 'pathname'
