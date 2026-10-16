@@ -150,6 +150,12 @@ describe 'SqlHelpers' do
       assert_equal 'template1', @connections.last[:database]
     end
 
+    it 'drops a postgres database named postgres over a connection to template1, as dropdb does' do
+      sqls = with_server('postgres') { drop(config('postgres', database: 'postgres')) }
+      assert_equal ['DROP DATABASE IF EXISTS "postgres"'], sqls
+      assert_equal(%w[template1], @connections.map { |connection| connection[:database] })
+    end
+
     it 'drops a mysql database over a connection to no database' do
       sqls = with_server('mysql') { drop(config('mysql2')) }
       assert_equal ['DROP DATABASE IF EXISTS `app_db`'], sqls

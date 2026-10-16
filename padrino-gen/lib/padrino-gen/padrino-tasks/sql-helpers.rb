@@ -8,7 +8,7 @@ module Padrino
         database = config[:database]
         case config[:adapter].to_s
         when 'postgres', 'postgresql'
-          on_server(config, 'postgres', 'template1') do |db|
+          on_server(config, *postgres_maintenance_databases(database)) do |db|
             db.run "CREATE DATABASE #{db.quote_identifier(database)} ENCODING #{db.literal(charset)}"
           end
         when 'mysql', 'mysql2'
@@ -30,7 +30,7 @@ module Padrino
         database = config[:database]
         case config[:adapter].to_s
         when 'postgres', 'postgresql'
-          on_server(config, 'postgres', 'template1') { |db| db.run "DROP DATABASE IF EXISTS #{db.quote_identifier(database)}" }
+          on_server(config, *postgres_maintenance_databases(database)) { |db| db.run "DROP DATABASE IF EXISTS #{db.quote_identifier(database)}" }
         when 'mysql', 'mysql2'
           on_server(config, nil) { |db| db.run "DROP DATABASE IF EXISTS #{db.quote_identifier(database)}" }
         when 'sqlite', 'sqlite3'
@@ -40,13 +40,19 @@ module Padrino
         end
       end
 
+      # Like createdb and dropdb, Postgres connects to postgres and then template1, but never to the
+      # database being created or dropped: Postgres can't drop the database a connection is using.
+      def self.postgres_maintenance_databases(database)
+        %w[postgres template1] - [database]
+      end
+      private_class_method :postgres_maintenance_databases
+
       # Options of the app connection that name or expect the app's own database.
       APP_DATABASE_OPTIONS = %i[uri orig_opts after_connect connect_sqls extensions preconnect servers].freeze
       private_constant :APP_DATABASE_OPTIONS
 
       # Connects to the app's server, but to the first of +databases+ that accepts the connection
-      # rather than the app's own database, which may not exist. Like createdb, Postgres tries
-      # postgres and then template1.
+      # rather than the app's own database, which may not exist.
       def self.on_server(config, *databases, &block)
         options = config.reject { |key, _| APP_DATABASE_OPTIONS.include?(key) }
         begin
