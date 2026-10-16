@@ -298,6 +298,23 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
     end
 
+    desc 'Dump the database data to a SQL file (FILE=path, default tmp/<env>_dump.sql)'
+    task dump: :skeleton do
+      targets = dump_targets(Padrino.env)
+      raise 'FILE= is ambiguous: more than one database is configured for this environment' if ENV['FILE'] && targets.size > 1
+
+      targets.each do |config, name|
+        suffix = targets.size > 1 ? "_#{name}" : ''
+        file = ENV['FILE'] || Padrino.root('tmp', "#{Padrino.env}#{suffix}_dump.sql")
+        # The config under Sequel's names for the user and database; the rest, TLS included, match.
+        options = config.symbolize_keys.merge(user: config[:username], database: config[:database] || config[:dbfile])
+
+        puts "=> Dumping database '#{options[:database]}' to #{file}"
+        Padrino::Generators::SqlHelpers.dump_db(options, file)
+      end
+      puts '<= ar:dump executed'
+    end
+
     desc 'Generates .yml files for I18n translations.'
     task translate: :environment do
       models = Dir["#{Padrino.root}/{app,}/models/**/*.rb"].map { |m| File.basename(m, '.rb') }
@@ -466,6 +483,15 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     end
   end
 
+  def dump_targets(env_name)
+    return [[ActiveRecord::Base.configurations.with_indifferent_access[env_name], nil]] if less_than_active_record_6_0?
+
+    ActiveRecord::Base.configurations.configs_for(env_name: env_name.to_s).map do |db_config|
+      name = db_config.respond_to?(:name) ? db_config.name : db_config.spec_name
+      [configuration_hash(db_config), name]
+    end
+  end
+
   def with_all_databases(&block)
     if less_than_active_record_6_0?
       ActiveRecord::Base.configurations.each_value(&block)
@@ -487,4 +513,5 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   task 'db:drop' => 'ar:drop'
   task 'db:reset' => 'ar:reset'
   task 'db:setup' => 'ar:setup'
+  task 'db:dump' => 'ar:dump'
 end

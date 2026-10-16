@@ -112,4 +112,24 @@ describe 'Sequel tasks' do
     assert_includes rake('sq:drop'), '<= sq:drop executed'
     refute File.exist?(database)
   end
+
+  # A widgets row in the SQLite database, written with the sqlite3 CLI that sq:dump shells out to.
+  def seed_widget
+    skip 'sqlite3 CLI not on PATH' unless system('sqlite3 -version', out: File::NULL, err: File::NULL)
+    FileUtils.mkdir_p(File.dirname(database))
+    system('sqlite3', database, "CREATE TABLE widgets(name TEXT); INSERT INTO widgets VALUES('sprocket');")
+  end
+
+  it 'should dump the data to tmp/<env>_dump.sql through db:dump' do
+    seed_widget
+    rake 'db:dump'
+    assert_match(/INSERT INTO widgets VALUES\('sprocket'\)/, File.read(File.join(@root, 'tmp', 'development_dump.sql')))
+    refute_match(/already initialized constant/, @stderr)
+  end
+
+  it 'should dump the data to FILE when given' do
+    seed_widget
+    rake 'sq:dump', 'FILE=backups/latest.sql'
+    assert_match(/INSERT INTO widgets/, File.read(File.join(@root, 'backups', 'latest.sql')))
+  end
 end
