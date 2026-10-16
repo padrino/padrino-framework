@@ -12,9 +12,13 @@ describe 'SqlHelpers.dump_db' do
     FileUtils.rm_rf(@dir) if @dir
   end
 
+  def partial
+    "#{@file}.#{Process.pid}.tmp"
+  end
+
   def succeed
     Process.expects(:wait2).with(42).returns([42, stub(success?: true)])
-    File.expects(:rename).with("#{@file}.tmp", @file)
+    File.expects(:rename).with(partial, @file)
   end
 
   def dump(adapter, password: nil, host: nil, port: nil, socket: nil, user: nil, database: 'app db')
@@ -25,40 +29,49 @@ describe 'SqlHelpers.dump_db' do
   describe 'postgres' do
     it 'runs pg_dump into a temp file with connection flags, database last' do
       succeed
-      Process.expects(:spawn).with({}, 'pg_dump', "--file=#{@file}.tmp", '--host=db', '--port=5433', '--username=bob', 'app db', {}).returns(42)
+      Process.expects(:spawn).with({}, 'pg_dump', "--file=#{partial}", '--host=db', '--port=5433', '--username=bob', 'app db', {}).returns(42)
       assert_equal @file, dump('postgres', host: 'db', port: 5433, user: 'bob')
     end
 
     it 'accepts the ActiveRecord adapter name and a Symbol adapter' do
       succeed
-      Process.expects(:spawn).with({}, 'pg_dump', "--file=#{@file}.tmp", 'app db', {}).returns(42)
+      Process.expects(:spawn).with({}, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
       dump('postgresql')
       succeed
-      Process.expects(:spawn).with({}, 'pg_dump', "--file=#{@file}.tmp", 'app db', {}).returns(42)
+      Process.expects(:spawn).with({}, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
       dump(:postgres)
     end
 
     it 'passes the password through PGPASSWORD as a String' do
       succeed
-      Process.expects(:spawn).with({ 'PGPASSWORD' => '1234' }, 'pg_dump', "--file=#{@file}.tmp", 'app db', {}).returns(42)
+      Process.expects(:spawn).with({ 'PGPASSWORD' => '1234' }, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
       dump('postgres', password: 1234)
     end
 
     it 'does not set PGPASSWORD for a blank password' do
       succeed
-      Process.expects(:spawn).with({}, 'pg_dump', "--file=#{@file}.tmp", 'app db', {}).returns(42)
+      Process.expects(:spawn).with({}, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
       dump('postgres', password: '')
     end
   end
 
   describe 'mysql' do
-    it 'runs mysqldump with result file, socket and MYSQL_PWD' do
+    it 'runs mysqldump with result file, socket and MYSQL_PWD, and no host or port for localhost, as mysql2' do
       succeed
       Process.expects(:spawn).with(
-        { 'MYSQL_PWD' => 'hunter2' }, 'mysqldump', "--result-file=#{@file}.tmp",
-        '--user=bob', '--host=localhost', '--port=3307', '--socket=/tmp/mysql.sock', 'app db', {}
+        { 'MYSQL_PWD' => 'hunter2' }, 'mysqldump', "--result-file=#{partial}",
+        '--user=bob', '--socket=/tmp/mysql.sock', 'app db', {}
       ).returns(42)
       dump('mysql2', password: 'hunter2', user: 'bob', host: 'localhost', port: 3307, socket: '/tmp/mysql.sock')
+    end
+
+    it 'passes a remote host and port, and leaves 127.0.0.1 without a port to the client default' do
+      succeed
+      Process.expects(:spawn).with({}, 'mysqldump', "--result-file=#{partial}", '--host=db', '--port=3307', 'app db', {}).returns(42)
+      dump('mysql', host: 'db', port: 3307)
+      succeed
+      Process.expects(:spawn).with({}, 'mysqldump', "--result-file=#{partial}", 'app db', {}).returns(42)
+      dump('mysql', host: '127.0.0.1')
     end
   end
 
@@ -67,7 +80,7 @@ describe 'SqlHelpers.dump_db' do
       db = File.join(@dir, 'app.db')
       File.write(db, '')
       succeed
-      Process.expects(:spawn).with({}, 'sqlite3', db, '.dump', { out: "#{@file}.tmp" }).returns(42)
+      Process.expects(:spawn).with({}, 'sqlite3', db, '.dump', { out: partial }).returns(42)
       dump('sqlite', database: db)
     end
 
@@ -84,7 +97,7 @@ describe 'SqlHelpers.dump_db' do
       system('sqlite3', db, "CREATE TABLE widgets(name TEXT); INSERT INTO widgets VALUES('sprocket');")
       assert_equal @file, dump('sqlite3', database: db)
       assert_match(/INSERT INTO widgets VALUES\('sprocket'\)/, File.read(@file))
-      refute File.exist?("#{@file}.tmp")
+      assert_empty Dir["#{@file}*.tmp"]
     end
   end
 
@@ -109,7 +122,7 @@ describe 'SqlHelpers.dump_db' do
       FileUtils.mkdir_p(ENV['PATH'])
       error = assert_raises(RuntimeError) { dump('sqlite3', database: db) }
       assert_equal 'sqlite3 not found on PATH', error.message
-      refute File.exist?("#{@file}.tmp")
+      assert_empty Dir["#{@file}*.tmp"]
     ensure
       ENV['PATH'] = saved_path
     end
@@ -126,7 +139,7 @@ describe 'SqlHelpers.dump_db' do
       error = assert_raises(RuntimeError) { dump('postgres') }
       assert_equal 'Error dumping database app db', error.message
       assert_equal 'previous dump', File.read(@file)
-      refute File.exist?("#{@file}.tmp")
+      assert_empty Dir["#{@file}*.tmp"]
     end
 
     it 'removes the temp file when the wait is interrupted' do
@@ -136,8 +149,35 @@ describe 'SqlHelpers.dump_db' do
         true
       end.returns(42)
       Process.expects(:wait2).with(42).raises(Interrupt)
+      Process.expects(:kill).with('TERM', 42)
+      Process.expects(:wait).with(42)
       assert_raises(Interrupt) { dump('postgres') }
-      refute File.exist?("#{@file}.tmp")
+      assert_empty Dir["#{@file}*.tmp"]
+    end
+
+    it 'stops and reaps the dump process when the wait is interrupted' do
+      skip 'Thread#raise does not interrupt Process.wait2 reliably on JRuby' if RUBY_ENGINE == 'jruby'
+      bin = File.join(@dir, 'bin')
+      FileUtils.mkdir_p(bin)
+      pid_file = File.join(@dir, 'pg_dump.pid')
+      File.write(File.join(bin, 'pg_dump'), "#!/bin/sh\necho $$ > #{pid_file}\nexec sleep 30\n")
+      File.chmod(0o755, File.join(bin, 'pg_dump'))
+      saved_path = ENV['PATH']
+      ENV['PATH'] = "#{bin}#{File::PATH_SEPARATOR}#{saved_path}"
+      worker = Thread.new do
+        Thread.current.report_on_exception = false
+        dump('postgres')
+      end
+      deadline = Time.now + 10
+      sleep 0.05 until (File.size?(pid_file) && worker.status == 'sleep') || !worker.alive? || Time.now > deadline
+      assert File.size?(pid_file), 'the dump process never started'
+      child = File.read(pid_file).to_i
+      worker.raise(Interrupt)
+      assert_raises(Interrupt) { worker.join }
+      assert_raises(Errno::ESRCH) { Process.kill(0, child) }
+      assert_empty Dir["#{@file}*.tmp"]
+    ensure
+      ENV['PATH'] = saved_path
     end
   end
 end

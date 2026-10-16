@@ -45,7 +45,8 @@ module Padrino
         adapter = config[:adapter].to_s
         user, host, port, socket, database = config.values_at(:user, :host, :port, :socket, :database)
         password = config[:password].to_s
-        partial = "#{file}.tmp"
+        # One temp file per process, so overlapping dumps to the same file can't write into each other's.
+        partial = "#{file}.#{Process.pid}.tmp"
         environment = {}
         options = {}
 
@@ -65,8 +66,7 @@ module Padrino
 
           arguments = ["--result-file=#{partial}"]
           arguments << "--user=#{user}" if user
-          arguments << "--host=#{host}" if host
-          arguments << "--port=#{port}" if port
+          arguments.concat(mysql_host_arguments(host, port))
           arguments << "--socket=#{socket}" if socket
           arguments << database
         when 'sqlite', 'sqlite3'
@@ -79,6 +79,7 @@ module Padrino
         end
 
         FileUtils.mkdir_p(File.dirname(file))
+        pid = status = nil
         renamed = false
         begin
           begin
@@ -93,10 +94,34 @@ module Padrino
           renamed = true
           file
         ensure
+          stop_child(pid) if pid && status.nil?
           # spawn may create the out: file before exec fails; an interrupt leaves it too
           FileUtils.rm_f(partial) unless renamed
         end
       end
+
+      # Reach the server the app connects to. mysql2 uses the local socket when the host is missing
+      # or localhost, and ignores the port there; the MariaDB client switches to TCP whenever it gets
+      # --port, so pass neither. Any other host is TCP to that host and port.
+      def self.mysql_host_arguments(host, port)
+        return [] if host.nil? || host == 'localhost'
+
+        arguments = []
+        arguments << "--host=#{host}" if port || host != '127.0.0.1'
+        arguments << "--port=#{port}" if port
+        arguments
+      end
+      private_class_method :mysql_host_arguments
+
+      # Stops and reaps a dump that was given up on, as when an interrupt or a signal reached only
+      # this process, so it doesn't keep running, or write the temp file after it was removed.
+      def self.stop_child(pid)
+        Process.kill('TERM', pid)
+        Process.wait(pid)
+      rescue Errno::ESRCH, Errno::ECHILD
+        nil
+      end
+      private_class_method :stop_child
 
       # Like createdb and dropdb, Postgres connects to postgres and then template1, but never to the
       # database being created or dropped: Postgres can't drop the database a connection is using.
