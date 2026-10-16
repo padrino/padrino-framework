@@ -47,18 +47,22 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           begin
             # Create the SQLite database
             FileUtils.mkdir_p File.dirname(config[:database]) unless File.exist?(File.dirname(config[:database]))
-            ActiveRecord::Base.establish_connection(config)
-            ActiveRecord::Base.connection
+            connect_to_database(config)
           rescue StandardError => e
             catch_error(:create, e, config)
           end
         end
-        return # Skip the else clause of begin/rescue
-      else
-        ActiveRecord::Base.establish_connection(config)
-        ActiveRecord::Base.connection
+        return
       end
-    rescue StandardError
+
+      begin
+        connect_to_database(config)
+        $stderr.puts "#{config[:database]} already exists"
+        return
+      rescue StandardError => e
+        connection_error = e
+      end
+
       case config[:adapter]
       when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
         @charset   = ENV['CHARSET']   || 'utf8'
@@ -69,10 +73,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           ActiveRecord::Base.connection.create_database(config[:database], creation_options)
           ActiveRecord::Base.establish_connection(config)
         rescue StandardError => e
-          $stderr.puts(*e.backtrace)
-          $stderr.puts e.inspect
-          $stderr.puts "Couldn't create database for #{config.inspect}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
+          catch_error(:create, connection_error, config) if probe_error?(e)
+          $stderr.puts "Couldn't create database #{config[:database]}, charset: #{config[:charset] || @charset}, collation: #{config[:collation] || @collation}"
           $stderr.puts '(if you set the charset manually, make sure you have a matching collation)' if config[:charset]
+          raise
         end
       when 'postgresql'
         @encoding = config[:encoding] || ENV['CHARSET'] || 'utf8'
@@ -81,11 +85,23 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
           ActiveRecord::Base.connection.create_database(config[:database], config.merge(encoding: @encoding))
           ActiveRecord::Base.establish_connection(config)
         rescue StandardError => e
-          catch_error(:create, e, config)
+          catch_error(:create, probe_error?(e) ? connection_error : e, config)
         end
+      else
+        catch_error(:create, connection_error, config)
       end
-    else
-      $stderr.puts "#{config[:database]} already exists"
+    end
+
+    # Active Record 7.1+ connects lazily, so only a verified connection shows that the database exists.
+    def connect_to_database(config)
+      ActiveRecord::Base.establish_connection(config)
+      ActiveRecord::Base.connection.verify!
+    end
+
+    # A create that finds the database already there means the connection failed for another reason
+    # (no access to that database, bad settings), which is the error to report.
+    def probe_error?(error)
+      defined?(ActiveRecord::DatabaseAlreadyExists) && error.is_a?(ActiveRecord::DatabaseAlreadyExists)
     end
 
     namespace :drop do
@@ -353,14 +369,15 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
   def drop_database(config)
     case config[:adapter]
     when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
-      ActiveRecord::Base.establish_connection(config)
+      # Connect without the database, which may not exist; DROP DATABASE IF EXISTS doesn't need it.
+      ActiveRecord::Base.establish_connection(config.merge(database: nil))
       ActiveRecord::Base.connection.drop_database config[:database]
     when /^sqlite/
       require 'pathname'
       path = Pathname.new(config[:database])
       file = path.absolute? ? path.to_s : Padrino.root(path)
 
-      FileUtils.rm(file)
+      FileUtils.rm(file) if File.exist?(file)
     when 'postgresql'
       ActiveRecord::Base.establish_connection(config.merge(database: 'postgres', schema_search_path: 'public'))
       ActiveRecord::Base.connection.drop_database config[:database]
@@ -376,15 +393,15 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     FireRuby::Database.db_string_for(config.symbolize_keys)
   end
 
+  # Says which database failed and re-raises, so the task exits non-zero with the error.
   def catch_error(type, error, config)
-    $stderr.puts(*error.backtrace)
-    $stderr.puts error.inspect
     case type
     when :create
-      $stderr.puts "Couldn't create database for #{config.inspect}"
+      $stderr.puts "Couldn't create database #{config[:database]}"
     when :drop
       $stderr.puts "Couldn't drop #{config[:database]}"
     end
+    raise error
   end
 
   def migrate_as(type)
