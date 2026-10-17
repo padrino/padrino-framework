@@ -180,6 +180,22 @@ describe 'MigrationGenerator' do
       assert_match_in_file(/def self\.up\s+change_table :comments do \|t\|\s+t\.remove_references :commentable, polymorphic: true\s+end/m, migration_file_path)
       assert_match_in_file(/def self\.down\s+change_table :comments do \|t\|\s+t\.belongs_to :commentable, polymorphic: true\s+end/m, migration_file_path)
     end
+
+    it 'should combine a polymorphic modifier with an index modifier in any order' do
+      capture_io { generate(:migration, 'AddCommentableToComments', 'commentable:references:index:polymorphic', 'owner:belongs_to:polymorphic:uniq', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_commentable_to_comments.rb"
+      up = /def self\.up\s+change_table :comments do \|t\|\s+t\.references :commentable, polymorphic: true, index: true\s+t\.belongs_to :owner, polymorphic: true, index: \{ unique: true \}\s+end/m
+      down = /def self\.down\s+change_table :comments do \|t\|\s+t\.remove_references :commentable, polymorphic: true\s+t\.remove_references :owner, polymorphic: true\s+end/m
+      assert_match_in_file(up, migration_file_path)
+      assert_match_in_file(down, migration_file_path)
+    end
+
+    it 'should add one unique index for index and uniq, and read an index after an unknown segment' do
+      capture_io { generate(:migration, 'AddEmailToUsers', 'email:string:index:uniq', 'name:string:foo:index', 'title:string:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb"
+      up = /def self\.up\s+change_table :users do \|t\|\s+t\.string :email\s+t\.index :email, unique: true\s+t\.string :name\s+t\.index :name\s+t\.string :title\s+end/m
+      assert_match_in_file(up, migration_file_path)
+    end
   end
 
   describe 'the migration generator for sequel' do
@@ -252,6 +268,18 @@ describe 'MigrationGenerator' do
       ['add_column :name, String, index: true', 'add_column :email, String, index: { unique: true }',
        'add_column :body, :text, index: { unique: true }', 'add_column :title, String', 'add_column :code, String',
        'drop_column :name', 'drop_column :email', 'drop_column :body', 'drop_column :title', 'drop_column :code'].each do |line|
+        assert_includes migration, "      #{line}\n"
+      end
+    end
+
+    it 'should combine index modifiers and a polymorphic modifier in any order' do
+      fields = %w[email:string:index:uniq name:string:foo:index commentable:references:uniq:polymorphic]
+      capture_io { generate(:migration, 'AddEmailToUsers', *fields, "-r=#{@apptmp}/sample_project") }
+      migration = File.read("#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb")
+      ['add_column :email, String, index: { unique: true }', 'add_column :name, String, index: true',
+       'add_column :commentable_id, Integer', 'add_column :commentable_type, String',
+       'add_index [:commentable_type, :commentable_id], unique: true',
+       'drop_column :commentable_id', 'drop_column :commentable_type'].each do |line|
         assert_includes migration, "      #{line}\n"
       end
     end
