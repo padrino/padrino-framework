@@ -2,7 +2,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
   # Sequel's Migrator raises without migration files (a new project, or a clone, since git drops the
   # empty db/migrate); like ar:migrate, there's then nothing to do.
   no_migrations = lambda do
-    next false if Dir.glob('db/migrate/*.rb', File::FNM_CASEFOLD).any?
+    next false if Dir.glob('db/migrate/*.[rR][bB]').any?
 
     puts '<= No migrations in db/migrate'
     true

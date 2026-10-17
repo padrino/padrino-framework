@@ -60,6 +60,12 @@ describe 'Sequel tasks' do
     assert_includes rake('db:migrate'), '<= No migrations in db/migrate'
   end
 
+  it 'should run a migration whose extension is upper case, as Sequel does' do
+    File.rename(File.join(@root, 'db', 'migrate', '001_create_widgets.rb'), File.join(@root, 'db', 'migrate', '001_create_widgets.RB'))
+    rake 'sq:migrate'
+    assert_includes File.binread(database), 'widgets'
+  end
+
   it 'should still reject migration files that are not named like migrations' do
     File.rename(File.join(@root, 'db', 'migrate', '001_create_widgets.rb'), File.join(@root, 'db', 'migrate', 'create_widgets.rb'))
     error = assert_raises(Minitest::Assertion) { rake 'sq:migrate' }
