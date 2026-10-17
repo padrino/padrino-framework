@@ -742,6 +742,7 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/gem 'bacon'/, "#{@apptmp}/sample_project/Gemfile")
       assert_match_in_file(/Bacon::Context/, "#{@apptmp}/sample_project/test/test_config.rb")
+      assert_match_in_file(/^Bacon\.summary_on_exit$/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(%r{mounted_apps\.each .*require_dependencies\(File\.join\(app\.app_root, '\{helpers\.rb,helpers/\*\*/\*\.rb\}'\)\)}, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_file_exists("#{@apptmp}/sample_project/test/test.rake")

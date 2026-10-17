@@ -3,6 +3,8 @@ BACON_SETUP = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_SETUP)
   require_relative '../config/boot'
   Padrino.mounted_apps.each { |app| Padrino.require_dependencies(File.join(app.app_root, '{helpers.rb,helpers/**/*.rb}')) }
 
+  Bacon.summary_on_exit
+
   class Bacon::Context
     include Rack::Test::Methods
   end
