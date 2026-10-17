@@ -51,6 +51,21 @@ describe 'Sequel tasks' do
     assert_includes File.binread(database), 'widgets'
   end
 
+  it 'should migrate without migration files, as a new project has none' do
+    File.delete(File.join(@root, 'db', 'migrate', '001_create_widgets.rb'))
+    %w[sq:migrate sq:migrate:down sq:migrate:auto].each do |task|
+      assert_includes rake(task), '<= No migrations in db/migrate'
+    end
+    FileUtils.rm_rf(File.join(@root, 'db', 'migrate'))
+    assert_includes rake('db:migrate'), '<= No migrations in db/migrate'
+  end
+
+  it 'should still reject migration files that are not named like migrations' do
+    File.rename(File.join(@root, 'db', 'migrate', '001_create_widgets.rb'), File.join(@root, 'db', 'migrate', 'create_widgets.rb'))
+    error = assert_raises(Minitest::Assertion) { rake 'sq:migrate' }
+    assert_match(/migration filename convention/, error.message)
+  end
+
   # A Postgres config for the boot. The server connection sq:create and sq:drop open is a mock that
   # logs its options and statements; with +reachable: false+ the app database doesn't exist yet.
   def postgres_boot(reachable:)
