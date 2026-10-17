@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- NEW #2426 `padrino g model` and `padrino g migration` read the `index`, `uniq` and `polymorphic` field modifiers in any order with ActiveRecord, Sequel and Mongoid, so they combine: `owner:belongs_to:polymorphic:uniq` makes a polymorphic reference with a unique index. `uniq` wins over `index`, and a modifier in fourth or later position now counts (@achiurizo)
 - FIX #2424 `-d sequel` projects: `rake sq:migrate` (`db:migrate`), `sq:migrate:down`, `sq:migrate:auto` and `sq:reset` succeed when there are no migrations yet, as `ar:migrate` does, instead of failing with `Sequel::Migrator::Error`. A new project has none, and neither does a clone of one, since git drops the empty `db/migrate` (@nesquena)
 - FIX #2423 `-t bacon` projects: `rake test` exits non-zero when a spec fails or errors, and prints Bacon's summary. It used to exit 0, so CI passed with failing specs. In an existing project, add `Bacon.summary_on_exit` to `test/test_config.rb` after the `require_relative '../config/boot'` line (@nesquena)
 - NEW #2418 Add `rake db:dump` (`sq:dump`, `ar:dump`) to dump database data to `tmp/<env>_dump.sql`, or to `FILE=`, for postgres, mysql and sqlite. It runs `pg_dump`, `mysqldump` or `sqlite3`, which must be on PATH, with the app's connection and TLS settings; the dump file is readable only by its owner, and a failed dump keeps the earlier one (@achiurizo)
