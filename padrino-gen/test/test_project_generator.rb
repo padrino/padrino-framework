@@ -15,9 +15,9 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the project generator' do
-    it 'should set SameSite=Lax on the session cookie' do
+    it 'should set SameSite=Lax and Secure in production on the session cookie' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      assert_match_in_file(/^    set :sessions, same_site: :lax$/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/^    set :sessions, same_site: :lax, secure: Padrino\.env == :production$/, "#{@apptmp}/sample_project/app/app.rb")
       assert_no_match_in_file(/^\s*enable :sessions/, "#{@apptmp}/sample_project/app/app.rb")
     end
 
