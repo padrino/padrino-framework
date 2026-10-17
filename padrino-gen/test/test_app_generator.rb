@@ -35,6 +35,12 @@ describe 'AppGenerator' do
       assert_match_in_file(/^  set :session_secret, ENV\.fetch\('SESSION_SECRET'\) \{ '\h{64}' \}$/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
+    it 'should set SameSite=Lax and Secure in production on the session cookie' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/^    set :sessions, same_site: :lax, secure: Padrino\.env == :production$/, "#{@apptmp}/sample_project/demo/app.rb")
+    end
+
     it 'should create correctly a new padrino application with an underscore name' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'demo_app', "--root=#{@apptmp}/sample_project") }
