@@ -26,8 +26,10 @@ module <%= @app_name %>
     set :admin_model, '<%= @model_name %>'
     set :login_page,  '/sessions/new'
 
-    set :sessions, same_site: :lax
-    # set :sessions, same_site: :lax, secure: true # Send the session cookie over HTTPS only
+    # The session cookie is Secure (sent over HTTPS only) in production. Over plain HTTP
+    # the app then sends no session cookie, so logins and CSRF-protected forms fail. Behind
+    # a proxy that terminates TLS, have it send X-Forwarded-Proto: https, or set secure: false.
+    set :sessions, same_site: :lax, secure: Padrino.env == :production
     disable :store_location
 
     access_control.roles_for :any do |role|
