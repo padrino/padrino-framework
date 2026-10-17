@@ -1,8 +1,19 @@
 if PadrinoTasks.load?(:sequel, defined?(Sequel))
+  # Sequel's Migrator raises without migration files (a new project, or a clone, since git drops the
+  # empty db/migrate); like ar:migrate, there's then nothing to do.
+  no_migrations = lambda do
+    next false if Dir.glob('db/migrate/*.[rR][bB]').any?
+
+    puts '<= No migrations in db/migrate'
+    true
+  end
+
   namespace :sq do
     namespace :migrate do
       desc 'Perform automigration (reset your db data)'
       task auto: :skeleton do
+        next if no_migrations.call
+
         ::Sequel.extension :migration
         ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate', target: 0
         ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate'
@@ -20,6 +31,8 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
 
       desc 'Perform migration up to latest migration available'
       task up: :skeleton do
+        next if no_migrations.call
+
         ::Sequel.extension :migration
         ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate'
         puts '<= sq:migrate:up executed'
@@ -27,6 +40,8 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
 
       desc 'Perform migration down (erase all data)'
       task down: :skeleton do
+        next if no_migrations.call
+
         ::Sequel.extension :migration
         ::Sequel::Migrator.run Sequel::Model.db, 'db/migrate', target: 0
         puts '<= sq:migrate:down executed'
