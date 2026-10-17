@@ -88,29 +88,32 @@ def sq_reference?(kind)
   %w[references belongs_to].include?(kind.underscore)
 end
 
-# A third field segment, as in name:string:index or email:string:uniq, adds an index. Other values are ignored.
-def sq_index_option(option)
-  { 'index' => ', index: true', 'uniq' => ', index: { unique: true }' }[option]
+# Segments after the kind are modifiers, in any order: index or uniq adds one index (uniq wins),
+# as in name:string:index or email:string:uniq. Other values are ignored.
+def sq_index_option(modifiers)
+  if modifiers.include?('uniq') then ', index: { unique: true }'
+  elsif modifiers.include?('index') then ', index: true'
+  end
 end
 
 # A references (or belongs_to) field is an indexed foreign key to the pluralized table: user:references
-# becomes user_id, referencing users. A third segment makes the index unique (uniq) or makes it
-# polymorphic: an id and a type column with an index on both, and no foreign key constraint.
-def sq_reference_columns(field, option, alter)
-  if option == 'polymorphic'
-    index = "[:#{field}_type, :#{field}_id]"
+# becomes user_id, referencing users. A uniq modifier makes the index unique. A polymorphic modifier
+# makes an id and a type column with an index on both (unique with uniq), and no foreign key constraint.
+def sq_reference_columns(field, modifiers, alter)
+  if modifiers.include?('polymorphic')
+    index = "[:#{field}_type, :#{field}_id]#{', unique: true' if modifiers.include?('uniq')}"
     return ["add_column :#{field}_id, Integer", "add_column :#{field}_type, String", "add_index #{index}"] if alter
 
     return ["Integer :#{field}_id", "String :#{field}_type", "index #{index}"]
   end
 
-  "#{'add_' if alter}foreign_key :#{field}_id, :#{field.pluralize.underscore}#{sq_index_option(option) || ', index: true'}"
+  "#{'add_' if alter}foreign_key :#{field}_id, :#{field.pluralize.underscore}#{sq_index_option(modifiers) || ', index: true'}"
 end
 
 # Dropping a column also drops its indexes.
-def sq_remove_column(field, kind, option)
+def sq_remove_column(field, kind, modifiers)
   return "drop_column :#{field}" unless sq_reference?(kind)
-  return ["drop_column :#{field}_id", "drop_column :#{field}_type"] if option == 'polymorphic'
+  return ["drop_column :#{field}_id", "drop_column :#{field}_type"] if modifiers.include?('polymorphic')
 
   "drop_foreign_key :#{field}_id"
 end
@@ -118,10 +121,10 @@ end
 def create_model_migration(migration_name, name, columns)
   output_model_migration(
     migration_name, name, columns,
-    column_format: proc { |field, kind, option|
-      next sq_reference_columns(field, option, false) if sq_reference?(kind)
+    column_format: proc { |field, kind, *modifiers|
+      next sq_reference_columns(field, modifiers, false) if sq_reference?(kind)
 
-      "#{kind.underscore.camelize} :#{field}#{sq_index_option(option)}"
+      "#{kind.underscore.camelize} :#{field}#{sq_index_option(modifiers)}"
     },
     base: SQ_MIGRATION,
     up: SQ_MODEL_UP_MG,
@@ -147,11 +150,11 @@ def create_migration_file(migration_name, name, columns)
   output_migration_file(
     migration_name, name, columns,
     base: SQ_MIGRATION, change_format: SQ_CHANGE_MG,
-    add: proc { |field, kind, option|
-      next sq_reference_columns(field, option, true) if sq_reference?(kind)
+    add: proc { |field, kind, *modifiers|
+      next sq_reference_columns(field, modifiers, true) if sq_reference?(kind)
 
-      "add_column :#{field}, #{sq_column_type(kind)}#{sq_index_option(option)}"
+      "add_column :#{field}, #{sq_column_type(kind)}#{sq_index_option(modifiers)}"
     },
-    remove: proc { |field, kind, option| sq_remove_column(field, kind, option) }
+    remove: proc { |field, kind, *modifiers| sq_remove_column(field, kind, modifiers) }
   )
 end

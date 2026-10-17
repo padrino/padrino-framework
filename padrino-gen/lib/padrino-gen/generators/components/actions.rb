@@ -28,7 +28,7 @@ module Padrino
             return if migration_exist?(filename)
             model_name = name.to_s.pluralize
             field_tuples = columns.map { |value| value.split(':') }
-            field_tuples.map! { |field, kind, index| [field, kind =~ /datetime/i ? 'DateTime' : kind, index] }
+            field_tuples.map! { |field, kind, *modifiers| [field, kind =~ /datetime/i ? 'DateTime' : kind, *modifiers] }
             column_declarations = field_tuples.flat_map(&options[:column_format]).join("\n      ")
             contents = options[:base].dup.gsub(/\s{4}!UP!\n/m, options[:up]).gsub(/!DOWN!\n/m, options[:down])
             contents = contents.gsub(/!NAME!/, model_name.underscore.camelize).gsub(/!TABLE!/, model_name.underscore)
@@ -70,7 +70,7 @@ module Padrino
             migration_scan = filename.underscore.camelize.scan(/(Add|Remove).*?(?:(?:To|From).+?)*(?:To|From)((?:To|From)?.*?)$/).flatten
             direction, table_name = migration_scan[0].downcase, migration_scan[1].downcase.pluralize if migration_scan.any?
             tuples = direction ? columns.map { |value| value.split(':') } : []
-            tuples.map! { |field, kind, index| [field, kind =~ /datetime/i ? 'DateTime' : kind, index] }
+            tuples.map! { |field, kind, *modifiers| [field, kind =~ /datetime/i ? 'DateTime' : kind, *modifiers] }
             add_columns    = tuples.flat_map(&options[:add]).join("\n      ")
             remove_columns = tuples.flat_map(&options[:remove]).join("\n      ")
             forward_text = change_format.gsub(/!TABLE!/, table_name).gsub(/!COLUMNS!/, add_columns) if tuples.any?

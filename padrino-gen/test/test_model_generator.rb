@@ -190,6 +190,15 @@ describe 'ModelGenerator' do
       fields = /create_table :comments do \|t\|\s+t\.text :body\s+t\.references :commentable, polymorphic: true\s+t\.timestamps/m
       assert_match_in_file(fields, migration_file_path)
     end
+
+    it 'should generate migration file with a uniquely indexed polymorphic reference' do
+      stop_time_for_test
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:model, 'comment', 'commentable:references:uniq:polymorphic', "-r=#{@apptmp}/sample_project") }
+      migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_comments.rb"
+      fields = /create_table :comments do \|t\|\s+t\.references :commentable, polymorphic: true, index: \{ unique: true \}\s+t\.timestamps/m
+      assert_match_in_file(fields, migration_file_path)
+    end
   end
 
   # SEQUEL
@@ -251,6 +260,15 @@ describe 'ModelGenerator' do
       columns = /create_table :comments do\s+primary_key :id\s+Text :body\s+Integer :commentable_id\s+String :commentable_type\s+index \[:commentable_type, :commentable_id\]\s+end/m
       assert_match_in_file(columns, migration_file_path)
     end
+
+    it 'should combine a polymorphic modifier with uniq in any order in the migration file' do
+      stop_time_for_test
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=sequel') }
+      capture_io { generate(:model, 'comment', 'commentable:references:uniq:polymorphic', 'email:string:index:uniq', "-r=#{@apptmp}/sample_project") }
+      migration = File.read("#{@apptmp}/sample_project/db/migrate/001_create_comments.rb")
+      ['Integer :commentable_id', 'String :commentable_type', 'index [:commentable_type, :commentable_id], unique: true',
+       'String :email, index: { unique: true }'].each { |line| assert_includes migration, "      #{line}\n" }
+    end
   end
 
   describe 'model generator using mongoid' do
@@ -298,13 +316,14 @@ describe 'ModelGenerator' do
 
     it 'should generate belongs_to for references' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-d=mongoid') }
-      kinds = %w[account:references author:belongs_to:index commentable:references:polymorphic]
+      kinds = %w[account:references author:belongs_to:index commentable:references:polymorphic owner:references:index:polymorphic]
       capture_io { generate(:model, 'post', *kinds, "-r=#{@apptmp}/sample_project") }
       model = File.read("#{@apptmp}/sample_project/models/post.rb")
       assert_includes model, "  belongs_to :account\n"
       assert_includes model, "  belongs_to :author\n"
       assert_includes model, "  belongs_to :commentable, polymorphic: true\n"
-      refute_match(/field :(account|author|commentable)/, model)
+      assert_includes model, "  belongs_to :owner, polymorphic: true\n"
+      refute_match(/field :(account|author|commentable|owner)/, model)
     end
   end
 

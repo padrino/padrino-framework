@@ -100,10 +100,11 @@ unless defined?(MONGOID_FIELD_TYPES)
 end
 
 # A references (or belongs_to) field becomes an association, as in Mongoid's own generator.
-def mongoid_field(field, kind, option = nil)
+# A polymorphic modifier, in any position after the kind, makes it polymorphic.
+def mongoid_field(field, kind, modifiers)
   kind = kind.underscore
   if %w[references belongs_to].include?(kind)
-    return "belongs_to :#{field}#{', polymorphic: true' if option == 'polymorphic'}"
+    return "belongs_to :#{field}#{', polymorphic: true' if modifiers.include?('polymorphic')}"
   end
 
   "field :#{field}, type: #{MONGOID_FIELD_TYPES.fetch(kind) { kind.camelize }}"
@@ -113,7 +114,7 @@ end
 def create_model_file(name, options = {})
   model_path = destination_root(options[:app], 'models', "#{name.to_s.underscore}.rb")
   field_tuples = options[:fields].map { |value| value.split(':') }
-  column_declarations = field_tuples.map { |field, kind, option| mongoid_field(field, kind, option) }.join("\n  ")
+  column_declarations = field_tuples.map { |field, kind, *modifiers| mongoid_field(field, kind, modifiers) }.join("\n  ")
   model_contents = MONGOID_MODEL.gsub(/!NAME!/, name.to_s.underscore.camelize)
   model_contents.gsub!(/!FIELDS!/, column_declarations)
   create_file(model_path, model_contents)

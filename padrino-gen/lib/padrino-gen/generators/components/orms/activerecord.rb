@@ -206,12 +206,24 @@ def ar_reference?(kind)
   %w[references belongs_to].include?(kind.underscore)
 end
 
-# A third field segment, as in user_id:integer:index or email:string:uniq, adds an index.
-# On a reference it can also be polymorphic, as in commentable:references:polymorphic.
-def ar_add_column(field, kind, index)
+# Segments after the kind are modifiers, in any order: index or uniq adds one index (uniq wins),
+# as in user_id:integer:index or email:string:uniq. On a reference polymorphic adds a type column,
+# as in commentable:references:polymorphic, and combines with an index: owner:references:polymorphic:uniq.
+def ar_index_modifier(modifiers)
+  if modifiers.include?('uniq') then 'uniq'
+  elsif modifiers.include?('index') then 'index'
+  end
+end
+
+def ar_polymorphic_option(modifiers)
+  ', polymorphic: true' if modifiers.include?('polymorphic')
+end
+
+def ar_add_column(field, kind, modifiers)
+  index = ar_index_modifier(modifiers)
   if ar_reference?(kind)
-    option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }', 'polymorphic' => ', polymorphic: true' }[index]
-    return "t.#{kind.underscore} :#{field}#{option}"
+    index_option = { 'index' => ', index: true', 'uniq' => ', index: { unique: true }' }[index]
+    return "t.#{kind.underscore} :#{field}#{ar_polymorphic_option(modifiers)}#{index_option}"
   end
 
   columns = ["t.#{kind.underscore.gsub(/_/, '')} :#{field}"]
@@ -221,18 +233,17 @@ def ar_add_column(field, kind, index)
 end
 
 # Removing a column also removes its indexes. A polymorphic reference also drops its type column.
-def ar_remove_column(field, kind, option = nil)
+def ar_remove_column(field, kind, modifiers)
   return "t.remove :#{field}" unless ar_reference?(kind)
 
-  polymorphic = ', polymorphic: true' if option == 'polymorphic'
-  "t.remove_references :#{field}#{polymorphic}"
+  "t.remove_references :#{field}#{ar_polymorphic_option(modifiers)}"
 end
 
 def create_model_migration(migration_name, name, columns)
   output_model_migration(
     migration_name, name, columns,
     base: AR_MIGRATION,
-    column_format: proc { |field, kind, index| ar_add_column(field, kind, index) },
+    column_format: proc { |field, kind, *modifiers| ar_add_column(field, kind, modifiers) },
     up: AR_MODEL_UP_MG,
     down: AR_MODEL_DOWN_MG
   )
@@ -249,7 +260,7 @@ def create_migration_file(migration_name, name, columns)
     migration_name, name, columns,
     base: AR_MIGRATION,
     change_format: AR_CHANGE_MG,
-    add: proc { |field, kind, index| ar_add_column(field, kind, index) },
-    remove: proc { |field, kind, option| ar_remove_column(field, kind, option) }
+    add: proc { |field, kind, *modifiers| ar_add_column(field, kind, modifiers) },
+    remove: proc { |field, kind, *modifiers| ar_remove_column(field, kind, modifiers) }
   )
 end
