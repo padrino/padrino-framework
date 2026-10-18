@@ -1,5 +1,6 @@
 require_relative '../helper'
 require_relative '../fixtures/sequel'
+require 'nokogiri'
 
 describe 'AdminPageGenerator' do
   before do
@@ -167,6 +168,34 @@ describe 'AdminPageGenerator' do
           assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.slim"
         end
         assert_match_in_file 'check_box_tag :bypass', "#{@apptmp}/sample_project/admin/views/sessions/new.slim"
+      end
+    end
+
+    %w[erb haml slim].each do |renderer|
+      it "should render the list menu with the same classes as the stylesheet and script expect (#{renderer})" do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
+        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+        capture_io { generate(:admin_page, 'friend', "--root=#{@apptmp}/sample_project") }
+        views = "#{@apptmp}/sample_project/admin/views"
+        mock_app do
+          set :views, views
+          helpers Padrino::Admin::Helpers::ViewHelpers
+          controllers :friends do
+            get(:index) { @friends = []; render 'friends/index', layout: false }
+            get(:new) {}
+            delete(:destroy_many) {}
+          end
+        end
+        get '/friends'
+        assert_equal 200, last_response.status
+        page = Nokogiri::HTML(last_response.body)
+        classes = ->(node) { node['class'].split }
+        assert_equal %w[list-menu-toggle dropdown-toggle], classes.call(page.at_css('[data-toggle=dropdown]'))
+        assert_equal 'menu', page.at_css('ul.dropdown-menu')['role']
+        assert_equal %w[list-menu-wrapper], classes.call(page.at_css('#select-all').parent)
+        %w[#deselect-all #delete-selected].each do |link|
+          assert_equal %w[list-menu-wrapper list-menu-wrapper-disabled], classes.call(page.at_css(link).parent)
+        end
       end
     end
 

@@ -15,11 +15,11 @@
               <li class=list-menu-wrapper>
                 <%%= link_to tag_icon('check-square-o', pat(:select_all)), '#', id: 'select-all', class: 'list-menu-link' %>
               </li>
-              <li class=list-menu-wrapper.list-menu-wrapper-disabled>
+              <li class="list-menu-wrapper list-menu-wrapper-disabled">
                 <%%= link_to tag_icon('square-o', pat(:deselect_all)), '#', id: 'deselect-all', class: 'list-menu-link list-menu-link-disabled' %>
               </li>
               <li class="list-menu-divider divider"></li>
-              <li class=list-menu-wrapper.list-menu-wrapper-disabled>
+              <li class="list-menu-wrapper list-menu-wrapper-disabled">
                 <%%=link_to tag_icon('trash-o', pat(:delete_selected)), '#', id: 'delete-selected', class: 'list-menu-link list-menu-link-disabled' %>
                 <div class='list-menu-popover-delete-selected popover right'>
                   <div class=arrow></div>

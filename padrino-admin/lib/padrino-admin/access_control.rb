@@ -188,7 +188,7 @@ module Padrino
         # Returns the name of the project module humanize them for you.
         #
         def human_name
-          @name.to_s.humanize
+          Padrino::Inflections.humanize(@name)
         end
 
         ##
