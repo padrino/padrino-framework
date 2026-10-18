@@ -40,7 +40,7 @@ module Padrino
         #
         def padrino_admin_translate(word, *args)
           options = args.last.is_a?(Hash) ? args.pop : {}
-          options[:default] ||= word.to_s.humanize
+          options[:default] ||= Padrino::Inflections.humanize(word)
           t("padrino.admin.#{word}", options)
         end
         alias pat padrino_admin_translate
@@ -60,7 +60,7 @@ module Padrino
         #   mat(:account, :email)
         #
         def model_attribute_translate(model, attribute)
-          t("models.#{model}.attributes.#{attribute}", default: attribute.to_s.humanize)
+          t("models.#{model}.attributes.#{attribute}", default: Padrino::Inflections.humanize(attribute))
         end
         alias t_attr model_attribute_translate
         alias mat t_attr
@@ -78,7 +78,7 @@ module Padrino
         #   mt(:account)
         #
         def model_translate(model)
-          t("models.#{model}.name", default: model.to_s.humanize)
+          t("models.#{model}.name", default: Padrino::Inflections.humanize(model))
         end
         alias mt model_translate
       end

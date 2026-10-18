@@ -1,7 +1,6 @@
 require_relative '../helper'
 require_relative '../fixtures/sequel'
 require 'nokogiri'
-require 'active_support/core_ext/string/inflections' # as the generated admin/app.rb does
 
 describe 'AdminPageGenerator' do
   before do

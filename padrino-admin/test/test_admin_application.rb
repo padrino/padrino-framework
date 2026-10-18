@@ -401,4 +401,8 @@ describe 'AdminApplication' do
     assert_match(/"admin"/, error.message)
     assert_raises(Padrino::Admin::AccessControlError) { access_control.roles_for }
   end
+
+  it 'should humanize project module names without ActiveSupport' do
+    assert_equal 'Blog posts', Padrino::Admin::AccessControl::ProjectModule.new(:blog_posts, '/blog_posts').human_name
+  end
 end
