@@ -8,10 +8,10 @@ div class="tabs-content"
       tr
         th class='header list-menu'
           div class='dropdown'
-            a href='#' class='list-menu-toggle.dropdown-toggle dropdown-toggle' data-toggle='dropdown'
+            a href='#' class='list-menu-toggle dropdown-toggle' data-toggle='dropdown'
               = tag_icon :magic
               span class='caret'
-            ul class='list-menu dropdown-menu' role='dropdown'
+            ul class='list-menu dropdown-menu' role='menu'
               li class='list-menu-wrapper' = link_to tag_icon('check-square-o', pat(:select_all)), '#', id: 'select-all', class: 'list-menu-link'
               li class='list-menu-wrapper list-menu-wrapper-disabled' = link_to tag_icon('square-o', pat(:deselect_all)), '#', id: 'deselect-all', class: 'list-menu-link list-menu-link-disabled'
               li class='list-menu-divider divider'
