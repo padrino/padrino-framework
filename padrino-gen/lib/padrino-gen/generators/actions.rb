@@ -408,7 +408,11 @@ module Padrino
       #   insert_into_gemfile(name, group: 'test', version: ">1.2.3")
       #
       def insert_into_gemfile(name, options = {})
-        after_pattern = options[:group] ? "#{options[:group].to_s.capitalize} requirements\n" : "Component requirements\n"
+        # Generated Gemfiles only have a "Test requirements" section; other groups go with the components.
+        group_pattern = "#{options[:group].to_s.capitalize} requirements\n" if options[:group]
+        gemfile = destination_root('Gemfile')
+        after_pattern = group_pattern if group_pattern && File.exist?(gemfile) && File.read(gemfile).include?(group_pattern)
+        after_pattern ||= "Component requirements\n"
         version       = options.delete(:version)
         gem_options   = options.map { |k, v| k.to_s == 'require' && [true, false].include?(v) ? "#{k}: #{v}" : "#{k}: '#{v}'" }.join(', ')
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"

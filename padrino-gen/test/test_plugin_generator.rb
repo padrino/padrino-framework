@@ -18,6 +18,15 @@ describe 'PluginGenerator' do
       refute_match(/You are not at the root/, out)
     end
 
+    it 'should add gems in a group the Gemfile has no section for' do
+      plugin = "#{@apptmp}/group_plugin.rb"
+      File.write(plugin, "require_dependencies 'foo_dev', group: :development\nrequire_dependencies 'foo_test', group: :test\n")
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:plugin, plugin, "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/# Component requirements\ngem 'foo_dev', group: 'development'\n/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/# Test requirements\ngem 'foo_test', group: 'test'\n/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
     it 'should fail outside app root' do
       path = File.expand_path('fixtures/plugin_template.rb', __dir__)
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:plugin, path, "--root=#{@apptmp}") }.status }
