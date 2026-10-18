@@ -413,8 +413,13 @@ module Padrino
         gemfile = destination_root('Gemfile')
         after_pattern = group_pattern if group_pattern && File.exist?(gemfile) && File.read(gemfile).include?(group_pattern)
         after_pattern ||= "Component requirements\n"
-        version       = options.delete(:version)
-        gem_options   = options.map { |k, v| k.to_s == 'require' && [true, false].include?(v) ? "#{k}: #{v}" : "#{k}: '#{v}'" }.join(', ')
+        version       = options[:version]
+        gem_options   = options.reject { |k, _| k == :version }.map do |k, v|
+          if v.is_a?(Array) then "#{k}: #{v.inspect}"
+          elsif k.to_s == 'require' && [true, false].include?(v) then "#{k}: #{v}"
+          else "#{k}: '#{v}'"
+          end
+        end.join(', ')
         write_option  = gem_options.empty? ? '' : ", #{gem_options}"
         write_version = version ? ", '#{version}'" : ''
         include_text  = "gem '#{name}'" << write_version << write_option << "\n"

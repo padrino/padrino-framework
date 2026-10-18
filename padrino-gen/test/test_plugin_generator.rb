@@ -27,6 +27,16 @@ describe 'PluginGenerator' do
       assert_match_in_file(/# Test requirements\ngem 'foo_test', group: 'test'\n/, "#{@apptmp}/sample_project/Gemfile")
     end
 
+    it 'should write an Array group and give each gem the version' do
+      plugin = "#{@apptmp}/options_plugin.rb"
+      File.write(plugin, "require_dependencies 'foo_both', group: [:development, :test]\nrequire_dependencies 'foo_a', 'foo_b', version: '>= 2'\n")
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:plugin, plugin, "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/^gem 'foo_both', group: \[:development, :test\]$/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/^gem 'foo_a', '>= 2'$/, "#{@apptmp}/sample_project/Gemfile")
+      assert_match_in_file(/^gem 'foo_b', '>= 2'$/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
     it 'should fail outside app root' do
       path = File.expand_path('fixtures/plugin_template.rb', __dir__)
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:plugin, path, "--root=#{@apptmp}") }.status }
