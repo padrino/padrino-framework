@@ -289,7 +289,8 @@ module Padrino
         project_name = project_name ? (Object.const_get(project_name) rescue nil) : nil
         Object.const_defined?(name) || project_name&.const_defined?(name)
       rescue ::NameError => e
-        raise unless e.instance_of?(::NameError) # a NoMethodError is a bug, not a bad name
+        # Only Ruby's rejection of the name itself; a NameError from code that autoloading runs is a real error.
+        raise unless e.instance_of?(::NameError) && e.message.start_with?('wrong constant name')
         raise Thor::Error, "#{name} is not a valid constant name"
       end
 
