@@ -29,9 +29,10 @@ describe 'ControllerGenerator' do
       assert_no_file_exists("#{@apptmp}/sample_project/nosuchapp/controllers/demo.rb")
     end
 
-    it 'should fail with NameError if given invalid namespace names' do
+    it 'should fail with a message if given invalid namespace names' do
       capture_io { generate(:project, 'sample', "--root=#{@apptmp}") }
-      assert_raises(::NameError) { capture_io { generate(:controller, 'wrong/name', "--root=#{@apptmp}/sample") } }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:controller, 'wrong/name', "--root=#{@apptmp}/sample") }.status }
+      assert_match(%r{Namespace 'wrong/name' must consist only of alphanumeric characters or '_'}, err)
     end
 
     it 'should generate controller within existing project' do

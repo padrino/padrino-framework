@@ -22,6 +22,13 @@ describe 'ModelGenerator' do
       assert_match(/No value provided for required arguments 'name'/, err)
     end
 
+    it 'should fail with a message if the model name is not a valid constant' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, '2bad', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/2bad is not a valid constant name/, err)
+      assert_no_file_exists("#{@apptmp}/sample_project/models/2bad.rb")
+    end
+
     it 'should generate filename properly' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
       capture_io { generate(:model, 'DemoItem', 'name:string', 'age', 'email:string', "-r=#{@apptmp}/sample_project") }

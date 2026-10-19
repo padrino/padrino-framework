@@ -19,9 +19,10 @@ describe 'HelperGenerator' do
       assert_no_file_exists("#{@apptmp}/app/helpers/demo_helper.rb")
     end
 
-    it 'should fail with NameError if given invalid namespace names' do
+    it 'should fail with a message if given invalid namespace names' do
       capture_io { generate(:project, 'sample', "--root=#{@apptmp}") }
-      assert_raises(::NameError) { capture_io { generate(:helper, 'wrong/name', "--root=#{@apptmp}/sample") } }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:helper, 'wrong/name', "--root=#{@apptmp}/sample") }.status }
+      assert_match(%r{Namespace 'wrong/name' must consist only of alphanumeric characters or '_'}, err)
     end
 
     it 'should generate helper within existing project' do

@@ -288,6 +288,10 @@ module Padrino
       def already_exists?(name, project_name = nil)
         project_name = project_name ? (Object.const_get(project_name) rescue nil) : nil
         Object.const_defined?(name) || project_name&.const_defined?(name)
+      rescue ::NameError => e
+        # Only Ruby's rejection of the name itself; a NameError from code that autoloading runs is a real error.
+        raise unless e.instance_of?(::NameError) && e.message.start_with?('wrong constant name')
+        raise Thor::Error, "#{name} is not a valid constant name"
       end
 
       ##
@@ -611,7 +615,8 @@ module Padrino
       end
 
       ##
-      # Ensures that project name is valid, else raise an NameError.
+      # Ensures that project name is valid, else raises a Thor::Error: the generator's start prints its
+      # message and exits with status 1.
       #
       # @param [String] name
       #   Name of project.
@@ -624,9 +629,9 @@ module Padrino
       #
       def valid_constant?(name)
         if name =~ /^\d/
-          raise ::NameError, "Constant name #{name} cannot start with numbers"
+          raise Thor::Error, "Constant name #{name} cannot start with numbers"
         elsif name =~ /^\W/
-          raise ::NameError, "Constant name #{name} cannot start with non-word character"
+          raise Thor::Error, "Constant name #{name} cannot start with non-word character"
         end
       end
 
@@ -642,7 +647,7 @@ module Padrino
       #
       def validate_namespace(name)
         valid_constant? name
-        name.match(/^[[:alnum:]_]+$/) || raise(::NameError, "Namespace '#{name}' must consist only of alphanumeric characters or '_'")
+        name.match(/^[[:alnum:]_]+$/) || raise(Thor::Error, "Namespace '#{name}' must consist only of alphanumeric characters or '_'")
       end
 
       ##
