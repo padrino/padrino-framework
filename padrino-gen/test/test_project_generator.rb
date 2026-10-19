@@ -79,8 +79,11 @@ describe 'ProjectGenerator' do
     end
 
     it 'should raise an Error when given invalid constant names' do
-      assert_raises(::NameError) { capture_io { generate(:project, '123asdf', "--root=#{@apptmp}") } }
-      assert_raises(::NameError) { capture_io { generate(:project, './sample_project', "--root=#{@apptmp}") } }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:project, '123asdf', "--root=#{@apptmp}") }.status }
+      assert_match(/Constant name 123asdf cannot start with numbers/, err)
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:project, './sample_project', "--root=#{@apptmp}") }.status }
+      assert_match(%r{Constant name \./sample_project cannot start with non-word character}, err)
+      assert_no_dir_exists("#{@apptmp}/123asdf")
     end
 
     it 'should display the right path' do

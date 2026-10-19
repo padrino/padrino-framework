@@ -17,6 +17,13 @@ describe 'AppGenerator' do
       assert_no_file_exists("#{@apptmp}/demo_root")
     end
 
+    it 'should fail with a message if the app name is not a valid constant' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:app, '4y', "--root=#{@apptmp}/sample_project") }.status }
+      assert_match(/4y is not a valid constant name/, err)
+      assert_no_dir_exists("#{@apptmp}/sample_project/4y")
+    end
+
     it 'should create correctly a new padrino application' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }

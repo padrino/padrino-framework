@@ -17,9 +17,10 @@ describe 'MailerGenerator' do
       assert_empty Dir.children(@apptmp)
     end
 
-    it 'should fail with NameError if given invalid namespace names' do
+    it 'should fail with a message if given invalid namespace names' do
       capture_io { generate(:project, 'sample', "--root=#{@apptmp}") }
-      assert_raises(::NameError) { capture_io { generate(:mailer, 'wrong/name', "--root=#{@apptmp}/sample") } }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:mailer, 'wrong/name', "--root=#{@apptmp}/sample") }.status }
+      assert_match(%r{Namespace 'wrong/name' must consist only of alphanumeric characters or '_'}, err)
     end
 
     it 'should generate mailer in specified app' do
