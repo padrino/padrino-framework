@@ -127,6 +127,7 @@ Style/CaseEquality:
   Exclude:
     - padrino-core/lib/padrino-core/filter.rb
     - padrino-core/lib/padrino-core/path_router/compiler.rb
+    - padrino-core/lib/padrino-core/reloader/storage.rb
 
 Style/CombinableLoops:
   Exclude:

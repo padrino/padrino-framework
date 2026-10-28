@@ -154,6 +154,18 @@ module Padrino
     end
 
     ##
+    # Clears the included and prepended blocks of an ActiveSupport::Concern, so that its file
+    # can define them again. Its dependencies are reset by +extend ActiveSupport::Concern+.
+    #
+    def reset_concern(concern)
+      return if constant_excluded?(concern)
+      %i[@_included_block @_prepended_block].each do |ivar|
+        concern.remove_instance_variable(ivar) if concern.instance_variable_defined?(ivar)
+      end
+      logger.devel "Reset concern #{concern}"
+    end
+
+    ##
     # Remove a feature from $LOADED_FEATURES so it can be required again.
     #
     def remove_feature(file)

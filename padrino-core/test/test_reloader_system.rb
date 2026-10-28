@@ -191,5 +191,94 @@ describe 'SystemReloader' do
       Padrino.reload!
       assert_equal original_value, BadModule.instance_variable_get(:@happy_global_variable)
     end
+
+    it 'should redefine an ActiveSupport::Concern whose included block moved' do
+      begin
+        require 'active_support/concern'
+      rescue LoadError
+        skip 'ActiveSupport is not available'
+      end
+      concern_file = "#{__dir__}/fixtures/apps/concerned/models/mixins/filterable.rb"
+      includer_file = "#{__dir__}/fixtures/apps/concerned/models/filtered_item.rb"
+      original = File.read(concern_file)
+      Padrino.clear!
+      require File.expand_path("#{__dir__}/fixtures/apps/concerned/app.rb")
+      @app = SystemConcernedClassDemo
+      Padrino.mount(SystemConcernedClassDemo).to('/')
+      get '/'
+      assert_equal 'v1', FilteredItem.new.filter
+      Filterable.instance_variable_set(:@config, :kept)
+
+      # A second edit checks that the concern stays tracked after its first reload.
+      [2, 3].each do |version|
+        File.write(concern_file, original.sub('  included do', "#{"  # moved\n" * version}  included do")
+                                         .sub("'v1'", "'v#{version}'").sub("'l1'", "'l#{version}'"))
+        FileUtils.touch(concern_file, mtime: Time.now + version)
+        Padrino.reload!
+        assert_equal "l#{version}", FilteredItem.new.label
+        FileUtils.touch(includer_file, mtime: Time.now + version)
+        Padrino.reload!
+        assert_equal "v#{version}", FilteredItem.new.filter
+      end
+      assert_equal :kept, Filterable.instance_variable_get(:@config)
+    ensure
+      File.write(concern_file, original) if original
+    end
+
+    it 'should redefine an ActiveSupport::Concern that another file requires, also after Padrino.clear!' do
+      begin
+        require 'active_support/concern'
+      rescue LoadError
+        skip 'ActiveSupport is not available'
+      end
+      concern_file = "#{__dir__}/fixtures/apps/concerned/models/mixins/sortable.rb"
+      includer_file = "#{__dir__}/fixtures/apps/concerned/models/catalog_item.rb"
+      original = File.read(concern_file)
+      # Sortable stays defined after Padrino.clear!, so the second load finds it already defined.
+      2.times do
+        Padrino.clear!
+        require File.expand_path("#{__dir__}/fixtures/apps/concerned/app.rb")
+        @app = SystemConcernedClassDemo
+        Padrino.mount(SystemConcernedClassDemo).to('/')
+        get '/'
+      end
+      assert_equal 's1', CatalogItem.new.sort_key
+
+      [2, 3].each do |version|
+        File.write(concern_file, original.sub('  included do', "#{"  # moved\n" * version}  included do").gsub("'s1'", "'s#{version}'"))
+        FileUtils.touch(concern_file, mtime: Time.now + version)
+        Padrino.reload!
+        assert_equal "s#{version}", CatalogItem.new.sort_label
+        FileUtils.touch(includer_file, mtime: Time.now + version)
+        Padrino.reload!
+        assert_equal "s#{version}", CatalogItem.new.sort_key
+      end
+    ensure
+      if original
+        File.write(concern_file, original)
+        # The next Padrino.clear! keeps Sortable, and CatalogItem then requires the restored file without a reset.
+        Padrino::Reloader.reset_concern(Sortable) if defined?(Sortable)
+      end
+    end
+
+    it 'should not call methods on deprecated constant proxies while looking for concerns' do
+      begin
+        require 'active_support'
+        require 'active_support/deprecation'
+      rescue LoadError
+        skip 'ActiveSupport is not available'
+      end
+      # A proxy is a Module that warns, or raises with this behavior, on any method call,
+      # so the test only keeps a reference to it and never calls it.
+      deprecator = ActiveSupport::Deprecation.new
+      deprecator.behavior = :raise
+      _proxy = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ReloaderDeprecatedMonitor', '::Monitor', deprecator)
+      Padrino.clear!
+      require File.expand_path("#{__dir__}/fixtures/apps/concerned/app.rb")
+      @app = SystemConcernedClassDemo
+      Padrino.mount(SystemConcernedClassDemo).to('/')
+      get '/'
+      assert_equal 'l1', FilteredItem.new.label
+    end
   end
 end

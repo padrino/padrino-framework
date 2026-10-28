@@ -20,6 +20,7 @@ module Padrino
 
       def prepare(name)
         file = remove(name)
+        reset_concerns(name)
         @old_entries ||= {}
         @old_entries[name] = {
           constants: object_classes,
@@ -55,6 +56,24 @@ module Padrino
 
       def files
         @files ||= {}
+      end
+
+      ##
+      # Resets the ActiveSupport::Concern modules first defined in the file. Unlike classes
+      # they are kept on reload, so that classes including them keep working and namespaces
+      # keep their constants, but their state is reset so the file can define them again.
+      #
+      def reset_concerns(file)
+        return unless defined?(::ActiveSupport::Concern)
+
+        ObjectSpace.each_object(::Module) do |mod|
+          # Module#=== doesn't call mod, which can be a DeprecatedConstantProxy that warns on any call.
+          next unless ::ActiveSupport::Concern === mod && mod.name
+          next unless Object.const_source_location(mod.name)&.first == file
+          Reloader.reset_concern(mod) if Object.const_get(mod.name).equal?(mod)
+        rescue NameError
+          next
+        end
       end
 
       ##
