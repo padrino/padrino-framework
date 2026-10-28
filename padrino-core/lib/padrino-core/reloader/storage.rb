@@ -67,7 +67,8 @@ module Padrino
         return unless defined?(::ActiveSupport::Concern)
 
         ObjectSpace.each_object(::Module) do |mod|
-          next unless mod.is_a?(::ActiveSupport::Concern) && mod.name
+          # Module#=== doesn't call mod, which can be a DeprecatedConstantProxy that warns on any call.
+          next unless ::ActiveSupport::Concern === mod && mod.name
           next unless Object.const_source_location(mod.name)&.first == file
           Reloader.reset_concern(mod) if Object.const_get(mod.name).equal?(mod)
         rescue NameError

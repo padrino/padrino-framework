@@ -260,5 +260,25 @@ describe 'SystemReloader' do
         Padrino::Reloader.reset_concern(Sortable) if defined?(Sortable)
       end
     end
+
+    it 'should not call methods on deprecated constant proxies while looking for concerns' do
+      begin
+        require 'active_support'
+        require 'active_support/deprecation'
+      rescue LoadError
+        skip 'ActiveSupport is not available'
+      end
+      # A proxy is a Module that warns, or raises with this behavior, on any method call.
+      deprecator = ActiveSupport::Deprecation.new
+      deprecator.behavior = :raise
+      proxy = ActiveSupport::Deprecation::DeprecatedConstantProxy.new('ReloaderDeprecatedMonitor', '::Monitor', deprecator)
+      Padrino.clear!
+      require File.expand_path("#{__dir__}/fixtures/apps/concerned/app.rb")
+      @app = SystemConcernedClassDemo
+      Padrino.mount(SystemConcernedClassDemo).to('/')
+      get '/'
+      assert_equal 'l1', FilteredItem.new.label
+      refute_nil proxy
+    end
   end
 end
