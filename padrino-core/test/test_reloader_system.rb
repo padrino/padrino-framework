@@ -191,5 +191,36 @@ describe 'SystemReloader' do
       Padrino.reload!
       assert_equal original_value, BadModule.instance_variable_get(:@happy_global_variable)
     end
+
+    it 'should redefine an ActiveSupport::Concern whose included block moved' do
+      begin
+        require 'active_support/concern'
+      rescue LoadError
+        skip 'ActiveSupport is not available'
+      end
+      concern_file = "#{__dir__}/fixtures/apps/concerned/models/mixins/filterable.rb"
+      includer_file = "#{__dir__}/fixtures/apps/concerned/models/filtered_item.rb"
+      original = File.read(concern_file)
+      Padrino.clear!
+      require File.expand_path("#{__dir__}/fixtures/apps/concerned/app.rb")
+      @app = SystemConcernedClassDemo
+      Padrino.mount(SystemConcernedClassDemo).to('/')
+      get '/'
+      assert_equal 'v1', FilteredItem.new.filter
+
+      # A second edit checks that the concern stays tracked after its first reload.
+      [2, 3].each do |version|
+        File.write(concern_file, original.sub('  included do', "#{"  # moved\n" * version}  included do")
+                                         .sub("'v1'", "'v#{version}'").sub("'l1'", "'l#{version}'"))
+        FileUtils.touch(concern_file, mtime: Time.now + version)
+        Padrino.reload!
+        assert_equal "l#{version}", FilteredItem.new.label
+        FileUtils.touch(includer_file, mtime: Time.now + version)
+        Padrino.reload!
+        assert_equal "v#{version}", FilteredItem.new.filter
+      end
+    ensure
+      File.write(concern_file, original) if original
+    end
   end
 end

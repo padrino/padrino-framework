@@ -154,6 +154,16 @@ module Padrino
     end
 
     ##
+    # Clears the state of an ActiveSupport::Concern, such as its included block, so that
+    # its file can define it again.
+    #
+    def reset_concern(concern)
+      return if constant_excluded?(concern)
+      concern.instance_variables.each { |ivar| concern.remove_instance_variable(ivar) }
+      logger.devel "Reset concern #{concern}"
+    end
+
+    ##
     # Remove a feature from $LOADED_FEATURES so it can be required again.
     #
     def remove_feature(file)
