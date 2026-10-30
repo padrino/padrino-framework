@@ -21,3 +21,4 @@ module Smoke
 end
 
 require 'smoke/combination'
+require 'smoke/shell'
