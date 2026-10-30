@@ -242,7 +242,10 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       desc 'Create a db/schema.rb file that can be portably used against any DB supported by AR.'
       task dump: :skeleton do
         require 'active_record/schema_dumper'
-        File.open(ENV['SCHEMA'] || Padrino.root('db', 'schema.rb'), 'w') do |file|
+        # A project on a database server has no db/ until its first migration is generated.
+        schema_file = ENV['SCHEMA'] || Padrino.root('db', 'schema.rb')
+        FileUtils.mkdir_p(File.dirname(schema_file))
+        File.open(schema_file, 'w') do |file|
           ActiveRecord::SchemaDumper.dump(schema_dumper_source, file)
         end
         Rake::Task['ar:schema:dump'].reenable
@@ -261,6 +264,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     namespace :structure do
       desc 'Dump the database structure to a SQL file.'
       task dump: :skeleton do
+        FileUtils.mkdir_p(File.dirname(resolve_structure_sql))
         with_database(Padrino.env) do |config|
           case config[:adapter]
           when 'mysql', 'mysql2', 'em_mysql2', 'oci', 'oracle', 'jdbcmysql'

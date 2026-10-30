@@ -142,6 +142,13 @@ describe 'ActiveRecord tasks' do
     assert_match(/create_table "widgets"/, schema)
   end
 
+  it 'should migrate a new project on a server database, which has no db directory yet' do
+    FileUtils.rm_rf(File.join(@root, 'db'))
+    File.write(File.join(@root, 'config', 'boot.rb'), File.read(File.join(@root, 'config', 'boot.rb')).sub("Padrino.root('db', 'development.db')", "Padrino.root('development.db')"))
+    rake('ar:migrate')
+    assert_includes schema, 'ActiveRecord::Schema'
+  end
+
   it 'should dump the schema after ar:migrate:down and ar:migrate:up' do
     rake 'ar:migrate'
     rake 'ar:migrate:down', 'MIGRATION_VERSION=1'
@@ -161,6 +168,15 @@ describe 'ActiveRecord tasks' do
     rake 'ar:structure:dump'
     structure = File.read(File.join(@root, 'db', 'development_structure.sql'))
     assert_match(/INSERT INTO "schema_migrations" \(version\) VALUES\s*\('1'\)/, structure)
+  end
+
+  it 'should dump the structure when there is no db directory yet' do
+    skip_without_sqlite_cli
+    File.write(File.join(@root, 'config', 'boot.rb'), File.read(File.join(@root, 'config', 'boot.rb')).sub("Padrino.root('db', 'development.db')", "Padrino.root('development.db')"))
+    rake 'ar:migrate'
+    FileUtils.rm_rf(File.join(@root, 'db'))
+    rake 'ar:structure:dump'
+    assert_file_exists File.join(@root, 'db', 'development_structure.sql')
   end
 
   def rake_failing(*args)
