@@ -111,6 +111,7 @@ module Smoke
       fill_in_placeholders
       padrino('scaffold', %w[g model post title:string body:text]) unless combination.orm == 'none'
       padrino('scaffold', %w[g mailer notifier])
+      build_vite if combination.vite?
     end
 
     def db_tasks!
@@ -200,6 +201,12 @@ module Smoke
     end
 
     private
+
+    # The vite component prints the npm install it needs; the build proves its config and entrypoint work.
+    def build_vite
+      run('vite', %w[npm install])
+      run('vite', %w[bundle exec vite build])
+    end
 
     def free_port
       server = TCPServer.new('127.0.0.1', 0)

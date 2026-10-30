@@ -1,0 +1,83 @@
+name: Smoke
+
+# Generates real projects across a pairwise set of components (smoke/combinations.yml) and checks that each
+# bundles, migrates, renders, tests, boots and survives re-running its generators. Runs nightly to catch gem
+# releases that break generated projects; on pull requests it is informational, not a required check.
+on:
+  push:
+    branches: [master]
+  pull_request:
+    paths:
+      - 'padrino-gen/**'
+      - 'padrino-admin/**'
+      - 'smoke/**'
+      - '.github/workflows/smoke.yml'
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    outputs:
+      rows: ${{ steps.matrix.outputs.rows }}
+    steps:
+    - uses: actions/checkout@v7
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '4.0'
+        bundler-cache: true
+    - run: bundle exec rake smoke:test
+    - id: matrix
+      run: echo "rows=$(bundle exec rake smoke:matrix)" >> "$GITHUB_OUTPUT"
+
+  smoke:
+    needs: list
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.list.outputs.rows) }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: root
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        ports: ['3306:3306']
+        options: --health-cmd "mysqladmin ping -h 127.0.0.1" --health-interval 5s --health-timeout 5s --health-retries 20
+      mongo:
+        image: mongo:7
+        ports: ['27017:27017']
+    env:
+      PGHOST: 127.0.0.1
+      PGUSER: root
+      SMOKE_BUNDLE_PATH: ${{ github.workspace }}/vendor/smoke-bundle
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        submodules: true
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+    - uses: actions/setup-node@v4
+      if: matrix.vite
+      with:
+        node-version: '22'
+    - uses: actions/cache@v4
+      with:
+        path: vendor/smoke-bundle
+        key: smoke-${{ matrix.name }}-${{ matrix.ruby }}-${{ github.run_id }}
+        restore-keys: smoke-${{ matrix.name }}-${{ matrix.ruby }}-
+    # Projects must create and drop their databases without the database client binaries (#2417).
+    - if: matrix.no_db_clients
+      run: for bin in psql createdb dropdb mysql; do sudo rm -f "$(command -v "$bin")"; done
+    - run: bundle exec rake "smoke[${{ matrix.name }}]"
