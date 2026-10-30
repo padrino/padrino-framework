@@ -20,6 +20,8 @@ module Smoke
   end
 end
 
+$LOAD_PATH.unshift(__dir__) unless $LOAD_PATH.include?(__dir__)
 require 'smoke/combination'
 require 'smoke/shell'
 require 'smoke/project'
+require 'smoke/runner'

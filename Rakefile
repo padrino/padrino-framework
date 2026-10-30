@@ -150,3 +150,29 @@ end
 
 desc 'Run tests for all padrino stack gems'
 task default: :test
+
+desc 'Generate a real project for one smoke combination and check it works (SMOKE_KEEP=1 keeps it)'
+task :smoke, [:name] do |_t, args|
+  require_relative 'smoke/lib/smoke'
+  Smoke::Runner.run(args.name.to_s)
+end
+
+namespace :smoke do
+  desc 'List the smoke combinations'
+  task :list do
+    require_relative 'smoke/lib/smoke'
+    puts Smoke::Combination.load.map(&:name)
+  end
+
+  desc 'Print the smoke combinations as a JSON matrix for GitHub Actions'
+  task :matrix do
+    require 'json'
+    require_relative 'smoke/lib/smoke'
+    puts JSON.generate(Smoke::Combination.load.map { |c| { name: c.name, ruby: c.ruby, vite: c.vite?, no_db_clients: c.no_db_clients? } })
+  end
+
+  desc 'Run the smoke runner unit tests'
+  task :test do
+    sh "#{Gem.ruby} -Ismoke/lib -Ismoke/test -e 'Dir[\"smoke/test/test_*.rb\"].each { |f| require File.expand_path(f) }'"
+  end
+end
