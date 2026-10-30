@@ -119,15 +119,20 @@ module Padrino
       end
 
       ##
-      # Returns default list of path globs to load as dependencies.
-      # Appends custom dependency patterns to the be loaded for your Application.
+      # Returns the files to load as dependencies of your Application: those matching
+      # the default globs below, under the application's root. The list is built again
+      # on each call, so appending to it has no effect; to load more files, override
+      # the method and add them to +super+.
       #
-      # @return [Array]
-      #   list of path globs to load as dependencies
+      # @return [Array<String>]
+      #   paths of the files to load as dependencies
       #
       # @example
-      #   MyApp.dependencies << "#{Padrino.root}/uploaders/**/*.rb"
-      #   MyApp.dependencies << Padrino.root('other_app', 'controllers.rb')
+      #   class MyApp < Padrino::Application
+      #     def self.dependencies
+      #       super + Dir.glob(Padrino.root('uploaders', '**', '*.rb'))
+      #     end
+      #   end
       #
       def dependencies
         [
