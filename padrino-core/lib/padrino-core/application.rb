@@ -122,7 +122,9 @@ module Padrino
       # Returns the files to load as dependencies of your Application: those matching
       # the default globs below, under the application's root. The list is built again
       # on each call, so appending to it has no effect; to load more files, override
-      # the method and add them to +super+.
+      # the method and add them to +super+. Add file paths (expand globs with Dir.glob)
+      # under Padrino.root: the reloader watches these files and reloads the application
+      # when one changes.
       #
       # @return [Array<String>]
       #   paths of the files to load as dependencies
