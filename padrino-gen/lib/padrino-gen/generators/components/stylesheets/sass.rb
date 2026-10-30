@@ -10,6 +10,6 @@ SASS
 
 def setup_stylesheet
   require_dependencies 'sass'
-  initializer :sass, SASS_INIT.chomp
+  initializer :sass, SASS_INIT.chomp, skip: reapplying_component?(:stylesheet)
   empty_directory destination_root('/app/stylesheets')
 end

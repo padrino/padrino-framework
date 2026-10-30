@@ -13,7 +13,7 @@ def setup_orm
   db = @project_name.underscore
   require_dependencies 'sequel'
 
-  case resolve_valid_adapter
+  case (resolve_valid_adapter unless adapter_unknown?)
   when 'mysql-gem'
     sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")
     sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{db}_production\"")
@@ -44,7 +44,7 @@ def setup_orm
     FIBER
   end
 
-  create_file('config/database.rb', sequel)
+  create_file('config/database.rb', sequel, skip: keep_database_config?)
   empty_directory('db/migrate')
 end
 

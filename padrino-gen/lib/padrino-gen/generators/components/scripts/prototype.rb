@@ -8,5 +8,5 @@ def setup_script
     copy_file('templates/static/js/lowpro.js',     destination_root('/public/javascripts/lowpro.js'))
     copy_file('templates/static/ujs/prototype.js', destination_root('/public/javascripts/prototype-ujs.js'))
   end
-  create_file(destination_root('/public/javascripts/application.js'), '// Put your application scripts here')
+  create_file(destination_root('/public/javascripts/application.js'), '// Put your application scripts here', skip: true)
 end

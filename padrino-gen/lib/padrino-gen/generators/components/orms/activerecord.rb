@@ -115,7 +115,7 @@ def setup_orm
   ar = AR.dup
   db = @project_name.underscore
 
-  case resolve_valid_adapter
+  case (resolve_valid_adapter unless adapter_unknown?)
   when 'mysql-gem'
     ar.sub!(/!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_development'"))
     ar.sub!(/!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_production'"))
@@ -148,8 +148,8 @@ def setup_orm
     FIBER
   end
 
-  create_file('config/database.rb', ar)
-  middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
+  create_file('config/database.rb', ar, skip: keep_database_config?)
+  middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE, skip: reapplying_component?(:orm)
 end
 
 AR_MODEL = <<~MODEL unless defined?(AR_MODEL)

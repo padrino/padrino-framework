@@ -17,7 +17,7 @@ module Padrino
 
       class_option :app,     desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
       class_option :root,    desc: 'The root destination',                                             aliases: '-r', default: '.',         type: :string
-      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: 'sqlite',    type: :string
+      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: nil,         type: :string
 
       defines_component_options default: false
 
@@ -28,6 +28,7 @@ module Padrino
         self.destination_root = options[:root]
         if in_app_root?
           @_components = options.class.new(options.slice(*self.class.component_types))
+          @_stored_components = retrieve_component_config(destination_root('.components'))
           @app_name = (options[:app] || 'App').gsub(/\W/, '_').camelize
           if @_components.values.delete_if(&:empty?).empty?
             self.class.start(['-h'])
@@ -63,6 +64,7 @@ module Padrino
             choice = @_components[comp]
             execute_component_setup(comp, choice)
             store_component_choice(comp, choice)
+            store_component_choice(:adapter, resolve_valid_adapter) if comp.to_s == 'orm' && SQL_ADAPTER_ORMS.include?(choice) && !adapter_unknown?
             if comp.to_s == 'orm' && choice.to_s != 'none'
               inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(:database)\n", before: 'PadrinoTasks.init'
               inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", before: 'PadrinoTasks.init'
