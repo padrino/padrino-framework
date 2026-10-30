@@ -439,6 +439,26 @@ describe 'ComponentGenerator' do
         assert_match_in_file(%r{^require 'mocha/minitest'\n}, helper)
       end
 
+      it 'should never leave the project with neither mock when the helper cannot be read' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+        helper = "#{project}/test/test_config.rb"
+        File.binwrite(helper, "#{File.binread(helper)}# caf\xC3\xA9\n".b)
+        external = Encoding.default_external
+        verbose, $VERBOSE = $VERBOSE, nil
+        Encoding.default_external = Encoding::US_ASCII
+        begin
+          switch_mock(project, 'rr')
+        rescue ArgumentError
+          # Thor can't read the helper as US-ASCII; the switch fails, as on master.
+        ensure
+          Encoding.default_external = external
+          $VERBOSE = verbose
+        end
+        content = File.binread(helper)
+        assert(content.include?("require 'mocha/minitest'\n") || content.include?("require 'rr'\n"), content)
+      end
+
       it 'should switch the mock of a project whose test component has no mock setup' do
         %w[bacon cucumber none].each do |test|
           project = "#{@apptmp}/project_#{test}"

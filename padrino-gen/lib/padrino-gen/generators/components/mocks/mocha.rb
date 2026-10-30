@@ -14,9 +14,10 @@ def setup_mock
 
   test = options[:test].to_s
   test = fetch_component_choice(:test).to_s if test.empty?
-  remove_previous_mock_setup(test)
   if (setup = mock_setup_lines(test))
     inject_into_file setup[:path], setup[:text], after: setup[:after]
+    # After the insert, so a helper Thor fails to read keeps the previous mock.
+    remove_previous_mock_setup(test)
   else
     say "Mocha is in the Gemfile but not set up for the '#{test}' test component. To use it, require mocha/api " \
         'and call mocha_setup, mocha_verify and mocha_teardown around each test: https://github.com/freerange/mocha#readme', :yellow

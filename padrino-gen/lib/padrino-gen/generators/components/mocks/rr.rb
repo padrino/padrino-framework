@@ -18,9 +18,10 @@ def setup_mock
   test = options[:test].to_s
   test = fetch_component_choice(:test).to_s if test.empty?
   require_dependencies 'test-unit-rr', require: false, group: 'test' if %w[testunit shoulda].include?(test)
-  remove_previous_mock_setup(test)
   if (setup = mock_setup_lines(test))
     inject_into_file setup[:path], setup[:text], after: setup[:after]
+    # After the insert, so a helper Thor fails to read keeps the previous mock.
+    remove_previous_mock_setup(test)
   else
     say "RR is in the Gemfile but not set up for the '#{test}' test component. To use it, require 'rr', include RR::DSL " \
         'where your tests run, and call RR.reset before and RR.verify after each test: https://github.com/rr/rr#readme', :yellow
