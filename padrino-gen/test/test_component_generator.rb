@@ -204,6 +204,20 @@ describe 'ComponentGenerator' do
         assert_match_in_file(%r{sqlite://}, project_file('config/database.rb'))
       end
 
+      it 'should not record an adapter it did not use for an activerecord project that has none stored' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=postgres') }
+        components = YAML.load_file(project_file('.components'))
+        components.delete(:adapter)
+        File.write(project_file('.components'), components.to_yaml)
+        rerun('--orm=activerecord')
+        assert_no_match_in_file(/gem 'sqlite3'/, project_file('Gemfile'))
+        assert_nil YAML.load_file(project_file('.components'))[:adapter]
+        assert_match_in_file(/adapter:\s+'postgresql'/, project_file('config/database.rb'))
+        rerun('--orm=activerecord', '--adapter=sqlite')
+        assert_match_in_file(/adapter: 'sqlite3'/, project_file('config/database.rb'))
+        assert_no_match_in_file(/postgresql/, project_file('config/database.rb'))
+      end
+
       it 'should rewrite the database config when given another adapter' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
         rerun('--orm=sequel', '--adapter=postgres')
@@ -239,11 +253,14 @@ describe 'ComponentGenerator' do
       end
 
       it 'should keep an edited stylesheet initializer and connection pool middleware' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--stylesheet=sass') }
-        files = %w[config/initializers/sass.rb lib/connection_pool_management_middleware.rb]
-        files.each { |file| File.write(project_file(file), "# edited\n") }
-        rerun('--orm=activerecord', '--stylesheet=sass')
-        files.each { |file| assert_equal "# edited\n", File.read(project_file(file)), file }
+        %w[sass scss].each do |stylesheet|
+          `rm -rf #{@apptmp}/sample_project`
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', "--stylesheet=#{stylesheet}") }
+          files = %W[config/initializers/#{stylesheet}.rb lib/connection_pool_management_middleware.rb]
+          files.each { |file| File.write(project_file(file), "# edited\n") }
+          rerun('--orm=activerecord', "--stylesheet=#{stylesheet}")
+          files.each { |file| assert_equal "# edited\n", File.read(project_file(file)), "#{stylesheet}: #{file}" }
+        end
       end
 
       it 'should still point the test setup at the app named with --app' do
@@ -355,6 +372,104 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{@apptmp}/project_rspec/spec/spec_helper.rb").scan('RSpec::Core::ExampleGroup.include RR::DSL').size
       %w[testunit shoulda].each do |test|
         assert_equal 1, File.read("#{@apptmp}/project_#{test}/Gemfile").scan(/^gem 'test-unit-rr'/).size, test
+      end
+    end
+
+    describe 'switching the mock component' do
+      # The setup lines each mock adds to the helper of each test component.
+      def mock_setup
+        rr_rspec = ['  conf.mock_with :rr', "  # On ExampleGroup, not conf.include, so RSpec's own matchers (satisfy) stay ahead of rr's DSL.",
+                    '  RSpec::Core::ExampleGroup.include RR::DSL']
+        { 'mocha' => { 'rspec' => ['  conf.mock_with :mocha'], 'minitest' => ["require 'mocha/minitest'"],
+                       'testunit' => ["require 'mocha/test_unit'"], 'shoulda' => ["require 'mocha/test_unit'"] },
+          'rr' => { 'rspec' => rr_rspec, 'minitest' => ["require 'rr'"],
+                    'testunit' => ["require 'test/unit/rr'"], 'shoulda' => ["require 'test/unit/rr'"] } }
+      end
+
+      def switch_mock(project, mock, *args)
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate_with_parts(:component, "--mock=#{mock}", *args, "-r=#{project}", apps: 'app') }
+      end
+
+      def assert_mock_setup(helper, test, mock)
+        other = (mock_setup.keys - [mock]).first
+        lines = File.read(helper).lines.map(&:chomp)
+        mock_setup[mock][test].each { |line| assert_equal 1, lines.count(line), "#{test}: #{line}" }
+        mock_setup[other][test].each { |line| assert_equal 0, lines.count { |l| l.strip == line.strip }, "#{test}: #{line}" }
+        assert_equal 1, lines.count('# edited by the project'), test
+        assert_equal mock, YAML.load_file("#{File.dirname(helper)}/../.components")[:mock], test
+      end
+
+      it 'should replace the setup of the previous mock in the test helper for every test component' do
+        %w[rspec minitest testunit shoulda].product([[], :test]).each do |test, with_test|
+          args = with_test == :test ? ["--test=#{test}"] : []
+          project = "#{@apptmp}/project_#{test}_#{args.size}"
+          capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
+          helper = "#{project}/#{test == 'rspec' ? 'spec/spec_helper.rb' : 'test/test_config.rb'}"
+          File.write(helper, "#{File.read(helper)}# edited by the project\n")
+          assert_mock_setup(helper, test, 'mocha')
+          switch_mock(project, 'rr', *args)
+          assert_mock_setup(helper, test, 'rr')
+          switch_mock(project, 'rr', *args)
+          assert_mock_setup(helper, test, 'rr')
+          switch_mock(project, 'mocha', *args)
+          assert_mock_setup(helper, test, 'mocha')
+          switch_mock(project, 'mocha', *args)
+          assert_mock_setup(helper, test, 'mocha')
+        end
+      end
+
+      it 'should remove the rr setup for rspec whose comment the project edited' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
+        helper = "#{project}/spec/spec_helper.rb"
+        File.write(helper, File.read(helper).sub(/^  # On ExampleGroup.*\n/, "  # our note\n"))
+        switch_mock(project, 'mocha')
+        assert_no_match_in_file(/mock_with :rr|RR::DSL/, helper)
+        assert_match_in_file(/^  # our note\n/, helper)
+        assert_match_in_file(/^  conf\.mock_with :mocha\n/, helper)
+      end
+
+      it 'should keep the previous mock when the new one has no line to follow' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+        helper = "#{project}/test/test_config.rb"
+        File.write(helper, File.read(helper).sub("require_relative '../config/boot'\n", "require_relative '../config/boot' # boot\n"))
+        switch_mock(project, 'rr')
+        assert_match_in_file(%r{^require 'mocha/minitest'\n}, helper)
+      end
+
+      it 'should never leave the project with neither mock when the helper cannot be read' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+        helper = "#{project}/test/test_config.rb"
+        File.binwrite(helper, "#{File.binread(helper)}# caf\xC3\xA9\n".b)
+        external = Encoding.default_external
+        verbose, $VERBOSE = $VERBOSE, nil
+        Encoding.default_external = Encoding::US_ASCII
+        begin
+          switch_mock(project, 'rr')
+        rescue ArgumentError
+          # Thor can't read the helper as US-ASCII; the switch fails, as on master.
+        ensure
+          Encoding.default_external = external
+          $VERBOSE = verbose
+        end
+        content = File.binread(helper)
+        assert(content.include?("require 'mocha/minitest'\n") || content.include?("require 'rr'\n"), content)
+      end
+
+      it 'should switch the mock of a project whose test component has no mock setup' do
+        %w[bacon cucumber none].each do |test|
+          project = "#{@apptmp}/project_#{test}"
+          capture_io { generate(:project, "project_#{test}", "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
+          before = Dir["#{project}/{test,spec,features}/**/*"].select { |path| File.file?(path) }.to_h { |path| [path, File.read(path)] }
+          out, = switch_mock(project, 'rr')
+          assert_match(/RR is in the Gemfile but not set up for the '#{test}' test component/, out)
+          assert_equal 'rr', YAML.load_file("#{project}/.components")[:mock], test
+          after = Dir["#{project}/{test,spec,features}/**/*"].select { |path| File.file?(path) }.to_h { |path| [path, File.read(path)] }
+          assert_equal before, after, test
+        end
       end
     end
 

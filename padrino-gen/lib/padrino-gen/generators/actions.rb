@@ -206,6 +206,35 @@ module Padrino
       end
 
       ##
+      # Removes the lines the project's mock component added to the test helper, when `padrino g component`
+      # switches to another mock. Each mock file defines mock_setup_lines(test), the lines its setup_mock adds;
+      # the previous mock's file is evaluated on a separate object, so its methods don't replace the new mock's.
+      # Only lines that are still exactly as written (indentation aside) are removed; other edits stay.
+      #
+      # @param [String] test
+      #   The test component the new mock is set up for.
+      #
+      def remove_previous_mock_setup(test)
+        previous = @_stored_components && @_stored_components[:mock].to_s
+        return if previous.nil? || previous.empty? || previous == 'none' || reapplying_component?(:mock)
+        source = File.expand_path("components/mocks/#{previous}.rb", __dir__)
+        return unless File.exist?(source)
+
+        probe = Object.new
+        probe.instance_eval(File.read(source, encoding: 'UTF-8'), source)
+        setup = probe.respond_to?(:mock_setup_lines) && probe.mock_setup_lines(test)
+        return unless setup && File.exist?(destination_root(setup[:path]))
+
+        content = File.binread(destination_root(setup[:path]))
+        # The mocks insert after the same line; if the project edited it, the new mock can't be added, so keep the old one.
+        return unless content.include?(setup[:after].b)
+
+        lines = setup[:text].each_line.map(&:strip).reject(&:empty?).uniq
+        pattern = /^[ \t]*(?:#{lines.map { |line| Regexp.escape(line) }.join('|')})[ \t]*(?:\n|\z)/
+        gsub_file(setup[:path], pattern, '') if content.match?(pattern)
+      end
+
+      ##
       # Returns whether config/database.rb stays: the orm is the project's, and so is any --adapter given.
       #
       # @return [Boolean] Whether to keep an existing database config.
