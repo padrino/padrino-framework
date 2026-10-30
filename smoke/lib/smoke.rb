@@ -22,3 +22,4 @@ end
 
 require 'smoke/combination'
 require 'smoke/shell'
+require 'smoke/project'
