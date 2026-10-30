@@ -197,6 +197,7 @@ describe 'ComponentGenerator' do
         components.delete(:adapter)
         File.write(project_file('.components'), components.to_yaml)
         rerun('--orm=sequel')
+        assert_no_match_in_file(/gem 'sqlite3'/, project_file('Gemfile'))
         assert_nil YAML.load_file(project_file('.components'))[:adapter]
         assert_match_in_file(%r{postgres://localhost}, project_file('config/database.rb'))
         rerun('--orm=sequel', '--adapter=sqlite')
@@ -227,6 +228,22 @@ describe 'ComponentGenerator' do
           rerun_test("--test=#{test}")
           [rake, config].each { |file| assert_equal "# edited\n", File.read(project_file(file)), "#{test}: #{file}" }
         end
+      end
+
+      it 'should keep the other edited setup files of cucumber' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=cucumber') }
+        files = %w[features/support/env.rb features/support/url.rb spec/spec.rake]
+        files.each { |file| File.write(project_file(file), "# edited\n") }
+        rerun_test('--test=cucumber')
+        files.each { |file| assert_equal "# edited\n", File.read(project_file(file)), file }
+      end
+
+      it 'should keep an edited stylesheet initializer and connection pool middleware' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--stylesheet=sass') }
+        files = %w[config/initializers/sass.rb lib/connection_pool_management_middleware.rb]
+        files.each { |file| File.write(project_file(file), "# edited\n") }
+        rerun('--orm=activerecord', '--stylesheet=sass')
+        files.each { |file| assert_equal "# edited\n", File.read(project_file(file)), file }
       end
 
       it 'should still point the test setup at the app named with --app' do

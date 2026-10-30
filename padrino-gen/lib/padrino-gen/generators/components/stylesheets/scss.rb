@@ -11,6 +11,6 @@ SCSS
 
 def setup_stylesheet
   require_dependencies 'sass'
-  initializer :scss, SCSS_INIT.chomp
+  initializer :scss, SCSS_INIT.chomp, skip: reapplying_component?(:stylesheet)
   empty_directory destination_root('/app/stylesheets')
 end
