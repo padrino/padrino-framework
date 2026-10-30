@@ -99,6 +99,7 @@ module Padrino
         store_component_config('.components', force: true)
         store_component_choice(:namespace, @project_name)
         store_component_choice(:migration_format, options[:migration_format])
+        store_component_choice(:adapter, resolve_valid_adapter) if SQL_ADAPTER_ORMS.include?(@_components[:orm])
       end
 
       ##

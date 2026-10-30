@@ -91,7 +91,7 @@ def setup_test
   require_dependencies 'rack-test', require: 'rack/test', group: 'test'
   require_dependencies 'rspec', group: 'test'
   insert_test_suite_setup RSPEC_SETUP, path: 'spec/spec_helper.rb'
-  create_file destination_root('spec/spec.rake'), RSPEC_RAKE
+  create_file destination_root('spec/spec.rake'), RSPEC_RAKE, skip: reapplying_component?(:test)
 end
 
 def generate_controller_test(name, path)

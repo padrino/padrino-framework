@@ -69,7 +69,7 @@ def setup_orm
 
     FIBER
   end
-  create_file('config/database.rb', mongoid)
+  create_file('config/database.rb', mongoid, skip: keep_database_config?)
 end
 
 MONGOID_MODEL = <<~MODEL unless defined?(MONGOID_MODEL)

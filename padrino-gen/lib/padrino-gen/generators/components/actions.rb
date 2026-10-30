@@ -145,7 +145,8 @@ module Padrino
         #
         def insert_test_suite_setup(suite_text, options = {})
           options = { path: 'test/test_config.rb' }.update(options)
-          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, "#{@project_name}::#{@app_name}"))
+          # --app points the setup at another app, so that run rewrites it.
+          create_file(options[:path], suite_text.gsub(/CLASS_NAME/, "#{@project_name}::#{@app_name}"), skip: reapplying_component?(:test) && !self.options[:app])
         end
 
         ##

@@ -143,6 +143,106 @@ describe 'ComponentGenerator' do
       assert_equal "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n", File.read(procfile)
     end
 
+    describe 'applied again with the same choice' do
+      def rerun(*args)
+        Readline.stubs(:readline).returns(nil)
+        capture_io { generate(:component, *args, "-r=#{@apptmp}/sample_project") }
+      end
+
+      def rerun_test(*args, apps: 'app')
+        Readline.stubs(:readline).returns(nil)
+        capture_io { generate_with_parts(:component, *args, "-r=#{@apptmp}/sample_project", apps: apps) }
+      end
+
+      def project_file(path)
+        "#{@apptmp}/sample_project/#{path}"
+      end
+
+      it 'should keep an edited database config for every orm' do
+        %w[activerecord mongoid sequel].each do |orm|
+          `rm -rf #{@apptmp}/sample_project`
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--orm=#{orm}") }
+          File.write(project_file('config/database.rb'), "# edited\n")
+          rerun("--orm=#{orm}")
+          assert_equal "# edited\n", File.read(project_file('config/database.rb')), orm
+        end
+      end
+
+      it 'should keep the adapter of the project and add no other driver' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=postgres') }
+        assert_equal 'postgres', YAML.load_file(project_file('.components'))[:adapter]
+        rerun('--orm=sequel')
+        assert_no_match_in_file(/gem 'sqlite3'/, project_file('Gemfile'))
+        assert_equal 'postgres', YAML.load_file(project_file('.components'))[:adapter]
+      end
+
+      it 'should keep an edited database config when given the adapter the project has' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=postgres') }
+        File.write(project_file('config/database.rb'), "# edited\n")
+        rerun('--orm=sequel', '--adapter=postgres')
+        assert_equal "# edited\n", File.read(project_file('config/database.rb'))
+      end
+
+      it 'should rewrite the database config when given another adapter' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
+        rerun('--orm=sequel', '--adapter=postgres')
+        assert_match_in_file(%r{postgres://localhost}, project_file('config/database.rb'))
+        assert_equal 'postgres', YAML.load_file(project_file('.components'))[:adapter]
+      end
+
+      it 'should rewrite the database config when switching orm' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=activerecord', "-r=#{@apptmp}/sample_project") }
+        assert_match_in_file(/ActiveRecord::Base\.configurations/, project_file('config/database.rb'))
+      end
+
+      it 'should keep edited test setup files for every test component' do
+        { 'bacon' => 'test/test.rake', 'minitest' => 'test/test.rake', 'rspec' => 'spec/spec.rake', 'shoulda' => 'test/test.rake',
+          'testunit' => 'test/test.rake', 'cucumber' => 'cucumber.yml' }.each do |test, rake|
+          `rm -rf #{@apptmp}/sample_project`
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--test=#{test}") }
+          config = test == 'rspec' || test == 'cucumber' ? 'spec/spec_helper.rb' : 'test/test_config.rb'
+          [rake, config].each { |file| File.write(project_file(file), "# edited\n") }
+          rerun_test("--test=#{test}")
+          [rake, config].each { |file| assert_equal "# edited\n", File.read(project_file(file)), "#{test}: #{file}" }
+        end
+      end
+
+      it 'should still point the test setup at the app named with --app' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest') }
+        capture_io { generate(:app, 'compo', "-r=#{@apptmp}/sample_project") }
+        rerun_test('--test=minitest', '--app=compo', apps: 'compo')
+        assert_match_in_file(/SampleProject::Compo/, project_file('test/test_config.rb'))
+      end
+
+      it 'should not bring back the cucumber samples a project deleted' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=cucumber') }
+        samples = %w[features/add.feature features/step_definitions/add_steps.rb]
+        samples.each { |file| File.delete(project_file(file)) }
+        rerun_test('--test=cucumber')
+        samples.each { |file| assert_no_file_exists(project_file(file)) }
+      end
+
+      it 'should write the test setup of the new component when switching' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest') }
+        File.write(project_file('test/test.rake'), "# edited\n")
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate_with_parts(:component, '--test=testunit', "-r=#{@apptmp}/sample_project", apps: 'app') }
+        assert_no_match_in_file(/edited/, project_file('test/test.rake'))
+      end
+
+      it 'should keep an edited application.js for every script component' do
+        %w[dojo jquery mootools prototype].each do |script|
+          `rm -rf #{@apptmp}/sample_project`
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--script=#{script}") }
+          File.write(project_file('public/javascripts/application.js'), "// edited\n")
+          rerun("--script=#{script}")
+          assert_equal "// edited\n", File.read(project_file('public/javascripts/application.js')), script
+        end
+      end
+    end
+
     it 'should properly generate with adapter' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       out, = capture_io { generate(:component, '--orm=sequel', '--adapter=postgres', "-r=#{@apptmp}/sample_project") }

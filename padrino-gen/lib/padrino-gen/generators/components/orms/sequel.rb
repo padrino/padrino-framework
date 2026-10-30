@@ -44,7 +44,7 @@ def setup_orm
     FIBER
   end
 
-  create_file('config/database.rb', sequel)
+  create_file('config/database.rb', sequel, skip: keep_database_config?)
   empty_directory('db/migrate')
 end
 

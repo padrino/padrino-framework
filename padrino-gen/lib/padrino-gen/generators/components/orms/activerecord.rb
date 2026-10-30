@@ -148,7 +148,7 @@ def setup_orm
     FIBER
   end
 
-  create_file('config/database.rb', ar)
+  create_file('config/database.rb', ar, skip: keep_database_config?)
   middleware :connection_pool_management, CONNECTION_POOL_MIDDLEWARE
 end
 
