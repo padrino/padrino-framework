@@ -1,4 +1,6 @@
 require 'fileutils'
+require 'net/http'
+require 'socket'
 
 module Smoke
   # The steps that build and exercise one generated project.
@@ -140,11 +142,113 @@ module Smoke
       end
     end
 
+    # The admin generator runs only for orms and renderers it supports, and refuses the rest with a message.
+    def admin!
+      unless combination.admin?
+        output = padrino('admin', %w[g admin], expect: :failure)
+        raise StepFailed.new('admin', %w[padrino g admin], path, 'backtrace instead of a message', output) if output =~ /\.rb:\d+:in /
+
+        return
+      end
+
+      padrino('admin', %w[g admin])
+      bundle!
+      each_env { |env| run('admin', %w[bundle exec rake db:migrate], env: env) } if combination.sql?
+      padrino('admin', %w[g admin_page post])
+      output = run('admin', %w[bundle exec rake db:seed], input: "smoke@example.com\nsmokepass1\n")
+      raise StepFailed.new('admin', %w[rake db:seed], path, 'no account created', output) unless output.include?('successfully created')
+    end
+
+    # The server answers with the rendered view and the admin login redirect, then stops cleanly on TERM (#2395).
+    def boot!
+      port = free_port
+      pid = Shell.spawn(%w[bundle exec padrino start -a] + [combination.server, '-p', port.to_s], chdir: path)
+      expect_response('boot', port, '/posts', '200', marker)
+      expect_response('boot', port, '/admin', '302') if combination.admin?
+      Process.kill('TERM', pid)
+      status = wait_for(pid, 10)
+      # Puma re-raises TERM and dies by the signal, which supervisors count as a clean stop.
+      stopped = status && (status.success? || status.termsig == Signal.list['TERM'])
+      raise StepFailed.new('boot', %w[TERM], path, "server exit #{status.inspect}", server_log) unless stopped
+      raise StepFailed.new('boot', %w[TERM], path, 'error logged on shutdown', server_log) if server_log =~ /FATAL|\.rb:\d+:in /
+    ensure
+      kill(pid)
+    end
+
+    # Running the generator again with the same choices leaves an edited project unchanged.
+    def rerun_same!
+      run('rerun', %w[git init -q])
+      run('rerun', %w[git add -A])
+      run('rerun', %w[git -c user.email=smoke@example.com -c user.name=smoke commit -q -m base])
+      padrino('rerun', %w[g component] + combination.component_flags)
+      changes = run('rerun', %w[git status --porcelain])
+      raise StepFailed.new('rerun', %w[git status --porcelain], path, 'project changed', changes + run('rerun', %w[git diff])) unless changes.empty?
+    end
+
+    # Adding another component to an existing project keeps its test suite working (#2420, #2427).
+    def add_component!
+      return if combination.add_component.empty?
+
+      flags = combination.add_component.map { |type, value| "--#{type}=#{value}" }
+      padrino('add_component', %w[g component] + flags)
+      bundle!
+      test_suite!
+    end
+
     def marker
       EXPECTED_BODY[combination.test]
     end
 
     private
+
+    def free_port
+      server = TCPServer.new('127.0.0.1', 0)
+      server.addr[1]
+    ensure
+      server&.close
+    end
+
+    def expect_response(step, port, url, code, body = nil)
+      deadline = Time.now + 60
+      begin
+        response = Net::HTTP.get_response(URI("http://127.0.0.1:#{port}#{url}"))
+      rescue SystemCallError, EOFError, Net::ReadTimeout
+        raise StepFailed.new(step, ['GET', url], path, 'server did not answer', server_log) if Time.now > deadline
+
+        sleep 0.5
+        retry
+      end
+      return if response.code == code && (body.nil? || response.body.include?(body))
+
+      raise StepFailed.new(step, ['GET', url], path, "#{response.code} (want #{code}#{" with #{body.inspect}" if body})",
+                           "#{response.body}\n--- server log\n#{server_log}")
+    end
+
+    def wait_for(pid, seconds)
+      deadline = Time.now + seconds
+      loop do
+        _, status = Process.wait2(pid, Process::WNOHANG)
+        return status if status
+        return nil if Time.now > deadline
+
+        sleep 0.2
+      end
+    end
+
+    def kill(pid)
+      return unless pid
+
+      Process.kill('KILL', pid)
+      Process.wait(pid)
+    rescue Errno::ESRCH, Errno::ECHILD
+      nil
+    end
+
+    def server_log
+      File.read(File.join(path, 'log/smoke-server.log'))
+    rescue Errno::ENOENT
+      ''
+    end
 
     # Do what a developer does with the generated placeholder tests: give them the code they describe.
     def fill_in_placeholders
