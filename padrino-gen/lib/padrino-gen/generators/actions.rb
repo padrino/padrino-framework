@@ -225,9 +225,13 @@ module Padrino
         setup = probe.respond_to?(:mock_setup_lines) && probe.mock_setup_lines(test)
         return unless setup && File.exist?(destination_root(setup[:path]))
 
+        content = File.binread(destination_root(setup[:path]))
+        # The mocks insert after the same line; if the project edited it, the new mock can't be added, so keep the old one.
+        return unless content.include?(setup[:after].b)
+
         lines = setup[:text].each_line.map(&:strip).reject(&:empty?).uniq
         pattern = /^[ \t]*(?:#{lines.map { |line| Regexp.escape(line) }.join('|')})[ \t]*(?:\n|\z)/
-        gsub_file(setup[:path], pattern, '') if File.read(destination_root(setup[:path])).match?(pattern)
+        gsub_file(setup[:path], pattern, '') if content.match?(pattern)
       end
 
       ##

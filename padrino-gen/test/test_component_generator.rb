@@ -425,9 +425,18 @@ describe 'ComponentGenerator' do
         helper = "#{project}/spec/spec_helper.rb"
         File.write(helper, File.read(helper).sub(/^  # On ExampleGroup.*\n/, "  # our note\n"))
         switch_mock(project, 'mocha')
-        assert_no_match_in_file(/rr|RR/, helper)
+        assert_no_match_in_file(/mock_with :rr|RR::DSL/, helper)
         assert_match_in_file(/^  # our note\n/, helper)
         assert_match_in_file(/^  conf\.mock_with :mocha\n/, helper)
+      end
+
+      it 'should keep the previous mock when the new one has no line to follow' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+        helper = "#{project}/test/test_config.rb"
+        File.write(helper, File.read(helper).sub("require_relative '../config/boot'\n", "require_relative '../config/boot' # boot\n"))
+        switch_mock(project, 'rr')
+        assert_match_in_file(%r{^require 'mocha/minitest'\n}, helper)
       end
 
       it 'should switch the mock of a project whose test component has no mock setup' do
