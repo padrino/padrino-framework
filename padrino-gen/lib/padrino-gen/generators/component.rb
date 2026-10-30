@@ -64,7 +64,10 @@ module Padrino
             choice = @_components[comp]
             execute_component_setup(comp, choice)
             store_component_choice(comp, choice)
-            store_component_choice(:adapter, resolve_valid_adapter) if comp.to_s == 'orm' && SQL_ADAPTER_ORMS.include?(choice)
+            # A kept config of a project with no stored adapter doesn't say which adapter it uses.
+            if comp.to_s == 'orm' && SQL_ADAPTER_ORMS.include?(choice) && (stored_adapter || !keep_database_config?)
+              store_component_choice(:adapter, resolve_valid_adapter)
+            end
             if comp.to_s == 'orm' && choice.to_s != 'none'
               inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(:database)\n", before: 'PadrinoTasks.init'
               inject_into_file destination_root('Rakefile'), "PadrinoTasks.use(#{choice.to_sym.inspect})\n", before: 'PadrinoTasks.init'

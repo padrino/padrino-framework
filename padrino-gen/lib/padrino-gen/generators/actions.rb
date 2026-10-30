@@ -211,7 +211,9 @@ module Padrino
       # @return [Boolean] Whether to keep an existing database config.
       #
       def keep_database_config?
-        reapplying_component?(:orm) && [nil, stored_adapter].include?(options[:adapter])
+        # An --adapter corrected at the prompt counts as the corrected one, which resolve_valid_adapter keeps in @_adapter.
+        given = options[:adapter] && (@_adapter || options[:adapter])
+        reapplying_component?(:orm) && [nil, stored_adapter].include?(given)
       end
 
       ##

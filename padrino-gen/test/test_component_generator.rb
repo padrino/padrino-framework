@@ -183,6 +183,26 @@ describe 'ComponentGenerator' do
         assert_equal "# edited\n", File.read(project_file('config/database.rb'))
       end
 
+      it 'should keep an edited database config when a mistyped adapter is corrected to the project one' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=postgres') }
+        File.write(project_file('config/database.rb'), "# edited\n")
+        Readline.stubs(:readline).returns('postgres', nil)
+        capture_io { generate(:component, '--orm=sequel', '--adapter=postgress', "-r=#{@apptmp}/sample_project") }
+        assert_equal "# edited\n", File.read(project_file('config/database.rb'))
+      end
+
+      it 'should not record an adapter it did not use for a project that has none stored' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=postgres') }
+        components = YAML.load_file(project_file('.components'))
+        components.delete(:adapter)
+        File.write(project_file('.components'), components.to_yaml)
+        rerun('--orm=sequel')
+        assert_nil YAML.load_file(project_file('.components'))[:adapter]
+        assert_match_in_file(%r{postgres://localhost}, project_file('config/database.rb'))
+        rerun('--orm=sequel', '--adapter=sqlite')
+        assert_match_in_file(%r{sqlite://}, project_file('config/database.rb'))
+      end
+
       it 'should rewrite the database config when given another adapter' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
         rerun('--orm=sequel', '--adapter=postgres')
