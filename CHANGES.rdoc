@@ -1,5 +1,9 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #2433 `rake db:migrate` (`ar:migrate`), `ar:schema:dump` and `ar:structure:dump` create `db/` when it is missing, so a new `-d activerecord` project on postgres or mysql can migrate before it has a model, as can a fresh clone of one, instead of failing with `Errno::ENOENT` on `db/schema.rb` after the migration ran (@achiurizo)
+
 == 0.18.0 (2026-10-31)
 
 - FIX #2436 Switching the mock component with `padrino g component -m` (mocha to rr or rr to mocha) removes the previous mock's setup lines from the test helper (`spec/spec_helper.rb` for rspec, `test/test_config.rb` for minitest, testunit and shoulda) before adding the new one's, so the project no longer sets up both. The helper's other lines stay, and the previous mock's gem stays in the Gemfile with `require: false`; remove it if nothing else uses it. A project already switched keeps both setups: delete the old mock's line (`conf.mock_with :mocha`, `require 'mocha/minitest'`, `require 'mocha/test_unit'`, or rr's `conf.mock_with :rr` and `RSpec::Core::ExampleGroup.include RR::DSL`, `require 'rr'`, `require 'test/unit/rr'`) (@nesquena)
