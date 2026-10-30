@@ -35,6 +35,8 @@ jobs:
     needs: list
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    # A generator prompt that loops on closed input would otherwise hold the runner for six hours.
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -72,10 +74,13 @@ jobs:
       if: matrix.vite
       with:
         node-version: '22'
+    # One bundle cache per row per day: a run_id key would save 24 caches every run and evict ci.yml's.
+    - id: date
+      run: echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
     - uses: actions/cache@v4
       with:
         path: vendor/smoke-bundle
-        key: smoke-${{ matrix.name }}-${{ matrix.ruby }}-${{ github.run_id }}
+        key: smoke-${{ matrix.name }}-${{ matrix.ruby }}-${{ steps.date.outputs.date }}
         restore-keys: smoke-${{ matrix.name }}-${{ matrix.ruby }}-
     # Projects must create and drop their databases without the database client binaries (#2417).
     - if: matrix.no_db_clients

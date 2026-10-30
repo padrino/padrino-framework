@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'net/http'
 require 'socket'
+require 'yaml'
 
 module Smoke
   # The steps that build and exercise one generated project.
@@ -191,7 +192,14 @@ module Smoke
       return if combination.add_component.empty?
 
       flags = combination.add_component.map { |type, value| "--#{type}=#{value}" }
-      padrino('add_component', %w[g component] + flags)
+      # Switching a chosen component asks for confirmation once per component.
+      padrino('add_component', %w[g component] + flags, input: "yes\n" * flags.size)
+      components = YAML.safe_load(File.read(File.join(path, '.components')), permitted_classes: [Symbol])
+      combination.add_component.each do |type, value|
+        next if components[type.to_sym].to_s == value
+
+        raise StepFailed.new('add_component', %w[padrino g component] + flags, path, "#{type} is #{components[type.to_sym].inspect}, want #{value}", '')
+      end
       bundle!
       test_suite!
     end
