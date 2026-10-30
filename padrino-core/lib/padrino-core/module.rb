@@ -34,8 +34,9 @@ module Padrino
     end
 
     ##
-    # Returns the list of path globs to load as dependencies.
-    # Appends custom dependency patterns to the be loaded for Padrino.
+    # Returns the path globs of the module's files to load as dependencies. The list
+    # is built again on each call, so appending to it has no effect; to load more
+    # files, override the method and add globs to +super+.
     #
     # @return [Array<String>]
     #   The dependency paths.
@@ -44,9 +45,11 @@ module Padrino
     #   module MyModule
     #     extend Padrino::Module
     #     gem! 'my_gem'
-    #   end
     #
-    #   Module.dependency_paths << "#{MyModule.root}/uploaders/*.rb"
+    #     def self.dependency_paths
+    #       super + ["#{root}/uploaders/*.rb"]
+    #     end
+    #   end
     #
     def dependency_paths
       [
