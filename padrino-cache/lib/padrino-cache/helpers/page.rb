@@ -60,7 +60,7 @@ module Padrino
         #
         # @api public
         def expires(time)
-          @route.cache_expires = time
+          @_cache_expires = time
         end
 
         ##
@@ -89,7 +89,11 @@ module Padrino
         #
         def cache_key(name = nil, &block)
           raise 'Can not provide both cache_key and a block' if name && block
-          @route.cache_key = name || block
+
+          @_cache_key = name || block
+          # A Symbol or a block is the same for every request, so later requests can look it up before the
+          # handler runs. Any other key (a String built from params) belongs to this request only.
+          @route.cache_key = @_cache_key if @_cache_key.is_a?(Symbol) || @_cache_key.is_a?(Proc)
         end
 
         CACHED_VERBS = { 'GET' => true, 'HEAD' => true }.freeze
@@ -106,7 +110,7 @@ module Padrino
           end
 
           route.after_filters do
-            save_cached_response(route.cache_expires) if settings.caching?
+            save_cached_response(@_cache_expires || route.cache_expires) if settings.caching?
           end
         end
 
@@ -142,7 +146,7 @@ module Padrino
         # Resolve the cache_key when it's a block in the correct context.
         #
         def resolve_cache_key
-          key = @route.cache_key
+          key = @_cache_key || @route.cache_key
           key.is_a?(Proc) ? instance_eval(&key) : key
         end
 

@@ -381,6 +381,44 @@ describe 'PadrinoCache' do
     assert_equal 2, call_count
   end
 
+  it 'should not reuse a string cache key from another request' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/post/:id', cache: true do
+        cache_key "post-#{params[:id]}"
+        "post #{params[:id]}"
+      end
+    end
+
+    get '/post/1'
+    assert_equal 'post 1', body
+    get '/post/2'
+    assert_equal 'post 2', body
+    get '/post/1'
+    assert_equal 'post 1', body
+  end
+
+  it 'should keep expires to the request that set it' do
+    stored = []
+    store = Object.new
+    store.define_singleton_method(:[]) { |_key| nil }
+    store.define_singleton_method(:store) { |key, _value, options| stored << [key, options[:expires]] }
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, store
+      get '/foo', cache: true do
+        expires 100 if params[:long]
+        'foo'
+      end
+    end
+
+    get '/foo?long=1'
+    get '/foo'
+    assert_equal [['/foo', 100], ['/foo', nil]], stored
+  end
+
   it 'should resolve block cache keys' do
     call_count = 0
     mock_app do
