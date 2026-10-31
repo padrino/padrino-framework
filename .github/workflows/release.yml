@@ -1,0 +1,91 @@
+# Publishes a release to rubygems.org when a version tag (e.g. 0.18.0) is pushed.
+#
+# 1. "build" (no credentials) checks that the tag matches the version files and is on master or an
+#    X.Y-stable branch, builds the nine gems in release order and uploads them, with their sha256 sums,
+#    as an artifact. Check those files before approving: they are exactly what "publish" pushes.
+# 2. "publish" runs in the "release" environment, so it waits for a required reviewer's approval. It
+#    exchanges this run's OIDC identity for short-lived RubyGems tokens (trusted publishing: no API key
+#    is stored anywhere), checks the sums, and pushes each gem that isn't on rubygems.org yet, so a
+#    re-run resumes a release that stopped partway.
+name: release
+
+on:
+  push:
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.repository == 'padrino/padrino-framework'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          submodules: true
+          persist-credentials: false
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: '3.3'
+      - name: Check the tag
+        id: check
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          core=$(ruby -e 'puts File.read("padrino-core/lib/padrino-core/version.rb")[/VERSION = .([^\x27"]+)/, 1]')
+          perf=$(ruby -e 'puts File.read("padrino-performance/lib/padrino-performance/version.rb")[/VERSION = .([^\x27"]+)/, 1]')
+          [ "$tag" = "$core" ] && [ "$tag" = "$perf" ] || { echo "::error::tag $tag but version files say $core / $perf"; exit 1; }
+          series="${tag%.*}-stable"
+          on=""
+          for b in master "$series"; do
+            git merge-base --is-ancestor "$GITHUB_SHA" "origin/$b" 2>/dev/null && on="$b"
+          done
+          [ -n "$on" ] || { echo "::error::$tag ($GITHUB_SHA) is not on master or $series"; exit 1; }
+          echo "version=$tag" >> "$GITHUB_OUTPUT"
+          echo "$tag is on $on"
+      - name: Build the gems
+        run: |
+          mkdir dist
+          ruby -e 'require "./padrino/subgems"; puts PADRINO_GEMS.keys' > dist/ORDER
+          while read -r g; do
+            (cd "$g" && gem build "$g.gemspec" --output "../dist/$g-${{ steps.check.outputs.version }}.gem")
+          done < dist/ORDER
+          (cd dist && sha256sum *.gem > SHA256SUMS && cat ORDER SHA256SUMS)
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gems-${{ steps.check.outputs.version }}
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: gems-${{ needs.build.outputs.version }}
+          path: dist
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: '3.3'
+      - uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
+      - name: Push the gems
+        working-directory: dist
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          sha256sum -c SHA256SUMS
+          while read -r g; do
+            if curl -fsS "https://rubygems.org/api/v1/versions/$g.json" | ruby -rjson -e 'exit(JSON.parse($stdin.read).any? { |v| v["number"] == ENV["VERSION"] } ? 0 : 1)'; then
+              echo "$g $VERSION is already on rubygems.org; skipping"
+            else
+              gem push "$g-$VERSION.gem"
+            fi
+          done < ORDER
