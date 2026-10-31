@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- SEC #2445 `padrino g admin` no longer generates a login bypass. The sessions controller logged in as the first account when a `bypass` param was sent and `Padrino.env` was `:development`, which is also the case for an app started without `RACK_ENV`. In existing projects, delete the `elsif Padrino.env == :development && params[:bypass]` branch (three lines and the `elsif`) from `admin/controllers/sessions.rb` and the bypass checkbox from `admin/views/sessions/new.*`. The generated Mongoid account model matched any part of an email; anchor its lookup: `where(email: /\A#{Object::Regexp.escape(email)}\z/i)` (@nesquena, reported by @achiurizo)
 - REMOVE #2443 Ruby 2.7 is no longer supported: Padrino now requires Ruby 3.0.7 or later. Apps on Ruby 2.7 stay on Padrino 0.18 until they upgrade Ruby (@achiurizo)
 - FIX #2433 `rake db:migrate` (`ar:migrate`), `ar:schema:dump` and `ar:structure:dump` create `db/` when it is missing, so a new `-d activerecord` project on postgres or mysql can migrate before it has a model, as can a fresh clone of one, instead of failing with `Errno::ENOENT` on `db/schema.rb` after the migration ran (@achiurizo)
 
