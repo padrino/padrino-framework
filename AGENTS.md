@@ -180,10 +180,11 @@ and its siblings (`singularize`, `underscore`, `camelize`, `classify`,
 ### Reloader
 
 - Reloading is on only in development unless `Padrino::Reloader.enabled` is
-  set. A test that needs it on should save
-  `Padrino::Reloader.instance_variable_get(:@enabled)`, set `enabled = true`,
-  and restore the saved value in `ensure`. `enabled?` is computed, so saving
-  it would pin the setting instead of restoring the default.
+  set, and it must be set before the app's files load. padrino-core's
+  `test/helper.rb` sets it to `true` for every test there. A test that needs
+  another value should save `Padrino::Reloader.instance_variable_get(:@enabled)`,
+  set what it needs, and restore the saved value in `ensure`. `enabled?` is
+  computed, so saving it would pin the setting instead of restoring the default.
 
 ## Security
 
