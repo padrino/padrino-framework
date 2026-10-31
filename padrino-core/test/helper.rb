@@ -15,6 +15,9 @@ require 'rack/test'
 require 'yaml'
 require 'padrino-core'
 
+# Reloading outside development needs tracking enabled before the apps load, and any test file can load them first.
+Padrino::Reloader.enabled = true
+
 require 'ext/minitest-spec'
 require 'ext/rack-test-methods'
 
