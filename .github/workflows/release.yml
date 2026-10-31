@@ -79,6 +79,13 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - name: Refuse a stale run (the tag moved since this run started)
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          tagged=$(git ls-remote "https://github.com/$GITHUB_REPOSITORY" "refs/tags/$VERSION*" |
+            awk -v t="refs/tags/$VERSION" '$2 == t || $2 == t "^{}" { print $1 }')
+          echo "$tagged" | grep -qx "$GITHUB_SHA" || { echo "::error::tag $VERSION is no longer at $GITHUB_SHA (now: ${tagged:-gone}); this run is stale"; exit 1; }
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: gems-${{ needs.build.outputs.version }}
@@ -92,9 +99,6 @@ jobs:
         env:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
-          tagged=$(git ls-remote "https://github.com/$GITHUB_REPOSITORY" "refs/tags/$VERSION*" |
-            awk -v t="refs/tags/$VERSION" '$2 == t || $2 == t "^{}" { print $1 }')
-          echo "$tagged" | grep -qx "$GITHUB_SHA" || { echo "::error::tag $VERSION is no longer at $GITHUB_SHA (now: ${tagged:-gone}); this run is stale"; exit 1; }
           sha256sum -c SHA256SUMS
           while read -r g; do
             if curl -fsS "https://rubygems.org/api/v1/versions/$g.json" | ruby -rjson -e 'exit(JSON.parse($stdin.read).any? { |v| v["number"] == ENV["VERSION"] } ? 0 : 1)'; then
