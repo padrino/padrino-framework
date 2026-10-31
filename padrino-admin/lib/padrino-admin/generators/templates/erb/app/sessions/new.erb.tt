@@ -31,12 +31,6 @@
           <div class="col-lg-10"><%%= password_field_tag :password, id: :password, class: 'form-control' %></div>
         </div>
 
-        <fieldset class="login-control-group-last control-group">
-          <div class="login-controls controls">
-            <label class="login-bypass-label checkbox"><%%= check_box_tag :bypass %>  <%%= pat('login.bypass') %></label>
-          </div>
-        </fieldset>
-
       </div>
       <div class="login-footer modal-footer"><%%= submit_tag(pat('login.sign_in'), class: 'btn btn-primary pull-right') %></div>
     <%% end %>

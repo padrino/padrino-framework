@@ -7,10 +7,6 @@
     if account = <%= @model_name %>.authenticate(params[:email], params[:password])
       set_current_account(account)
       redirect url(:base, :index)
-    elsif Padrino.env == :development && params[:bypass]
-      account = <%= @model_name %>.first
-      set_current_account(account)
-      redirect url(:base, :index)
     else
       params[:email] = h(params[:email])
       flash.now[:error] = pat('login.error')

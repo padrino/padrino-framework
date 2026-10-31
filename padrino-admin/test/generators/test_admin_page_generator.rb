@@ -111,7 +111,7 @@ describe 'AdminPageGenerator' do
       assert_file_exists "#{@apptmp}/sample_project/admin/controllers/friends.rb"
       assert_match_in_file 'SampleProject::Admin.controllers :friends do', "#{@apptmp}/sample_project/admin/controllers/friends.rb"
       assert_match_in_file "role.project_module :friends, '/friends'", "#{@apptmp}/sample_project/admin/app.rb"
-      assert_match_in_file 'elsif Padrino.env == :development && params[:bypass]', "#{@apptmp}/sample_project/admin/controllers/sessions.rb"
+      assert_no_match_in_file(/bypass/, "#{@apptmp}/sample_project/admin/controllers/sessions.rb")
     end
 
     # users can override certain templates from a generators/templates folder in the destination_root
@@ -137,7 +137,7 @@ describe 'AdminPageGenerator' do
           assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.haml"
           assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.haml"
         end
-        assert_match_in_file 'check_box_tag :bypass', "#{@apptmp}/sample_project/admin/views/sessions/new.haml"
+        assert_no_match_in_file(/bypass/, "#{@apptmp}/sample_project/admin/views/sessions/new.haml")
       end
 
       it 'should correctly generate a new page with erb' do
@@ -152,7 +152,7 @@ describe 'AdminPageGenerator' do
           assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.erb"
           assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.erb"
         end
-        assert_match_in_file 'check_box_tag :bypass', "#{@apptmp}/sample_project/admin/views/sessions/new.erb"
+        assert_no_match_in_file(/bypass/, "#{@apptmp}/sample_project/admin/views/sessions/new.erb")
       end
 
       it 'should correctly generate a new page with slim' do
@@ -167,7 +167,7 @@ describe 'AdminPageGenerator' do
           assert_match_in_file "label :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.slim"
           assert_match_in_file "text_field :#{field}", "#{@apptmp}/sample_project/admin/views/friends/_form.slim"
         end
-        assert_match_in_file 'check_box_tag :bypass', "#{@apptmp}/sample_project/admin/views/sessions/new.slim"
+        assert_no_match_in_file(/bypass/, "#{@apptmp}/sample_project/admin/views/sessions/new.slim")
       end
     end
 
