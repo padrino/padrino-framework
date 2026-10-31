@@ -570,6 +570,9 @@ module Padrino
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
 
+        # Controller before filters go first, so extensions (such as page caching) that add their own before
+        # filters in the hook run after them and can't skip them.
+        route.before_filters << @filters[:before]
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
         block_parameter_length = route.block_parameter_length
@@ -578,7 +581,6 @@ module Padrino
         end
 
         # Add Application defaults.
-        route.before_filters << @filters[:before]
         route.after_filters << @filters[:after]
         if @_controller
           route.use_layout = @layout

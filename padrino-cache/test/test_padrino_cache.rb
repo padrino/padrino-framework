@@ -399,6 +399,59 @@ describe 'PadrinoCache' do
     assert_equal 'post 1', body
   end
 
+  it 'should run controller before filters on a cached response' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      controller :secret, cache: true do
+        before { halt 403, 'denied' unless params[:ok] }
+        get(:index) { 'secret page' }
+      end
+    end
+
+    get '/secret?ok=1'
+    assert_equal 'secret page', body
+    get '/secret'
+    assert_equal 403, status
+    assert_equal 'denied', body
+  end
+
+  it 'should use a cache key set in a controller before filter for the lookup' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      controller :users, cache: true do
+        before { cache_key "user-#{params[:u]}" }
+        get(:show, with: :u) { calls += 1; "user #{params[:u]}" }
+      end
+    end
+
+    get '/users/show/a'
+    get '/users/show/b'
+    get '/users/show/a'
+    assert_equal 'user a', body
+    assert_equal 2, calls
+  end
+
+  it 'should not apply a cache key to the next route after pass' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/x/:id', cache: true do
+        cache_key :shared
+        pass if params[:id] == 'skip'
+        "A #{params[:id]}"
+      end
+      get('/x/:id', cache: true) { "B #{params[:id]}" }
+    end
+
+    get '/x/skip'
+    assert_equal 'B skip', body
+    get '/x/1'
+    assert_equal 'A 1', body
+  end
+
   it 'should keep expires to the request that set it' do
     stored = []
     store = Object.new

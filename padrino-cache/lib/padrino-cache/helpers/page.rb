@@ -111,6 +111,8 @@ module Padrino
 
           route.after_filters do
             save_cached_response(@_cache_expires || route.cache_expires) if settings.caching?
+            # After a pass, the next route must not inherit this route's key or expiry.
+            @_cache_key = @_cache_expires = nil
           end
         end
 
