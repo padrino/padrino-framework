@@ -3,10 +3,19 @@
 # 1. "build" (no credentials) checks that the tag matches the version files and is on master or an
 #    X.Y-stable branch, builds the nine gems in release order and uploads them, with their sha256 sums,
 #    as an artifact. Check those files before approving: they are exactly what "publish" pushes.
-# 2. "publish" runs in the "release" environment, so it waits for a required reviewer's approval. It
-#    exchanges this run's OIDC identity for short-lived RubyGems tokens (trusted publishing: no API key
-#    is stored anywhere), checks the sums, and pushes each gem that isn't on rubygems.org yet, so a
-#    re-run resumes a release that stopped partway.
+# 2. "publish" runs in the "release" environment and exchanges this run's OIDC identity for short-lived
+#    RubyGems tokens (trusted publishing: no API key is stored anywhere). It refuses if the tag has
+#    moved since this run started, checks the sums, and pushes each gem that isn't on rubygems.org yet;
+#    "Re-run failed jobs" resumes a release that stopped partway.
+#
+# The "release" environment's protection rules are the ONLY gate on publishing: RubyGems trusts any run
+# of a release.yml in this repository that uses that environment, whatever the ref, so a tag or branch
+# can carry its own copy of this file. Set the environment up (required reviewer, no admin bypass,
+# deployments only from version tags) BEFORE adding the trusted publishers on rubygems.org.
+#
+# Prerelease tags (0.19.0.rc1) don't match the trigger, and a stable branch needs this file on it before
+# its tags trigger it; release those with rake bump / rake publish. A tag pushed by rake publish also
+# starts a run here: reject its "release" deployment.
 name: release
 
 on:
@@ -47,11 +56,13 @@ jobs:
           echo "version=$tag" >> "$GITHUB_OUTPUT"
           echo "$tag is on $on"
       - name: Build the gems
+        env:
+          VERSION: ${{ steps.check.outputs.version }}
         run: |
           mkdir dist
           ruby -e 'require "./padrino/subgems"; puts PADRINO_GEMS.keys' > dist/ORDER
           while read -r g; do
-            (cd "$g" && gem build "$g.gemspec" --output "../dist/$g-${{ steps.check.outputs.version }}.gem")
+            (cd "$g" && gem build "$g.gemspec" --output "../dist/$g-$VERSION.gem")
           done < dist/ORDER
           (cd dist && sha256sum *.gem > SHA256SUMS && cat ORDER SHA256SUMS)
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -81,11 +92,14 @@ jobs:
         env:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
+          tagged=$(git ls-remote "https://github.com/$GITHUB_REPOSITORY" "refs/tags/$VERSION*" |
+            awk -v t="refs/tags/$VERSION" '$2 == t || $2 == t "^{}" { print $1 }')
+          echo "$tagged" | grep -qx "$GITHUB_SHA" || { echo "::error::tag $VERSION is no longer at $GITHUB_SHA (now: ${tagged:-gone}); this run is stale"; exit 1; }
           sha256sum -c SHA256SUMS
           while read -r g; do
             if curl -fsS "https://rubygems.org/api/v1/versions/$g.json" | ruby -rjson -e 'exit(JSON.parse($stdin.read).any? { |v| v["number"] == ENV["VERSION"] } ? 0 : 1)'; then
               echo "$g $VERSION is already on rubygems.org; skipping"
             else
-              gem push "$g-$VERSION.gem"
+              gem push "$g-$VERSION.gem" </dev/null
             fi
           done < ORDER
