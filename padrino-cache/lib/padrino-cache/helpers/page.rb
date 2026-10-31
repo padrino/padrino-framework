@@ -109,7 +109,7 @@ module Padrino
           route.custom_conditions << instance_method(:serve_cached_response)
 
           route.after_filters do
-            save_cached_response(@_cache_expires || route.cache_expires) if settings.caching?
+            save_cached_response(@_cache_expires.nil? ? route.cache_expires : @_cache_expires) if settings.caching?
             @_cache_key, @_cache_expires = @_cache_outer
           end
         end

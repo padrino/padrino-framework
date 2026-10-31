@@ -506,6 +506,25 @@ describe 'PadrinoCache' do
     assert_equal [['/foo', 100], ['/foo', nil]], stored
   end
 
+  it 'should let expires false in a handler override the route expiry' do
+    stored = []
+    store = Object.new
+    store.define_singleton_method(:[]) { |_key| nil }
+    store.define_singleton_method(:store) { |key, _value, options| stored << [key, options[:expires]] }
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, store
+      get '/ef', cache: true, expires: 60 do
+        expires false
+        'ef'
+      end
+    end
+
+    get '/ef'
+    assert_equal [['/ef', false]], stored
+  end
+
   it 'should resolve block cache keys' do
     call_count = 0
     mock_app do
