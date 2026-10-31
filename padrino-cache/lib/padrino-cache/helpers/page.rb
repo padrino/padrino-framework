@@ -101,22 +101,28 @@ module Padrino
         def self.padrino_route_added(route, verb, *)
           return unless route.cache && CACHED_VERBS[verb]
 
-          route.before_filters do
-            next unless settings.caching?
-            if (cached_response = load_cached_response)
-              content_type cached_response[:content_type]
-              halt 200, cached_response[:body]
-            end
-          end
+          # Remember the key and expiry set before this route (by an app-level before filter), so a route
+          # reached through pass starts from them rather than from this route's.
+          route.before_filters { @_cache_outer = [@_cache_key, @_cache_expires] }
+          # The lookup is the route's last condition: it runs after every before filter and condition, so
+          # access checks written there apply to cached pages too.
+          route.custom_conditions << instance_method(:serve_cached_response)
 
           route.after_filters do
             save_cached_response(@_cache_expires || route.cache_expires) if settings.caching?
-            # After a pass, the next route must not inherit this route's key or expiry.
-            @_cache_key = @_cache_expires = nil
+            @_cache_key, @_cache_expires = @_cache_outer
           end
         end
 
         private
+
+        def serve_cached_response
+          if settings.caching? && (cached_response = load_cached_response)
+            content_type cached_response[:content_type]
+            halt 200, cached_response[:body]
+          end
+          true
+        end
 
         def load_cached_response
           began_at = Time.now

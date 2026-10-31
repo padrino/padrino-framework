@@ -452,6 +452,40 @@ describe 'PadrinoCache' do
     assert_equal 'A 1', body
   end
 
+  it 'should check route conditions on a cached response' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      def self.protect(protected)
+        condition { halt 403, 'No secrets for you!' unless params[:key] == 's3cr3t' } if protected
+      end
+      controller cache: true, conditions: { protect: true } do
+        get('/private') { 'secret stuff' }
+      end
+    end
+
+    get '/private?key=s3cr3t'
+    assert_equal 'secret stuff', body
+    get '/private'
+    assert_equal 403, status
+    assert_equal 'No secrets for you!', body
+  end
+
+  it 'should keep a cache key from an app-level before filter for the route reached through pass' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      before { cache_key "u-#{params[:u]}" }
+      get('/z', cache: true) { pass }
+      get('/z', cache: true) { "B for #{params[:u]}" }
+    end
+
+    get '/z?u=alice'
+    assert_equal 'B for alice', body
+    get '/z?u=bob'
+    assert_equal 'B for bob', body
+  end
+
   it 'should keep expires to the request that set it' do
     stored = []
     store = Object.new
