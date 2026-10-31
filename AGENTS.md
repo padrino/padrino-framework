@@ -46,19 +46,18 @@ bundle exec rubocop <files you changed>
 
 ## What CI checks
 
-- `bundle exec rake test` on Ruby 2.7 through 4.0 and JRuby, with HAML 5
+- `bundle exec rake test` on Ruby 3.0 through 4.0 and JRuby, with HAML 5
   and 7. Pull requests from forks run once a maintainer approves the run.
 - The whole suite again with `RUBYOPT=--enable-frozen-string-literal`.
 - CI doesn't run RuboCop.
 
 So, in code you add:
 
-- **Ruby 2.7 syntax** (the gemspecs require `>= 2.7.8`). Not available:
-  endless methods, the `it` block parameter, anonymous block, rest and
-  keyword-rest arguments (`&`, `*`, `**`), hash shorthand (`{x:}`) and
-  rightward assignment (`=>`). RuboCop targets 2.7 and flags most of these,
-  but not `it` or newer core methods such as `Hash#except`; those only fail
-  on the 2.7 CI job.
+- **Ruby 3.0 syntax** (the gemspecs require `>= 3.0.7`). Not available: the
+  `it` block parameter, anonymous block, rest and keyword-rest arguments
+  (`&`, `*`, `**`) and hash shorthand (`{x:}`). RuboCop targets 3.0 and flags
+  most of these, but not `it` or newer core methods such as
+  `Array#intersect?`; those only fail on the 3.0 CI job.
 - **No mutation of string literals or of strings you were given** (`<<`,
   `gsub!`, `encode!`, `force_encoding` on a caller's string). Build a new
   string (`+''`, `dup`, `encode`) instead.

@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- REMOVE #2443 Ruby 2.7 is no longer supported: Padrino now requires Ruby 3.0.7 or later. Apps on Ruby 2.7 stay on Padrino 0.18 until they upgrade Ruby (@achiurizo)
 - FIX #2433 `rake db:migrate` (`ar:migrate`), `ar:schema:dump` and `ar:structure:dump` create `db/` when it is missing, so a new `-d activerecord` project on postgres or mysql can migrate before it has a model, as can a fresh clone of one, instead of failing with `Errno::ENOENT` on `db/schema.rb` after the migration ran (@achiurizo)
 
 == 0.18.0 (2026-10-31)

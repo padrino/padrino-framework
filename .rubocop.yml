@@ -2,7 +2,7 @@ require:
   - rubocop-minitest
 
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 3.0
 
 ## Custom settings according to the current codebase
 Lint/MissingSuper:
