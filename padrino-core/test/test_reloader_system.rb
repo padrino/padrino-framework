@@ -1,8 +1,6 @@
 require_relative 'helper'
 require 'tmpdir'
 
-# Reloading outside development needs tracking enabled before the apps load.
-Padrino::Reloader.enabled = true
 require_relative 'fixtures/apps/kiq'
 require_relative 'fixtures/apps/system'
 require_relative 'fixtures/apps/static'
@@ -201,6 +199,7 @@ describe 'SystemReloader' do
       concern_file = "#{__dir__}/fixtures/apps/concerned/models/mixins/filterable.rb"
       includer_file = "#{__dir__}/fixtures/apps/concerned/models/filtered_item.rb"
       original = File.read(concern_file)
+      includer_mtime = File.mtime(includer_file)
       Padrino.clear!
       require File.expand_path("#{__dir__}/fixtures/apps/concerned/app.rb")
       @app = SystemConcernedClassDemo
@@ -223,6 +222,8 @@ describe 'SystemReloader' do
       assert_equal :kept, Filterable.instance_variable_get(:@config)
     ensure
       File.write(concern_file, original) if original
+      # A future mtime would hide the next run's touch from Reloader.
+      File.utime(includer_mtime, includer_mtime, includer_file) if includer_mtime
     end
 
     it 'should redefine an ActiveSupport::Concern that another file requires, also after Padrino.clear!' do
@@ -234,6 +235,7 @@ describe 'SystemReloader' do
       concern_file = "#{__dir__}/fixtures/apps/concerned/models/mixins/sortable.rb"
       includer_file = "#{__dir__}/fixtures/apps/concerned/models/catalog_item.rb"
       original = File.read(concern_file)
+      includer_mtime = File.mtime(includer_file)
       # Sortable stays defined after Padrino.clear!, so the second load finds it already defined.
       2.times do
         Padrino.clear!
@@ -256,6 +258,7 @@ describe 'SystemReloader' do
     ensure
       if original
         File.write(concern_file, original)
+        File.utime(includer_mtime, includer_mtime, includer_file)
         # The next Padrino.clear! keeps Sortable, and CatalogItem then requires the restored file without a reset.
         Padrino::Reloader.reset_concern(Sortable) if defined?(Sortable)
       end
