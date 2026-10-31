@@ -1,29 +1,51 @@
-# Publishes a release to rubygems.org when a version tag (e.g. 0.18.0) is pushed.
+# Publishes a release to rubygems.org. Two ways to start it:
+# - "Run workflow" (workflow_dispatch) on master or an X.Y-stable branch with the version, e.g. 0.18.0.
+#   Dispatch right after merging the release PR (version bump + CHANGES stamp): the run releases the
+#   branch head, and refuses unless CHANGES.rdoc's top section is that version, so nothing merged later
+#   ships under it. The workflow creates the tag itself, on the built commit, once the release is
+#   approved.
+# - Pushing a version tag (e.g. 0.18.0) on a commit of master or an X.Y-stable branch.
 #
-# 1. "build" (no credentials) checks that the tag matches the version files and is on master or an
-#    X.Y-stable branch, builds the nine gems in release order and uploads them, with their sha256 sums,
-#    as an artifact. Check those files before approving: they are exactly what "publish" pushes.
-# 2. "publish" runs in the "release" environment. It first refuses if the tag has moved since this run
-#    started, then exchanges this run's OIDC identity for short-lived RubyGems tokens (trusted
-#    publishing: no API key is stored anywhere), checks the sums, and pushes each gem that isn't on
-#    rubygems.org yet; "Re-run failed jobs" resumes a release that stopped partway.
+# 1. "build" (no credentials) checks the version against the version files and the branch, builds the
+#    nine gems in release order and uploads them, with their sha256 sums, as an artifact. Check those
+#    files before approving: they are exactly what "publish" pushes.
+# 2. "publish" runs in the "release" environment. It first refuses if the tag exists somewhere else
+#    (or, for a tag push, has moved or been deleted since this run started), checks the sums, creates
+#    the tag if this run was dispatched, then exchanges this run's OIDC identity for short-lived RubyGems tokens (trusted
+#    publishing: no API key is stored anywhere) and pushes each gem that isn't on rubygems.org yet;
+#    "Re-run failed jobs" resumes a release that stopped partway.
 #
 # The "release" environment's protection rules are the ONLY gate on publishing: RubyGems trusts any run
 # of a release.yml in this repository that uses that environment, whatever the ref, so a tag or branch
 # can carry its own copy of this file. Set the environment up (required reviewer, no admin bypass,
-# deployments only from version tags) BEFORE adding the trusted publishers on rubygems.org.
+# deployments only from version tags and master) BEFORE adding the trusted publishers on rubygems.org.
+# A branch rule for X.Y-stable is needed only to dispatch from a stable branch, and lets anyone with
+# write access create such a branch carrying its own copy of this file (master is protected; a new
+# stable branch is not).
 #
-# Prerelease tags (0.19.0.rc1) don't match the trigger, and a stable branch needs this file on it before
-# its tags trigger it; release those with rake bump / rake publish. A tag pushed by rake publish also
-# starts a run here: reject its "release" deployment.
+# Prerelease versions (0.19.0.rc1) are refused by a dispatch, and a prerelease tag push doesn't start
+# this workflow at all; a stable branch needs this file on it before it can use it. Release those with
+# rake bump / rake publish. A tag pushed by rake publish also starts a run here: reject its "release"
+# deployment. Reject any run you won't approve: one waiting for approval holds the "release"
+# concurrency group, and a newer queued run replaces an older queued one.
 name: release
 
 on:
   push:
     tags: ['[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (already in the version files of this branch), e.g. 0.18.0'
+        required: true
+        type: string
 
 permissions:
   contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -40,21 +62,38 @@ jobs:
       - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: '3.3'
-      - name: Check the tag
+      - name: Check the version
         id: check
+        shell: bash -eo pipefail {0}
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          tag="${GITHUB_REF_NAME}"
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            version="$INPUT_VERSION"
+            [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::the version input is not a plain version like 1.2.3"; exit 1; }
+            case "$GITHUB_REF" in
+              refs/heads/master|"refs/heads/${version%.*}-stable") ;;
+              *) echo "::error::run this on master or ${version%.*}-stable, not $GITHUB_REF"; exit 1 ;;
+            esac
+            top=$(grep -m1 '^== ' CHANGES.rdoc | cut -d' ' -f2)
+            [ "$top" = "$version" ] || { echo "::error::CHANGES.rdoc starts with '== $top', not '== $version': merge the release PR first, and nothing after it"; exit 1; }
+            tagged=$(git ls-remote origin "refs/tags/$version" "refs/tags/$version^{}" | cut -f1)
+            [ -z "$tagged" ] || echo "$tagged" | grep -qx "$GITHUB_SHA" ||
+              { echo "::error::tag $version already exists at another commit"; exit 1; }
+          else
+            version="$GITHUB_REF_NAME"
+          fi
           core=$(ruby -e 'puts File.read("padrino-core/lib/padrino-core/version.rb")[/VERSION = .([^\x27"]+)/, 1]')
           perf=$(ruby -e 'puts File.read("padrino-performance/lib/padrino-performance/version.rb")[/VERSION = .([^\x27"]+)/, 1]')
-          [ "$tag" = "$core" ] && [ "$tag" = "$perf" ] || { echo "::error::tag $tag but version files say $core / $perf"; exit 1; }
-          series="${tag%.*}-stable"
+          [ "$version" = "$core" ] && [ "$version" = "$perf" ] || { echo "::error::version $version but version files say $core / $perf"; exit 1; }
+          series="${version%.*}-stable"
           on=""
           for b in master "$series"; do
             git merge-base --is-ancestor "$GITHUB_SHA" "origin/$b" 2>/dev/null && on="$b"
           done
-          [ -n "$on" ] || { echo "::error::$tag ($GITHUB_SHA) is not on master or $series"; exit 1; }
-          echo "version=$tag" >> "$GITHUB_OUTPUT"
-          echo "$tag is on $on"
+          [ -n "$on" ] || { echo "::error::$version ($GITHUB_SHA) is not on master or $series"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "$version ($GITHUB_SHA) is on $on"
       - name: Build the gems
         env:
           VERSION: ${{ steps.check.outputs.version }}
@@ -76,20 +115,45 @@ jobs:
     runs-on: ubuntu-latest
     environment: release
     permissions:
-      contents: read
+      # contents: write creates the tag on a dispatched release. The actions after it are SHA-pinned, and
+      # id-token: write (the RubyGems push credential) is the more valuable grant in this job anyway.
+      contents: write
       id-token: write
     steps:
-      - name: Refuse a stale run (the tag moved since this run started)
+      - name: Refuse a stale run (the tag is somewhere else)
+        shell: bash -eo pipefail {0}
         env:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
           tagged=$(git ls-remote "https://github.com/$GITHUB_REPOSITORY" "refs/tags/$VERSION*" |
             awk -v t="refs/tags/$VERSION" '$2 == t || $2 == t "^{}" { print $1 }')
-          echo "$tagged" | grep -qx "$GITHUB_SHA" || { echo "::error::tag $VERSION is no longer at $GITHUB_SHA (now: ${tagged:-gone}); this run is stale"; exit 1; }
+          if [ -z "$tagged" ] && [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            echo "tag $VERSION will be created at $GITHUB_SHA"
+          else
+            echo "$tagged" | grep -qx "$GITHUB_SHA" || { echo "::error::tag $VERSION is not at $GITHUB_SHA (now: ${tagged:-gone}); this run is stale"; exit 1; }
+          fi
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: gems-${{ needs.build.outputs.version }}
           path: dist
+      - name: Check the sums
+        working-directory: dist
+        run: sha256sum -c SHA256SUMS
+      - name: Create the tag
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash -eo pipefail {0}
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tagged=$(git ls-remote "https://github.com/$GITHUB_REPOSITORY" "refs/tags/$VERSION" "refs/tags/$VERSION^{}" | cut -f1)
+          if [ -z "$tagged" ]; then
+            gh api "repos/$GITHUB_REPOSITORY/git/refs" -f ref="refs/tags/$VERSION" -f sha="$GITHUB_SHA"
+          elif echo "$tagged" | grep -qx "$GITHUB_SHA"; then
+            echo "tag $VERSION is already at $GITHUB_SHA"
+          else
+            echo "::error::tag $VERSION is not at $GITHUB_SHA (now: $tagged)"; exit 1
+          fi
       - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
         with:
           ruby-version: '3.3'
@@ -99,7 +163,6 @@ jobs:
         env:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
-          sha256sum -c SHA256SUMS
           while read -r g; do
             if curl -fsS "https://rubygems.org/api/v1/versions/$g.json" | ruby -rjson -e 'exit(JSON.parse($stdin.read).any? { |v| v["number"] == ENV["VERSION"] } ? 0 : 1)'; then
               echo "$g $VERSION is already on rubygems.org; skipping"
