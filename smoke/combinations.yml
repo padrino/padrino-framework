@@ -11,7 +11,7 @@
   server: webrick
   add_component:
     mock: rr
-  ruby: '2.7'
+  ruby: '3.0'
 - name: sequel-postgres-haml-rspec
   orm: sequel
   adapter: postgres
@@ -113,7 +113,7 @@
   server: puma
   add_component:
     mock: rr
-  ruby: '2.7'
+  ruby: '3.0'
 - name: activerecord-postgres-haml-shoulda
   orm: activerecord
   adapter: postgres
