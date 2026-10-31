@@ -43,12 +43,24 @@ bundle exec rubocop <files you changed>
 
   then boot or test the generated project. `--dev` points its Gemfile at your
   checkout.
+- The smoke runner does that for one row of `smoke/combinations.yml`:
+  generate, bundle, migrate, render, run the project's tests, boot, and
+  re-run the generators. `SMOKE_KEEP=1` keeps the project for inspection.
+
+  ```shell
+  bundle exec rake smoke:list
+  bundle exec rake 'smoke[sequel-sqlite-erb-minitest]'
+  ```
 
 ## What CI checks
 
 - `bundle exec rake test` on Ruby 3.0 through 4.0 and JRuby, with HAML 5
   and 7. Pull requests from forks run once a maintainer approves the run.
 - The whole suite again with `RUBYOPT=--enable-frozen-string-literal`.
+- The smoke workflow (`.github/workflows/smoke.yml`): one job per row of
+  `smoke/combinations.yml`, nightly and on pull requests that touch
+  padrino-gen or padrino-admin. On pull requests it is informational; a
+  row that fails because of a known bug carries `allowed_failure: <issue>`.
 - CI doesn't run RuboCop.
 
 So, in code you add:

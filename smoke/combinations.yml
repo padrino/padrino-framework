@@ -1,0 +1,258 @@
+# Generated-project smoke combinations, one CI job each (rake smoke:list, rake smoke[name]).
+# Pairwise: every orm x renderer and orm x test pair appears once or more.
+- name: sequel-sqlite-erb-minitest
+  orm: sequel
+  adapter: sqlite
+  renderer: erb
+  test: minitest
+  mock: mocha
+  script: jquery
+  stylesheet: scss
+  server: webrick
+  add_component:
+    mock: rr
+  ruby: '3.0'
+- name: sequel-postgres-haml-rspec
+  orm: sequel
+  adapter: postgres
+  renderer: haml
+  test: rspec
+  mock: rr
+  script: none
+  stylesheet: sass
+  server: puma
+  add_component:
+    stylesheet: tailwind
+  no_db_clients: true
+- name: sequel-mysql2-liquid-bacon
+  orm: sequel
+  adapter: mysql2
+  renderer: liquid
+  test: bacon
+  mock: none
+  script: dojo
+  stylesheet: tailwind
+  server: thin
+  add_component:
+    mock: rr
+- name: sequel-sqlite-slim-cucumber
+  orm: sequel
+  adapter: sqlite
+  renderer: slim
+  test: cucumber
+  mock: mocha
+  script: mootools
+  stylesheet: none
+  server: falcon
+  add_component:
+    mock: rr
+- name: sequel-postgres-erb-shoulda
+  orm: sequel
+  adapter: postgres
+  renderer: erb
+  test: shoulda
+  mock: rr
+  script: prototype
+  stylesheet: scss
+  server: webrick
+  add_component:
+    stylesheet: tailwind
+- name: sequel-mysql2-haml-testunit
+  orm: sequel
+  adapter: mysql2
+  renderer: haml
+  test: testunit
+  mock: none
+  script: vite
+  stylesheet: sass
+  server: puma
+  add_component:
+    mock: rr
+- name: activerecord-sqlite-haml-minitest
+  orm: activerecord
+  adapter: sqlite
+  renderer: haml
+  test: minitest
+  mock: mocha
+  script: jquery
+  stylesheet: tailwind
+  server: thin
+  add_component:
+    mock: rr
+- name: activerecord-postgres-liquid-rspec
+  orm: activerecord
+  adapter: postgres
+  renderer: liquid
+  test: rspec
+  mock: rr
+  script: none
+  stylesheet: none
+  server: falcon
+  add_component:
+    stylesheet: tailwind
+- name: activerecord-mysql2-slim-bacon
+  orm: activerecord
+  adapter: mysql2
+  renderer: slim
+  test: bacon
+  mock: none
+  script: dojo
+  stylesheet: scss
+  server: webrick
+  add_component:
+    mock: rr
+  no_db_clients: true
+- name: activerecord-sqlite-erb-cucumber
+  orm: activerecord
+  adapter: sqlite
+  renderer: erb
+  test: cucumber
+  mock: mocha
+  script: mootools
+  stylesheet: sass
+  server: puma
+  add_component:
+    mock: rr
+  ruby: '3.0'
+- name: activerecord-postgres-haml-shoulda
+  orm: activerecord
+  adapter: postgres
+  renderer: haml
+  test: shoulda
+  mock: rr
+  script: prototype
+  stylesheet: tailwind
+  server: thin
+  add_component:
+    stylesheet: scss
+- name: activerecord-mysql2-liquid-testunit
+  orm: activerecord
+  adapter: mysql2
+  renderer: liquid
+  test: testunit
+  mock: none
+  script: vite
+  stylesheet: none
+  server: falcon
+  add_component:
+    mock: rr
+- name: mongoid-liquid-minitest
+  orm: mongoid
+  renderer: liquid
+  test: minitest
+  mock: mocha
+  script: jquery
+  stylesheet: scss
+  server: webrick
+  add_component:
+    mock: rr
+- name: mongoid-slim-rspec
+  orm: mongoid
+  renderer: slim
+  test: rspec
+  mock: rr
+  script: none
+  stylesheet: sass
+  server: puma
+  add_component:
+    stylesheet: tailwind
+- name: mongoid-erb-bacon
+  orm: mongoid
+  renderer: erb
+  test: bacon
+  mock: none
+  script: dojo
+  stylesheet: tailwind
+  server: thin
+  add_component:
+    mock: rr
+- name: mongoid-haml-cucumber
+  orm: mongoid
+  renderer: haml
+  test: cucumber
+  mock: mocha
+  script: mootools
+  stylesheet: none
+  server: falcon
+  add_component:
+    mock: rr
+- name: mongoid-liquid-shoulda
+  orm: mongoid
+  renderer: liquid
+  test: shoulda
+  mock: rr
+  script: prototype
+  stylesheet: scss
+  server: webrick
+  add_component:
+    stylesheet: tailwind
+- name: mongoid-slim-testunit
+  orm: mongoid
+  renderer: slim
+  test: testunit
+  mock: none
+  script: vite
+  stylesheet: sass
+  server: puma
+  add_component:
+    mock: rr
+- name: none-slim-minitest
+  orm: none
+  renderer: slim
+  test: minitest
+  mock: mocha
+  script: jquery
+  stylesheet: tailwind
+  server: thin
+  add_component:
+    mock: rr
+- name: none-erb-rspec
+  orm: none
+  renderer: erb
+  test: rspec
+  mock: rr
+  script: none
+  stylesheet: none
+  server: falcon
+  add_component:
+    stylesheet: tailwind
+- name: none-haml-bacon
+  orm: none
+  renderer: haml
+  test: bacon
+  mock: none
+  script: dojo
+  stylesheet: scss
+  server: webrick
+  add_component:
+    mock: rr
+- name: none-liquid-cucumber
+  orm: none
+  renderer: liquid
+  test: cucumber
+  mock: mocha
+  script: mootools
+  stylesheet: sass
+  server: puma
+  add_component:
+    mock: rr
+- name: none-slim-shoulda
+  orm: none
+  renderer: slim
+  test: shoulda
+  mock: rr
+  script: prototype
+  stylesheet: tailwind
+  server: thin
+  add_component:
+    stylesheet: scss
+- name: none-erb-testunit
+  orm: none
+  renderer: erb
+  test: testunit
+  mock: none
+  script: vite
+  stylesheet: none
+  server: falcon
+  add_component:
+    mock: rr
