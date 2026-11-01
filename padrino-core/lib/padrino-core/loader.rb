@@ -55,7 +55,7 @@ module Padrino
     # Requires necessary dependencies as well as application files from root
     # lib and models.
     #
-    # Concurrent calls load once: the others wait for it to finish, then return false.
+    # Calls from other threads while it loads wait for it to finish, then return false.
     # If it raised, the next waiting caller runs the load instead.
     # A call made while loading, from the loading thread (in any fiber), returns false.
     #

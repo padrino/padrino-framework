@@ -76,6 +76,41 @@ describe 'Padrino loaded state' do
     assert Padrino.loaded?
   end
 
+  it 'runs the load in a waiting thread when the first load raised' do
+    calls = 0
+    entered = Queue.new
+    release = Queue.new
+    Padrino.before_load do
+      calls += 1
+      next unless calls == 1
+      entered << true
+      release.pop
+      raise 'boom'
+    end
+
+    begin
+      first = Thread.new do
+        Padrino.load!
+      rescue RuntimeError => e
+        e
+      end
+      pop_from(entered, first)
+      second = Thread.new { Padrino.load! }
+      deadline = Time.now + 5
+      Thread.pass until second.status == 'sleep' || !second.alive? || Time.now > deadline
+      assert_equal 'sleep', second.status, 'the second load! did not wait'
+    ensure
+      release << true
+      threads = [first, second].compact
+      threads.each { |thread| thread.kill unless thread.join(5) }
+    end
+
+    assert_instance_of RuntimeError, first.value
+    assert second.value
+    assert_equal 2, calls
+    assert Padrino.loaded?
+  end
+
   it 'returns false from a load! called inside a before_load hook' do
     calls = 0
     nested = nil
