@@ -287,7 +287,7 @@ describe 'ComponentGenerator' do
       end
 
       it 'should keep an edited application.js for every script component' do
-        %w[dojo jquery mootools prototype].each do |script|
+        %w[dojo htmx jquery mootools prototype].each do |script|
           `rm -rf #{@apptmp}/sample_project`
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--script=#{script}") }
           File.write(project_file('public/javascripts/application.js'), "// edited\n")
@@ -564,6 +564,13 @@ describe 'ComponentGenerator' do
       assert_match(%r{Add `require 'active_support/core_ext/object/try'`}, out)
     end
 
+    it 'should print the layout tags for a renderer applied in the same run' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, = capture_io { generate(:component, '--script=vite', '--renderer=haml', "-r=#{@apptmp}/sample_project") }
+      assert_match(%r{layouts/application\.haml}, out)
+      assert_match(/^\s+= vite_client_tag$/, out)
+    end
+
     it 'should add vite to an existing project and keep its package.json' do
       capture_io { generate(:project, 'sample_project', '--renderer=haml', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/package.json", "{}\n")
@@ -605,6 +612,129 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{@apptmp}/sample_project/config/boot.rb").scan(%r{active_support/core_ext/object/try}).size
       assert_equal 1, File.read("#{@apptmp}/sample_project/Rakefile").scan('ViteRuby.install_tasks').size
       assert_equal "web: bundle exec padrino start\nvite: bundle exec vite dev\n", File.read("#{@apptmp}/sample_project/Procfile.dev")
+    end
+  end
+
+  describe 'htmx script component' do
+    before { Readline.stubs(:readline).returns(nil) }
+
+    def project_file(path)
+      "#{@apptmp}/sample_project/#{path}"
+    end
+
+    def vendored_htmx
+      File.binread(File.expand_path('../lib/padrino-gen/generators/templates/htmx/htmx.min.js', __dir__))
+    end
+
+    def apply_component(*args, answer: nil)
+      Readline.stubs(:readline).returns(answer)
+      capture_io { generate(:component, *args, "-r=#{@apptmp}/sample_project") }
+    end
+
+    it 'should install htmx and its CSRF script in a new project without the network' do
+      WebMock.reset_executed_requests!
+      out, = capture_io { generate(:project, 'sample_project', '--script=htmx', "--root=#{@apptmp}") }
+      assert_match(/applying.*?htmx.*?script/, out)
+      assert_equal vendored_htmx, File.binread(project_file('public/javascripts/htmx.js'))
+      assert_match_in_file(/htmx:configRequest/, project_file('public/javascripts/htmx-csrf.js'))
+      assert_match_in_file(/X-CSRF-Token/, project_file('public/javascripts/htmx-csrf.js'))
+      assert_file_exists(project_file('public/javascripts/application.js'))
+      assert_equal 'htmx', YAML.load_file(project_file('.components'))[:script]
+      assert_not_requested :get, /.*/
+    end
+
+    it 'should add htmx to an existing project' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      apply_component('--script=htmx')
+      assert_equal vendored_htmx, File.binread(project_file('public/javascripts/htmx.js'))
+      assert_file_exists(project_file('public/javascripts/htmx-csrf.js'))
+      assert_equal 'htmx', YAML.load_file(project_file('.components'))[:script]
+    end
+
+    it 'should install into a tiny project' do
+      capture_io { generate(:project, 'sample_project', '--script=htmx', '--tiny', "--root=#{@apptmp}") }
+      assert_equal vendored_htmx, File.binread(project_file('public/javascripts/htmx.js'))
+      assert_file_exists(project_file('public/javascripts/htmx-csrf.js'))
+    end
+
+    it 'should keep edited files when applied again without a terminal' do
+      capture_io { generate(:project, 'sample_project', '--script=htmx', "--root=#{@apptmp}") }
+      edited = %w[htmx.js htmx-csrf.js application.js].map { |name| project_file("public/javascripts/#{name}") }
+      edited.each { |path| File.write(path, "// edited\n") }
+      apply_component('--script=htmx')
+      edited.each { |path| assert_equal "// edited\n", File.read(path), path }
+    end
+
+    it 'should switch from jquery to htmx and back, keeping an edited application.js' do
+      capture_io { generate(:project, 'sample_project', '--script=jquery', "--root=#{@apptmp}") }
+      File.write(project_file('public/javascripts/application.js'), "// edited\n")
+
+      apply_component('--script=htmx', answer: 'yes')
+      assert_equal 'htmx', YAML.load_file(project_file('.components'))[:script]
+      assert_match_in_file(/htmx:configRequest/, project_file('public/javascripts/htmx-csrf.js'))
+
+      apply_component('--script=jquery', answer: 'yes')
+      assert_equal 'jquery', YAML.load_file(project_file('.components'))[:script]
+      assert_file_exists(project_file('public/javascripts/jquery-ujs.js'))
+      assert_equal "// edited\n", File.read(project_file('public/javascripts/application.js'))
+    end
+
+    it 'should leave the project unchanged when the switch is declined without a terminal' do
+      capture_io { generate(:project, 'sample_project', '--script=jquery', "--root=#{@apptmp}") }
+      apply_component('--script=htmx')
+      assert_equal 'jquery', YAML.load_file(project_file('.components'))[:script]
+      assert_no_file_exists(project_file('public/javascripts/htmx.js'))
+    end
+
+    it 'should install into a lean project' do
+      capture_io { generate(:project, 'sample_project', '--script=htmx', '--lean', "--root=#{@apptmp}") }
+      assert_equal vendored_htmx, File.binread(project_file('public/javascripts/htmx.js'))
+      assert_no_dir_exists(project_file('app'))
+    end
+
+    it 'should print a plain script tag for an api project, which has no helpers' do
+      out, = capture_io { generate(:project, 'sample_project', '--script=htmx', '--api', "--root=#{@apptmp}") }
+      assert_match(%r{<script src="/javascripts/htmx\.js"></script>}, out)
+      refute_match(/csrf_meta_tags/, out)
+      assert_file_exists(project_file('public/javascripts/htmx.js'))
+    end
+
+    it 'should print a plain script tag when added to an existing api project' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      out, = apply_component('--script=htmx')
+      assert_match(%r{<script src="/javascripts/htmx\.js"></script>}, out)
+      refute_match(/csrf_meta_tags/, out)
+    end
+
+    it 'should print the layout lines for a renderer applied in the same run' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, = apply_component('--script=htmx', '--renderer=haml')
+      assert_match(%r{layouts/application\.haml}, out)
+      assert_match(/^\s+= csrf_meta_tags$/, out)
+    end
+
+    it 'should read the token where csrf_meta_tags writes it' do
+      capture_io { generate(:project, 'sample_project', '--script=htmx', "--root=#{@apptmp}") }
+      script = File.read(project_file('public/javascripts/htmx-csrf.js'))
+      view = Object.new.extend(Padrino::Helpers::TagHelpers, Padrino::Helpers::AssetTagHelpers, Padrino::Helpers::FormHelpers::Security)
+      view.stubs(is_protected_from_csrf?: true, csrf_param: 'authenticity_token', csrf_token: 'the-token')
+
+      name = script[/meta\[name="([^"]+)"\]/, 1]
+      attribute = script[/token\.(\w+)/, 1]
+      tag = view.csrf_meta_tags[/<meta[^>]*name="#{name}"[^>]*>/]
+      assert_match(/#{attribute}="the-token"/, tag)
+    end
+
+    it 'should print the layout lines for each template engine' do
+      {
+        'erb' => [/<%= csrf_meta_tags %>/, /<%= javascript_include_tag 'htmx', 'htmx-csrf', 'application' %>/, %r{layouts/application\.erb}],
+        'haml' => [/^\s+= csrf_meta_tags$/, /^\s+= javascript_include_tag 'htmx', 'htmx-csrf', 'application'$/, %r{layouts/application\.haml}],
+        'slim' => [/^\s+= csrf_meta_tags$/, /^\s+= javascript_include_tag 'htmx', 'htmx-csrf', 'application'$/, %r{layouts/application\.slim}]
+      }.each do |renderer, expected|
+        `rm -rf #{@apptmp}/sample_project`
+        out, = capture_io { generate(:project, 'sample_project', '--script=htmx', "--renderer=#{renderer}", "--root=#{@apptmp}") }
+        expected.each { |pattern| assert_match(pattern, out) }
+      end
     end
   end
 
