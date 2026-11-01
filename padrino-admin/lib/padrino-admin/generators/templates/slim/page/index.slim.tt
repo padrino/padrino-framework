@@ -38,7 +38,7 @@ div class="tabs-content"
           <%- if column.name == 'created_at' || column.name == 'updated_at' -%>
           td class='list-column' = time_ago_in_words <%= @orm.name_singular %>.<%= column.name %>
           <%- elsif @orm.field_type(column.type) == :check_box -%>
-          td class='list-column' = <%= @orm.name_singular %>.<%= column.name %> ? tag_icon(:check) : tag_icon(:times)
+          td class='list-column' = tag_icon(<%= @orm.name_singular %>.<%= column.name %> ? :check : :times) + content_tag(:span, <%= @orm.name_singular %>.<%= column.name %>.to_s, class: 'sr-only') unless <%= @orm.name_singular %>.<%= column.name %>.nil?
           <%- else -%>
           td class='list-column' = <%= @orm.name_singular %>.<%= column.name %>
           <%- end -%>

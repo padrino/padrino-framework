@@ -215,14 +215,15 @@ describe 'AdminPageGenerator' do
           Object.const_set(:Switch, Class.new(Sequel::Model(:switches)))
           Switch.create(name: 'on', enabled: true)
           Switch.create(name: 'off', enabled: false)
+          Switch.create(name: 'unset', enabled: nil)
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
+          capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
           if type_name
             boolean = Class.new
             boolean.define_singleton_method(:to_s) { type_name }
             columns = Switch.db_schema.map { |name, info| Padrino::Admin::Generators::Orm::Column.new(name, name == :enabled ? boolean : info[:type]) }
             Padrino::Admin::Generators::Orm.any_instance.stubs(:columns).returns(columns)
           end
-          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
-          capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
           capture_io { generate(:admin_page, 'switch', "--root=#{@apptmp}/sample_project") }
           views = "#{@apptmp}/sample_project/admin/views"
           mock_app do
@@ -240,12 +241,16 @@ describe 'AdminPageGenerator' do
           assert_equal 200, last_response.status
           page = Nokogiri::HTML(last_response.body)
           column = page.css('#list thead th').map { |th| th.text.strip }.index('Enabled')
-          on, off = page.css('#list tbody tr').map { |row| row.css('td')[column].css('i.fa').map { |icon| icon['class'].split - ['fa'] } }
-          refute_empty on.flatten
-          refute_empty off.flatten
-          refute_equal on, off
+          on, off, unset = page.css('#list tbody tr').map { |row| row.css('td')[column] }
+          icons = ->(cell) { cell.css('i.fa').flat_map { |icon| icon['class'].split - ['fa'] } }
+          refute_empty icons.call(on)
+          refute_empty icons.call(off)
+          refute_equal icons.call(on), icons.call(off)
+          assert_equal 'true', on.at_css('.sr-only')&.text
+          assert_equal 'false', off.at_css('.sr-only')&.text
+          assert_empty unset.children.to_s.strip
           stylesheet = File.read("#{@apptmp}/sample_project/public/admin/stylesheets/application.css")
-          undrawn = (on + off).flatten.reject { |icon| stylesheet.include?(".#{icon}:before") }
+          undrawn = (icons.call(on) + icons.call(off)).reject { |icon| stylesheet.include?(".#{icon}:before") }
           assert_empty undrawn, 'the stylesheet draws no glyph for these icons'
         ensure
           Object.send(:remove_const, :Switch) if Object.const_defined?(:Switch, false)
@@ -255,6 +260,7 @@ describe 'AdminPageGenerator' do
     end
 
     it 'should not carry a flash over to the next page when a record is not found' do
+      saved = Object.send(:remove_const, :SampleProject) if Object.const_defined?(:SampleProject, false)
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', '-e=erb') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:admin_page, 'friend', "--root=#{@apptmp}/sample_project") }
@@ -275,6 +281,7 @@ describe 'AdminPageGenerator' do
       assert_equal '', last_response.body
     ensure
       Object.send(:remove_const, :SampleProject) if Object.const_defined?(:SampleProject, false)
+      Object.const_set(:SampleProject, saved) if saved
     end
 
     it 'should correctly generate a new padrino admin application with multiple models at the same time' do

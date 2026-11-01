@@ -302,7 +302,7 @@ describe 'AdminAppGenerator' do
           assets = out.lines.grep(/\AASSET /).map(&:split)
           refute_empty assets
           assets.each do |(_, page, url)|
-            assert url.start_with?('/'), "#{page} loads #{url} from another site"
+            assert_match %r{\A/(?!/)}, url, "#{page} loads #{url} from another site"
           end
           assert_empty out.lines.grep(/\ACOMMENT .*\[if /)
         end
@@ -313,7 +313,7 @@ describe 'AdminAppGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', '-e=erb') }
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       stylesheet = File.read("#{@apptmp}/sample_project/public/admin/stylesheets/application.css")
-      loaded = stylesheet.scan(/@font-face\{font-family:'([^']+)'/).flatten
+      loaded = stylesheet.scan(/@font-face\s*\{\s*font-family:\s*['"]([^'"]+)['"]/).flatten
       named = stylesheet.scan(/font-family:([^;}]+)/).flatten.flat_map { |list| list.split(',') }.map { |font| font.strip.delete(%q('")) }
       assert_empty named.uniq - loaded - %w[serif sans-serif monospace system-ui inherit]
     end
