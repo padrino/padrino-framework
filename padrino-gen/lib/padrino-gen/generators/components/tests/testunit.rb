@@ -49,6 +49,7 @@ TESTUNIT_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(TESTUNIT_C
     end
 
     def test_returns_hello_world_text
+      pend "add some examples to \#{__FILE__}"
       assert_equal "Hello World", last_response.body
     end
   end
@@ -79,6 +80,7 @@ TESTUNIT_HELPER_TEST = <<~TEST unless defined?(TESTUNIT_HELPER_TEST)
     end
 
     def test_foo_helper
+      pend "add some examples to (or delete) \#{__FILE__}"
       assert_equal nil, helpers.foo
     end
   end
