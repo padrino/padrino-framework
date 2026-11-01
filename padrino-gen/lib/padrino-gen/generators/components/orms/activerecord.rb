@@ -131,11 +131,13 @@ end
 # generator wrote; any other requirement stays, with a warning when it may not suit trilogy.
 def require_activerecord(adapter)
   floor = adapter == 'trilogy' ? '>= 7.1' : '>= 3.1'
-  line = File.read(destination_root('Gemfile'))[/^\s*gem ['"]activerecord['"].*$/]
+  line = File.read(destination_root('Gemfile'))[/^\s*gem[\s(]+['"]activerecord['"].*$/]
   return require_dependencies('activerecord', require: 'active_record', version: floor) unless line
-  return if adapter.nil? || adapter == stored_adapter || line == ar_gem_line(floor)
 
-  return unless (stored_adapter == 'trilogy') != (adapter == 'trilogy')
+  previous = stored_adapter if reapplying_component?(:orm) # A stored adapter may be another ORM's.
+  return if adapter.nil? || adapter == previous || line == ar_gem_line(floor)
+
+  return unless (previous == 'trilogy') != (adapter == 'trilogy')
 
   if line == ar_gem_line(floor == '>= 7.1' ? '>= 3.1' : '>= 7.1')
     gsub_file('Gemfile', line, ar_gem_line(floor), verbose: false)

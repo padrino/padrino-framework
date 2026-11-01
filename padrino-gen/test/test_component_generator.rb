@@ -271,7 +271,10 @@ describe 'ComponentGenerator' do
         assert_equal ["gem 'activerecord', '~> 8.0', require: 'active_record'"], activerecord_lines
       end
 
-      ["gem 'activerecord', '~> 8.0'", %(gem "activerecord", ">= 3.1", require: "active_record"), %(  gem 'activerecord')].each do |line|
+      [
+        "gem 'activerecord', '~> 8.0'", %(gem "activerecord", ">= 3.1", require: "active_record"), %(  gem 'activerecord'),
+        "gem('activerecord', '~> 8.0')", "gem  'activerecord', '~> 8.0'"
+      ].each do |line|
         it "should leave #{line.strip} and warn when switching to trilogy" do
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
           edit_gemfile("gem 'activerecord', '>= 3.1', require: 'active_record'", line)
@@ -280,6 +283,14 @@ describe 'ComponentGenerator' do
           assert_equal [line], activerecord_lines
           assert_includes out, "Keeping the Gemfile line #{line.strip}"
         end
+      end
+
+      it 'should raise the floor when returning to activerecord with the trilogy adapter of sequel' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=sequel', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:component, '--orm=activerecord', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+        assert_equal ["gem 'activerecord', '>= 7.1', require: 'active_record'"], activerecord_lines
       end
 
       it 'should leave a pinned line without a warning when switching between other adapters' do
