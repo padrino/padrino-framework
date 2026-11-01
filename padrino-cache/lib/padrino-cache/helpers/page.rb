@@ -60,7 +60,7 @@ module Padrino
         #
         # @api public
         def expires(time)
-          @route.cache_expires = time
+          @_cache_expires = time
         end
 
         ##
@@ -89,7 +89,11 @@ module Padrino
         #
         def cache_key(name = nil, &block)
           raise 'Can not provide both cache_key and a block' if name && block
-          @route.cache_key = name || block
+
+          @_cache_key = name || block
+          # A Symbol or a block is the same for every request, so later requests can look it up before the
+          # handler runs. Any other key (a String built from params) belongs to this request only.
+          @route.cache_key = @_cache_key if @_cache_key.is_a?(Symbol) || @_cache_key.is_a?(Proc)
         end
 
         CACHED_VERBS = { 'GET' => true, 'HEAD' => true }.freeze
@@ -97,20 +101,28 @@ module Padrino
         def self.padrino_route_added(route, verb, *)
           return unless route.cache && CACHED_VERBS[verb]
 
-          route.before_filters do
-            next unless settings.caching?
-            if (cached_response = load_cached_response)
-              content_type cached_response[:content_type]
-              halt 200, cached_response[:body]
-            end
-          end
+          # Remember the key and expiry set before this route (by an app-level before filter), so a route
+          # reached through pass starts from them rather than from this route's.
+          route.before_filters { @_cache_outer = [@_cache_key, @_cache_expires] }
+          # The lookup is the route's last condition: it runs after every before filter and condition, so
+          # access checks written there apply to cached pages too.
+          route.custom_conditions << instance_method(:serve_cached_response)
 
           route.after_filters do
-            save_cached_response(route.cache_expires) if settings.caching?
+            save_cached_response(@_cache_expires.nil? ? route.cache_expires : @_cache_expires) if settings.caching?
+            @_cache_key, @_cache_expires = @_cache_outer
           end
         end
 
         private
+
+        def serve_cached_response
+          if settings.caching? && (cached_response = load_cached_response)
+            content_type cached_response[:content_type]
+            halt 200, cached_response[:body]
+          end
+          true
+        end
 
         def load_cached_response
           began_at = Time.now
@@ -142,7 +154,7 @@ module Padrino
         # Resolve the cache_key when it's a block in the correct context.
         #
         def resolve_cache_key
-          key = @route.cache_key
+          key = @_cache_key || @route.cache_key
           key.is_a?(Proc) ? instance_eval(&key) : key
         end
 

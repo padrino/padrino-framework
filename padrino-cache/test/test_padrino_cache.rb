@@ -381,6 +381,150 @@ describe 'PadrinoCache' do
     assert_equal 2, call_count
   end
 
+  it 'should not reuse a string cache key from another request' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/post/:id', cache: true do
+        cache_key "post-#{params[:id]}"
+        "post #{params[:id]}"
+      end
+    end
+
+    get '/post/1'
+    assert_equal 'post 1', body
+    get '/post/2'
+    assert_equal 'post 2', body
+    get '/post/1'
+    assert_equal 'post 1', body
+  end
+
+  it 'should run controller before filters on a cached response' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      controller :secret, cache: true do
+        before { halt 403, 'denied' unless params[:ok] }
+        get(:index) { 'secret page' }
+      end
+    end
+
+    get '/secret?ok=1'
+    assert_equal 'secret page', body
+    get '/secret'
+    assert_equal 403, status
+    assert_equal 'denied', body
+  end
+
+  it 'should use a cache key set in a controller before filter for the lookup' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      controller :users, cache: true do
+        before { cache_key "user-#{params[:u]}" }
+        get(:show, with: :u) { calls += 1; "user #{params[:u]}" }
+      end
+    end
+
+    get '/users/show/a'
+    get '/users/show/b'
+    get '/users/show/a'
+    assert_equal 'user a', body
+    assert_equal 2, calls
+  end
+
+  it 'should not apply a cache key to the next route after pass' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/x/:id', cache: true do
+        cache_key :shared
+        pass if params[:id] == 'skip'
+        "A #{params[:id]}"
+      end
+      get('/x/:id', cache: true) { "B #{params[:id]}" }
+    end
+
+    get '/x/skip'
+    assert_equal 'B skip', body
+    get '/x/1'
+    assert_equal 'A 1', body
+  end
+
+  it 'should check route conditions on a cached response' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      def self.protect(protected)
+        condition { halt 403, 'No secrets for you!' unless params[:key] == 's3cr3t' } if protected
+      end
+      controller cache: true, conditions: { protect: true } do
+        get('/private') { 'secret stuff' }
+      end
+    end
+
+    get '/private?key=s3cr3t'
+    assert_equal 'secret stuff', body
+    get '/private'
+    assert_equal 403, status
+    assert_equal 'No secrets for you!', body
+  end
+
+  it 'should keep a cache key from an app-level before filter for the route reached through pass' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      before { cache_key "u-#{params[:u]}" }
+      get('/z', cache: true) { pass }
+      get('/z', cache: true) { "B for #{params[:u]}" }
+    end
+
+    get '/z?u=alice'
+    assert_equal 'B for alice', body
+    get '/z?u=bob'
+    assert_equal 'B for bob', body
+  end
+
+  it 'should keep expires to the request that set it' do
+    stored = []
+    store = Object.new
+    store.define_singleton_method(:[]) { |_key| nil }
+    store.define_singleton_method(:store) { |key, _value, options| stored << [key, options[:expires]] }
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, store
+      get '/foo', cache: true do
+        expires 100 if params[:long]
+        'foo'
+      end
+    end
+
+    get '/foo?long=1'
+    get '/foo'
+    assert_equal [['/foo', 100], ['/foo', nil]], stored
+  end
+
+  it 'should let expires false in a handler override the route expiry' do
+    stored = []
+    store = Object.new
+    store.define_singleton_method(:[]) { |_key| nil }
+    store.define_singleton_method(:store) { |key, _value, options| stored << [key, options[:expires]] }
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, store
+      get '/ef', cache: true, expires: 60 do
+        expires false
+        'ef'
+      end
+    end
+
+    get '/ef'
+    assert_equal [['/ef', false]], stored
+  end
+
   it 'should resolve block cache keys' do
     call_count = 0
     mock_app do
