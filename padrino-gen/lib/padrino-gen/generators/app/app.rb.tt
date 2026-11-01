@@ -8,7 +8,8 @@ module <%= @project_name %>
 <% end -%>
 <% if api_project? -%>
     # CSRF protection follows sessions, because without a session it rejects every request.
-    # `enable :sessions` here turns on both, except in the test environment.
+    # `enable :sessions` here turns on both, except in the test environment. A session middleware
+    # added by hand (such as `use Rack::Session::Cookie`) needs `enable :protect_from_csrf` too.
     set :protect_from_csrf, proc { sessions? && Padrino.env != :test }
 <% else -%>
     # The session cookie is Secure (sent over HTTPS only) in production. Over plain HTTP
