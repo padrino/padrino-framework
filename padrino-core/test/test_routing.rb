@@ -135,6 +135,73 @@ describe 'Routing' do
     end
   end
 
+  it 'should decode static file paths without replacing invalid UTF-8' do
+    Dir.mktmpdir do |dir|
+      FileUtils.mkdir_p("#{dir}/public")
+      File.write("#{dir}/public/visible.txt", 'visible')
+      File.write("#{dir}/public/\u{FFFD}.txt", 'replacement')
+      mock_app do
+        set :public_folder, "#{dir}/public"
+        get('/*') { 'not found' }
+      end
+      get '/%76isible.txt'
+      assert_equal 'visible', body
+      get '/%EF%BF%BD.txt'
+      assert_equal 'replacement', body
+      get '/%ff.txt'
+      assert_equal 404, status
+    end
+  end
+
+  describe 'decode_path' do
+    it 'decodes %XX escapes and keeps a plus sign' do
+      assert_equal '/posts/1', Padrino::Routing.decode_path('/posts/1')
+      assert_equal '/posts', Padrino::Routing.decode_path('/%70osts')
+      assert_equal '/a/b', Padrino::Routing.decode_path('/a%2Fb')
+      assert_equal '/a/b', Padrino::Routing.decode_path('/a%2fb')
+      assert_equal '/../secret', Padrino::Routing.decode_path('/%2e%2e/secret')
+      assert_equal '/a+b', Padrino::Routing.decode_path('/a+b')
+      assert_equal '/a b', Padrino::Routing.decode_path('/a%20b')
+      assert_equal '/a%zz', Padrino::Routing.decode_path('/a%zz')
+    end
+
+    it 'returns UTF-8 for encoded non-ASCII characters, whatever the input encoding' do
+      ['/caf%C3%A9', '/caf%C3%A9'.b].each do |path|
+        decoded = Padrino::Routing.decode_path(path)
+        assert_equal '/café', decoded
+        assert_equal Encoding::UTF_8, decoded.encoding
+        assert decoded.valid_encoding?
+      end
+    end
+
+    it 'keeps invalid UTF-8 byte for byte' do
+      decoded = Padrino::Routing.decode_path('/%ff')
+      assert_equal Encoding::UTF_8, decoded.encoding
+      refute decoded.valid_encoding?
+      assert_equal "/\xFF".b, decoded.b
+    end
+
+    it 'decodes an empty path to an empty UTF-8 string' do
+      decoded = Padrino::Routing.decode_path('')
+      assert_equal '', decoded
+      assert_equal Encoding::UTF_8, decoded.encoding
+    end
+
+    it 'returns a new string and leaves its argument untouched' do
+      frozen = '/%70osts'.freeze
+      assert_equal '/posts', Padrino::Routing.decode_path(frozen)
+
+      path = '/caf%C3%A9'.b
+      decoded = Padrino::Routing.decode_path(path)
+      refute_same path, decoded
+      assert_equal '/caf%C3%A9', path
+      assert_equal Encoding::ASCII_8BIT, path.encoding
+
+      plain = +'/posts'
+      refute_same plain, Padrino::Routing.decode_path(plain)
+    end
+  end
+
   it 'should ignore trailing delimiters for basic route' do
     mock_app do
       get('/foo') { 'okey' }

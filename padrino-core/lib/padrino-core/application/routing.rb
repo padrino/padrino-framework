@@ -51,6 +51,24 @@ module Padrino
         app.extend(ClassMethods)
       end
       alias included registered
+
+      ##
+      # Decodes the %XX escapes in a request path, %2F included; a '+' stays a
+      # plus, as it does for the router and Sinatra. Returns a new UTF-8 string
+      # and leaves +path+ untouched.
+      #
+      # Invalid UTF-8 (such as '/%ff') is kept byte for byte, so the result's
+      # +valid_encoding?+ is false: replacing it would name a different file.
+      # The router matches no route for such a path; callers that compare the
+      # result with Regexps scrub it first.
+      #
+      # @example
+      #   Padrino::Routing.decode_path('/caf%C3%A9/a+b') # => "/café/a+b"
+      #
+      # @api private
+      def decode_path(path)
+        Rack::Utils.unescape_path(path.b).force_encoding(Encoding::UTF_8)
+      end
     end
 
     # Class methods responsible for enhanced routing for controllers.
@@ -880,8 +898,7 @@ module Padrino
       #
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
-        # Decode the path the way Sinatra's static! and the router do: %XX only, so '+' stays a plus.
-        file = Rack::Utils.unescape_path(path_info.b).force_encoding(Encoding::UTF_8)
+        file = Routing.decode_path(path_info)
         [File.expand_path(public_dir), settings.shared_public_folder].compact.each do |dir|
           path = "#{dir}#{file}"
           next unless Rack::Utils.valid_path?(path)

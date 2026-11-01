@@ -105,7 +105,7 @@ module Padrino
         def allowed?(account = nil, path = nil)
           path = '/' if path.nil? || path.empty?
           # Compare the decoded path; scrub invalid UTF-8 ('/%ff') so Regexp rules can match it.
-          path = Rack::Utils.unescape_path(path.b).force_encoding(Encoding::UTF_8).scrub
+          path = Padrino::Routing.decode_path(path).scrub
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq

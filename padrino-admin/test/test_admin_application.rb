@@ -50,6 +50,28 @@ describe 'AdminApplication' do
     assert_equal 'unauthenticated', body
   end
 
+  it 'should require login for a protected path with an encoded letter' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/foo'
+      end
+
+      get('/foo') { 'foo' }
+      get('/bar') { 'bar' }
+    end
+
+    ['/%66oo', '/f%6Fo', '/%66oo/'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+    end
+
+    get '/%62ar'
+    assert_equal 'bar', body
+  end
+
   it 'should set basic roles with store location and login page' do
     mock_app do
       set    :app_name, :basic_app
