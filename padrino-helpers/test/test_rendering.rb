@@ -833,14 +833,14 @@ describe 'Rendering' do
           register Padrino::Helpers
           get('/') { render :erb, '<%= "<b>" %><% content_tag(:p) do %>ok<% end %>' }
         end
-        print Rack::MockRequest.new(app).get('/').body
+        File.write('body.html', Rack::MockRequest.new(app).get('/').body)
       RUBY
       Dir.mktmpdir do |dir|
         File.write(File.join(dir, 'erubis.rb'), "module Erubis; class Eruby; end; end\n")
         env = { 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
-        out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-I', dir, '-e', script, chdir: dir)
+        _out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-I', dir, '-e', script, chdir: dir)
         assert status.success?, err
-        assert_equal '&lt;b&gt;<p>ok</p>', out
+        assert_equal '&lt;b&gt;<p>ok</p>', File.read(File.join(dir, 'body.html'))
       end
     end
   end
