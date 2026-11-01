@@ -123,6 +123,7 @@ module Smoke
       each_env do |env|
         if combination.sql?
           run('db_tasks', %w[bundle exec rake db:migrate], env: env)
+          run('db_tasks', %w[bundle exec rake db:dump], env: env) if combination.adapter == 'trilogy'
         elsif combination.orm == 'mongoid'
           run('db_tasks', %w[bundle exec rake mi:create_indexes], env: env)
         end

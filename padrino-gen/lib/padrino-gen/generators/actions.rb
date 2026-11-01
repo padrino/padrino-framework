@@ -13,7 +13,7 @@ module Padrino
     ##
     # The SQL adapters for --adapter, and the ORM components that set up their database with one.
     #
-    SQL_ADAPTERS = %w[mysql mysql2 mysql-gem postgres sqlite].freeze
+    SQL_ADAPTERS = %w[mysql mysql2 mysql-gem trilogy postgres sqlite].freeze
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
 
     ##

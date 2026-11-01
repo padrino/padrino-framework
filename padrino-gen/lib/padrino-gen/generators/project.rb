@@ -31,7 +31,7 @@ module Padrino
       class_option :template,         desc: 'Generate project from template',                                   aliases: '-p', default: nil,         type: :string
       class_option :gem,              desc: 'Generate project as a gem',                                        aliases: '-g', default: false,       type: :boolean
       class_option :migration_format, desc: 'Filename format for migrations (number, timestamp)',                              default: 'number',    type: :string
-      class_option :adapter,          desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: 'sqlite',    type: :string
+      class_option :adapter,          desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, trilogy, postgres)', aliases: '-a', default: 'sqlite', type: :string
       class_option :server,           desc: 'HTTP server to use (webrick, thin, puma, falcon)', default: 'webrick', type: :string
 
       # Definitions for the available customizable components.

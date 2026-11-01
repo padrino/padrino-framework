@@ -17,7 +17,7 @@ module Padrino
 
       class_option :app,     desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
       class_option :root,    desc: 'The root destination',                                             aliases: '-r', default: '.',         type: :string
-      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: nil,         type: :string
+      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, trilogy, postgres)', aliases: '-a', default: nil, type: :string
 
       defines_component_options default: false
 

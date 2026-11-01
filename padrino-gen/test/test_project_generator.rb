@@ -464,6 +464,14 @@ describe 'ProjectGenerator' do
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
       end
 
+      it 'should properly generate trilogy' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=trilogy') }
+        assert_match_in_file(/gem 'trilogy'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_no_match_in_file(/gem 'mysql/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(%r{"trilogy://root@127.0.0.1/sample_project_development"}, "#{@apptmp}/sample_project/config/database.rb")
+        assert_equal 'trilogy', YAML.load_file("#{@apptmp}/sample_project/.components")[:adapter]
+      end
+
       it 'should properly generate mysql-gem' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=mysql-gem') }
         assert_match_in_file(/gem 'mysql'/, "#{@apptmp}/sample_project/Gemfile")
@@ -487,7 +495,7 @@ describe 'ProjectGenerator' do
 
       # Sequel tests a new connection by default, so a missing database would fail the boot
       # before sq:create could create it.
-      %w[postgres mysql2 sqlite].each do |adapter|
+      %w[postgres mysql2 trilogy sqlite].each do |adapter|
         it "should not test the #{adapter} connection at boot" do
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', "--adapter=#{adapter}") }
           require 'sequel'
@@ -522,6 +530,19 @@ describe 'ProjectGenerator' do
         assert_match_in_file(/gem 'mysql2'/, "#{@apptmp}/sample_project/Gemfile")
         assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
         assert_match_in_file(/adapter:   'mysql2'/, "#{@apptmp}/sample_project/config/database.rb")
+      end
+
+      # Active Record added the trilogy adapter in 7.1.
+      it 'should properly generate trilogy' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=trilogy') }
+        assert_match_in_file(/gem 'trilogy'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_no_match_in_file(/gem 'mysql/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/gem 'activerecord', '>= 7.1', require: 'active_record'/, "#{@apptmp}/sample_project/Gemfile")
+        assert_match_in_file(/adapter:   'trilogy'/, "#{@apptmp}/sample_project/config/database.rb")
+        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
+        assert_match_in_file(/^ *host:      '127.0.0.1'$/, "#{@apptmp}/sample_project/config/database.rb")
+        assert_no_match_in_file(/^ *socket:/, "#{@apptmp}/sample_project/config/database.rb")
+        assert_equal 'trilogy', YAML.load_file("#{@apptmp}/sample_project/.components")[:adapter]
       end
 
       it 'should properly generate mysql-gem' do
@@ -582,7 +603,7 @@ describe 'ProjectGenerator' do
     %w[sequel activerecord].each do |orm|
       it "should stop with the valid #{orm} adapters at the end of input" do
         err = generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus')
-        assert_match(/No input left to choose a valid --adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite/, err)
+        assert_match(/No input left to choose a valid --adapter; pass one of: mysql, mysql2, mysql-gem, trilogy, postgres, sqlite/, err)
       end
     end
 

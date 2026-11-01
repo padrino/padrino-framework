@@ -24,6 +24,11 @@ def setup_orm
     sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql2://localhost/#{db}_production\"")
     sequel.gsub!(/!DB_TEST!/, "\"mysql2://localhost/#{db}_test\"")
     require_dependencies 'mysql2'
+  when 'trilogy'
+    sequel.gsub!(/!DB_DEVELOPMENT!/, "\"trilogy://root@127.0.0.1/#{db}_development\"")
+    sequel.gsub!(/!DB_PRODUCTION!/, "\"trilogy://root@127.0.0.1/#{db}_production\"")
+    sequel.gsub!(/!DB_TEST!/, "\"trilogy://root@127.0.0.1/#{db}_test\"")
+    require_dependencies 'trilogy'
   when 'postgres'
     sequel.gsub!(/!DB_DEVELOPMENT!/, "\"postgres://localhost/#{db}_development\"")
     sequel.gsub!(/!DB_PRODUCTION!/, "\"postgres://localhost/#{db}_production\"")

@@ -225,6 +225,101 @@ describe 'ComponentGenerator' do
         assert_equal 'postgres', YAML.load_file(project_file('.components'))[:adapter]
       end
 
+      # Bundler refuses a Gemfile that lists a gem twice with different requirements.
+      it 'should keep one activerecord line when switching to trilogy and back' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=activerecord', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+        assert_equal ["gem 'activerecord', '>= 7.1', require: 'active_record'"], File.readlines(project_file('Gemfile'), chomp: true).grep(/activerecord/)
+        assert_match_in_file(/adapter:   'trilogy'/, project_file('config/database.rb'))
+        assert_equal 'trilogy', YAML.load_file(project_file('.components'))[:adapter]
+
+        capture_io { generate(:component, '--orm=activerecord', '--adapter=mysql2', "-r=#{@apptmp}/sample_project") }
+        assert_equal ["gem 'activerecord', '>= 3.1', require: 'active_record'"], File.readlines(project_file('Gemfile'), chomp: true).grep(/activerecord/)
+        assert_match_in_file(/adapter:   'mysql2'/, project_file('config/database.rb'))
+      end
+
+      def activerecord_lines
+        File.readlines(project_file('Gemfile'), chomp: true).grep(/activerecord/)
+      end
+
+      def edit_gemfile(from, to)
+        File.write(project_file('Gemfile'), File.read(project_file('Gemfile')).sub(from, to))
+      end
+
+      it 'should keep a raised activerecord floor when rerun on a mysql2 project' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        edit_gemfile("'>= 3.1'", "'>= 7.1'")
+        rerun('--orm=activerecord')
+        assert_equal ["gem 'activerecord', '>= 7.1', require: 'active_record'"], activerecord_lines
+      end
+
+      it 'should keep a raised activerecord floor when rerun on a project with no stored adapter' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        components = YAML.load_file(project_file('.components'))
+        components.delete(:adapter)
+        File.write(project_file('.components'), components.to_yaml)
+        edit_gemfile("'>= 3.1'", "'>= 7.1'")
+        rerun('--orm=activerecord')
+        assert_equal ["gem 'activerecord', '>= 7.1', require: 'active_record'"], activerecord_lines
+      end
+
+      it 'should keep one activerecord line when rerun on a pinned trilogy project' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=trilogy') }
+        edit_gemfile("'>= 7.1'", "'~> 8.0'")
+        rerun('--orm=activerecord')
+        assert_equal ["gem 'activerecord', '~> 8.0', require: 'active_record'"], activerecord_lines
+      end
+
+      ["gem 'activerecord', '~> 8.0'", %(gem "activerecord", ">= 3.1", require: "active_record"), %(  gem 'activerecord')].each do |line|
+        it "should leave #{line.strip} and warn when switching to trilogy" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+          edit_gemfile("gem 'activerecord', '>= 3.1', require: 'active_record'", line)
+          Readline.stubs(:readline).returns('yes')
+          out, = capture_io { generate(:component, '--orm=activerecord', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+          assert_equal [line], activerecord_lines
+          assert_includes out, "Keeping the Gemfile line #{line.strip}"
+        end
+      end
+
+      it 'should leave a pinned line without a warning when switching between other adapters' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        edit_gemfile("gem 'activerecord', '>= 3.1', require: 'active_record'", "gem 'activerecord', '~> 8.0'")
+        Readline.stubs(:readline).returns('yes')
+        out, = capture_io { generate(:component, '--orm=activerecord', '--adapter=postgres', "-r=#{@apptmp}/sample_project") }
+        assert_equal ["gem 'activerecord', '~> 8.0'"], activerecord_lines
+        refute_includes out, 'Keeping the Gemfile line'
+      end
+
+      it 'should not count activerecord-import as the activerecord line' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
+        edit_gemfile("gem 'sequel'\n", "gem 'sequel'\ngem 'activerecord-import'\n")
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=activerecord', "-r=#{@apptmp}/sample_project") }
+        assert_includes activerecord_lines, "gem 'activerecord', '>= 3.1', require: 'active_record'"
+      end
+
+      %w[activerecord sequel].each do |orm|
+        it "should change nothing when rerun on a #{orm} trilogy project" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--orm=#{orm}", '--adapter=trilogy') }
+          gemfile, config = %w[Gemfile config/database.rb].map { |path| File.read(project_file(path)) }
+          rerun("--orm=#{orm}")
+          assert_equal gemfile, File.read(project_file('Gemfile'))
+          assert_equal config, File.read(project_file('config/database.rb'))
+          assert_equal 'trilogy', YAML.load_file(project_file('.components'))[:adapter]
+        end
+      end
+
+      it 'should rewrite the database config when switching a sequel project to trilogy' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=mysql2') }
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=sequel', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+        assert_no_match_in_file(%r{mysql2://}, project_file('config/database.rb'))
+        assert_match_in_file(%r{"trilogy://root@127.0.0.1/sample_project_test"}, project_file('config/database.rb'))
+        assert_match_in_file(/gem 'trilogy'/, project_file('Gemfile'))
+        assert_equal 'trilogy', YAML.load_file(project_file('.components'))[:adapter]
+      end
+
       it 'should rewrite the database config when switching orm' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
         Readline.stubs(:readline).returns('yes')
