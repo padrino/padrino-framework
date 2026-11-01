@@ -20,7 +20,7 @@ module Padrino
         return if compiled?
         @routes.each_with_index do |route, index|
           route.index = index
-          route.regexp = /(?<_#{index}>#{route.matcher.to_regexp})/
+          route.regexp = /\A(?<_#{index}>#{route.matcher.to_regexp})\z/
         end
         @compiled = true
       end

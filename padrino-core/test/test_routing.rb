@@ -414,6 +414,28 @@ describe 'Routing' do
     assert_equal 'cpp', body
   end
 
+  it 'should match the whole path, not up to a trailing newline' do
+    mock_app do
+      before('/private') { halt 403, 'filtered' }
+      get('/private') { 'private' }
+      get('/files/*path') { "file #{params[:path]}" }
+      get('/names/:name') { "name #{params[:name].inspect}" }
+      get(%r{/rx}) { 'rx' }
+    end
+    ['/private%0A', '/private%0A/', '/files/a%0A', '/x%0A/rx', '/rx%0A'].each do |path|
+      get path
+      assert_equal 404, status, path
+    end
+    get '/private'
+    assert_equal [403, 'filtered'], [status, body]
+    get '/files/a/b'
+    assert_equal 'file a/b', body
+    get '/rx'
+    assert_equal 'rx', body
+    get '/names/a%0A'
+    assert_equal 'name "a\n"', body
+  end
+
   it 'should not find a route for a path that does not decode to valid UTF-8' do
     mock_app do
       get('/') { 'root' }
