@@ -1,6 +1,7 @@
 require_relative 'helper'
 require 'open3'
 require 'tmpdir'
+require 'padrino-core/cli/base'
 
 describe 'Padrino::Cli' do
   # Runs the script in a temp project whose app is mounted at /runner and keeps its route in
@@ -106,5 +107,38 @@ describe 'Padrino::Cli' do
     RUBY
     assert status.success?, err
     assert_includes out.lines.map(&:strip), 'URL /runner/hello'
+  end
+
+  describe 'generate' do
+    def cli_requiring(failing)
+      Padrino::Cli::Base.new.tap do |cli|
+        cli.define_singleton_method(:require) do |name|
+          name == 'padrino-gen/command' ? failing.call : super(name)
+        end
+      end
+    end
+
+    it 'should say how to install padrino-gen and fail when it is missing' do
+      cli = cli_requiring(-> { Kernel.require('padrino-gen/not_installed') })
+      out, = capture_io do
+        error = assert_raises(SystemExit) { cli.generate }
+        assert_equal 1, error.status
+      end
+      assert_match(/gem install padrino-gen/, out)
+    end
+
+    it 'should not blame padrino-gen for another missing file' do
+      cli = cli_requiring(-> { Kernel.require('some_dependency/not_installed') })
+      error = assert_raises(LoadError) { cli.generate }
+      assert_equal 'some_dependency/not_installed', error.path
+    end
+
+    it 'should not blame padrino-gen for an error raised while generating' do
+      cli = cli_requiring(-> { raise ArgumentError, 'broken generator' })
+      out, = capture_io do
+        assert_raises(ArgumentError) { cli.generate }
+      end
+      refute_match(/gem install/, out)
+    end
   end
 end
