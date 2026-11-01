@@ -16,6 +16,7 @@ module Padrino
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
+      include Padrino::Generators::Admin::KeepFiles
 
       # Look for custom template files in a generators folder under the project root.
       def source_paths
@@ -57,26 +58,32 @@ module Padrino
           @admin_name = options[:admin_name].classify
           @admin_path = options[:admin_name].underscore
 
+          # Setup Admin Model
+          @model_name     = options[:admin_model].classify
+          @model_singular = @model_name.underscore
+          @model_plural   = @model_singular.pluralize
+          model_path      = destination_root('models', "#{@model_singular}.rb")
+
+          stop_for_model_without_login(model_path) unless options[:destroy]
+
           store_component_choice(:admin_renderer, tmp_ext)
 
           self.behavior = :revoke if options[:destroy]
 
           empty_directory destination_root(@admin_path)
 
-          # Setup Admin Model
-          @model_name     = options[:admin_model].classify
-          @model_singular = @model_name.underscore
-          @model_plural   = @model_singular.pluralize
-
           directory 'templates/app',       destination_root(@admin_path)
           directory 'templates/assets',    destination_root('public', @admin_path)
           template  'templates/app.rb.tt', destination_root("#{@admin_path}/app.rb")
-          inject_into_file destination_root('config/apps.rb'), <<~RUBY.prepend("\n"), before: %r{^Padrino.mount.*\.to\('/'\)$}
-            Padrino.mount('#{@app_name}::#{@admin_name}', app_file: Padrino.root('#{@admin_path}/app.rb')).to('/#{@admin_path}')
-          RUBY
+          mounted = /^\s*Padrino\.mount\W+#{@app_name}::#{@admin_name}\b/
+          if options[:destroy] || !line_in_file?(destination_root('config/apps.rb'), mounted)
+            inject_into_file destination_root('config/apps.rb'), <<~RUBY.prepend("\n"), before: %r{^Padrino.mount.*\.to\('/'\)$}
+              Padrino.mount('#{@app_name}::#{@admin_name}', app_file: Padrino.root('#{@admin_path}/app.rb')).to('/#{@admin_path}')
+            RUBY
+          end
 
-          unless options[:destroy]
-            insert_middleware 'ConnectionPoolManagement', @admin_path if orm == :activerecord
+          unless options[:destroy] || orm != :activerecord || line_in_file?(destination_root(@admin_path, 'app.rb'), /^\s*use ConnectionPoolManagement\b/)
+            insert_middleware 'ConnectionPoolManagement', @admin_path
           end
 
           params = [
@@ -87,7 +94,7 @@ module Padrino
           params << '-d' if options[:destroy]
 
           # An existing model is reused: the model generator would refuse it and exit 1.
-          model_exists = already_exists?(@model_name, fetch_component_choice(:namespace))
+          model_exists = already_exists?(@model_name, fetch_component_choice(:namespace)) || File.exist?(model_path)
           Padrino::Generators::Model.start(params) if options[:destroy] || !model_exists
           column = Struct.new(:name, :type)
           columns = %i[id name surname email].map { |col| column.new(col) }
@@ -100,6 +107,9 @@ module Padrino
             { name: :role,                  field_type: :text_field }
           ]
 
+          controller = destination_root("#{@admin_path}/controllers/#{@model_plural}.rb")
+          controller_before = File.binread(controller) if File.exist?(controller)
+
           unless options[:destroy]
             admin_app = Padrino::Generators::AdminPage.new([@model_singular], root: options[:root], destroy: options[:destroy], admin_model: @model_singular, admin_name: options[:admin_name])
             admin_app.default_orm = Padrino::Admin::Generators::Orm.new(@model_singular, orm, columns, column_fields)
@@ -107,10 +117,14 @@ module Padrino
           end
 
           # TODO: See this, there's something wrong it's not being applied properly or something because test_account_model_generator last test fails.
-          template "templates/account/#{orm}.rb.tt", destination_root('models', "#{@model_singular}.rb"), force: true
+          template "templates/account/#{orm}.rb.tt", model_path, force: !model_exists
 
+          # Seeds of the admin model stay in place; moving others aside never replaces an earlier move.
           seed_destination = destination_root('db', 'seeds.rb')
-          run "mv #{seed_destination} #{destination_root('db/seeds.old')}" if File.exist?(seed_destination)
+          seed_backup      = destination_root('db/seeds.old')
+          if File.exist?(seed_destination) && !File.exist?(seed_backup) && !line_in_file?(seed_destination, /\b#{@model_name}\b/)
+            run "mv #{seed_destination} #{seed_backup}"
+          end
           template 'templates/account/seeds.rb.tt', seed_destination
 
           empty_directory destination_root("#{@admin_path}/controllers")
@@ -129,19 +143,21 @@ module Padrino
           template "templates/#{ext}/app/errors/404.#{ext}.tt",          destination_root("#{@admin_path}/views/errors/404.#{ext}")
           template "templates/#{ext}/app/errors/500.#{ext}.tt",          destination_root("#{@admin_path}/views/errors/500.#{ext}")
 
+          gemfile = destination_root('Gemfile')
           unless options[:destroy]
-            add_project_module @model_plural
-            require_dependencies('bcrypt')
+            add_missing_project_module @model_plural
+            require_dependencies('bcrypt') unless line_in_file?(gemfile, /^\s*gem\s+['"]bcrypt['"]/)
           end
 
-          require_dependencies 'activesupport', version: '>= 3.1'
+          require_dependencies 'activesupport', version: '>= 3.1' if options[:destroy] || !line_in_file?(gemfile, /^\s*gem\s+['"]activesupport['"]/)
 
           # A nicer select box.
           # TODO FIXME This doesn't make much sense in here. Review.
           # gsub_file destination_root("admin/views/#{@model_plural}/_form.#{ext}"), "f.text_field :role, class: :text_field", "f.select :role, options: access_control.roles"
 
           # Destroy account only if not logged in.
-          gsub_file destination_root("#{@admin_path}/controllers/#{@model_plural}.rb"), "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy"
+          controller_after = File.binread(controller) if File.exist?(controller)
+          gsub_file controller, "if #{@model_singular}.destroy", "if #{@model_singular} != current_account && #{@model_singular}.destroy" if controller_after != controller_before
           return if self.behavior == :revoke
 
           instructions = []
