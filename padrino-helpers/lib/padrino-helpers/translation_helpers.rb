@@ -29,7 +29,8 @@ module Padrino
       #  The translation for the specified keys.
       #
       def localize(*args)
-        I18n.localize(*args)
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        I18n.localize(*args, **options)
       end
       alias l localize
     end

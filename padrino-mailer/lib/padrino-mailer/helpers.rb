@@ -148,16 +148,19 @@ module Padrino
         # Returns the parsed delivery method options.
         #
         def delivery_settings
-          @_delivery_setting ||= begin
-            if Gem.win_platform? && !respond_to?(:delivery_method)
-              raise 'To use mailers on Windows you must set a :delivery_method, see http://padrinorb.com/guides/features/padrino-mailer/#configuration'
-            end
-
-            return [:sendmail, { location: `which sendmail`.chomp }] unless respond_to?(:delivery_method)
-            return [delivery_method.keys[0], delivery_method.values[0]] if delivery_method.is_a?(Hash)
-            return [delivery_method, {}] if delivery_method.is_a?(Symbol)
-            [nil, {}]
+          if Gem.win_platform? && !respond_to?(:delivery_method)
+            raise 'To use mailers on Windows you must set a :delivery_method, see http://padrinorb.com/guides/features/padrino-mailer/#configuration'
           end
+
+          # Only the sendmail lookup spawns a process, so only it is memoised.
+          # The rest is read from the setting each time, so a changed
+          # :delivery_method is picked up. Concurrent first calls at worst
+          # repeat the same lookup.
+          return [:sendmail, { location: (@_sendmail_location ||= `which sendmail`.chomp) }] unless respond_to?(:delivery_method)
+          return [delivery_method.keys[0], delivery_method.values[0]] if delivery_method.is_a?(Hash)
+          return [delivery_method, {}] if delivery_method.is_a?(Symbol)
+
+          [nil, {}]
         end
       end
     end
