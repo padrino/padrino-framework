@@ -17,6 +17,7 @@ module Padrino
       # custom generators, so is necessary know who are.
       #
       def load_boot
+        Padrino::Generators.boot_error = nil
         saved_env = { 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'], 'PADRINO_LOG_LEVEL' => ENV['PADRINO_LOG_LEVEL'] }
         ENV['PADRINO_LOG_LEVEL'] ||= 'test'
         root = File.expand_path(options[:root] || '.')
@@ -33,6 +34,7 @@ module Padrino
           require 'padrino-support'
         end
       rescue StandardError => e
+        Padrino::Generators.boot_error = e
         puts "=> Problem loading #{boot}"
         puts ["=> #{e.message}", *e.backtrace].join("\n  ")
       ensure

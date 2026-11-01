@@ -402,6 +402,34 @@ describe 'AdminApplication' do
     assert_raises(Padrino::Admin::AccessControlError) { access_control.roles_for }
   end
 
+  describe 'admin model' do
+    def mock_admin_app(admin_model)
+      mock_app do
+        register Padrino::Admin::AccessControl
+        set :admin_model, admin_model
+        get('/current') { current_account.inspect }
+      end
+    end
+
+    it 'should say a missing admin model must be defined' do
+      mock_admin_app 'MissingAdminSample::Account'
+      error = assert_raises(Padrino::Admin::AccessControlError) { get '/current' }
+      assert_equal 'You must define an MissingAdminSample::Account Model', error.message
+    end
+
+    it 'should raise the error of an admin model that fails to load' do
+      Dir.mktmpdir do |dir|
+        File.write("#{dir}/broken_admin_sample.rb", "module BrokenAdminSample; class Account; MissingConcern; end; end\n")
+        Object.autoload(:BrokenAdminSample, "#{dir}/broken_admin_sample.rb")
+        mock_admin_app 'BrokenAdminSample::Account'
+        error = assert_raises(NameError) { get '/current' }
+        assert_match(/MissingConcern/, error.message)
+      end
+    ensure
+      Object.send(:remove_const, :BrokenAdminSample) if Object.const_defined?(:BrokenAdminSample, false)
+    end
+  end
+
   it 'should humanize project module names without ActiveSupport' do
     assert_equal 'Blog posts', Padrino::Admin::AccessControl::ProjectModule.new(:blog_posts, '/blog_posts').human_name
   end

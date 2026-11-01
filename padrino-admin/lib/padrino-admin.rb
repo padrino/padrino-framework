@@ -20,6 +20,14 @@ module Padrino
         I18n.load_path += Dir["#{__dir__}/padrino-admin/locale/**/*.yml"]
       end
       alias included registered
+
+      ##
+      # Whether +error+, raised looking up the constant +name+, says that constant (or one of its
+      # namespaces) is not defined, rather than coming from the code that defining it ran.
+      #
+      def missing_constant?(error, name)
+        error.is_a?(NameError) && name.to_s.split('::').include?(error.name.to_s)
+      end
     end
   end
 end

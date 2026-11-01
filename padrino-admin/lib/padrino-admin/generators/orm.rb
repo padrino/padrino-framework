@@ -22,7 +22,7 @@ module Padrino
         def initialize(name, orm, columns = nil, column_fields = nil)
           name            = name.to_s
           @klass_name     = name.underscore.camelize
-          @klass          = @klass_name.constantize rescue nil
+          @klass          = load_klass
           @name_param     = name.underscore.gsub('/', '_')
           @name_singular  = name.underscore.gsub(%r{^.*/}, '') # convert submodules i.e. FooBar::Jank.all # => jank
           @name_plural    = @name_singular.pluralize
@@ -35,6 +35,7 @@ module Padrino
         # needed when reading the model's columns to generate a page, so destroying a page skips it.
         def check_model_orm
           return unless @columns.nil?
+          raise OrmError, "Model '#{klass_name}' could not be loaded!\n#{@load_error.class}: #{@load_error.message}" if @load_error
           raise OrmError, "Model '#{klass_name}' could not be found!\nPerhaps you would like to run 'bundle exec padrino g model #{klass_name}' to create it first?" if @klass.nil?
 
           base = MODEL_BASES[orm]
@@ -139,6 +140,17 @@ module Padrino
           when :sequel then "@#{name_singular}.errors.key?(:#{field}) && @#{name_singular}.errors[:#{field}].count > 0"
           else "@#{name_singular}.errors.include?(:#{field})"
           end
+        end
+
+        private
+
+        # Returns nil when the model is not defined. A model that failed to load keeps its error in
+        # @load_error, whether looking it up raised it or loading the project (config/boot.rb) did.
+        def load_klass
+          @klass_name.constantize
+        rescue StandardError => e
+          @load_error = Padrino::Admin.missing_constant?(e, @klass_name) ? Padrino::Generators.boot_error : e
+          nil
         end
       end
     end

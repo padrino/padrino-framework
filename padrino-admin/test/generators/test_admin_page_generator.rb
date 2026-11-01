@@ -1,6 +1,7 @@
 require_relative '../helper'
 require_relative '../fixtures/sequel'
 require 'nokogiri'
+require 'padrino-gen/generators/cli'
 
 describe 'AdminPageGenerator' do
   before do
@@ -99,6 +100,31 @@ describe 'AdminPageGenerator' do
       FileUtils.mkdir_p("#{@apptmp}/sample_project/admin/views/friends")
       capture_io { generate(:admin_page, 'friend', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_dir_exists("#{@apptmp}/sample_project/admin/views/friends")
+    end
+
+    it 'should report a model that fails to load with the project instead of a missing one' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      File.write("#{@apptmp}/sample_project/models/broken_widget.rb", "class BrokenWidget < Sequel::Modle; end\n")
+      File.write("#{@apptmp}/sample_project/config/boot.rb", "require_relative '../models/broken_widget'\n")
+      capture_io { Padrino::Generators::Cli.new([], root: "#{@apptmp}/sample_project").load_boot }
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'broken_widget', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Model 'BrokenWidget' could not be loaded!\nNameError: uninitialized constant Sequel::Modle/, err)
+      refute_match(/could not be found/, err)
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin/views/broken_widgets")
+    ensure
+      Padrino::Generators.boot_error = nil
+    end
+
+    it 'should report the error of a model that fails to load when looked up' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      File.write("#{@apptmp}/broken_page_sample.rb", "module BrokenPageSample; class Gadget; MissingConcern; end; end\n")
+      Object.autoload(:BrokenPageSample, "#{@apptmp}/broken_page_sample.rb")
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'broken_page_sample/gadget', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Model 'BrokenPageSample::Gadget' could not be loaded!\nNameError: uninitialized constant BrokenPageSample::Gadget::MissingConcern/, err)
+    ensure
+      Object.send(:remove_const, :BrokenPageSample) if Object.const_defined?(:BrokenPageSample, false)
     end
 
     it 'should fail when the project has no orm and the model is not activerecord' do

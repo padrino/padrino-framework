@@ -77,6 +77,20 @@ describe 'Cli' do
       $padrino_test_boot = nil
     end
 
+    it 'should keep the error of a project boot that fails for the generators' do
+      FileUtils.mkdir_p(File.join(@apptmp, 'config'))
+      File.write(File.join(@apptmp, 'config/boot.rb'), "MissingBootConstant\n")
+      out, = capture_io { Padrino::Generators::Cli.new([], root: @apptmp).load_boot }
+      assert_match(/Problem loading/, out)
+      assert_match(/MissingBootConstant/, Padrino::Generators.boot_error.message)
+
+      File.write(File.join(@apptmp, 'config/boot.rb'), "\n")
+      capture_io { Padrino::Generators::Cli.new([], root: @apptmp).load_boot }
+      assert_nil Padrino::Generators.boot_error
+    ensure
+      Padrino::Generators.boot_error = nil
+    end
+
     it 'should give back the environment variables it sets while loading the project boot' do
       saved = { 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'], 'PADRINO_LOG_LEVEL' => ENV['PADRINO_LOG_LEVEL'] }
       ENV['BUNDLE_GEMFILE'] = '/caller/Gemfile'
