@@ -22,11 +22,27 @@ module Padrino
         ##
         # Override the current_account, you must provide an instance of Account model.
         #
+        # When the logged-in account changes (logging in, logging out or switching accounts), the
+        # session gets a new id and a new CSRF token, and keeps its other data. Logging out (no
+        # account) removes this app's account key from the session.
+        #
         # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
         def set_current_account(account = nil)
-          session[settings.session_id] = account&.id
+          account_id = account&.id
+          # Compared as strings, so an id that the session coder stored as a string still matches.
+          if session[settings.session_id].to_s != account_id.to_s
+            if account_id.nil?
+              session.delete(settings.session_id)
+            else
+              session[settings.session_id] = account_id
+            end
+            request.session_options[:renew] = true
+            # Replaced rather than deleted, in the format Rack::Protection checks, so a form
+            # rendered later in this request gets a token that is accepted.
+            session[:csrf] = Rack::Protection::AuthenticityToken.random_token if session.key?(:csrf)
+          end
           @current_account = account
         end
 
@@ -60,19 +76,30 @@ module Padrino
         end
 
         ##
-        # Store in session[:return_to] the env['REQUEST_URI'].
+        # Store in session[:return_to] the path of the request (with SCRIPT_NAME and the query
+        # string), under ENV['RACK_BASE_URI'] when that is set and the SCRIPT_NAME above the
+        # app's mount point doesn't already start with it.
         #
         def store_location!
-          session[:return_to] = "#{ENV['RACK_BASE_URI']}#{env['REQUEST_URI']}" if env['REQUEST_URI']
+          path = request.fullpath
+          base_uri = File.join('/', ENV['RACK_BASE_URI'].to_s).chomp('/')
+          mount = settings.respond_to?(:uri_root) ? settings.uri_root.to_s.chomp('/') : ''
+          outer_script_name = mount.empty? ? request.script_name : request.script_name.chomp(mount)
+          unless base_uri.empty? || outer_script_name == base_uri || outer_script_name.start_with?("#{base_uri}/")
+            path = File.join(base_uri, path)
+          end
+          session[:return_to] = path
         end
 
         ##
         # Redirect the account to the page that requested an authentication or
         # if the account is not allowed/logged return it to a default page.
         #
+        # Only a path on this site is followed; anything else redirects to +default+.
+        #
         def redirect_back_or_default(default)
           return_to = session.delete(:return_to)
-          redirect(return_to || default)
+          redirect(local_path?(return_to) ? return_to : default)
         end
 
         private
@@ -81,7 +108,22 @@ module Padrino
           if login_page
             redirect url(login_page)
           else
-            halt 401, "You don't have permission for this resource"
+            halt logged_in? ? 403 : 401, "You don't have permission for this resource"
+          end
+        end
+
+        # One leading slash, not followed by another or by a backslash, and no control characters.
+        LOCAL_PATH = %r{\A/(?![/\\])[^\x00-\x1f\x7f]*\z}n
+        private_constant :LOCAL_PATH
+
+        # True for a path on this site, checked as given and with its path part percent-decoded,
+        # each as UTF-8 bytes.
+        def local_path?(path)
+          return false unless path.is_a?(String)
+
+          bytes = path.b
+          [bytes, Rack::Utils.unescape_path(bytes[/\A[^?#]*/n])].all? do |candidate|
+            candidate.b.force_encoding(Encoding::UTF_8).valid_encoding? && candidate.b.match?(LOCAL_PATH)
           end
         end
 

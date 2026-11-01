@@ -155,6 +155,300 @@ describe 'AdminApplication' do
     assert_equal 'foo', body
   end
 
+  describe 'sessions' do
+    def mock_session_app(store)
+      mock_app do
+        register Padrino::Admin::AccessControl
+        set :session_store, store
+        enable :sessions
+
+        get('/note') { session[:note] = 'kept'; session[:return_to] = '/posts'; session.id.to_s }
+        get('/login/:role') { set_current_account(Account.send(params[:role])); 'logged in' }
+        get('/logout') { set_current_account(nil); 'logged out' }
+        get '/state' do
+          [session.id.to_s, session[:note].inspect, session[:return_to].inspect, session.key?(settings.session_id), logged_in?].join(' ')
+        end
+      end
+    end
+
+    def session_state
+      get '/state'
+      %i[id note return_to account_key logged_in].zip(body.split).to_h
+    end
+
+    [Rack::Session::Cookie, Rack::Session::Pool].each do |store|
+      it "should start a new session at login with #{store.name}, keeping its data" do
+        mock_session_app(store)
+        get '/note'
+        before_login = body
+        cookie = current_session.cookie_jar['rack.session']
+
+        get '/login/admin'
+        state = session_state
+        refute_equal before_login, state[:id]
+        refute_equal cookie, current_session.cookie_jar['rack.session']
+        assert_equal '"kept"', state[:note]
+        assert_equal 'true', state[:logged_in]
+      end
+
+      it "should start a new session when the account changes, not when it is set again, with #{store.name}" do
+        mock_session_app(store)
+        get '/login/admin'
+        logged_in_id = session_state[:id]
+
+        get '/login/admin'
+        assert_equal logged_in_id, session_state[:id]
+
+        get '/login/editor'
+        refute_equal logged_in_id, session_state[:id]
+      end
+
+      it "should remove only the account from the session at logout and start a new one with #{store.name}" do
+        mock_session_app(store)
+        get '/note'
+        get '/login/admin'
+        logged_in_id = session_state[:id]
+
+        get '/logout'
+        state = session_state
+        assert_equal 'false', state[:account_key]
+        assert_equal 'false', state[:logged_in]
+        assert_equal '"kept"', state[:note]
+        assert_equal '"/posts"', state[:return_to]
+        refute_equal logged_in_id, state[:id]
+      end
+
+      it "should leave the session alone when nobody was logged in with #{store.name}" do
+        mock_session_app(store)
+        get '/note'
+        before = session_state
+
+        get '/logout'
+        assert_equal before, session_state
+        assert_equal '"/posts"', before[:return_to]
+      end
+    end
+  end
+
+  describe 'CSRF token' do
+    before do
+      mock_app do
+        register Padrino::Admin::AccessControl
+        enable :sessions
+        set :protect_from_csrf, true
+
+        get('/form') { csrf_token }
+        post('/login') { set_current_account(Account.admin); 'logged in' }
+        post('/login-and-form') { set_current_account(Account.admin); csrf_token }
+        post('/switch') { set_current_account(Account.editor); 'switched' }
+        post('/logout') { set_current_account(nil); 'logged out' }
+        post('/action') { 'done' }
+      end
+    end
+
+    it 'should reject a token issued before login and accept one issued after' do
+      get '/form'
+      token = body
+      post '/login', authenticity_token: token
+      assert_equal 200, status
+
+      post '/action', authenticity_token: token
+      assert_equal 403, status
+
+      get '/form'
+      post '/action', authenticity_token: body
+      assert_equal 200, status
+    end
+
+    it 'should accept a token rendered in the request that logs in' do
+      get '/form'
+      post '/login-and-form', authenticity_token: body
+      post '/action', authenticity_token: body
+      assert_equal 200, status
+    end
+
+    { '/logout' => 'logging out', '/switch' => 'switching accounts' }.each do |path, change|
+      it "should reject a token issued before #{change} and accept one issued after" do
+        get '/form'
+        post '/login', authenticity_token: body
+        get '/form'
+        token = body
+        post path, authenticity_token: token
+        assert_equal 200, status
+
+        post '/action', authenticity_token: token
+        assert_equal 403, status
+
+        get '/form'
+        post '/action', authenticity_token: body
+        assert_equal 200, status
+      end
+    end
+
+    it 'should give an XHR login the new token to use in later requests' do
+      get '/form'
+      page_token = body
+      post '/login-and-form', {}, 'HTTP_X_CSRF_TOKEN' => page_token, 'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+      assert_equal 200, status
+      new_token = body
+
+      post '/action', {}, 'HTTP_X_CSRF_TOKEN' => page_token
+      assert_equal 403, status
+      post '/action', {}, 'HTTP_X_CSRF_TOKEN' => new_token
+      assert_equal 200, status
+    end
+
+    it 'should keep the token when nobody was logged in' do
+      get '/form'
+      token = body
+      post '/logout', authenticity_token: token
+      post '/action', authenticity_token: token
+      assert_equal 200, status
+    end
+  end
+
+  describe 'redirect_back_or_default' do
+    def mock_redirect_app(absolute_redirects)
+      mock_app do
+        register Padrino::Admin::AccessControl
+        enable :sessions
+        set :absolute_redirects, absolute_redirects
+        # binary: store the value as an ASCII-8BIT string, as params arrive as UTF-8.
+        get('/remember') { session[:return_to] = params[:binary] ? params[:to].b : params[:to]; 'remembered' }
+        get('/back') { redirect_back_or_default('/default') }
+      end
+    end
+
+    def redirect_back_from(return_to)
+      get '/remember', to: return_to, binary: (true if return_to.encoding == Encoding::BINARY)
+      get '/back'
+      last_response.location
+    end
+
+    { true => 'http://example.org/default', false => '/default' }.each do |absolute_redirects, default|
+      it "should redirect back to a local path (absolute_redirects: #{absolute_redirects})" do
+        mock_redirect_app(absolute_redirects)
+        base = default.delete_suffix('/default')
+        assert_equal "#{base}/posts?page=2&q=a%2Fb", redirect_back_from('/posts?page=2&q=a%2Fb')
+        assert_equal "#{base}/caf%C3%A9/1", redirect_back_from('/caf%C3%A9/1')
+      end
+
+      it "should redirect to the default for anything but a local path (absolute_redirects: #{absolute_redirects})" do
+        mock_redirect_app(absolute_redirects)
+        ['//example.com', '///example.com', '/\\example.com', "/\t/example.com", '/%2F%2Fexample.com', '/%2f/example.com',
+         '/%5Cexample.com', '/%09/example.com', 'https://example.com', 'https://example.com/posts', 'javascript:alert(1)',
+         'example.com', '', "/\xff".dup.force_encoding('UTF-8'), "/\xff".b, '/%FF', '/posts%FF?page=2'].each do |return_to|
+          assert_equal default, redirect_back_from(return_to), return_to.inspect
+        end
+      end
+    end
+
+    it 'should redirect to the default without a stored location' do
+      mock_redirect_app(true)
+      get '/back'
+      assert_equal 'http://example.org/default', last_response.location
+    end
+  end
+
+  it 'should store the location under RACK_BASE_URI and redirect back to it after login' do
+    saved_base_uri = ENV['RACK_BASE_URI']
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :store_location
+      enable :sessions
+      set :login_page, '/login'
+
+      access_control.roles_for :any do |role|
+        role.protect '/foo'
+      end
+
+      get('/login') { set_current_account(Account.admin); redirect_back_or_default('/default') }
+      get('/foo') { 'foo' }
+    end
+
+    { nil => 'http://example.org/foo?x=1', '/base' => 'http://example.org/base/foo?x=1', '/' => 'http://example.org/foo?x=1' }.each do |base_uri, location|
+      ENV['RACK_BASE_URI'] = base_uri
+      # WEBrick sets REQUEST_URI to the full URL, puma to the path.
+      ['/foo?x=1', 'http://example.org/foo?x=1'].each do |request_uri|
+        clear_cookies
+        get '/foo?x=1', {}, 'REQUEST_URI' => request_uri
+        assert_equal 302, status
+        get '/login'
+        assert_equal location, last_response.location, "RACK_BASE_URI=#{base_uri.inspect}, REQUEST_URI=#{request_uri}"
+      end
+    end
+  ensure
+    ENV['RACK_BASE_URI'] = saved_base_uri
+  end
+
+  it 'should store the path of a mounted app, with RACK_BASE_URI once, and redirect back to it after login' do
+    saved_base_uri = ENV['RACK_BASE_URI']
+    mock_app do
+      register Padrino::Admin::AccessControl
+      set :uri_root, '/admin'
+      enable :store_location
+      enable :sessions
+      set :login_page, '/login'
+
+      access_control.roles_for :any do |role|
+        role.protect '/posts'
+      end
+
+      get('/login') { set_current_account(Account.admin); redirect_back_or_default('/default') }
+      get('/posts') { 'posts' }
+    end
+
+    # [RACK_BASE_URI, SCRIPT_NAME, stored path], for an app mounted at /admin: on its own; behind a
+    # proxy that strips /base (or /admin, the same name as the mount point); and under /app that
+    # the server puts in SCRIPT_NAME (with RACK_BASE_URI set for url()).
+    [[nil, '/admin', '/admin/posts?page=2'],
+     ['/base', '/admin', '/base/admin/posts?page=2'],
+     ['base/', '/admin', '/base/admin/posts?page=2'],
+     ['/admin', '/admin', '/admin/admin/posts?page=2'],
+     ['/app', '/app/admin', '/app/admin/posts?page=2'],
+     ['/app', '/application/admin', '/app/application/admin/posts?page=2']].each do |base_uri, script_name, stored|
+      ENV['RACK_BASE_URI'] = base_uri
+      clear_cookies
+      get '/posts?page=2', {}, 'SCRIPT_NAME' => script_name
+      assert_equal 302, status
+      get '/login'
+      assert_equal "http://example.org#{stored}", last_response.location, "RACK_BASE_URI=#{base_uri.inspect}, SCRIPT_NAME=#{script_name}"
+    end
+  ensure
+    ENV['RACK_BASE_URI'] = saved_base_uri
+  end
+
+  it 'should answer 401 to visitors and 403 to accounts without access when there is no login page' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/login'
+      end
+
+      access_control.roles_for :editor do |role|
+        role.project_module :posts, '/posts'
+      end
+
+      access_control.roles_for :admin do |role|
+        role.project_module :settings, '/settings'
+      end
+
+      get('/login/:role') { set_current_account(Account.send(params[:role])); 'logged in' }
+      get('/settings') { 'settings' }
+    end
+
+    get '/settings'
+    assert_equal 401, status
+
+    get '/login/editor'
+    get '/settings'
+    assert_equal 403, status
+    assert_equal "You don't have permission for this resource", body
+  end
+
   it 'should set advanced roles with store location and login page' do
     mock_app do
       register Padrino::Admin::AccessControl
