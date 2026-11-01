@@ -889,6 +889,30 @@ describe 'ProjectGenerator' do
   end
 
   describe 'tiny app skeleton generator for test component' do
+    { 'minitest' => /skip "add some examples/, 'testunit' => /pend "add some examples/, 'shoulda' => /pend "add some examples/ }.each do |test, pending|
+      it "should mark the tiny skeleton's #{test} placeholders pending, so a new project passes its own tests" do
+        capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", "--test=#{test}") }
+        %w[controllers/controllers_test.rb helpers/helpers_test.rb].each do |file|
+          assert_match_in_file(pending, "#{@apptmp}/sample_project/test/app/#{file}")
+        end
+      end
+    end
+
+    it "should leave the tiny skeleton's bacon placeholders without requirements, which bacon reports as missing" do
+      capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", '--test=bacon') }
+      %w[controllers/controllers_test.rb helpers/helpers_test.rb].each do |file|
+        assert_no_match_in_file(/^\s*[^#\s].*\.should/, "#{@apptmp}/sample_project/test/app/#{file}")
+      end
+    end
+
+    %w[bacon minitest rspec shoulda testunit].each do |test|
+      it "should substitute every marker in the tiny skeleton's #{test} tests" do
+        capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", "--test=#{test}") }
+        dir = test == 'rspec' ? 'spec' : 'test'
+        Dir["#{@apptmp}/sample_project/#{dir}/app/**/*.rb"].each { |file| assert_no_match_in_file(/![A-Z_]+!/, file) }
+      end
+    end
+
     it 'should properly generate for rspec' do
       capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", '--test=rspec') }
       assert_dir_exists("#{@apptmp}/sample_project/spec/")
