@@ -2,15 +2,8 @@
 
 ## Supported versions
 
-| Version | Supported |
-| ------- | --------- |
-| 0.18.x  | Yes |
-| 0.17.x  | Security fixes only |
-| < 0.17  | No |
-
-The latest minor release gets every fix. The minor before it gets security
-fixes until the next minor ships. Upgrade to the latest patch release of a
-supported minor to get them.
+Security fixes ship as a patch release of the latest minor version. Older
+versions don't get fixes, so upgrade to the latest release to get them.
 
 ## Reporting a vulnerability
 
@@ -24,7 +17,5 @@ A maintainer will acknowledge the report, confirm whether it's a vulnerability,
 and work with you on a fix and an advisory. We credit reporters in the advisory
 and in `CHANGES.rdoc` unless you'd rather not be named.
 
-This policy covers the gems in this repository: `padrino`, `padrino-core`,
-`padrino-helpers`, `padrino-gen`, `padrino-admin`, `padrino-mailer`,
-`padrino-cache`, `padrino-support` and `padrino-performance`, including the code
-that `padrino-gen` and `padrino-admin` generate.
+This policy covers every gem in this repository, including the code that
+`padrino-gen` and `padrino-admin` generate.
