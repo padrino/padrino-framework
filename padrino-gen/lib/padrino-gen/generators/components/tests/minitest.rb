@@ -49,6 +49,7 @@ MINITEST_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(MINITEST_C
     end
 
     it "should return hello world text" do
+      skip "add some examples to \#{__FILE__}"
       assert_equal "Hello World", last_response.body
     end
   end
@@ -79,6 +80,7 @@ MINITEST_HELPER_TEST = <<~TEST unless defined?(MINITEST_HELPER_TEST)
     end
 
     it "should return nil" do
+      skip "add some examples to (or delete) \#{__FILE__}"
       assert_nil helpers.foo
     end
   end

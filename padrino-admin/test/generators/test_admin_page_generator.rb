@@ -13,6 +13,12 @@ describe 'AdminPageGenerator' do
   end
 
   describe 'the admin page generator' do
+    it 'should stop with a message in a project without an app' do
+      capture_io { generate(:project, 'sample_project', '--lean', "--root=#{@apptmp}", '-d', 'sequel', '-e', 'erb') }
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Unable to locate 'App' application/, out)
+    end
+
     it 'should fail outside app root' do
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'foo', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/not at the root/, out)
