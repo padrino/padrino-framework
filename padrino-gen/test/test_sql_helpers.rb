@@ -102,6 +102,12 @@ describe 'SqlHelpers' do
         assert_nil @connections.first[:database]
       end
 
+      it 'creates the database of a trilogy app over a connection to no database' do
+        sqls = with_server('mysql') { create(config('trilogy')) }
+        assert_equal ["CREATE DATABASE `app_db` DEFAULT CHARACTER SET 'utf8' DEFAULT COLLATE 'utf8_unicode_ci'"], sqls
+        assert_nil @connections.first[:database]
+      end
+
       it 'connects with the app connection settings' do
         with_server('mysql') { create(config('mysql', socket: '/run/mysqld/mysqld.sock')) }
         assert_equal ['mysql', 'db.example', 5433, 'admin', 'hunter2', '/run/mysqld/mysqld.sock'],
@@ -158,6 +164,12 @@ describe 'SqlHelpers' do
 
     it 'drops a mysql database over a connection to no database' do
       sqls = with_server('mysql') { drop(config('mysql2')) }
+      assert_equal ['DROP DATABASE IF EXISTS `app_db`'], sqls
+      assert_nil @connections.first[:database]
+    end
+
+    it 'drops the database of a trilogy app over a connection to no database' do
+      sqls = with_server('mysql') { drop(config('trilogy')) }
       assert_equal ['DROP DATABASE IF EXISTS `app_db`'], sqls
       assert_nil @connections.first[:database]
     end

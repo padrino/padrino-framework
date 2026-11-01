@@ -64,7 +64,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
       end
 
       case config[:adapter]
-      when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
+      when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql', 'trilogy'
         @charset   = ENV['CHARSET']   || 'utf8'
         @collation = ENV['COLLATION'] || 'utf8_unicode_ci'
         creation_options = { charset: config[:charset] || @charset, collation: config[:collation] || @collation }
@@ -185,7 +185,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     task charset: :skeleton do
       with_database(Padrino.env || :development) do |config|
         case config[:adapter]
-        when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
+        when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql', 'trilogy'
           ActiveRecord::Base.establish_connection(config)
           puts ActiveRecord::Base.connection.charset
         when 'postgresql'
@@ -201,7 +201,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
     task collation: :skeleton do
       with_database(Padrino.env || :development) do |config|
         case config[:adapter]
-        when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
+        when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql', 'trilogy'
           ActiveRecord::Base.establish_connection(config)
           puts ActiveRecord::Base.connection.collation
         else
@@ -267,7 +267,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         FileUtils.mkdir_p(File.dirname(resolve_structure_sql))
         with_database(Padrino.env) do |config|
           case config[:adapter]
-          when 'mysql', 'mysql2', 'em_mysql2', 'oci', 'oracle', 'jdbcmysql'
+          when 'mysql', 'mysql2', 'em_mysql2', 'oci', 'oracle', 'jdbcmysql', 'trilogy'
             ActiveRecord::Tasks::DatabaseTasks.structure_dump(config.transform_keys(&:to_s), resolve_structure_sql)
           when 'postgresql'
             ENV['PGHOST']     = config[:host] if config[:host]
@@ -312,6 +312,8 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
         file = ENV['FILE'] || Padrino.root('tmp', "#{Padrino.env}#{suffix}_dump.sql")
         # The config under Sequel's names for the user and database; the rest, TLS included, match.
         options = config.symbolize_keys.merge(user: config[:username], database: config[:database] || config[:dbfile])
+        # Active Record drops the host of a trilogy config that sets a socket, so the app uses the socket.
+        options.delete(:host) if options[:adapter] == 'trilogy' && options[:socket]
 
         puts "=> Dumping database '#{options[:database]}' to #{file}"
         Padrino::Generators::SqlHelpers.dump_db(options, file)
@@ -372,7 +374,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
 
   def drop_database(config)
     case config[:adapter]
-    when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql'
+    when 'mysql', 'mysql2', 'em_mysql2', 'jdbcmysql', 'trilogy'
       # Connect without the database, which may not exist; DROP DATABASE IF EXISTS doesn't need it.
       ActiveRecord::Base.establish_connection(config.merge(database: nil))
       ActiveRecord::Base.connection.drop_database config[:database]

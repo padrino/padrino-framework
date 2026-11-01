@@ -85,6 +85,17 @@ MYSQL2 = <<-MYSQL2.chomp unless defined?(MYSQL2)
     socket:    '/tmp/mysql.sock'
 MYSQL2
 
+# TCP: a socket path depends on the server install, and mysqldump takes localhost as a socket.
+TRILOGY = <<-TRILOGY.chomp unless defined?(TRILOGY)
+    adapter:   'trilogy',
+    encoding:  'utf8',
+    database:  !DB_NAME!,
+    pool:      5,
+    username:  'root',
+    password:  '',
+    host:      '127.0.0.1'
+TRILOGY
+
 POSTGRES = <<-POSTGRES.chomp unless defined?(POSTGRES)
     adapter:   'postgresql',
     database:  !DB_NAME!,
@@ -111,11 +122,36 @@ CONNECTION_POOL_MIDDLEWARE = <<~MIDDLEWARE
   end
 MIDDLEWARE
 
+def ar_gem_line(floor)
+  "gem 'activerecord', '#{floor}', require: 'active_record'"
+end
+
+# Lists activerecord once: Bundler refuses a gem listed with two requirements, and an existing line may be
+# the project's own. A switch to or from trilogy, which Active Record added in 7.1, moves the floor the
+# generator wrote; any other requirement stays, with a warning when it may not suit trilogy.
+def require_activerecord(adapter)
+  floor = adapter == 'trilogy' ? '>= 7.1' : '>= 3.1'
+  line = File.read(destination_root('Gemfile'))[/^[ \t]*gem[ \t(]+['"]activerecord['"].*$/]
+  return require_dependencies('activerecord', require: 'active_record', version: floor) unless line
+
+  previous = stored_adapter if reapplying_component?(:orm) # A stored adapter may be another ORM's.
+  return if adapter.nil? || adapter == previous || line.strip == ar_gem_line(floor)
+
+  return unless (previous == 'trilogy') != (adapter == 'trilogy')
+
+  if line.strip == ar_gem_line(floor == '>= 7.1' ? '>= 3.1' : '>= 7.1')
+    gsub_file('Gemfile', line, line.sub(line.strip, ar_gem_line(floor)), verbose: false)
+  elsif adapter == 'trilogy'
+    say("Keeping the Gemfile line #{line.strip}; the #{adapter} adapter is generated with '#{floor}'.", :yellow)
+  end
+end
+
 def setup_orm
   ar = AR.dup
   db = @project_name.underscore
 
-  case (resolve_valid_adapter unless adapter_unknown?)
+  adapter = (resolve_valid_adapter unless adapter_unknown?)
+  case adapter
   when 'mysql-gem'
     ar.sub!(/!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_development'"))
     ar.sub!(/!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_production'"))
@@ -126,6 +162,11 @@ def setup_orm
     ar.sub!(/!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_production'"))
     ar.sub!(/!DB_TEST!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_test'"))
     require_dependencies 'mysql2'
+  when 'trilogy'
+    ar.sub!(/!DB_DEVELOPMENT!/, TRILOGY.sub(/!DB_NAME!/, "'#{db}_development'"))
+    ar.sub!(/!DB_PRODUCTION!/, TRILOGY.sub(/!DB_NAME!/, "'#{db}_production'"))
+    ar.sub!(/!DB_TEST!/, TRILOGY.sub(/!DB_NAME!/, "'#{db}_test'"))
+    require_dependencies 'trilogy'
   when 'postgres'
     ar.sub!(/!DB_DEVELOPMENT!/, POSTGRES.sub(/!DB_NAME!/, "'#{db}_development'"))
     ar.sub!(/!DB_PRODUCTION!/, POSTGRES.sub(/!DB_NAME!/, "'#{db}_production'"))
@@ -138,7 +179,7 @@ def setup_orm
     require_dependencies 'sqlite3'
   end
 
-  require_dependencies 'activerecord', require: 'active_record', version: '>= 3.1'
+  require_activerecord(adapter)
 
   if falcon_server?
     ar = <<~FIBER + ar

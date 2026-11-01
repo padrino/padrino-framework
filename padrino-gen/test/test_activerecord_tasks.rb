@@ -98,17 +98,24 @@ describe 'ActiveRecord tasks' do
 
   # A boot for a server adapter whose connections are faked: connecting to a database named in
   # +missing+ raises NoDatabaseError, and +probe_error+ is what verifying the app's connection raises.
-  def fake_server_boot(adapter, missing:, probe_error: nil, create_error: nil)
+  def fake_server_boot(adapter, missing:, probe_error: nil, create_error: nil, options: {})
     File.write(File.join(@root, 'config', 'boot.rb'), <<~RUBY)
       require 'padrino-core'
       require 'active_record'
-      ActiveRecord::Base.configurations = { development: { adapter: #{adapter.inspect}, database: 'app_db' } }
+      ActiveRecord::Base.configurations = { development: { adapter: #{adapter.inspect}, database: 'app_db' }.merge(#{options.inspect}) }
       $calls = []
       fake = Object.new
       fake.define_singleton_method(:verify!) do
         raise #{probe_error || 'ActiveRecord::NoDatabaseError'}, 'probe' if #{missing} || #{!probe_error.nil?}
       end
       fake.define_singleton_method(:drop_database) { |name| $calls << [:drop, name] }
+      fake.define_singleton_method(:charset) { 'fake_charset' }
+      fake.define_singleton_method(:collation) { 'fake_collation' }
+      fake.define_singleton_method(:dump_schema_information) { '' }
+      ActiveRecord::Tasks::DatabaseTasks.define_singleton_method(:structure_dump) do |config, file|
+        $calls << [:structure_dump, config['adapter']]
+        File.write(file, '')
+      end
       fake.define_singleton_method(:create_database) do |name, *|
         #{create_error ? "raise #{create_error}, 'create'" : '$calls << [:create, name]'}
       end
@@ -127,6 +134,49 @@ describe 'ActiveRecord tasks' do
     out, err = rake 'ar:drop'
     refute_includes err, "Couldn't drop"
     assert_includes out, '[:connect, nil], [:drop, "app_db"]'
+  end
+
+  it 'should drop and create a trilogy database over a connection to no database' do
+    fake_server_boot('trilogy', missing: true)
+    out, err = rake 'ar:drop'
+    refute_includes err, "Couldn't drop"
+    assert_includes out, '[:connect, nil], [:drop, "app_db"]'
+
+    # The fake's database stays missing after the create, so the task's reconnect fails; the create is what counts.
+    out, = run_rake 'ar:create'
+    assert_includes out, '[:connect, nil], [:create, "app_db"]'
+  end
+
+  it 'should read the charset and collation of a trilogy database' do
+    fake_server_boot('trilogy', missing: false)
+    assert_includes rake('ar:charset').first, 'fake_charset'
+    assert_includes rake('ar:collation').first, 'fake_collation'
+  end
+
+  it 'should dump the structure of a trilogy database' do
+    fake_server_boot('trilogy', missing: false)
+    assert_includes rake('ar:structure:dump').first, '[:structure_dump, "trilogy"]'
+  end
+
+  # A stand-in mysqldump that records its arguments and leaves the file the task renames.
+  def recording_mysqldump
+    bin = File.join(@root, 'bin')
+    FileUtils.mkdir_p(bin)
+    File.write(File.join(bin, 'mysqldump'), %(#!/bin/sh\necho "$@" > #{@root}/dump_arguments\n))
+    File.chmod(0o755, File.join(bin, 'mysqldump'))
+    original = ENV['PATH']
+    ENV['PATH'] = "#{bin}#{File::PATH_SEPARATOR}#{original}"
+    yield
+    File.read(File.join(@root, 'dump_arguments'))
+  ensure
+    ENV['PATH'] = original
+  end
+
+  it 'should dump a trilogy database through the socket when both a host and a socket are set, as the app connects' do
+    fake_server_boot('trilogy', missing: false, options: { host: 'db', socket: '/run/mysqld.sock' })
+    arguments = recording_mysqldump { rake 'ar:dump' }
+    assert_includes arguments, '--socket=/run/mysqld.sock'
+    refute_includes arguments, '--host'
   end
 
   it 'should report why the connection failed when the database turns out to exist' do

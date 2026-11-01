@@ -12,7 +12,7 @@ module Padrino
           on_server(config, *postgres_maintenance_databases(database)) do |db|
             db.run "CREATE DATABASE #{db.quote_identifier(database)} ENCODING #{db.literal(charset)}"
           end
-        when 'mysql', 'mysql2'
+        when 'mysql', 'mysql2', 'trilogy'
           on_server(config, nil) do |db|
             db.run "CREATE DATABASE #{db.quote_identifier(database)} " \
                    "DEFAULT CHARACTER SET #{db.literal(charset)} DEFAULT COLLATE #{db.literal(collation)}"
@@ -32,7 +32,7 @@ module Padrino
         case config[:adapter].to_s
         when 'postgres', 'postgresql'
           on_server(config, *postgres_maintenance_databases(database)) { |db| db.run "DROP DATABASE IF EXISTS #{db.quote_identifier(database)}" }
-        when 'mysql', 'mysql2'
+        when 'mysql', 'mysql2', 'trilogy'
           on_server(config, nil) { |db| db.run "DROP DATABASE IF EXISTS #{db.quote_identifier(database)}" }
         when 'sqlite', 'sqlite3'
           File.delete(database) if File.file?(database)
@@ -65,15 +65,20 @@ module Padrino
           arguments << "--port=#{port}" if port
           arguments << "--username=#{user}" if user
           arguments << database
-        when 'mysql', 'mysql2'
+        when 'mysql', 'mysql2', 'trilogy'
           binary = 'mysqldump'
           environment['MYSQL_PWD'] = password unless password.empty?
 
           arguments = ["--result-file=#{partial}"]
           arguments << "--user=#{user}" if user
-          arguments.concat(mysql_host_arguments(host, port))
-          arguments << "--socket=#{socket}" if socket
-          MYSQL_TLS_ARGUMENTS.each { |key, flag| arguments << "#{flag}=#{config[key]}" if config[key] }
+          if adapter == 'trilogy'
+            arguments.concat(trilogy_host_arguments(host, port, socket))
+            arguments.concat(trilogy_tls_arguments(config))
+          else
+            arguments.concat(mysql_host_arguments(host, port))
+            arguments << "--socket=#{socket}" if socket
+            MYSQL_TLS_ARGUMENTS.each { |key, flag| arguments << "#{flag}=#{config[key]}" if config[key] }
+          end
           arguments << database
         when 'sqlite', 'sqlite3'
           raise "Database #{database} does not exist" unless File.file?(database.to_s)
@@ -149,6 +154,28 @@ module Padrino
       end
       private_class_method :mysql_host_arguments
 
+      # Reach the server trilogy connects to. It takes any host over TCP, localhost included, which
+      # mysqldump does only with --protocol, and ignores the socket then. Without a host it uses the
+      # socket, /tmp/mysql.sock by default. ar:dump drops the host, as Active Record does, when both are set.
+      def self.trilogy_host_arguments(host, port, socket)
+        return ["--socket=#{socket || '/tmp/mysql.sock'}"] unless host
+
+        arguments = ['--protocol=tcp', "--host=#{host}"]
+        arguments << "--port=#{port}" if port
+        arguments
+      end
+      private_class_method :trilogy_host_arguments
+
+      # Trilogy's TLS settings as mysqldump options. Its ssl_mode is one of Trilogy's integers, or under
+      # Active Record also a name, with or without the SSL_MODE_ prefix.
+      def self.trilogy_tls_arguments(config)
+        TRILOGY_TLS_ARGUMENTS.select { |key, _| config[key] }.map do |key, flag|
+          value = key == :ssl_mode ? TRILOGY_SSL_MODES.fetch(config[key]) { config[key].to_s.sub(/\ASSL_MODE_/i, '') } : config[key]
+          "#{flag}=#{value}"
+        end
+      end
+      private_class_method :trilogy_tls_arguments
+
       # The connection options (Sequel's and ActiveRecord's names) that set TLS, and how the
       # Postgres and MySQL clients take them, as in Rails' database tasks.
       POSTGRES_TLS_ENVIRONMENT = {
@@ -158,7 +185,12 @@ module Padrino
         sslca: '--ssl-ca', sslcert: '--ssl-cert', sslcapath: '--ssl-capath', sslcipher: '--ssl-cipher',
         sslkey: '--ssl-key', ssl_mode: '--ssl-mode'
       }.freeze
-      private_constant :POSTGRES_TLS_ENVIRONMENT, :MYSQL_TLS_ARGUMENTS
+      TRILOGY_TLS_ARGUMENTS = {
+        ssl_ca: '--ssl-ca', ssl_cert: '--ssl-cert', ssl_capath: '--ssl-capath', ssl_cipher: '--ssl-cipher',
+        ssl_crl: '--ssl-crl', ssl_crlpath: '--ssl-crlpath', ssl_key: '--ssl-key', ssl_mode: '--ssl-mode'
+      }.freeze
+      TRILOGY_SSL_MODES = { 0 => 'DISABLED', 1 => 'VERIFY_IDENTITY', 2 => 'VERIFY_CA', 3 => 'REQUIRED', 4 => 'PREFERRED' }.freeze
+      private_constant :POSTGRES_TLS_ENVIRONMENT, :MYSQL_TLS_ARGUMENTS, :TRILOGY_TLS_ARGUMENTS, :TRILOGY_SSL_MODES
 
       # Stops and reaps a dump that was given up on, as when an interrupt or a signal reached only
       # this process, so it doesn't keep running, or write the temp file after it was removed.
