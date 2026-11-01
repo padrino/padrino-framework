@@ -287,4 +287,63 @@ describe 'Email' do
       assert_equal(['gamma plain', 'gamma html'], email.parts.map { |part| part.body.to_s })
     end
   end
+
+  describe 'delivery settings' do
+    def counted_app
+      mock_app do
+        register Padrino::Mailer
+        @sendmail_lookups = 0
+        class << self
+          attr_reader :sendmail_lookups
+
+          def `(command)
+            @sendmail_lookups += 1
+            "/fake/#{command.split.last}\n"
+          end
+        end
+      end
+    end
+
+    it 'should look up sendmail once when no delivery method is set' do
+      app = counted_app
+      first = app.send(:delivery_settings)
+      second = app.send(:delivery_settings)
+      assert_equal [:sendmail, { location: '/fake/sendmail' }], first
+      assert_equal first, second
+      assert_equal 1, app.sendmail_lookups
+    end
+
+    it 'should follow a delivery method changed after the first call' do
+      app = counted_app
+      assert_equal :sendmail, app.send(:delivery_settings).first
+      app.set :delivery_method, :test
+      assert_equal [:test, {}], app.send(:delivery_settings)
+      app.set :delivery_method, smtp: { address: 'localhost' }
+      assert_equal [:smtp, { address: 'localhost' }], app.send(:delivery_settings)
+      app.set :delivery_method, 'unusual'
+      assert_equal [nil, {}], app.send(:delivery_settings)
+      assert_equal 1, app.sendmail_lookups
+    end
+
+    it 'should read a Symbol and a Hash delivery method on repeated calls' do
+      app = counted_app
+      app.set :delivery_method, :test
+      2.times { assert_equal [:test, {}], app.send(:delivery_settings) }
+      app.set :delivery_method, smtp: { port: 25 }
+      2.times { assert_equal [:smtp, { port: 25 }], app.send(:delivery_settings) }
+      assert_equal 0, app.sendmail_lookups
+    end
+
+    it 'should still raise on Windows without a delivery method' do
+      app = counted_app
+      original = Gem.method(:win_platform?)
+      Gem.define_singleton_method(:win_platform?) { true }
+      begin
+        2.times { assert_raises(RuntimeError) { app.send(:delivery_settings) } }
+      ensure
+        Gem.define_singleton_method(:win_platform?, original)
+      end
+      assert_equal 0, app.sendmail_lookups
+    end
+  end
 end
