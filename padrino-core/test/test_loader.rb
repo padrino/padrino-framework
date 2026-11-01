@@ -99,6 +99,7 @@ describe 'Padrino loaded state' do
       deadline = Time.now + 5
       Thread.pass until second.status == 'sleep' || !second.alive? || Time.now > deadline
       assert_equal 'sleep', second.status, 'the second load! did not wait'
+      assert_equal 1, calls, 'the second load! ran the load hooks before the first finished'
     ensure
       release << true
       threads = [first, second].compact
