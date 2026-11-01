@@ -2599,4 +2599,224 @@ describe 'Routing' do
       assert_equal 'static', body
     end
   end
+
+  describe "env['sinatra.route']" do
+    it 'names the root route /' do
+      mock_app do
+        get(:index) { env['sinatra.route'] }
+        controller(:admin) { get(:index) { env['sinatra.route'] } }
+      end
+      get '/'
+      assert_equal 'GET /', body
+      get '/admin'
+      assert_equal 'GET /admin', body
+    end
+
+    it 'holds the verb and the pattern, as Sinatra writes it' do
+      mock_app do
+        get(:index, map: '/posts') { env['sinatra.route'] }
+        get('/posts/:id') { env['sinatra.route'] }
+        post('/posts/:id') { env['sinatra.route'] }
+      end
+      get '/posts'
+      assert_equal 'GET /posts', body
+      get '/posts/1'
+      assert_equal 'GET /posts/:id', body
+      post '/posts/1'
+      assert_equal 'POST /posts/:id', body
+    end
+
+    it 'writes a regexp the way Sinatra does' do
+      mock_app do
+        get(%r{/plain/(\d+)}) { env['sinatra.route'] }
+        get(%r{/flagged/(\d+)}i) { env['sinatra.route'] }
+        get(%r{/spaced/ (\d+)}x) { env['sinatra.route'] }
+      end
+      get '/plain/1'
+      assert_equal 'GET \/plain\/(\d+)', body
+      get '/flagged/1'
+      assert_equal 'GET (?i-mx:\/flagged\/(\d+))', body
+      get '/spaced/1'
+      assert_equal 'GET /spaced/(\d+)', body
+    end
+
+    it 'names a regexp with anchors, which Sinatra refuses' do
+      mock_app do
+        get(%r{^/anchored$}) { env['sinatra.route'] }
+      end
+      get '/anchored'
+      assert_equal 'GET ^\/anchored$', body
+    end
+
+    it 'includes the controller prefix, the parent and the with params' do
+      mock_app do
+        controller :admin do
+          get(:index) { env['sinatra.route'] }
+          get(:show, with: :id) { env['sinatra.route'] }
+        end
+        controller :items, parent: :user do
+          get(:index) { env['sinatra.route'] }
+        end
+      end
+      get '/admin'
+      assert_equal 'GET /admin', body
+      get '/admin/show/1'
+      assert_equal 'GET /admin/show/:id', body
+      get '/user/1/items'
+      assert_equal 'GET /user/:user_id/items', body
+    end
+
+    it 'keeps the format of a route with provides in the pattern' do
+      mock_app do
+        get(:index, map: '/feed', provides: %i[html json]) { env['sinatra.route'] }
+      end
+      get '/feed.json'
+      assert_equal 'GET /feed(.:format)?', body
+      get '/feed'
+      assert_equal 'GET /feed(.:format)?', body
+    end
+
+    it 'is set for after filters, and not yet for before filters, as in Sinatra' do
+      seen = []
+      mock_app do
+        before { seen << [:before, env['sinatra.route']] }
+        after { seen << [:after, env['sinatra.route']] }
+        controller :admin do
+          before { seen << [:controller_before, env['sinatra.route']] }
+          after { seen << [:controller_after, env['sinatra.route']] }
+          get(:show, with: :id) { 'ok' }
+        end
+      end
+      get '/admin/show/1'
+      assert_equal 200, status
+      assert_equal [
+        [:before, nil],
+        [:controller_before, nil],
+        [:controller_after, 'GET /admin/show/:id'],
+        [:after, 'GET /admin/show/:id']
+      ], seen
+    end
+
+    it 'stays unset when a before filter halts' do
+      mock_app do
+        before { halt 403, env.key?('sinatra.route').to_s }
+        get('/secret') { 'never' }
+      end
+      get '/secret'
+      assert_equal 403, status
+      assert_equal 'false', body
+    end
+
+    it 'reaches an error handler reached from a route' do
+      mock_app do
+        set :raise_errors, false
+        set :show_exceptions, false
+        error(FooError) { env['sinatra.route'] }
+        get('/boom/:id') { raise FooError }
+      end
+      get '/boom/1'
+      assert_equal 500, status
+      assert_equal 'GET /boom/:id', body
+    end
+
+    it 'names the route that answers after a pass' do
+      seen = []
+      mock_app do
+        after { seen << env['sinatra.route'] }
+        get('/posts/:id') { pass }
+        get('/posts/*rest') { env['sinatra.route'] }
+      end
+      get '/posts/1'
+      assert_equal 'GET /posts/*rest', body
+      assert_equal ['GET /posts/*rest'], seen
+    end
+
+    it 'names a HEAD request as HEAD' do
+      seen = []
+      mock_app do
+        after { seen << env['sinatra.route'] }
+        get('/posts/:id') { 'ok' }
+      end
+      head '/posts/1'
+      assert_equal 200, status
+      assert_equal ['HEAD /posts/:id'], seen
+    end
+
+    it 'stays unset for a request that matches no route' do
+      seen = []
+      mock_app do
+        before { seen << env.key?('sinatra.route') }
+        not_found { env.key?('sinatra.route').to_s }
+        get('/posts') { 'ok' }
+      end
+      get '/nothing'
+      assert_equal 404, status
+      assert_equal 'false', body
+      assert_equal [false], seen
+    end
+
+    it 'stays unset when only the verb differs' do
+      mock_app do
+        error(405) { env.key?('sinatra.route').to_s }
+        get('/posts') { 'ok' }
+      end
+      post '/posts'
+      assert_equal 405, status
+      assert_equal 'false', body
+    end
+
+    it 'stays unset when the only matching route fails its condition' do
+      mock_app do
+        not_found { env.key?('sinatra.route').to_s }
+        get('/feed', provides: :json) { 'ok' }
+        condition { false }
+        get('/hidden') { 'ok' }
+        get('/bots', agent: /bot/) { 'ok' }
+      end
+      ['/feed.xml', '/hidden', '/bots'].each do |path|
+        get path
+        assert_equal 404, status
+        assert_equal 'false', body
+      end
+    end
+
+    it 'stays unset when a condition calls pass' do
+      mock_app do
+        not_found { env.key?('sinatra.route').to_s }
+        condition { pass }
+        get('/cp') { 'never' }
+      end
+      get '/cp'
+      assert_equal 404, status
+      assert_equal 'false', body
+    end
+
+    it 'keeps the passed route when the next route fails its condition' do
+      mock_app do
+        not_found { env['sinatra.route'] }
+        get('/posts/:id') { pass }
+        condition { false }
+        get('/posts/*rest') { 'never' }
+      end
+      get '/posts/1'
+      assert_equal 404, status
+      assert_equal 'GET /posts/:id', body
+    end
+
+    it 'leaves out the mount path, at the root and under a sub-path' do
+      mock_app do
+        get('/posts/:id') { env['sinatra.route'] }
+      end
+      map = Padrino::Router.new({ path: '/', to: @app }, { path: '/blog', to: @app })
+      outer_env = nil
+      outer = lambda { |env|
+        outer_env = env
+        map.call(env)
+      }
+
+      assert_equal 'GET /posts/:id', Rack::MockRequest.new(outer).get('/posts/1').body
+      assert_equal 'GET /posts/:id', Rack::MockRequest.new(outer).get('/blog/posts/1').body
+      assert_equal 'GET /posts/:id', outer_env['sinatra.route']
+    end
+  end
 end

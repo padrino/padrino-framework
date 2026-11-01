@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2473 `env['sinatra.route']` is set to the matched verb and route pattern (such as `GET /posts/:id`) before the route block runs, and for pages served from the page cache, so APM and error trackers can name Padrino routes. Routes with `provides` include the format segment, such as `GET /feed(.:format)?` (@achiurizo)
 - FIX #2475 Mailers with no `delivery_method` run `which sendmail` once instead of on every delivery (@achiurizo)
 - FIX #2474 `l(date, format: :short)` and other `localize` calls with options no longer raise `ArgumentError` on Ruby 3 (@achiurizo)
 - FIX #2446 `padrino g project --tiny` projects with minitest, testunit, shoulda or bacon pass their own `rake`, and the placeholder tests from `padrino g controller` and `g helper` with those components report as skipped, pending or missing instead of failing, as RSpec's do (@achiurizo)
