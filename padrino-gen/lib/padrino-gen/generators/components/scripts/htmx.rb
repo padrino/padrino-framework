@@ -4,7 +4,7 @@ HTMX_CSRF = <<~JS unless defined?(HTMX_CSRF)
     var token = document.querySelector('meta[name="csrf-token"]');
     var verb = event.detail.verb;
     var sameOrigin = new URL(event.detail.path, document.baseURI).origin === window.location.origin;
-    if (token && sameOrigin && verb !== 'get') event.detail.headers['X-CSRF-Token'] = token.content;
+    if (token && sameOrigin && verb.toLowerCase() !== 'get') event.detail.headers['X-CSRF-Token'] = token.content;
   });
 JS
 
@@ -23,6 +23,6 @@ def setup_script
   renderer = layout_renderer
   lines = ['csrf_meta_tags', "javascript_include_tag 'htmx', 'htmx-csrf', 'application'"]
   lines = lines.map { |line| renderer == 'erb' ? "<%= #{line} %>" : "= #{line}" }
-  say "Add to the <head> of your layout (views/layouts/application.#{renderer}), so htmx requests pass CSRF protection:", :yellow
+  say "Add to the <head> of your layout (app/views/layouts/application.#{renderer}), so htmx requests pass CSRF protection:", :yellow
   say lines.map { |line| "  #{line}" }.join("\n"), :yellow
 end
