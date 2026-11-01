@@ -3,6 +3,8 @@
 == Unreleased
 
 - FIX #2470 `require 'padrino-helpers'` no longer fails with `uninitialized constant Tilt::ErubisTemplate` when the `erubis` gem is installed and Tilt is 2.5 or newer, which has no Erubis support. ERB templates then render with Erubi when it is bundled, otherwise with Ruby's ERB; with Tilt 2.4 or older Erubis is still used as before (@nesquena)
+- FIX #2475 Mailers with no `delivery_method` run `which sendmail` once instead of on every delivery (@achiurizo)
+- FIX #2474 `l(date, format: :short)` and other `localize` calls with options no longer raise `ArgumentError` on Ruby 3 (@achiurizo)
 - FIX #2446 `padrino g project --tiny` projects with minitest, testunit, shoulda or bacon pass their own `rake`, and the placeholder tests from `padrino g controller` and `g helper` with those components report as skipped, pending or missing instead of failing, as RSpec's do (@achiurizo)
 - FIX #2446 `padrino g admin` and `g admin_page` in a project without an `app/` application, such as a `--lean` project, print a message and exit 1 instead of a backtrace (@achiurizo)
 
