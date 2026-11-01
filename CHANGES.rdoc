@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- NEW #2489 New projects answer `GET /up` with 200 `OK` for load balancer and container health checks. It skips the session cookie, follows the app's mount point, and is left out of `--lean` projects and apps from `padrino g app`. Existing projects don't change: add the route to `app/app.rb` yourself (@achiurizo)
 - WARN #2479 A `controller` block nested inside another now inherits the outer block's `conditions:` (merged, the inner block's keys winning), as it already inherited its filters. If a nested block's routes must not have an outer condition, turn it off in the inner block's `conditions:` (for example `conditions: { protect: false }`) or in the route's options (`protect: false`), for a condition that skips itself when given false, or move the block out of the outer one (@nesquena)
 
 == 0.18.2 (2026-11-01)
