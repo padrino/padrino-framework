@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.metadata = {
     'bug_tracker_uri' => 'https://github.com/padrino/padrino-framework/issues',
     'changelog_uri' => 'https://github.com/padrino/padrino-framework/blob/master/CHANGES.rdoc',
-    'documentation_uri' => 'https://padrinorb.com/guides/',
+    'documentation_uri' => 'https://github.com/padrino/padrino-framework/tree/master/padrino-performance',
     'source_code_uri' => 'https://github.com/padrino/padrino-framework'
   }
 
