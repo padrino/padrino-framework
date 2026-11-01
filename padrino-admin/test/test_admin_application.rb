@@ -86,6 +86,158 @@ describe 'AdminApplication' do
     assert_equal 'foo', body
   end
 
+  describe 'sessions' do
+    def mock_session_app(store)
+      mock_app do
+        register Padrino::Admin::AccessControl
+        set :session_store, store
+        enable :sessions
+
+        get('/note') { session[:note] = 'kept'; session.id.to_s }
+        get('/login') { set_current_account(Account.admin); 'logged in' }
+        get('/logout') { set_current_account(nil); session[:after] = 'kept'; 'logged out' }
+        get('/state') { [session.id.to_s, session[:note].inspect, session[:after].inspect, logged_in?].join(' ') }
+      end
+    end
+
+    [Rack::Session::Cookie, Rack::Session::Pool].each do |store|
+      it "should start a new session at login with #{store.name}, keeping its data" do
+        mock_session_app(store)
+        get '/note'
+        before_login = body
+        cookie = current_session.cookie_jar['rack.session']
+
+        get '/login'
+        get '/state'
+        session_id, note, _, logged_in = body.split
+        refute_equal before_login, session_id
+        refute_equal cookie, current_session.cookie_jar['rack.session']
+        assert_equal '"kept"', note
+        assert_equal 'true', logged_in
+      end
+
+      it "should clear the session at logout with #{store.name}" do
+        mock_session_app(store)
+        get '/note'
+        get '/login'
+        get '/state'
+        logged_in_id = body.split.first
+
+        get '/logout'
+        get '/state'
+        session_id, note, after, logged_in = body.split
+        assert_equal 'nil', note
+        assert_equal 'false', logged_in
+        assert_equal '"kept"', after
+        refute_equal logged_in_id, session_id
+      end
+    end
+  end
+
+  describe 'redirect_back_or_default' do
+    def mock_redirect_app(absolute_redirects)
+      mock_app do
+        register Padrino::Admin::AccessControl
+        enable :sessions
+        set :absolute_redirects, absolute_redirects
+        get('/remember') { session[:return_to] = params[:to]; 'remembered' }
+        get('/back') { redirect_back_or_default('/default') }
+      end
+    end
+
+    def redirect_back_from(return_to)
+      get '/remember', to: return_to
+      get '/back'
+      last_response.location
+    end
+
+    { true => 'http://example.org/default', false => '/default' }.each do |absolute_redirects, default|
+      it "should redirect back to a local path (absolute_redirects: #{absolute_redirects})" do
+        mock_redirect_app(absolute_redirects)
+        base = default.delete_suffix('/default')
+        assert_equal "#{base}/posts?page=2&q=a%2Fb", redirect_back_from('/posts?page=2&q=a%2Fb')
+        assert_equal "#{base}/caf%C3%A9/1", redirect_back_from('/caf%C3%A9/1')
+      end
+
+      it "should redirect to the default for anything but a local path (absolute_redirects: #{absolute_redirects})" do
+        mock_redirect_app(absolute_redirects)
+        ['//example.com', '///example.com', '/\\example.com', "/\t/example.com", '/%2F%2Fexample.com', '/%2f/example.com',
+         '/%5Cexample.com', '/%09/example.com', 'https://example.com', 'https://example.com/posts', 'javascript:alert(1)',
+         'example.com', ''].each do |return_to|
+          assert_equal default, redirect_back_from(return_to), return_to.inspect
+        end
+      end
+    end
+
+    it 'should redirect to the default without a stored location' do
+      mock_redirect_app(true)
+      get '/back'
+      assert_equal 'http://example.org/default', last_response.location
+    end
+  end
+
+  it 'should store the location under RACK_BASE_URI and redirect back to it after login' do
+    saved_base_uri = ENV['RACK_BASE_URI']
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :store_location
+      enable :sessions
+      set :login_page, '/login'
+
+      access_control.roles_for :any do |role|
+        role.protect '/foo'
+      end
+
+      get('/login') { set_current_account(Account.admin); redirect_back_or_default('/default') }
+      get('/foo') { 'foo' }
+    end
+
+    { nil => 'http://example.org/foo?x=1', '/base' => 'http://example.org/base/foo?x=1', '/' => 'http://example.org/foo?x=1' }.each do |base_uri, location|
+      ENV['RACK_BASE_URI'] = base_uri
+      # WEBrick sets REQUEST_URI to the full URL, puma to the path.
+      ['/foo?x=1', 'http://example.org/foo?x=1'].each do |request_uri|
+        clear_cookies
+        get '/foo?x=1', {}, 'REQUEST_URI' => request_uri
+        assert_equal 302, status
+        get '/login'
+        assert_equal location, last_response.location, "RACK_BASE_URI=#{base_uri.inspect}, REQUEST_URI=#{request_uri}"
+      end
+    end
+  ensure
+    ENV['RACK_BASE_URI'] = saved_base_uri
+  end
+
+  it 'should answer 401 to visitors and 403 to accounts without access when there is no login page' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/login'
+      end
+
+      access_control.roles_for :editor do |role|
+        role.project_module :posts, '/posts'
+      end
+
+      access_control.roles_for :admin do |role|
+        role.project_module :settings, '/settings'
+      end
+
+      get('/login/:role') { set_current_account(Account.send(params[:role])); 'logged in' }
+      get('/settings') { 'settings' }
+    end
+
+    get '/settings'
+    assert_equal 401, status
+
+    get '/login/editor'
+    get '/settings'
+    assert_equal 403, status
+    assert_equal "You don't have permission for this resource", body
+  end
+
   it 'should set advanced roles with store location and login page' do
     mock_app do
       register Padrino::Admin::AccessControl

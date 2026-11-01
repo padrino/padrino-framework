@@ -22,11 +22,16 @@ module Padrino
         ##
         # Override the current_account, you must provide an instance of Account model.
         #
+        # Logging in starts a new session (a new session id, keeping the session's data);
+        # logging out (no account) also clears the session.
+        #
         # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
         def set_current_account(account = nil)
+          session.clear unless account
           session[settings.session_id] = account&.id
+          request.session_options[:renew] = true
           @current_account = account
         end
 
@@ -60,19 +65,23 @@ module Padrino
         end
 
         ##
-        # Store in session[:return_to] the env['REQUEST_URI'].
+        # Store in session[:return_to] the path of the request, with its query string,
+        # under ENV['RACK_BASE_URI'] when that is set.
         #
         def store_location!
-          session[:return_to] = "#{ENV['RACK_BASE_URI']}#{env['REQUEST_URI']}" if env['REQUEST_URI']
+          path = request.fullpath
+          session[:return_to] = ENV['RACK_BASE_URI'] ? File.join(ENV['RACK_BASE_URI'], path) : path
         end
 
         ##
         # Redirect the account to the page that requested an authentication or
         # if the account is not allowed/logged return it to a default page.
         #
+        # Only a path on this site is followed; anything else redirects to +default+.
+        #
         def redirect_back_or_default(default)
           return_to = session.delete(:return_to)
-          redirect(return_to || default)
+          redirect(local_path?(return_to) ? return_to : default)
         end
 
         private
@@ -81,8 +90,18 @@ module Padrino
           if login_page
             redirect url(login_page)
           else
-            halt 401, "You don't have permission for this resource"
+            halt logged_in? ? 403 : 401, "You don't have permission for this resource"
           end
+        end
+
+        # One leading slash, not followed by another or by a backslash, and no control characters.
+        LOCAL_PATH = %r{\A/(?![/\\])[^\x00-\x1f\x7f]*\z}n
+
+        # True for a path on this site, checked as given and with its path part percent-decoded.
+        def local_path?(path)
+          return false unless path.is_a?(String)
+
+          [path, Rack::Utils.unescape_path(path[/\A[^?#]*/])].all? { |candidate| candidate.b.match?(LOCAL_PATH) }
         end
 
         def login_page
