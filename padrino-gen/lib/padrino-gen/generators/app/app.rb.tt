@@ -19,9 +19,10 @@ module <%= @project_name %>
 <% end -%>
 <% if @up_route -%>
 
-    # Health check for load balancers and containers. It doesn't touch the database, and skips
-    # the session cookie so that probes don't each start a session. The path follows the mount
-    # point of this app, and filters and host rules set for the whole app apply to it.
+    # Health check for load balancers and containers. It doesn't touch the database and sets no
+    # session cookie (a server-side session store may still see the request). The path follows
+    # the mount point of this app, and filters and host rules set for the whole app apply to it.
+    # It answers before any controller's /up route; remove it to serve /up from a controller.
     get '/up' do
       request.session_options[:skip] = true
       content_type :text
