@@ -980,6 +980,137 @@ describe 'Routing' do
     assert_equal 'foo_bar_index', body
   end
 
+  it 'should not give routes defined after a nested controller block the outer controller options' do
+    mock_app do
+      get(:early) { 'early' }
+      controller :admin, provides: :json, conditions: { agent: /Admin/ } do
+        before { response['x-outer'] = 'admin' }
+        after { response['x-outer-after'] = 'admin' }
+        controller :posts do
+          before { response['x-inner'] = 'posts' }
+          get(:index) { 'posts' }
+        end
+        get(:show) { 'show' }
+      end
+      get(:top) { 'top' }
+    end
+    get '/posts'
+    assert_equal 'posts', body
+    assert_equal 'admin', response['x-outer']
+    assert_equal 'posts', response['x-inner']
+    get '/admin/show', {}, 'HTTP_USER_AGENT' => 'Admin'
+    assert_equal 'show', body
+    assert_equal 'admin', response['x-outer']
+    assert_nil response['x-inner']
+    assert_match %r{^application/json}, response['Content-Type']
+    get '/admin/show'
+    assert_equal 404, status
+    get '/top'
+    assert_equal 200, status
+    assert_equal 'top', body
+    assert_nil response['x-outer']
+    assert_nil response['x-outer-after']
+    assert_match %r{^text/html}, response['Content-Type']
+    assert_equal '/top', @app.url(:top)
+    get '/early'
+    assert_equal 'early', body
+    assert_nil response['x-outer']
+    assert_nil response['x-outer-after']
+    get '/admin/top', {}, 'HTTP_USER_AGENT' => 'Admin'
+    assert_equal 404, status
+  end
+
+  it 'should not give routes defined after a nested controller block the outer map, layout or default values' do
+    mock_app do
+      controller :admin, map: '/manage', lang: 'en' do
+        @layout = :admin_layout # what padrino-helpers' `layout :admin_layout` sets
+        controller(:posts) { get(:index) { 'posts' } }
+        get(:show) { 'show' }
+      end
+      get(:top) { 'top' }
+      controller(:other) { get(:x) { 'x' } }
+    end
+    show = @app.routes.find { |route| route.action == :show }
+    top = @app.routes.find { |route| route.action == :top }
+    other = @app.routes.find { |route| route.action == :x }
+    assert_equal :admin_layout, show.use_layout
+    assert_equal({ lang: 'en' }, show.default_values)
+    assert_nil top.use_layout
+    assert_nil top.default_values
+    assert_nil other.use_layout
+    get '/manage/show'
+    assert_equal 'show', body
+    get '/top'
+    assert_equal 'top', body
+  end
+
+  it 'should restore each level of controllers nested three deep' do
+    mock_app do
+      controller :one, conditions: { agent: /One/ } do
+        before { response['x-one'] = 'one' }
+        controller :two do
+          before { response['x-two'] = 'two' }
+          controller :three do
+            get(:index) { 'three' }
+          end
+          get(:in_two) { 'in two' }
+        end
+        get(:in_one) { 'in one' }
+      end
+      get(:top) { 'top' }
+    end
+    get '/three'
+    assert_equal 'three', body
+    assert_equal 'two', response['x-two']
+    get '/two/in_two'
+    assert_equal 'in two', body
+    assert_equal 'one', response['x-one']
+    assert_equal 'two', response['x-two']
+    get '/one/in_one', {}, 'HTTP_USER_AGENT' => 'One'
+    assert_equal 'in one', body
+    assert_equal 'one', response['x-one']
+    assert_nil response['x-two']
+    get '/one/in_one'
+    assert_equal 404, status
+    get '/top'
+    assert_equal 'top', body
+    assert_nil response['x-one']
+    assert_nil response['x-two']
+  end
+
+  it 'should restore the outer options after sibling nested controller blocks' do
+    mock_app do
+      controller :admin, conditions: { agent: /Admin/ } do
+        controller(:posts) { get(:index) { 'posts' } }
+        controller(:users) { get(:index) { 'users' } }
+        get(:show) { 'show' }
+      end
+      get(:top) { 'top' }
+    end
+    get '/posts'
+    assert_equal 'posts', body
+    get '/users'
+    assert_equal 'users', body
+    get '/admin/show', {}, 'HTTP_USER_AGENT' => 'Admin'
+    assert_equal 'show', body
+    get '/top'
+    assert_equal 'top', body
+  end
+
+  it 'should restore the options when a controller block raises' do
+    mock_app
+    assert_raises(RuntimeError) do
+      @app.controller :broken, conditions: { agent: /Broken/ } do
+        before { response['x-broken'] = 'broken' }
+        raise 'broken controller'
+      end
+    end
+    @app.get(:top) { 'top' }
+    get '/top'
+    assert_equal 'top', body
+    assert_nil response['x-broken']
+  end
+
   it 'should use map and with' do
     mock_app do
       get :index, map: '/bugs', with: :id do
