@@ -96,6 +96,27 @@ describe 'AdminApplication' do
     refute @app.access_control.allowed?(nil, '/sessions%2F')
   end
 
+  it 'should deny a protected path whose encoded slash a splat route decodes' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/files/secret'
+      end
+
+      get('/*path') { "file #{params[:path]}" }
+    end
+
+    ['/files/secret', '/files%2Fsecret', '/files%2fsecret', '/%66iles%2Fsecret/1'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+      refute @app.access_control.allowed?(nil, path), path
+    end
+    get '/files/public'
+    assert_equal 'file files/public', body
+  end
+
   it 'should set basic roles with store location and login page' do
     mock_app do
       set    :app_name, :basic_app

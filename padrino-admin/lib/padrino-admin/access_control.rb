@@ -104,8 +104,11 @@ module Padrino
         #
         def allowed?(account = nil, path = nil)
           path = '/' if path.nil? || path.empty?
-          # Compare the decoded path the router matches; scrub invalid UTF-8 ('/%ff') so Regexp rules can match it.
-          path = Padrino::Routing.decode_route_path(path).scrub
+          # Allow rules see the decoded path the router matches ('%2F' stays inside its segment); deny
+          # rules also see it fully decoded, as a splat or param receives it. Scrub invalid UTF-8
+          # ('/%ff') so Regexp rules can match it.
+          route_path = Padrino::Routing.decode_route_path(path).scrub
+          full_path  = Padrino::Routing.decode_path(path).scrub
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq
@@ -120,8 +123,8 @@ module Padrino
             denied_paths  += authorizations.map(&:allowed).flatten.uniq # remove paths explicitly allowed for other roles
             denied_paths  += authorizations.map(&:denied).flatten.uniq # remove paths explicitly denied to other roles
           end
-          return true  if allowed_paths.any? { |p| path_within?(path, p) }
-          return false if denied_paths.any?  { |p| path.start_with?(p) } # loose on purpose: fails closed
+          return true  if allowed_paths.any? { |p| path_within?(route_path, p) }
+          return false if denied_paths.any?  { |p| route_path.start_with?(p) || full_path.start_with?(p) } # loose on purpose: fails closed
           true
         end
 

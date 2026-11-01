@@ -150,6 +150,54 @@ describe 'Filters' do
     assert_equal 'page private/x', body
   end
 
+  it 'should filter by path a request the router serves with a trailing slash' do
+    mock_app do
+      before('/private') { halt 403, 'filtered' }
+      get('/private') { 'private' }
+    end
+    ['/private', '/private/', '/%70rivate/'].each do |path|
+      get path
+      assert_equal [403, 'filtered'], [status, body], path
+    end
+  end
+
+  it 'should filter by path a request whose encoded slash a splat route decodes' do
+    mock_app do
+      before('/files/secret') { halt 403, 'filtered' }
+      get('/*path') { "file #{params[:path]}" }
+    end
+    ['/files/secret', '/files%2Fsecret', '/files%2fsecret'].each do |path|
+      get path
+      assert_equal [403, 'filtered'], [status, body], path
+    end
+    get '/files/public'
+    assert_equal 'file files/public', body
+  end
+
+  it 'should skip an except filter only for paths the router matches to the excepted path' do
+    mock_app do
+      before(except: '/public/page') { halt 403, 'filtered' }
+      get('/public/page') { 'public' }
+      get('/:name') { "name #{params[:name]}" }
+    end
+    ['/public/page', '/%70ublic/page', '/public/page/'].each do |path|
+      get path
+      assert_equal [200, 'public'], [status, body], path
+    end
+    get '/public%2Fpage'
+    assert_equal [403, 'filtered'], [status, body]
+  end
+
+  it 'should filter by path on the request path as it is when the filter runs' do
+    mock_app do
+      before('/old') { request.path_info = '/new' }
+      before('/new') { @test = 'new filter' }
+      get('/old') { @test.to_s }
+    end
+    get '/old'
+    assert_equal 'new filter', body
+  end
+
   it 'should be able to filter based on a symbol' do
     mock_app do
       before(:index) { @test = 'before' }
