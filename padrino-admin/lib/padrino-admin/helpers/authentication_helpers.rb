@@ -23,8 +23,8 @@ module Padrino
         # Override the current_account, you must provide an instance of Account model.
         #
         # When the logged-in account changes (logging in, logging out or switching accounts), the
-        # session gets a new id and keeps its other data. Logging out (no account) removes this
-        # app's account key from the session.
+        # session gets a new id and a new CSRF token, and keeps its other data. Logging out (no
+        # account) removes this app's account key from the session.
         #
         # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
@@ -39,6 +39,9 @@ module Padrino
               session[settings.session_id] = account_id
             end
             request.session_options[:renew] = true
+            # Replaced rather than deleted, in the format Rack::Protection checks, so a form
+            # rendered later in this request gets a token that is accepted.
+            session[:csrf] = Rack::Protection::AuthenticityToken.random_token if session.key?(:csrf)
           end
           @current_account = account
         end
@@ -108,7 +111,7 @@ module Padrino
 
         # True for a path on this site, checked as given and with its path part percent-decoded.
         def local_path?(path)
-          return false unless path.is_a?(String)
+          return false unless path.is_a?(String) && path.valid_encoding?
 
           [path, Rack::Utils.unescape_path(path[/\A[^?#]*/])].all? { |candidate| candidate.b.match?(LOCAL_PATH) }
         end

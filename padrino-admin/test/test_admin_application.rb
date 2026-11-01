@@ -161,6 +161,51 @@ describe 'AdminApplication' do
     end
   end
 
+  describe 'CSRF token' do
+    before do
+      mock_app do
+        register Padrino::Admin::AccessControl
+        enable :sessions
+        set :protect_from_csrf, true
+
+        get('/form') { csrf_token }
+        post('/login') { set_current_account(Account.admin); 'logged in' }
+        post('/login-and-form') { set_current_account(Account.admin); csrf_token }
+        post('/logout') { set_current_account(nil); 'logged out' }
+        post('/action') { 'done' }
+      end
+    end
+
+    it 'should reject a token issued before login and accept one issued after' do
+      get '/form'
+      token = body
+      post '/login', authenticity_token: token
+      assert_equal 200, status
+
+      post '/action', authenticity_token: token
+      assert_equal 403, status
+
+      get '/form'
+      post '/action', authenticity_token: body
+      assert_equal 200, status
+    end
+
+    it 'should accept a token rendered in the request that logs in' do
+      get '/form'
+      post '/login-and-form', authenticity_token: body
+      post '/action', authenticity_token: body
+      assert_equal 200, status
+    end
+
+    it 'should keep the token when nobody was logged in' do
+      get '/form'
+      token = body
+      post '/logout', authenticity_token: token
+      post '/action', authenticity_token: token
+      assert_equal 200, status
+    end
+  end
+
   describe 'redirect_back_or_default' do
     def mock_redirect_app(absolute_redirects)
       mock_app do
@@ -190,7 +235,7 @@ describe 'AdminApplication' do
         mock_redirect_app(absolute_redirects)
         ['//example.com', '///example.com', '/\\example.com', "/\t/example.com", '/%2F%2Fexample.com', '/%2f/example.com',
          '/%5Cexample.com', '/%09/example.com', 'https://example.com', 'https://example.com/posts', 'javascript:alert(1)',
-         'example.com', ''].each do |return_to|
+         'example.com', '', "/\xff".dup.force_encoding('UTF-8')].each do |return_to|
           assert_equal default, redirect_back_from(return_to), return_to.inspect
         end
       end
