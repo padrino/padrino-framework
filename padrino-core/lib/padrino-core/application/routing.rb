@@ -69,6 +69,20 @@ module Padrino
       def decode_path(path)
         Rack::Utils.unescape_path(path.b).force_encoding(Encoding::UTF_8)
       end
+
+      ##
+      # Decodes a request path into the form routes are matched against: like
+      # decode_path, but an encoded slash stays '%2F' (from '%2F' or '%2f'), so
+      # it can't split a path segment. Invalid UTF-8 and malformed escapes are
+      # kept as they are; the router matches no route for such a path.
+      #
+      # @example
+      #   Padrino::Routing.decode_route_path('/%70osts%2F1') # => "/posts%2F1"
+      #
+      # @api private
+      def decode_route_path(path)
+        path.b.split(/%2F/i, -1).map { |segment| decode_path(segment) }.join('%2F').force_encoding(Encoding::UTF_8)
+      end
     end
 
     # Class methods responsible for enhanced routing for controllers.

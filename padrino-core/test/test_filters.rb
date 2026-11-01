@@ -130,6 +130,26 @@ describe 'Filters' do
     assert_equal '', body
   end
 
+  it 'should filter by path and Regexp on the decoded path the router matches' do
+    mock_app do
+      before('/private') { halt 403, 'filtered' }
+      before(%r{\A/secret}) { halt 403, 'filtered' }
+      before("/caf\u00e9") { @test = 'cafe filter' }
+      get('/private') { 'private' }
+      get('/secret/:id') { 'secret' }
+      get("/caf\u00e9") { @test.to_s }
+      get('/:page') { "page #{params[:page]}" }
+    end
+    ['/private', '/%70rivate', '/priv%61te', '/secret/1', '/%73ecret/1', '/secret%ff'].each do |path|
+      get path
+      assert_equal [403, 'filtered'], [status, body], path
+    end
+    get '/caf%C3%A9'
+    assert_equal 'cafe filter', body
+    get '/private%2Fx'
+    assert_equal 'page private/x', body
+  end
+
   it 'should be able to filter based on a symbol' do
     mock_app do
       before(:index) { @test = 'before' }

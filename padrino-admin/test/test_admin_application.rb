@@ -72,6 +72,30 @@ describe 'AdminApplication' do
     assert_equal 'bar', body
   end
 
+  it 'should keep an encoded slash inside the path segment it is in' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/sessions'
+      end
+
+      get('/sessions/:id') { 'session' }
+      get('/:page') { "page #{params[:page]}" }
+    end
+
+    get '/sessions/new'
+    assert_equal 'session', body
+    ['/sessions%2Fnew', '/sessions%2fnew', '/%73essions%2Fnew'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+    end
+    assert @app.access_control.allowed?(nil, '/sessions/a%2Fb')
+    refute @app.access_control.allowed?(nil, '/sessions%2F')
+  end
+
   it 'should set basic roles with store location and login page' do
     mock_app do
       set    :app_name, :basic_app

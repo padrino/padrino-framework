@@ -32,13 +32,15 @@ module Padrino
 
     def match_with_arguments?(request)
       route = request.route_obj
-      path = request.path_info
+      path = nil
       @args.any? do |argument|
         if argument.instance_of?(Symbol)
           next unless route
           name = route.name
           argument == name || name == [scoped_controller_name, argument].join(' ').to_sym
         else
+          # The decoded path the router matches; scrubbed so a Regexp can match invalid UTF-8.
+          path ||= Routing.decode_route_path(request.path_info).scrub
           argument === path
         end
       end

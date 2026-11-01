@@ -202,6 +202,44 @@ describe 'Routing' do
     end
   end
 
+  describe 'decode_route_path' do
+    it 'decodes like decode_path but keeps an encoded slash inside its segment' do
+      assert_equal '/posts/1', Padrino::Routing.decode_route_path('/%70osts/1')
+      assert_equal '/posts%2F1', Padrino::Routing.decode_route_path('/posts%2F1')
+      assert_equal '/posts%2F1', Padrino::Routing.decode_route_path('/posts%2f1')
+      assert_equal '%2F%2F', Padrino::Routing.decode_route_path('%2f%2F')
+      assert_equal '/a+b/c d', Padrino::Routing.decode_route_path('/a+b/c%20d')
+      assert_equal '/../x', Padrino::Routing.decode_route_path('/%2e%2e/x')
+      assert_equal '/%2F', Padrino::Routing.decode_route_path('/%252F')
+      assert_equal '/a%zz', Padrino::Routing.decode_route_path('/a%zz')
+    end
+
+    it 'returns UTF-8, keeps invalid UTF-8 byte for byte and leaves its argument untouched' do
+      decoded = Padrino::Routing.decode_route_path('/caf%C3%A9%2F%ff'.b.freeze)
+      assert_equal Encoding::UTF_8, decoded.encoding
+      refute decoded.valid_encoding?
+      assert_equal "/caf\xC3\xA9%2F\xFF".b, decoded.b
+      assert_equal "/caf\u00e9", Padrino::Routing.decode_route_path('/caf%C3%A9')
+
+      path = "/caf\u00e9/%70".b
+      Padrino::Routing.decode_route_path(path)
+      assert_equal "/caf\u00e9/%70".b, path
+      assert_equal Encoding::ASCII_8BIT, path.encoding
+      assert_equal Encoding::UTF_8, Padrino::Routing.decode_route_path('').encoding
+    end
+
+    it 'is the form the router matches' do
+      mock_app do
+        get('/posts/:id') { "post #{params[:id]}" }
+        get('/:page') { "page #{params[:page]}" }
+      end
+      { '/posts/1' => 'post 1', '/%70osts/1' => 'post 1', '/posts%2F1' => 'page posts/1', '/posts%2f1' => 'page posts/1' }.each do |path, expected|
+        get path
+        assert_equal expected, body, path
+      end
+    end
+  end
+
   it 'should ignore trailing delimiters for basic route' do
     mock_app do
       get('/foo') { 'okey' }
