@@ -1020,6 +1020,27 @@ describe 'Routing' do
     assert_equal 404, status
   end
 
+  it 'should not give routes defined after a nested controller block the outer map, layout or default values' do
+    mock_app do
+      controller :admin, map: '/manage', lang: 'en' do
+        @layout = :admin_layout # what padrino-helpers' `layout :admin_layout` sets
+        controller(:posts) { get(:index) { 'posts' } }
+        get(:show) { 'show' }
+      end
+      get(:top) { 'top' }
+    end
+    show = @app.routes.find { |route| route.action == :show }
+    top = @app.routes.find { |route| route.action == :top }
+    assert_equal :admin_layout, show.use_layout
+    assert_equal({ lang: 'en' }, show.default_values)
+    assert_nil top.use_layout
+    assert_nil top.default_values
+    get '/manage/show'
+    assert_equal 'show', body
+    get '/top'
+    assert_equal 'top', body
+  end
+
   it 'should restore each level of controllers nested three deep' do
     mock_app do
       controller :one, conditions: { agent: /One/ } do
