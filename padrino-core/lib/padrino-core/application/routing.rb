@@ -122,7 +122,7 @@ module Padrino
       #     end
       #
       #     # A controller block nested in this one inherits these conditions; its own
-      #     # conditions, and each route's, win over them key by key.
+      #     # `conditions:`, and each route's options, win over them key by key.
       #   end
       #
       # @example Supply default values:
