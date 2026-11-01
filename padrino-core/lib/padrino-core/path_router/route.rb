@@ -55,6 +55,14 @@ module Padrino
         @path
       end
 
+      ##
+      # Returns the pattern as Sinatra writes it in env['sinatra.route']. Sinatra
+      # stringifies a Regexp through Mustermann, which drops the (?-mix:) wrapper.
+      #
+      def sinatra_pattern
+        @sinatra_pattern ||= @path.is_a?(Regexp) ? Mustermann.new(@path, check_anchors: false).to_s : @path.to_s
+      end
+
       SIGNIFICANT_VARIABLES_REGEX = /(^|[^\\])[:*]([a-zA-Z0-9_]+)/
 
       ##
@@ -111,6 +119,7 @@ module Padrino
       def path=(pattern)
         @path = pattern
         @matcher = nil
+        @sinatra_pattern = nil
         @significant_variable_names = nil
       end
 

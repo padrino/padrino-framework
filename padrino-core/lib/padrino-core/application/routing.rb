@@ -1019,6 +1019,7 @@ module Padrino
           (route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
           @layout = route.use_layout if route.use_layout
           route.custom_conditions.each { |block| pass if block.bind(self).call == false }
+          env['sinatra.route'] = "#{@request.request_method} #{route.sinatra_pattern}"
           route_response = route.block[self, captured_params]
           @_response_buffer = route_response.instance_of?(Array) ? route_response.last : route_response
           halt(route_response)
