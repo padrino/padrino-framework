@@ -231,7 +231,7 @@
   renderer: liquid
   test: cucumber
   mock: mocha
-  script: mootools
+  script: ujs
   stylesheet: sass
   server: puma
   add_component:

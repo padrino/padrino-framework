@@ -287,13 +287,59 @@ describe 'ComponentGenerator' do
       end
 
       it 'should keep an edited application.js for every script component' do
-        %w[dojo jquery mootools prototype].each do |script|
+        %w[dojo jquery mootools prototype ujs].each do |script|
           `rm -rf #{@apptmp}/sample_project`
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--script=#{script}") }
           File.write(project_file('public/javascripts/application.js'), "// edited\n")
           rerun("--script=#{script}")
           assert_equal "// edited\n", File.read(project_file('public/javascripts/application.js')), script
         end
+      end
+      it 'should keep an edited ujs.js' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=ujs') }
+        File.write(project_file('public/javascripts/ujs.js'), "// edited\n")
+        rerun('--script=ujs')
+        assert_equal "// edited\n", File.read(project_file('public/javascripts/ujs.js'))
+      end
+    end
+
+    describe 'ujs script component' do
+      def script_choice
+        YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+      end
+
+      def ujs_file
+        "#{@apptmp}/sample_project/public/javascripts/ujs.js"
+      end
+
+      def apply_script(script, answer)
+        Readline.stubs(:readline).returns(answer)
+        capture_io { generate(:component, "--script=#{script}", "-r=#{@apptmp}/sample_project") }
+      end
+
+      it 'should add ujs to a project without a script' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        capture_io { generate(:component, '--script=ujs', "-r=#{@apptmp}/sample_project") }
+        assert_match_in_file(/data-method/, ujs_file)
+        assert_equal 'ujs', script_choice
+      end
+
+      it 'should switch from jquery to ujs and back' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
+        out, = apply_script('ujs', 'yes')
+        assert_match(/applying.*?ujs.*?script/, out)
+        assert_match(/remove the include tag of any script it replaces/, out)
+        assert_match_in_file(/data-method/, ujs_file)
+        assert_equal 'ujs', script_choice
+        apply_script('jquery', 'yes')
+        assert_equal 'jquery', script_choice
+      end
+
+      it 'should keep jquery when no input answers the switch prompt' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
+        Timeout.timeout(5) { apply_script('ujs', nil) }
+        assert_no_file_exists(ujs_file)
+        assert_equal 'jquery', script_choice
       end
     end
 
