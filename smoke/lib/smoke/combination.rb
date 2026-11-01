@@ -7,7 +7,7 @@ module Smoke
     COMPONENTS_DIR = CHECKOUT.join('padrino-gen/lib/padrino-gen/generators/components')
     SQL_ORMS = %w[activerecord sequel].freeze
     ADMIN_RENDERERS = %w[erb haml slim].freeze
-    ADAPTERS = %w[sqlite postgres mysql2].freeze
+    ADAPTERS = %w[sqlite postgres mysql2 trilogy].freeze
     SERVERS = %w[webrick puma thin falcon].freeze
     SHAPES = %w[tiny lean api].freeze
 

@@ -122,6 +122,59 @@ describe 'SqlHelpers.dump_db' do
       dump('mysql2', sslca: '/ca.pem', sslcert: '/c.pem', sslkey: '/k.pem', sslcapath: '/certs', sslcipher: 'AES256-SHA',
                      ssl_mode: :VERIFY_IDENTITY)
     end
+
+    # Trilogy connects to localhost over TCP, and mysqldump needs --protocol to agree.
+    it 'dumps a trilogy database on localhost over TCP, as trilogy connects' do
+      succeed
+      Process.expects(:spawn).with(
+        { 'MYSQL_PWD' => 'hunter2' }, 'mysqldump', "--result-file=#{partial}",
+        '--user=bob', '--protocol=tcp', '--host=localhost', '--port=3307', 'app db', {}
+      ).returns(42)
+      dump('trilogy', password: 'hunter2', user: 'bob', host: 'localhost', port: 3307)
+    end
+
+    it 'dumps a trilogy database through its socket when no host is set' do
+      succeed
+      Process.expects(:spawn).with({}, 'mysqldump', "--result-file=#{partial}", '--socket=/run/mysqld.sock', 'app db', {}).returns(42)
+      dump('trilogy', socket: '/run/mysqld.sock')
+    end
+
+    # Sequel passes both to trilogy, which ignores the socket then, as create_db's connection does.
+    it 'dumps a trilogy database over TCP when both a host and a socket are set' do
+      succeed
+      Process.expects(:spawn).with(
+        {}, 'mysqldump', "--result-file=#{partial}", '--protocol=tcp', '--host=db', '--port=3307', 'app db', {}
+      ).returns(42)
+      dump('trilogy', host: 'db', port: 3307, socket: '/run/mysqld.sock')
+    end
+
+    it 'dumps a trilogy database with no host or socket through the socket trilogy defaults to' do
+      succeed
+      Process.expects(:spawn).with({}, 'mysqldump', "--result-file=#{partial}", '--socket=/tmp/mysql.sock', 'app db', {}).returns(42)
+      dump('trilogy')
+    end
+
+    { 0 => 'DISABLED', 1 => 'VERIFY_IDENTITY', 2 => 'VERIFY_CA', 3 => 'REQUIRED', 4 => 'PREFERRED',
+      'SSL_MODE_REQUIRED' => 'REQUIRED', required: 'required' }.each do |mode, flag|
+      it "passes the trilogy ssl_mode #{mode.inspect} as the name mysqldump takes" do
+        succeed
+        Process.expects(:spawn).with(
+          {}, 'mysqldump', "--result-file=#{partial}", '--protocol=tcp', '--host=db', "--ssl-mode=#{flag}", 'app db', {}
+        ).returns(42)
+        dump('trilogy', host: 'db', ssl_mode: mode)
+      end
+    end
+
+    it 'passes the TLS settings under the trilogy names' do
+      succeed
+      Process.expects(:spawn).with(
+        {}, 'mysqldump', "--result-file=#{partial}", '--protocol=tcp', '--host=db', '--ssl-ca=/ca.pem', '--ssl-cert=/c.pem',
+        '--ssl-capath=/certs', '--ssl-cipher=AES256-SHA', '--ssl-crl=/crl.pem', '--ssl-crlpath=/crls', '--ssl-key=/k.pem',
+        '--ssl-mode=VERIFY_IDENTITY', 'app db', {}
+      ).returns(42)
+      dump('trilogy', host: 'db', ssl_ca: '/ca.pem', ssl_cert: '/c.pem', ssl_key: '/k.pem', ssl_capath: '/certs', ssl_cipher: 'AES256-SHA',
+                      ssl_crl: '/crl.pem', ssl_crlpath: '/crls', ssl_mode: :VERIFY_IDENTITY)
+    end
   end
 
   describe 'sqlite' do

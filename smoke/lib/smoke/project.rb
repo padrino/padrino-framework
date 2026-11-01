@@ -123,6 +123,7 @@ module Smoke
       each_env do |env|
         if combination.sql?
           run('db_tasks', %w[bundle exec rake db:migrate], env: env)
+          run('db_tasks', %w[bundle exec rake db:dump], env: env) if combination.adapter == 'trilogy'
         elsif combination.orm == 'mongoid'
           run('db_tasks', %w[bundle exec rake mi:create_indexes], env: env)
         end
@@ -170,6 +171,7 @@ module Smoke
       port = free_port
       pid = Shell.spawn(%w[bundle exec padrino start -a] + [combination.server, '-p', port.to_s], chdir: path)
       combination.lean? ? expect_response('boot', port, '/', '404') : expect_response('boot', port, '/posts', '200', marker)
+      expect_response('boot', port, '/up', '200', 'OK') unless combination.lean?
       expect_response('boot', port, '/admin', '302') if combination.admin?
       Process.kill('TERM', pid)
       status = wait_for(pid, 10)

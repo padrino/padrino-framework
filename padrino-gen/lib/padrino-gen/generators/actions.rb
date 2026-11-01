@@ -13,7 +13,7 @@ module Padrino
     ##
     # The SQL adapters for --adapter, and the ORM components that set up their database with one.
     #
-    SQL_ADAPTERS = %w[mysql mysql2 mysql-gem postgres sqlite].freeze
+    SQL_ADAPTERS = %w[mysql mysql2 mysql-gem trilogy postgres sqlite].freeze
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
 
     ##
@@ -113,6 +113,18 @@ module Padrino
       #
       def fetch_component_choice(component)
         retrieve_component_config(destination_root('.components'))[component]
+      end
+
+      ##
+      # Returns the template engine that layout snippets should be printed for: the renderer this run
+      # applies, which .components only records once it is applied, otherwise the stored one.
+      #
+      # @return [String] 'haml', 'slim', or 'erb' for any other renderer.
+      #
+      def layout_renderer
+        chosen = @_components && @_components[:renderer].to_s
+        renderer = chosen.nil? || chosen.empty? ? fetch_component_choice(:renderer).to_s : chosen
+        %w[haml slim].include?(renderer) ? renderer : 'erb'
       end
 
       ##

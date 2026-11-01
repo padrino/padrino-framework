@@ -17,7 +17,7 @@ module Padrino
 
       class_option :app,     desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
       class_option :root,    desc: 'The root destination',                                             aliases: '-r', default: '.',         type: :string
-      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, postgres)', aliases: '-a', default: nil,         type: :string
+      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, trilogy, postgres)', aliases: '-a', default: nil, type: :string
 
       defines_component_options default: false
 
@@ -49,7 +49,9 @@ module Padrino
             choice = @_components[comp]
             existing = fetch_component_choice(comp)
             ask = existing != 'none' && existing != choice
-            !ask || yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
+            accepted = !ask || yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
+            @_components[comp] = '' unless accepted
+            accepted
           end
 
           @project_name = fetch_component_choice(:namespace)

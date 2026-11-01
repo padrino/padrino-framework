@@ -225,6 +225,137 @@ describe 'ComponentGenerator' do
         assert_equal 'postgres', YAML.load_file(project_file('.components'))[:adapter]
       end
 
+      # Bundler refuses a Gemfile that lists a gem twice with different requirements.
+      it 'should keep one activerecord line when switching to trilogy and back' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=activerecord', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+        assert_equal ["gem 'activerecord', '>= 7.1', require: 'active_record'"], File.readlines(project_file('Gemfile'), chomp: true).grep(/activerecord/)
+        assert_match_in_file(/adapter:   'trilogy'/, project_file('config/database.rb'))
+        assert_equal 'trilogy', YAML.load_file(project_file('.components'))[:adapter]
+
+        capture_io { generate(:component, '--orm=activerecord', '--adapter=mysql2', "-r=#{@apptmp}/sample_project") }
+        assert_equal ["gem 'activerecord', '>= 3.1', require: 'active_record'"], File.readlines(project_file('Gemfile'), chomp: true).grep(/activerecord/)
+        assert_match_in_file(/adapter:   'mysql2'/, project_file('config/database.rb'))
+      end
+
+      def activerecord_lines
+        File.readlines(project_file('Gemfile'), chomp: true).grep(/activerecord/)
+      end
+
+      def edit_gemfile(from, to)
+        File.write(project_file('Gemfile'), File.read(project_file('Gemfile')).sub(from, to))
+      end
+
+      floors = { 'mysql2' => '>= 3.1', 'trilogy' => '>= 7.1' }
+      [%w[mysql2 trilogy], %w[trilogy mysql2]].each do |from, to|
+        old_line = "gem 'activerecord', '#{floors[from]}', require: 'active_record'"
+        new_line = "gem 'activerecord', '#{floors[to]}', require: 'active_record'"
+
+        it "should move the floor below a blank line when switching from #{from} to #{to}" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', "--adapter=#{from}") }
+          edit_gemfile(old_line, "\n#{old_line}")
+          Readline.stubs(:readline).returns('yes')
+          out, = capture_io { generate(:component, '--orm=activerecord', "--adapter=#{to}", "-r=#{@apptmp}/sample_project") }
+          assert_equal [new_line], activerecord_lines
+          assert_includes File.read(project_file('Gemfile')), "\n\n#{new_line}\n"
+          refute_includes out, 'Keeping the Gemfile line'
+        end
+
+        it "should move the floor of an indented line when switching from #{from} to #{to}" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', "--adapter=#{from}") }
+          edit_gemfile(old_line, "group :default do\n  #{old_line}\nend")
+          Readline.stubs(:readline).returns('yes')
+          out, = capture_io { generate(:component, '--orm=activerecord', "--adapter=#{to}", "-r=#{@apptmp}/sample_project") }
+          assert_equal ["  #{new_line}"], activerecord_lines
+          refute_includes out, 'Keeping the Gemfile line'
+        end
+      end
+
+      it 'should keep a raised activerecord floor when rerun on a mysql2 project' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        edit_gemfile("'>= 3.1'", "'>= 7.1'")
+        rerun('--orm=activerecord')
+        assert_equal ["gem 'activerecord', '>= 7.1', require: 'active_record'"], activerecord_lines
+      end
+
+      it 'should keep a raised activerecord floor when rerun on a project with no stored adapter' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        components = YAML.load_file(project_file('.components'))
+        components.delete(:adapter)
+        File.write(project_file('.components'), components.to_yaml)
+        edit_gemfile("'>= 3.1'", "'>= 7.1'")
+        rerun('--orm=activerecord')
+        assert_equal ["gem 'activerecord', '>= 7.1', require: 'active_record'"], activerecord_lines
+      end
+
+      it 'should keep one activerecord line when rerun on a pinned trilogy project' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=trilogy') }
+        edit_gemfile("'>= 7.1'", "'~> 8.0'")
+        rerun('--orm=activerecord')
+        assert_equal ["gem 'activerecord', '~> 8.0', require: 'active_record'"], activerecord_lines
+      end
+
+      [
+        "gem 'activerecord', '~> 8.0'", %(gem "activerecord", ">= 3.1", require: "active_record"), %(  gem 'activerecord'),
+        "gem('activerecord', '~> 8.0')", "gem  'activerecord', '~> 8.0'"
+      ].each do |line|
+        it "should leave #{line.strip} and warn when switching to trilogy" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+          edit_gemfile("gem 'activerecord', '>= 3.1', require: 'active_record'", line)
+          Readline.stubs(:readline).returns('yes')
+          out, = capture_io { generate(:component, '--orm=activerecord', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+          assert_equal [line], activerecord_lines
+          assert_includes out, "Keeping the Gemfile line #{line.strip}"
+        end
+      end
+
+      it 'should raise the floor when returning to activerecord with the trilogy adapter of sequel' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=sequel', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+        capture_io { generate(:component, '--orm=activerecord', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+        assert_equal ["gem 'activerecord', '>= 7.1', require: 'active_record'"], activerecord_lines
+      end
+
+      it 'should leave a pinned line without a warning when switching between other adapters' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
+        edit_gemfile("gem 'activerecord', '>= 3.1', require: 'active_record'", "gem 'activerecord', '~> 8.0'")
+        Readline.stubs(:readline).returns('yes')
+        out, = capture_io { generate(:component, '--orm=activerecord', '--adapter=postgres', "-r=#{@apptmp}/sample_project") }
+        assert_equal ["gem 'activerecord', '~> 8.0'"], activerecord_lines
+        refute_includes out, 'Keeping the Gemfile line'
+      end
+
+      it 'should not count activerecord-import as the activerecord line' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
+        edit_gemfile("gem 'sequel'\n", "gem 'sequel'\ngem 'activerecord-import'\n")
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=activerecord', "-r=#{@apptmp}/sample_project") }
+        assert_includes activerecord_lines, "gem 'activerecord', '>= 3.1', require: 'active_record'"
+      end
+
+      %w[activerecord sequel].each do |orm|
+        it "should change nothing when rerun on a #{orm} trilogy project" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--orm=#{orm}", '--adapter=trilogy') }
+          gemfile, config = %w[Gemfile config/database.rb].map { |path| File.read(project_file(path)) }
+          rerun("--orm=#{orm}")
+          assert_equal gemfile, File.read(project_file('Gemfile'))
+          assert_equal config, File.read(project_file('config/database.rb'))
+          assert_equal 'trilogy', YAML.load_file(project_file('.components'))[:adapter]
+        end
+      end
+
+      it 'should rewrite the database config when switching a sequel project to trilogy' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=mysql2') }
+        Readline.stubs(:readline).returns('yes')
+        capture_io { generate(:component, '--orm=sequel', '--adapter=trilogy', "-r=#{@apptmp}/sample_project") }
+        assert_no_match_in_file(%r{mysql2://}, project_file('config/database.rb'))
+        assert_match_in_file(%r{"trilogy://root@127.0.0.1/sample_project_test"}, project_file('config/database.rb'))
+        assert_match_in_file(/gem 'trilogy'/, project_file('Gemfile'))
+        assert_equal 'trilogy', YAML.load_file(project_file('.components'))[:adapter]
+      end
+
       it 'should rewrite the database config when switching orm' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
         Readline.stubs(:readline).returns('yes')
@@ -287,13 +418,73 @@ describe 'ComponentGenerator' do
       end
 
       it 'should keep an edited application.js for every script component' do
-        %w[dojo jquery mootools prototype].each do |script|
+        %w[dojo htmx jquery mootools prototype ujs].each do |script|
           `rm -rf #{@apptmp}/sample_project`
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--script=#{script}") }
           File.write(project_file('public/javascripts/application.js'), "// edited\n")
           rerun("--script=#{script}")
           assert_equal "// edited\n", File.read(project_file('public/javascripts/application.js')), script
         end
+      end
+      it 'should keep an edited ujs.js' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=ujs') }
+        File.write(project_file('public/javascripts/ujs.js'), "// edited\n")
+        rerun('--script=ujs')
+        assert_equal "// edited\n", File.read(project_file('public/javascripts/ujs.js'))
+      end
+    end
+
+    describe 'ujs script component' do
+      def script_choice
+        YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+      end
+
+      def ujs_file
+        "#{@apptmp}/sample_project/public/javascripts/ujs.js"
+      end
+
+      def apply_script(script, answer)
+        Readline.stubs(:readline).returns(answer)
+        capture_io { generate(:component, "--script=#{script}", "-r=#{@apptmp}/sample_project") }
+      end
+
+      it 'should add ujs to a project without a script' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        capture_io { generate(:component, '--script=ujs', "-r=#{@apptmp}/sample_project") }
+        assert_match_in_file(/data-method/, ujs_file)
+        assert_equal 'ujs', script_choice
+      end
+
+      it 'should switch from jquery to ujs and back' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
+        out, = apply_script('ujs', 'yes')
+        assert_match(/applying.*?ujs.*?script/, out)
+        assert_match(/remove the include tag of any script it replaces/, out)
+        assert_match_in_file(/data-method/, ujs_file)
+        assert_equal 'ujs', script_choice
+        apply_script('jquery', 'yes')
+        assert_equal 'jquery', script_choice
+      end
+
+      # An --api project has no padrino-helpers, so its layout has neither csrf_meta_tags nor javascript_include_tag.
+      it 'should give a plain script tag for an api project' do
+        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--api', '--script=ujs') }
+        assert_includes out, '<script src="/javascripts/ujs.js"></script>'
+        refute_match(/csrf_meta_tags/, out)
+      end
+
+      it 'should give a plain script tag when added to an api project' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--api') }
+        out, = capture_io { generate(:component, '--script=ujs', "-r=#{@apptmp}/sample_project") }
+        assert_includes out, '<script src="/javascripts/ujs.js"></script>'
+        refute_match(/csrf_meta_tags/, out)
+      end
+
+      it 'should keep jquery when no input answers the switch prompt' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
+        Timeout.timeout(5) { apply_script('ujs', nil) }
+        assert_no_file_exists(ujs_file)
+        assert_equal 'jquery', script_choice
       end
     end
 
@@ -564,6 +755,13 @@ describe 'ComponentGenerator' do
       assert_match(%r{Add `require 'active_support/core_ext/object/try'`}, out)
     end
 
+    it 'should print the layout tags for a renderer applied in the same run' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, = capture_io { generate(:component, '--script=vite', '--renderer=haml', "-r=#{@apptmp}/sample_project") }
+      assert_match(%r{layouts/application\.haml}, out)
+      assert_match(/^\s+= vite_client_tag$/, out)
+    end
+
     it 'should add vite to an existing project and keep its package.json' do
       capture_io { generate(:project, 'sample_project', '--renderer=haml', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/package.json", "{}\n")
@@ -605,6 +803,137 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{@apptmp}/sample_project/config/boot.rb").scan(%r{active_support/core_ext/object/try}).size
       assert_equal 1, File.read("#{@apptmp}/sample_project/Rakefile").scan('ViteRuby.install_tasks').size
       assert_equal "web: bundle exec padrino start\nvite: bundle exec vite dev\n", File.read("#{@apptmp}/sample_project/Procfile.dev")
+    end
+  end
+
+  describe 'htmx script component' do
+    before { Readline.stubs(:readline).returns(nil) }
+
+    def project_file(path)
+      "#{@apptmp}/sample_project/#{path}"
+    end
+
+    def vendored_htmx
+      File.binread(File.expand_path('../lib/padrino-gen/generators/templates/htmx/htmx.min.js', __dir__))
+    end
+
+    def apply_component(*args, answer: nil)
+      Readline.stubs(:readline).returns(answer)
+      capture_io { generate(:component, *args, "-r=#{@apptmp}/sample_project") }
+    end
+
+    it 'should install htmx and its CSRF script in a new project without the network' do
+      WebMock.reset_executed_requests!
+      out, = capture_io { generate(:project, 'sample_project', '--script=htmx', "--root=#{@apptmp}") }
+      assert_match(/applying.*?htmx.*?script/, out)
+      assert_equal vendored_htmx, File.binread(project_file('public/javascripts/htmx.js'))
+      assert_match_in_file(/htmx:configRequest/, project_file('public/javascripts/htmx-csrf.js'))
+      assert_match_in_file(/X-CSRF-Token/, project_file('public/javascripts/htmx-csrf.js'))
+      assert_file_exists(project_file('public/javascripts/application.js'))
+      assert_equal 'htmx', YAML.load_file(project_file('.components'))[:script]
+      assert_not_requested :get, /.*/
+    end
+
+    it 'should add htmx to an existing project' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      apply_component('--script=htmx')
+      assert_equal vendored_htmx, File.binread(project_file('public/javascripts/htmx.js'))
+      assert_file_exists(project_file('public/javascripts/htmx-csrf.js'))
+      assert_equal 'htmx', YAML.load_file(project_file('.components'))[:script]
+    end
+
+    it 'should install into a tiny project' do
+      capture_io { generate(:project, 'sample_project', '--script=htmx', '--tiny', "--root=#{@apptmp}") }
+      assert_equal vendored_htmx, File.binread(project_file('public/javascripts/htmx.js'))
+      assert_file_exists(project_file('public/javascripts/htmx-csrf.js'))
+    end
+
+    it 'should keep edited files when applied again without a terminal' do
+      capture_io { generate(:project, 'sample_project', '--script=htmx', "--root=#{@apptmp}") }
+      edited = %w[htmx.js htmx-csrf.js application.js].map { |name| project_file("public/javascripts/#{name}") }
+      edited.each { |path| File.write(path, "// edited\n") }
+      apply_component('--script=htmx')
+      edited.each { |path| assert_equal "// edited\n", File.read(path), path }
+    end
+
+    it 'should switch from jquery to htmx and back, keeping an edited application.js' do
+      capture_io { generate(:project, 'sample_project', '--script=jquery', "--root=#{@apptmp}") }
+      File.write(project_file('public/javascripts/application.js'), "// edited\n")
+
+      apply_component('--script=htmx', answer: 'yes')
+      assert_equal 'htmx', YAML.load_file(project_file('.components'))[:script]
+      assert_match_in_file(/htmx:configRequest/, project_file('public/javascripts/htmx-csrf.js'))
+
+      apply_component('--script=jquery', answer: 'yes')
+      assert_equal 'jquery', YAML.load_file(project_file('.components'))[:script]
+      assert_file_exists(project_file('public/javascripts/jquery-ujs.js'))
+      assert_equal "// edited\n", File.read(project_file('public/javascripts/application.js'))
+    end
+
+    it 'should leave the project unchanged when the switch is declined without a terminal' do
+      capture_io { generate(:project, 'sample_project', '--script=jquery', "--root=#{@apptmp}") }
+      apply_component('--script=htmx')
+      assert_equal 'jquery', YAML.load_file(project_file('.components'))[:script]
+      assert_no_file_exists(project_file('public/javascripts/htmx.js'))
+    end
+
+    it 'should install into a lean project' do
+      capture_io { generate(:project, 'sample_project', '--script=htmx', '--lean', "--root=#{@apptmp}") }
+      assert_equal vendored_htmx, File.binread(project_file('public/javascripts/htmx.js'))
+      assert_no_dir_exists(project_file('app'))
+    end
+
+    it 'should print a plain script tag for an api project, which has no helpers' do
+      out, = capture_io { generate(:project, 'sample_project', '--script=htmx', '--api', "--root=#{@apptmp}") }
+      assert_match(%r{<script src="/javascripts/htmx\.js"></script>}, out)
+      refute_match(/csrf_meta_tags/, out)
+      assert_file_exists(project_file('public/javascripts/htmx.js'))
+    end
+
+    it 'should print a plain script tag when added to an existing api project' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      out, = apply_component('--script=htmx')
+      assert_match(%r{<script src="/javascripts/htmx\.js"></script>}, out)
+      refute_match(/csrf_meta_tags/, out)
+    end
+
+    it 'should print the layout lines for a renderer applied in the same run' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out, = apply_component('--script=htmx', '--renderer=haml')
+      assert_match(%r{layouts/application\.haml}, out)
+      assert_match(/^\s+= csrf_meta_tags$/, out)
+    end
+
+    it 'should print the layout lines for the stored renderer when the switch is declined' do
+      capture_io { generate(:project, 'sample_project', '--renderer=erb', "--root=#{@apptmp}") }
+      out, = apply_component('--script=htmx', '--renderer=haml', answer: 'no')
+      assert_match(%r{layouts/application\.erb}, out)
+      assert_match(/<%= csrf_meta_tags %>/, out)
+      assert_equal 'erb', YAML.load_file(project_file('.components'))[:renderer]
+    end
+
+    it 'should read the token where csrf_meta_tags writes it' do
+      capture_io { generate(:project, 'sample_project', '--script=htmx', "--root=#{@apptmp}") }
+      script = File.read(project_file('public/javascripts/htmx-csrf.js'))
+      view = Object.new.extend(Padrino::Helpers::TagHelpers, Padrino::Helpers::AssetTagHelpers, Padrino::Helpers::FormHelpers::Security)
+      view.stubs(is_protected_from_csrf?: true, csrf_param: 'authenticity_token', csrf_token: 'the-token')
+
+      name = script[/meta\[name="([^"]+)"\]/, 1]
+      attribute = script[/token\.(\w+)/, 1]
+      tag = view.csrf_meta_tags[/<meta[^>]*name="#{name}"[^>]*>/]
+      assert_match(/#{attribute}="the-token"/, tag)
+    end
+
+    it 'should print the layout lines for each template engine' do
+      {
+        'erb' => [/<%= csrf_meta_tags %>/, /<%= javascript_include_tag 'htmx', 'htmx-csrf', 'application' %>/, %r{layouts/application\.erb}],
+        'haml' => [/^\s+= csrf_meta_tags$/, /^\s+= javascript_include_tag 'htmx', 'htmx-csrf', 'application'$/, %r{layouts/application\.haml}],
+        'slim' => [/^\s+= csrf_meta_tags$/, /^\s+= javascript_include_tag 'htmx', 'htmx-csrf', 'application'$/, %r{layouts/application\.slim}]
+      }.each do |renderer, expected|
+        `rm -rf #{@apptmp}/sample_project`
+        out, = capture_io { generate(:project, 'sample_project', '--script=htmx', "--renderer=#{renderer}", "--root=#{@apptmp}") }
+        expected.each { |pattern| assert_match(pattern, out) }
+      end
     end
   end
 
