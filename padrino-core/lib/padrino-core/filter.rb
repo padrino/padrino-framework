@@ -38,7 +38,7 @@ module Padrino
           name = route.name
           argument == name || name == [scoped_controller_name, argument].join(' ').to_sym
         else
-          # A filter runs if either decoded form matches; an :except filter is skipped only if both do.
+          # A filter runs if any decoded form matches; an :except filter is skipped only if all do.
           paths = decoded_paths(request)
           @mode ? paths.any? { |path| path_match?(argument, path) } : paths.all? { |path| path_match?(argument, path) }
         end
@@ -47,18 +47,17 @@ module Padrino
 
     # The router also serves '/posts/' from a '/posts' route (PathRouter::Compiler#match?).
     def path_match?(argument, path)
-      argument === path || (argument.is_a?(String) && path.end_with?('/') && argument === path[0..-2])
+      argument === path || (path.end_with?('/') && argument === path[0..-2])
     end
 
-    # The request path as the router matches it ('%2F' stays inside its segment) and fully decoded
-    # (as a splat or param receives it), scrubbed so a Regexp can match invalid UTF-8. Decoded once
-    # per request, and again if PATH_INFO changes (a mounted app sees its own).
+    # Routing.path_forms of the request path, once per request, and again if PATH_INFO changes
+    # (a mounted app sees its own).
     def decoded_paths(request)
       path_info = request.path_info
       cached = request.env['padrino.decoded_paths']
       return cached[1] if cached && cached[0] == path_info
 
-      paths = [Routing.decode_route_path(path_info).scrub, Routing.decode_path(path_info).scrub].uniq
+      paths = Routing.path_forms(path_info)
       request.env['padrino.decoded_paths'] = [path_info.dup, paths]
       paths
     end

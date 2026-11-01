@@ -153,12 +153,30 @@ describe 'Filters' do
   it 'should filter by path a request the router serves with a trailing slash' do
     mock_app do
       before('/private') { halt 403, 'filtered' }
+      before(%r{\A/locked\z}) { halt 403, 'filtered' }
       get('/private') { 'private' }
+      get('/locked') { 'locked' }
     end
-    ['/private', '/private/', '/%70rivate/'].each do |path|
+    ['/private', '/private/', '/%70rivate/', '/locked', '/locked/', '/%6Cocked/'].each do |path|
       get path
       assert_equal [403, 'filtered'], [status, body], path
     end
+  end
+
+  it 'should filter by path a request whose route params decode an escape again' do
+    mock_app do
+      before('/files/secret') { halt 403, 'filtered' }
+      get('/files/:name') { "param #{params[:name]}" }
+      get('/*path') { "splat #{params[:path]}" }
+    end
+    ['/files%252Fsecret', '/files/%2573ecret', '/%2566iles/secret', '/files/sec%2572et'].each do |path|
+      get path
+      assert_equal [403, 'filtered'], [status, body], path
+    end
+    get '/files%25252Fsecret'
+    assert_equal 'splat files%2Fsecret', body
+    get '/files/%252573ecret'
+    assert_equal 'param %73ecret', body
   end
 
   it 'should filter by path a request whose encoded slash a splat route decodes' do
@@ -186,6 +204,22 @@ describe 'Filters' do
     end
     get '/public%2Fpage'
     assert_equal [403, 'filtered'], [status, body]
+  end
+
+  it 'should skip an except filter with a Regexp only for paths the router matches to it' do
+    mock_app do
+      before(except: %r{\A/public/page\z}) { halt 403, 'filtered' }
+      get('/public/page') { 'public' }
+      get('/:name') { "name #{params[:name]}" }
+    end
+    ['/public/page', '/%70ublic/page', '/public/page/'].each do |path|
+      get path
+      assert_equal [200, 'public'], [status, body], path
+    end
+    ['/public%2Fpage', '/public%252Fpage', '/public%2Fpage/'].each do |path|
+      get path
+      assert_equal [403, 'filtered'], [status, body], path
+    end
   end
 
   it 'should filter by path on the request path as it is when the filter runs' do

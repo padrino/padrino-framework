@@ -105,16 +105,18 @@ describe 'AdminApplication' do
         role.protect '/files/secret'
       end
 
+      get('/files/:name') { "name #{params[:name]}" }
       get('/*path') { "file #{params[:path]}" }
     end
 
-    ['/files/secret', '/files%2Fsecret', '/files%2fsecret', '/%66iles%2Fsecret/1'].each do |path|
+    ['/files/secret', '/files%2Fsecret', '/files%2fsecret', '/%66iles%2Fsecret/1',
+     '/files%252Fsecret', '/files/%2573ecret', '/%2566iles/secret', '/files/sec%2572et'].each do |path|
       get path
       assert_equal "You don't have permission for this resource", body, path
       refute @app.access_control.allowed?(nil, path), path
     end
     get '/files/public'
-    assert_equal 'file files/public', body
+    assert_equal 'name public', body
   end
 
   it 'should set basic roles with store location and login page' do

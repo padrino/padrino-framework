@@ -240,6 +240,16 @@ describe 'Routing' do
     end
   end
 
+  describe 'path_forms' do
+    it 'lists the router form, the full decode and the form route params receive' do
+      assert_equal ['/posts'], Padrino::Routing.path_forms('/%70osts')
+      assert_equal ['/a%2Fb', '/a/b'], Padrino::Routing.path_forms('/a%2fb')
+      assert_equal ['/files%2Fsecret', '/files/secret'], Padrino::Routing.path_forms('/files%252Fsecret')
+      assert_equal ['/x%41', '/xA'], Padrino::Routing.path_forms('/x%2541')
+      assert_equal ["/\u{FFFD}"], Padrino::Routing.path_forms('/%ff')
+    end
+  end
+
   it 'should ignore trailing delimiters for basic route' do
     mock_app do
       get('/foo') { 'okey' }

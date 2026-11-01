@@ -83,6 +83,22 @@ module Padrino
       def decode_route_path(path)
         path.b.split(/%2F/i, -1).map { |segment| decode_path(segment) }.join('%2F').force_encoding(Encoding::UTF_8)
       end
+
+      ##
+      # The forms a request path is compared in, router form first: as the
+      # router matches it (decode_route_path), fully decoded (decode_path), and
+      # as route params receive it (the router form decoded again, as a splat
+      # or param value is). Invalid UTF-8 is scrubbed so Regexps can match it;
+      # duplicates are dropped.
+      #
+      # @example
+      #   Padrino::Routing.path_forms('/files%252Fsecret') # => ["/files%2Fsecret", "/files/secret"]
+      #
+      # @api private
+      def path_forms(path)
+        route_path = decode_route_path(path)
+        [route_path, decode_path(path), decode_path(route_path)].map(&:scrub).uniq
+      end
     end
 
     # Class methods responsible for enhanced routing for controllers.
