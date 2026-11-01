@@ -64,23 +64,30 @@ module Padrino
     #
     def load!
       return false if @_loaded || @_loading_thread == Thread.current
-      @_load_lock.synchronize do
+      begin
+        @_load_lock.mon_enter
+      rescue ThreadError
+        # Another fiber of this thread holds the lock: it is loading. JRuby gives each fiber
+        # its own Thread.current, so the check above doesn't catch that case there.
+        raise unless @_loading_thread
+        return false
+      end
+      begin
         return false if @_loaded
         @_loading_thread = Thread.current
-        begin
-          began_at = Time.now
-          @_called_from = first_caller
-          Padrino.logger
-          Reloader.lock!
-          before_load.each(&:call)
-          require_dependencies(*dependency_paths)
-          after_load.each(&:call)
-          logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
-          precompile_all_routes!
-          @_loaded = true
-        ensure
-          @_loading_thread = nil
-        end
+        began_at = Time.now
+        @_called_from = first_caller
+        Padrino.logger
+        Reloader.lock!
+        before_load.each(&:call)
+        require_dependencies(*dependency_paths)
+        after_load.each(&:call)
+        logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
+        precompile_all_routes!
+        @_loaded = true
+      ensure
+        @_loading_thread = nil
+        @_load_lock.mon_exit
       end
     end
 
