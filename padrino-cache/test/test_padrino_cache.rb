@@ -6,6 +6,19 @@ describe 'PadrinoCache' do
     `rm -rf #{tmp}`
   end
 
+  it 'names a page served from the cache in sinatra.route' do
+    routes = []
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/page/:id', cache: true) { "page #{params[:id]}" }
+      after { routes << env['sinatra.route'] }
+    end
+    2.times { get '/page/1' }
+    assert_equal 'page 1', body
+    assert_equal ['GET /page/:id', 'GET /page/:id'], routes
+  end
+
   it 'should cache a fragment' do
     called = false
     mock_app do
