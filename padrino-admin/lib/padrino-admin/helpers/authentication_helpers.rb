@@ -77,13 +77,15 @@ module Padrino
 
         ##
         # Store in session[:return_to] the path of the request (with SCRIPT_NAME and the query
-        # string), under ENV['RACK_BASE_URI'] when that is set and SCRIPT_NAME doesn't already
-        # start with it.
+        # string), under ENV['RACK_BASE_URI'] when that is set and the SCRIPT_NAME above the
+        # app's mount point doesn't already start with it.
         #
         def store_location!
           path = request.fullpath
           base_uri = File.join('/', ENV['RACK_BASE_URI'].to_s).chomp('/')
-          unless base_uri.empty? || request.script_name == base_uri || request.script_name.start_with?("#{base_uri}/")
+          mount = settings.respond_to?(:uri_root) ? settings.uri_root.to_s.chomp('/') : ''
+          outer_script_name = mount.empty? ? request.script_name : request.script_name.chomp(mount)
+          unless base_uri.empty? || outer_script_name == base_uri || outer_script_name.start_with?("#{base_uri}/")
             path = File.join(base_uri, path)
           end
           session[:return_to] = path

@@ -316,6 +316,7 @@ describe 'AdminApplication' do
     saved_base_uri = ENV['RACK_BASE_URI']
     mock_app do
       register Padrino::Admin::AccessControl
+      set :uri_root, '/admin'
       enable :store_location
       enable :sessions
       set :login_page, '/login'
@@ -328,11 +329,13 @@ describe 'AdminApplication' do
       get('/posts') { 'posts' }
     end
 
-    # [RACK_BASE_URI, SCRIPT_NAME, stored path]: mounted at /admin; behind a proxy that strips
-    # /base; and under /app that the server puts in SCRIPT_NAME (with RACK_BASE_URI set for url()).
+    # [RACK_BASE_URI, SCRIPT_NAME, stored path], for an app mounted at /admin: on its own; behind a
+    # proxy that strips /base (or /admin, the same name as the mount point); and under /app that
+    # the server puts in SCRIPT_NAME (with RACK_BASE_URI set for url()).
     [[nil, '/admin', '/admin/posts?page=2'],
      ['/base', '/admin', '/base/admin/posts?page=2'],
      ['base/', '/admin', '/base/admin/posts?page=2'],
+     ['/admin', '/admin', '/admin/admin/posts?page=2'],
      ['/app', '/app/admin', '/app/admin/posts?page=2'],
      ['/app', '/application/admin', '/app/application/admin/posts?page=2']].each do |base_uri, script_name, stored|
       ENV['RACK_BASE_URI'] = base_uri
