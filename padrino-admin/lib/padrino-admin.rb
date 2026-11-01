@@ -29,7 +29,7 @@ end
 #
 begin
   require 'padrino-gen'
-  Padrino::Generators.load_paths << Dir["#{__dir__}/padrino-admin/generators/{actions,orm,admin_app,admin_page}.rb"]
+  Padrino::Generators.load_paths << Dir["#{__dir__}/padrino-admin/generators/{actions,keep_files,orm,admin_app,admin_page}.rb"]
 rescue LoadError
   # do nothing if padrino-gen is not available
 end
