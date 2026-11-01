@@ -1,6 +1,7 @@
 require_relative 'helper'
 require 'timeout'
 require 'erb'
+require 'open3'
 require 'shellwords'
 
 describe 'ProjectGenerator' do
@@ -289,6 +290,54 @@ describe 'ProjectGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--app=API') }
       assert_file_exists("#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/class API < Padrino::Application/, "#{@apptmp}/sample_project/app/app.rb")
+    end
+  end
+
+  describe 'the /up health route' do
+    # Boots the project in production, as a load balancer sees it, and prints what each request answers.
+    def request_in_production(*requests)
+      project = "#{@apptmp}/sample_project"
+      script = <<~RUBY
+        PADRINO_ROOT = #{project.inspect}
+        RACK_ENV = 'production'
+        require 'padrino-core'
+        require 'padrino-helpers'
+        require 'padrino-mailer'
+        require 'rack/mock'
+        require File.join(PADRINO_ROOT, 'config/apps.rb')
+        Padrino.load!
+        #{requests.inspect}.each do |verb, path, env|
+          response = Rack::MockRequest.new(Padrino.application).request(verb, path, { 'HTTP_HOST' => 'lb.internal:8080' }.merge(env || {}))
+          puts [verb, path, response.status, response.media_type, response.body.inspect].join(' ')
+          puts "Set-Cookie \#{response['set-cookie']}" if response['set-cookie']
+        end
+      RUBY
+      out, = Open3.capture2e({ 'RACK_ENV' => 'production' }, RbConfig.ruby, '-rbundler/setup', '-e', script)
+      out
+    end
+
+    { 'default' => [], 'tiny' => %w[--tiny], 'api' => %w[--api], 'tiny api' => %w[--tiny --api] }.each do |shape, flags|
+      it "should answer GET and HEAD in a #{shape} project" do
+        capture_io { generate(:project, 'sample_project', *flags, "--root=#{@apptmp}") }
+        out = request_in_production(%w[GET /up], %w[HEAD /up])
+        assert_includes out, %(GET /up 200 text/plain "OK"\n)
+        assert_includes out, %(HEAD /up 200 text/plain ""\n)
+      end
+    end
+
+    it 'should not start a session for a probe behind a TLS proxy' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      out = request_in_production(['GET', '/up', { 'HTTP_X_FORWARDED_PROTO' => 'https' }])
+      assert_match(%r{^GET /up 200 }, out)
+      refute_match(/Set-Cookie/, out)
+    end
+
+    it 'should not be added to a second app' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+      out = request_in_production(%w[GET /up], %w[GET /demo/up])
+      assert_match(%r{^GET /up 200 }, out)
+      assert_match(%r{^GET /demo/up 404 }, out)
     end
   end
 

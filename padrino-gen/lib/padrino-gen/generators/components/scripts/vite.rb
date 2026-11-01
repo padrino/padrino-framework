@@ -82,8 +82,7 @@ def setup_script
   end
   append_file destination_root('Rakefile'), VITE_RAKE if File.exist?(destination_root('Rakefile'))
   append_line.call(destination_root('.gitignore'), VITE_GITIGNORE) if File.exist?(destination_root('.gitignore'))
-  renderer = fetch_component_choice(:renderer).to_s
-  renderer = 'erb' unless %w[haml slim].include?(renderer)
+  renderer = layout_renderer
   tags = renderer == 'erb' ? ['<%= vite_client_tag %>', "<%= vite_javascript_tag 'application' %>"] : ['= vite_client_tag', "= vite_javascript_tag 'application'"]
   install = package_json_exists ? 'npm install -D vite@^8.0.0 vite-plugin-ruby@^5.2.5' : 'npm install'
   say "Run `#{install}` to install Vite, then add to the <head> of your layout (app/views/layouts/application.#{renderer}):", :yellow
