@@ -417,25 +417,25 @@ module Padrino
 
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)
+        original = {}
         options = args.last.is_a?(Hash) ? args.pop : {}
 
-        CONTROLLER_OPTIONS.each { |key| replace_instance_variable("@_#{key}", options.delete(key)) }
-        replace_instance_variable(:@_controller, args)
-        replace_instance_variable(:@_defaults, options)
-        replace_instance_variable(:@filters, before: @filters[:before].dup, after: @filters[:after].dup)
-        replace_instance_variable(:@layout, @layout)
+        CONTROLLER_OPTIONS.each { |key| replace_instance_variable(original, "@_#{key}", options.delete(key)) }
+        replace_instance_variable(original, :@_controller, args)
+        replace_instance_variable(original, :@_defaults, options)
+        replace_instance_variable(original, :@filters, before: @filters[:before].dup, after: @filters[:after].dup)
+        replace_instance_variable(original, :@layout, @layout)
 
         yield
-
-        @original_instance.each do |key, value|
+      ensure
+        original.each do |key, value|
           instance_variable_set(key, value)
         end
       end
 
-      # Sets instance variable by name and saves the original value in @original_instance hash
-      def replace_instance_variable(name, value)
-        @original_instance ||= {}
-        @original_instance[name] = instance_variable_get(name)
+      # Sets instance variable by name and saves the original value in the given hash
+      def replace_instance_variable(original, name, value)
+        original[name] = instance_variable_get(name)
         instance_variable_set(name, value)
       end
 
