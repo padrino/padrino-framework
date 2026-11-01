@@ -17,6 +17,17 @@ module <%= @project_name %>
     # a proxy that terminates TLS, have it send X-Forwarded-Proto: https, or set secure: false.
     set :sessions, same_site: :lax, secure: Padrino.env == :production
 <% end -%>
+<% if @up_route -%>
+
+    # Health check for load balancers and containers. It doesn't touch the database, and skips
+    # the session cookie so that probes don't each start a session. The path follows the mount
+    # point of this app, and filters and host rules set for the whole app apply to it.
+    get '/up' do
+      request.session_options[:skip] = true
+      content_type :text
+      'OK'
+    end
+<% end -%>
 
     ##
     # Caching support.
