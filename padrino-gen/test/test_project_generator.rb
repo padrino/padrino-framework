@@ -797,6 +797,46 @@ describe 'ProjectGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
+    it 'should properly generate for ujs without fetching anything' do
+      WebMock.reset_executed_requests!
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=ujs') }
+      assert_match(/applying.*?ujs.*?script/, out)
+      assert_match(/csrf_meta_tags/, out)
+      assert_match_in_file(/data-method/, "#{@apptmp}/sample_project/public/javascripts/ujs.js")
+      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
+      assert_no_file_exists("#{@apptmp}/sample_project/public/javascripts/jquery.js")
+      assert_equal 'ujs', YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+      WebMock::API.assert_not_requested(:get, /padrino-static/)
+    end
+
+    # CI has no JavaScript runtime, so this only ties the script to the helpers' output. It proves no behaviour.
+    it 'should install a ujs script that reads what the helpers emit' do
+      view = Class.new do
+        include Padrino::Helpers::OutputHelpers
+        include Padrino::Helpers::TagHelpers
+        include Padrino::Helpers::AssetTagHelpers
+        include Padrino::Helpers::FormHelpers
+
+        def session
+          @session ||= {}
+        end
+      end.new
+      link = view.link_to('x', '/x', method: :delete, confirm: 'Sure?', remote: true)
+      attributes = link.scan(/data-[a-z]+/)
+      assert_equal %w[data-confirm data-method data-remote], attributes.sort
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=ujs') }
+      code = File.read("#{@apptmp}/sample_project/public/javascripts/ujs.js").sub(%r{\A/\*.*?\*/}m, '').gsub(%r{^\s*//.*$}, '')
+      assert_includes code, 'a[data-confirm], a[data-remote="true"], a[data-method]'
+      attributes.each { |attribute| assert_includes code, "getAttribute('#{attribute}')" }
+      view.csrf_meta_tags.scan(/name="([^"]+)"/).flatten.each { |name| assert_includes code, "meta('#{name}')" }
+    end
+
+    it 'should generate ujs in a tiny project' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=ujs', '--tiny') }
+      assert_match_in_file(/data-method/, "#{@apptmp}/sample_project/public/javascripts/ujs.js")
+      assert_equal 'ujs', YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+    end
+
     it 'should properly generate for vite' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=vite') }
       assert_match(/applying.*?vite.*?script/, out)
