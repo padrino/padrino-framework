@@ -164,6 +164,17 @@ describe 'ProjectGenerator' do
       assert_match('', err)
     end
 
+    it 'should generate an api project without sessions or CSRF protection' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      assert_no_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/app/app.rb")
+      assert_match_in_file(/^\s*set :protect_from_csrf, false$/, "#{@apptmp}/sample_project/config/apps.rb")
+    end
+
+    it 'should generate a tiny api project without mailers' do
+      capture_io { generate(:project, 'sample_project', '--api', '--tiny', "--root=#{@apptmp}") }
+      assert_no_file_exists("#{@apptmp}/sample_project/app/mailers.rb")
+    end
+
     it 'should generate tiny skeleton' do
       capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}") }
       assert_dir_exists("#{@apptmp}/sample_project")

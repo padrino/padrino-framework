@@ -32,9 +32,15 @@ Padrino.configure_apps do
   # a fallback, so set it in production.
   set :session_secret, ENV.fetch('SESSION_SECRET') { '<%= SecureRandom.hex(32) %>' }
   set :protection, except: :path_traversal
+<% if options.api? -%>
+  # An API project has no sessions, and CSRF protection without a session rejects
+  # every request. To use both, `enable :sessions` and `enable :protect_from_csrf`.
+  set :protect_from_csrf, false
+<% else -%>
   # CSRF protection is off in the test environment so test requests don't need a
   # token. To test it, `enable :protect_from_csrf` in an app.
   set :protect_from_csrf, Padrino.env != :test
+<% end -%>
 end
 
 # Mounts the core application for this project

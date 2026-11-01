@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'open3'
 
 describe 'AppGenerator' do
   def setup
@@ -64,6 +65,90 @@ describe 'AppGenerator' do
       assert_match_in_file('class DemoApp < Padrino::Application', "#{@apptmp}/sample_project/demo_app/app.rb")
       assert_match_in_file(/Padrino.configure_apps do/, "#{@apptmp}/sample_project/config/apps.rb")
       assert_match_in_file(/^  set :session_secret, ENV\.fetch\('SESSION_SECRET'\) \{ '\h{64}' \}$/, "#{@apptmp}/sample_project/config/apps.rb")
+    end
+
+    it 'should write an app without mailer, helpers, sessions or CSRF in an api project' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+      app_file = "#{@apptmp}/sample_project/demo/app.rb"
+      assert_no_match_in_file(/Padrino::(Mailer|Helpers)/, app_file)
+      assert_no_match_in_file(/set :sessions/, app_file)
+      # An older api project turns CSRF on for every app, so the app turns it off itself.
+      assert_match_in_file(/^\s*disable :protect_from_csrf$/, app_file)
+    end
+
+    it 'should write a tiny app without mailers in an api project' do
+      capture_io { generate(:project, 'sample_project', '--api', '--lean', "--root=#{@apptmp}") }
+      capture_io { generate(:app, 'demo', '--tiny', "--root=#{@apptmp}/sample_project") }
+      assert_no_match_in_file(/Padrino::(Mailer|Helpers)/, "#{@apptmp}/sample_project/demo/app.rb")
+      assert_no_file_exists("#{@apptmp}/sample_project/demo/mailers.rb")
+    end
+
+    it 'should keep mailer, helpers and sessions in a project with the padrino gem' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      capture_io { generate(:app, 'demo', '--tiny', "--root=#{@apptmp}/sample_project") }
+      app_file = "#{@apptmp}/sample_project/demo/app.rb"
+      assert_match_in_file(/register Padrino::Mailer/, app_file)
+      assert_match_in_file(/register Padrino::Helpers/, app_file)
+      assert_match_in_file(/set :sessions/, app_file)
+      assert_no_match_in_file(/protect_from_csrf/, app_file)
+      assert_file_exists("#{@apptmp}/sample_project/demo/mailers.rb")
+    end
+
+    it 'should keep the default app in a project without a Gemfile' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      File.delete("#{@apptmp}/sample_project/Gemfile")
+      capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+      app_file = "#{@apptmp}/sample_project/demo/app.rb"
+      assert_match_in_file(/register Padrino::Mailer/, app_file)
+      assert_match_in_file(/register Padrino::Helpers/, app_file)
+      assert_match_in_file(/set :sessions/, app_file)
+    end
+
+    it 'should keep the default app in a --dev project, whose Gemfile lists padrino in a loop' do
+      capture_io { generate(:project, 'sample_project', '--dev', "--root=#{@apptmp}") }
+      capture_io { generate(:app, 'demo', '--tiny', "--root=#{@apptmp}/sample_project") }
+      app_file = "#{@apptmp}/sample_project/demo/app.rb"
+      assert_match_in_file(/register Padrino::Mailer/, app_file)
+      assert_match_in_file(/register Padrino::Helpers/, app_file)
+      assert_match_in_file(/set :sessions/, app_file)
+      assert_file_exists("#{@apptmp}/sample_project/demo/mailers.rb")
+    end
+
+    it 'should keep the default app in a project that lists every padrino gem by name' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/Gemfile", "gem 'padrino-helpers'\ngem 'padrino-mailer'\n", mode: 'a')
+      capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/demo/app.rb")
+    end
+
+    # Boots the generated project in a process that loads only the gems its Gemfile names, as
+    # config/boot.rb would. Returns the output, ending in the status of a POST to the new app.
+    def boot_project(project, *gems)
+      script = <<~RUBY
+        PADRINO_ROOT = #{project.inspect}
+        RACK_ENV = 'development'
+        require 'padrino-core'
+        #{gems.map { |gem| "require '#{gem}'" }.join("\n")}
+        require 'rack/mock'
+        require File.join(PADRINO_ROOT, 'config/apps.rb')
+        Padrino.load!
+        puts "status=\#{Rack::MockRequest.new(Padrino.application).post('/demo/missing').status}"
+      RUBY
+      out, = Open3.capture2e({ 'RACK_ENV' => 'development' }, RbConfig.ruby, '-rbundler/setup', '-e', script)
+      out
+    end
+
+    { 'nothing' => [], 'padrino-helpers' => %w[padrino-helpers], 'padrino-mailer' => %w[padrino-mailer] }.each do |added, gems|
+      [false, true].each do |tiny|
+        it "should boot #{tiny ? 'a tiny' : 'an'} app in an api project with #{added} added to its Gemfile" do
+          project = "#{@apptmp}/sample_project"
+          capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+          File.write("#{project}/Gemfile", gems.map { |gem| "gem '#{gem}'\n" }.join, mode: 'a')
+          capture_io { generate(:app, 'demo', *(tiny ? ['--tiny'] : []), "--root=#{project}") }
+          assert_match(/status=404$/, boot_project(project, *gems))
+        end
+      end
     end
 
     it 'should generate tiny app skeleton' do
