@@ -402,6 +402,79 @@ describe 'AdminApplication' do
     assert_raises(Padrino::Admin::AccessControlError) { access_control.roles_for }
   end
 
+  describe 'admin model' do
+    def mock_admin_app(admin_model)
+      mock_app do
+        register Padrino::Admin::AccessControl
+        set :admin_model, admin_model
+        get('/current') { current_account.inspect }
+      end
+    end
+
+    it 'should say a missing admin model must be defined' do
+      mock_admin_app 'MissingAdminSample::Account'
+      error = assert_raises(Padrino::Admin::AccessControlError) { get '/current' }
+      assert_equal 'You must define an MissingAdminSample::Account Model', error.message
+    end
+
+    it 'should say a missing admin model must be defined when its name repeats a namespace' do
+      Object.const_set(:RepeatedAdminSample, Module.new)
+      mock_admin_app 'RepeatedAdminSample::RepeatedAdminSample'
+      error = assert_raises(Padrino::Admin::AccessControlError) { get '/current' }
+      assert_equal 'You must define an RepeatedAdminSample::RepeatedAdminSample Model', error.message
+    ensure
+      Object.send(:remove_const, :RepeatedAdminSample) if Object.const_defined?(:RepeatedAdminSample, false)
+    end
+
+    it 'should raise the error of a top-level admin model whose body names another constant like it' do
+      Dir.mktmpdir do |dir|
+        File.write("#{dir}/colliding_top_account.rb", <<~RUBY)
+          module CollidingTopMixins; end
+          class CollidingTopAccount
+            include CollidingTopMixins::CollidingTopAccount
+          end
+        RUBY
+        Object.autoload(:CollidingTopAccount, "#{dir}/colliding_top_account.rb")
+        mock_admin_app 'CollidingTopAccount'
+        error = assert_raises(NameError) { get '/current' }
+        assert_match(/CollidingTopMixins::CollidingTopAccount/, error.message)
+      end
+    ensure
+      %i[CollidingTopAccount CollidingTopMixins].each { |name| Object.send(:remove_const, name) if Object.const_defined?(name, false) }
+    end
+
+    it 'should raise the error of an admin model whose body names another constant like it' do
+      Dir.mktmpdir do |dir|
+        File.write("#{dir}/colliding_admin_sample.rb", <<~RUBY)
+          module CollidingAdminSample
+            module Mixins; end
+            class Account
+              include Mixins::Account
+            end
+          end
+        RUBY
+        Object.autoload(:CollidingAdminSample, "#{dir}/colliding_admin_sample.rb")
+        mock_admin_app 'CollidingAdminSample::Account'
+        error = assert_raises(NameError) { get '/current' }
+        assert_match(/Mixins::Account/, error.message)
+      end
+    ensure
+      Object.send(:remove_const, :CollidingAdminSample) if Object.const_defined?(:CollidingAdminSample, false)
+    end
+
+    it 'should raise the error of an admin model that fails to load' do
+      Dir.mktmpdir do |dir|
+        File.write("#{dir}/broken_admin_sample.rb", "module BrokenAdminSample; class Account; MissingConcern; end; end\n")
+        Object.autoload(:BrokenAdminSample, "#{dir}/broken_admin_sample.rb")
+        mock_admin_app 'BrokenAdminSample::Account'
+        error = assert_raises(NameError) { get '/current' }
+        assert_match(/MissingConcern/, error.message)
+      end
+    ensure
+      Object.send(:remove_const, :BrokenAdminSample) if Object.const_defined?(:BrokenAdminSample, false)
+    end
+  end
+
   it 'should humanize project module names without ActiveSupport' do
     assert_equal 'Blog posts', Padrino::Admin::AccessControl::ProjectModule.new(:blog_posts, '/blog_posts').human_name
   end
