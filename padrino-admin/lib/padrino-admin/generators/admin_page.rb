@@ -18,6 +18,7 @@ module Padrino
       include Thor::Actions
       include Padrino::Generators::Actions
       include Padrino::Generators::Admin::Actions
+      include Padrino::Generators::Admin::KeepFiles
 
       # Look for custom template files in a generators folder under the project root.
       def source_paths
@@ -66,7 +67,7 @@ module Padrino
             template "templates/#{ext}/page/index.#{ext}.tt", destination_root("#{@admin_path}/views/#{@orm.name_plural}/index.#{ext}")
             template "templates/#{ext}/page/new.#{ext}.tt",   destination_root("#{@admin_path}/views/#{@orm.name_plural}/new.#{ext}")
 
-            options[:destroy] ? remove_project_module(@orm.name_plural) : add_project_module(@orm.name_plural)
+            options[:destroy] ? remove_project_module(@orm.name_plural) : add_missing_project_module(@orm.name_plural)
           end
         else
           exit_outside_app_root!
