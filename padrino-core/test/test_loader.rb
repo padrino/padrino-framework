@@ -91,6 +91,21 @@ describe 'Padrino loaded state' do
     assert Padrino.loaded?
   end
 
+  it 'returns false from a load! called in another fiber of the loading thread' do
+    calls = 0
+    nested = nil
+    Padrino.before_load do
+      calls += 1
+      nested = Fiber.new { Padrino.load! }.resume if calls == 1
+    end
+
+    outer = in_thread { Padrino.load! }
+    assert outer
+    refute nested
+    assert_equal 1, calls
+    assert Padrino.loaded?
+  end
+
   it 'loads again after a load! that raised' do
     calls = 0
     Padrino.before_load do
@@ -100,8 +115,7 @@ describe 'Padrino loaded state' do
 
     assert_raises(RuntimeError) { Padrino.load! }
     refute Padrino.loaded?
-    retried = in_thread { Padrino.load! }
-    assert retried
+    assert Padrino.load!
     assert_equal 2, calls
   end
 
@@ -128,5 +142,30 @@ describe 'Padrino loaded state' do
     refute Padrino.loaded?
   ensure
     worker&.kill
+  end
+
+  it 'waits for a load in progress before clear! resets it' do
+    entered = Queue.new
+    release = Queue.new
+    Padrino.before_load do
+      entered << true
+      release.pop
+    end
+
+    begin
+      loader = Thread.new { Padrino.load! }
+      pop_from(entered, loader)
+      clearer = Thread.new { Padrino.clear! }
+      deadline = Time.now + 5
+      Thread.pass until clearer.status == 'sleep' || !clearer.alive? || Time.now > deadline
+      assert_equal 'sleep', clearer.status, 'clear! did not wait for the load'
+    ensure
+      release << true
+      threads = [loader, clearer].compact
+      threads.each { |thread| thread.kill unless thread.join(5) }
+    end
+
+    assert loader.value
+    refute Padrino.loaded?
   end
 end

@@ -8,6 +8,7 @@ module Padrino
       return if base.instance_variable_defined?(:@_load_lock)
       base.instance_variable_set(:@_load_lock, Monitor.new)
       base.instance_variable_set(:@_loaded, false)
+      base.instance_variable_set(:@_loading_thread, nil)
     end
 
     ##
@@ -55,25 +56,31 @@ module Padrino
     # lib and models.
     #
     # Concurrent calls load once: the others wait for it to finish, then return false.
-    # A call made while loading, from the loading thread, returns false.
+    # If it raised, the next waiting caller runs the load instead.
+    # A call made while loading, from the loading thread (in any fiber), returns false.
     #
     # @return [Boolean]
     #   returns true if Padrino is not already bootstraped otherwise else.
     #
     def load!
-      return false if @_loaded || @_load_lock.mon_owned?
+      return false if @_loaded || @_loading_thread == Thread.current
       @_load_lock.synchronize do
         return false if @_loaded
-        began_at = Time.now
-        @_called_from = first_caller
-        Padrino.logger
-        Reloader.lock!
-        before_load.each(&:call)
-        require_dependencies(*dependency_paths)
-        after_load.each(&:call)
-        logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
-        precompile_all_routes!
-        @_loaded = true
+        @_loading_thread = Thread.current
+        begin
+          began_at = Time.now
+          @_called_from = first_caller
+          Padrino.logger
+          Reloader.lock!
+          before_load.each(&:call)
+          require_dependencies(*dependency_paths)
+          after_load.each(&:call)
+          logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
+          precompile_all_routes!
+          @_loaded = true
+        ensure
+          @_loading_thread = nil
+        end
       end
     end
 
