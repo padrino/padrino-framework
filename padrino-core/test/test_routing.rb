@@ -995,6 +995,8 @@ describe 'Routing' do
       get(:top) { 'top' }
     end
     get '/posts'
+    assert_equal 404, status
+    get '/posts', {}, 'HTTP_USER_AGENT' => 'Admin'
     assert_equal 'posts', body
     assert_equal 'admin', response['x-outer']
     assert_equal 'posts', response['x-inner']
@@ -1059,10 +1061,10 @@ describe 'Routing' do
       end
       get(:top) { 'top' }
     end
-    get '/three'
+    get '/three', {}, 'HTTP_USER_AGENT' => 'One'
     assert_equal 'three', body
     assert_equal 'two', response['x-two']
-    get '/two/in_two'
+    get '/two/in_two', {}, 'HTTP_USER_AGENT' => 'One'
     assert_equal 'in two', body
     assert_equal 'one', response['x-one']
     assert_equal 'two', response['x-two']
@@ -1087,9 +1089,9 @@ describe 'Routing' do
       end
       get(:top) { 'top' }
     end
-    get '/posts'
+    get '/posts', {}, 'HTTP_USER_AGENT' => 'Admin'
     assert_equal 'posts', body
-    get '/users'
+    get '/users', {}, 'HTTP_USER_AGENT' => 'Admin'
     assert_equal 'users', body
     get '/admin/show', {}, 'HTTP_USER_AGENT' => 'Admin'
     assert_equal 'show', body
@@ -2252,6 +2254,82 @@ describe 'Routing' do
     get '/posts/foo'
     get '/posts/bar'
     assert_equal 1, counter
+  end
+
+  describe 'nested controller conditions' do
+    def mock_protected_app(&block)
+      mock_app do
+        set(:protect) { |on| condition { halt 403, 'no ok' unless params[:ok] } if on }
+        set(:vip) { |on| condition { halt 403, 'no vip' unless params[:vip] } if on }
+        instance_eval(&block)
+      end
+    end
+
+    it 'should add the nested controller conditions to the outer ones' do
+      mock_protected_app do
+        controller :admin, conditions: { protect: true } do
+          controller :posts, conditions: { vip: true } do
+            get(:index) { 'posts' }
+            controller(:comments) { get(:index) { 'comments' } }
+          end
+        end
+      end
+      %w[/posts /comments].each do |path|
+        get path, vip: 1
+        assert_equal 'no ok', body
+        get path, ok: 1
+        assert_equal 'no vip', body
+        get path, ok: 1, vip: 1
+        assert_equal 200, status
+      end
+    end
+
+    it 'should let the nested controller conditions override the same outer key' do
+      mock_protected_app do
+        controller :admin, conditions: { protect: true, vip: true } do
+          controller(:posts, conditions: { protect: false }) { get(:index) { 'posts' } }
+        end
+      end
+      get '/posts'
+      assert_equal 'no vip', body
+      get '/posts', vip: 1
+      assert_equal 'posts', body
+    end
+
+    it 'should apply the outer conditions to a nested controller unless a route overrides them' do
+      mock_protected_app do
+        controller :admin, conditions: { protect: true } do
+          controller :posts do
+            get(:index) { 'posts' }
+            get(:open, protect: false) { 'open' }
+          end
+        end
+      end
+      get '/posts'
+      assert_equal 'no ok', body
+      get '/posts', ok: 1
+      assert_equal 'posts', body
+      get '/posts/open'
+      assert_equal 'open', body
+    end
+
+    it 'should restore the outer and top-level conditions after a nested controller' do
+      mock_protected_app do
+        controller :admin, conditions: { protect: true } do
+          controller(:posts, conditions: { vip: true }) { get(:index) { 'posts' } }
+          get(:show) { 'show' }
+        end
+        get(:top) { 'top' }
+      end
+      get '/posts', vip: 1
+      assert_equal 'no ok', body
+      get '/admin/show'
+      assert_equal 'no ok', body
+      get '/admin/show', ok: 1
+      assert_equal 'show', body
+      get '/top'
+      assert_equal 'top', body
+    end
   end
 
   it 'should parse params with class level provides' do
