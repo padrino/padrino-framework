@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #2472 New `--api` projects have no sessions and turn off CSRF protection, so JSON POST requests no longer return 403, and `padrino g app` in an api project writes an app that boots, registering Padrino::Helpers and Padrino::Mailer only when the Gemfile has them. In an existing api project, `set :protect_from_csrf, false` in `config/apps.rb` to get the same behaviour (@achiurizo)
+- FIX #2472 New `--api` projects have no sessions and CSRF protection follows sessions, so JSON POST requests no longer return 403, and `padrino g app` in an api project writes an app that boots, registering Padrino::Helpers and Padrino::Mailer only when the Gemfile has them. In an existing api project, delete `set :sessions` from each `app.rb` and set `set :protect_from_csrf, proc { sessions? && Padrino.env != :test }` in `config/apps.rb` to get the same behaviour (@achiurizo)
 - FIX #2475 Mailers with no `delivery_method` run `which sendmail` once instead of on every delivery (@achiurizo)
 - FIX #2474 `l(date, format: :short)` and other `localize` calls with options no longer raise `ArgumentError` on Ruby 3 (@achiurizo)
 - FIX #2446 `padrino g project --tiny` projects with minitest, testunit, shoulda or bacon pass their own `rake`, and the placeholder tests from `padrino g controller` and `g helper` with those components report as skipped, pending or missing instead of failing, as RSpec's do (@achiurizo)

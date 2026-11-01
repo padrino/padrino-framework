@@ -7,9 +7,9 @@ module <%= @project_name %>
     register Padrino::Helpers
 <% end -%>
 <% if api_project? -%>
-    # An API app has no sessions, and CSRF protection without a session rejects every
-    # request. To use both, `enable :sessions` and `enable :protect_from_csrf` here.
-    disable :protect_from_csrf
+    # CSRF protection follows sessions, because without a session it rejects every request.
+    # `enable :sessions` here turns on both, except in the test environment.
+    set :protect_from_csrf, proc { sessions? && Padrino.env != :test }
 <% else -%>
     # The session cookie is Secure (sent over HTTPS only) in production. Over plain HTTP
     # the app then sends no session cookie, so logins and CSRF-protected forms fail. Behind

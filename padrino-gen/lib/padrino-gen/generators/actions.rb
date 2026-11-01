@@ -704,7 +704,7 @@ module Padrino
         gemfile = destination_root('Gemfile')
         return [] unless File.file?(gemfile) && File.readable?(gemfile)
 
-        File.read(gemfile).scan(/^\s*gem\s+['"]([^'"]+)['"]/).flatten
+        File.binread(gemfile).scan(/^\s*gem[\s(]+['"]([^'"]+)['"]/).flatten
       end
 
       ##
