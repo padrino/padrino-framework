@@ -417,6 +417,25 @@ describe 'AdminApplication' do
       assert_equal 'You must define an MissingAdminSample::Account Model', error.message
     end
 
+    it 'should raise the error of an admin model whose body names another constant like it' do
+      Dir.mktmpdir do |dir|
+        File.write("#{dir}/colliding_admin_sample.rb", <<~RUBY)
+          module CollidingAdminSample
+            module Mixins; end
+            class Account
+              include Mixins::Account
+            end
+          end
+        RUBY
+        Object.autoload(:CollidingAdminSample, "#{dir}/colliding_admin_sample.rb")
+        mock_admin_app 'CollidingAdminSample::Account'
+        error = assert_raises(NameError) { get '/current' }
+        assert_match(/Mixins::Account/, error.message)
+      end
+    ensure
+      Object.send(:remove_const, :CollidingAdminSample) if Object.const_defined?(:CollidingAdminSample, false)
+    end
+
     it 'should raise the error of an admin model that fails to load' do
       Dir.mktmpdir do |dir|
         File.write("#{dir}/broken_admin_sample.rb", "module BrokenAdminSample; class Account; MissingConcern; end; end\n")

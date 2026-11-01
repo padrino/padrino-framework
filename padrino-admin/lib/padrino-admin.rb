@@ -23,10 +23,21 @@ module Padrino
 
       ##
       # Whether +error+, raised looking up the constant +name+, says that constant (or one of its
-      # namespaces) is not defined, rather than coming from the code that defining it ran.
+      # namespaces) is not defined, rather than coming from the code that defining it ran. The
+      # error must name a segment of +name+ and have been raised on that segment's parent, so a
+      # model whose body references another constant with the same short name isn't "missing".
       #
       def missing_constant?(error, name)
-        error.is_a?(NameError) && name.to_s.split('::').include?(error.name.to_s)
+        return false unless error.instance_of?(NameError)
+
+        segments = name.to_s.sub(/\A::/, '').split('::')
+        index = segments.index(error.name.to_s)
+        return false unless index
+
+        parent = index.zero? ? Object : Object.const_get(segments.first(index).join('::'))
+        error.receiver.equal?(parent)
+      rescue ArgumentError, NameError
+        false
       end
     end
   end

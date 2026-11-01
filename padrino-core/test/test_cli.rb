@@ -103,6 +103,27 @@ describe 'Padrino::Cli' do
     assert_includes err, "Add gem 'padrino-gen' to your Gemfile"
   end
 
+  it 'should say how to add padrino-gen when the LoadError has no path' do
+    _, err, status = run_in_project(<<~RUBY)
+      module Kernel
+        alias_method :require_before_test, :require
+        def require(name)
+          if name == 'padrino-gen/command'
+            error = LoadError.new('cannot load such file -- padrino-gen/command')
+            error.define_singleton_method(:path) { nil }
+            raise error
+          end
+
+          require_before_test(name)
+        end
+      end
+      require 'padrino-core/cli/base'
+      Padrino::Cli::Base.start(['g', 'controller', 'demo'])
+    RUBY
+    assert_equal 1, status.exitstatus
+    assert_includes err, "Add gem 'padrino-gen' to your Gemfile"
+  end
+
   it 'should not hide a LoadError from inside padrino-gen in padrino g' do
     _, err, status = run_in_project(<<~RUBY)
       module Kernel
