@@ -12,6 +12,9 @@ describe 'PADRINO_IGNORE_CALLERS' do
     "#{gems}/padrino-0.18.1/lib/padrino.rb",
     "#{gems}/padrino-core-0.18.1/lib/padrino-core/application.rb",
     "#{gems}/padrino-helpers-0.18.1/lib/padrino/rendering.rb",
+    "#{gems}/padrino-helpers-0.18.1/lib/padrino/rendering/erb_template.rb",
+    "#{gems}/padrino-helpers-0.18.1/lib/padrino/safe_buffer.rb",
+    "#{gems}/padrino-helpers-0.18.1/lib/padrino/core_ext/output_safety.rb",
     "#{gems}/padrino-gen-0.18.1/bin/padrino-gen",
     "#{gems}/padrino-contrib-0.3.0/lib/padrino-contrib/helpers/flash.rb",
     '/home/me/.bundle/gems/padrino-framework-abc123/padrino-core/lib/padrino-core/mounter.rb',
@@ -36,7 +39,9 @@ describe 'PADRINO_IGNORE_CALLERS' do
     "#{gems}/shotgun-0.9/bin/shotgun",
     "#{gems}/mongrel-1.1/lib/mongrel/http_response.rb",
     "#{gems}/mocha-3.1.0/lib/mocha/integration/mini_test.rb",
-    "#{gems}/test-unit-3.6/lib/test/unit/testcase.rb"
+    "#{gems}/test-unit-3.6/lib/test/unit/testcase.rb",
+    "#{gems}/test-unit-3.6/lib/test/unit.rb",
+    "#{gems}/mocha-3.1.0/lib/mocha/integration.rb"
   ].each do |file|
     it "should ignore the library file #{file}" do
       assert ignored?(file), "#{file} should be ignored"
@@ -56,6 +61,11 @@ describe 'PADRINO_IGNORE_CALLERS' do
     /srv/test/unit/demo/app/app.rb
     /srv/mocha/integration/demo/app/app.rb
     /srv/demo/app/thor_helpers.rb
+    /srv/lib/padrino/rendering-blog/app/app.rb
+    /srv/lib/padrino/safe_buffer_demo.rb
+    /srv/lib/padrino/core_extras/app/app.rb
+    /srv/lib/test/unit-app/app/app.rb
+    /srv/lib/mocha/integration-demo/app/app.rb
   ].each do |file|
     it "should keep the application file #{file}" do
       refute ignored?(file), "#{file} should not be ignored"
