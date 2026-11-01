@@ -65,11 +65,13 @@
   function sendMethod(link) {
     var verb = link.getAttribute('data-method');
     var url = link.getAttribute('href') || window.location.href;
+    var target = link.getAttribute('target');
     var param = meta('csrf-param');
     var token = meta('csrf-token');
     var form = document.createElement('form');
     form.method = 'post';
     form.setAttribute('action', url);
+    if (target) form.setAttribute('target', target);
     form.style.display = 'none';
     if (verb !== 'post') form.appendChild(hiddenInput('_method', verb));
     if (param !== null && token !== null && isSameOrigin(url)) form.appendChild(hiddenInput(param, token));
@@ -78,11 +80,13 @@
   }
 
   // The form's successful controls, without files: they can't be urlencoded.
-  function formParams(form) {
+  // FormData leaves out the button that submitted the form.
+  function formParams(form, submitter) {
     var params = new URLSearchParams();
     new FormData(form).forEach(function (value, name) {
       if (typeof value === 'string') params.append(name, value);
     });
+    if (submitter && submitter.name) params.append(submitter.name, submitter.value);
     return params;
   }
 
@@ -168,6 +172,7 @@
   }
 
   document.addEventListener('submit', function (event) {
+    if (event.defaultPrevented) return;
     var form = event.target;
     var message = form.getAttribute('data-confirm');
     if (message && !window.confirm(message)) {
@@ -177,14 +182,15 @@
     if (form.getAttribute('data-remote') !== 'true') return;
     event.preventDefault();
     sendRequest(form, {
-      verb: form.getAttribute('data-method') || form.getAttribute('method') || 'post',
+      verb: form.getAttribute('data-method') || form.getAttribute('method') || 'get',
       url: form.getAttribute('action') || window.location.href,
       type: (form.getAttribute('data-type') || 'script').toLowerCase(),
-      params: formParams(form)
+      params: formParams(form, event.submitter)
     });
   });
 
   document.addEventListener('click', function (event) {
+    if (event.defaultPrevented) return;
     var link = event.target.closest && event.target.closest('a[data-confirm], a[data-remote="true"], a[data-method]');
     if (!link) return;
     if (link.hasAttribute('data-confirm') && !window.confirm(link.getAttribute('data-confirm'))) {
