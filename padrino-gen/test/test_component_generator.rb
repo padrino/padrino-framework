@@ -247,6 +247,31 @@ describe 'ComponentGenerator' do
         File.write(project_file('Gemfile'), File.read(project_file('Gemfile')).sub(from, to))
       end
 
+      floors = { 'mysql2' => '>= 3.1', 'trilogy' => '>= 7.1' }
+      [%w[mysql2 trilogy], %w[trilogy mysql2]].each do |from, to|
+        old_line = "gem 'activerecord', '#{floors[from]}', require: 'active_record'"
+        new_line = "gem 'activerecord', '#{floors[to]}', require: 'active_record'"
+
+        it "should move the floor below a blank line when switching from #{from} to #{to}" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', "--adapter=#{from}") }
+          edit_gemfile(old_line, "\n#{old_line}")
+          Readline.stubs(:readline).returns('yes')
+          out, = capture_io { generate(:component, '--orm=activerecord', "--adapter=#{to}", "-r=#{@apptmp}/sample_project") }
+          assert_equal [new_line], activerecord_lines
+          assert_includes File.read(project_file('Gemfile')), "\n\n#{new_line}\n"
+          refute_includes out, 'Keeping the Gemfile line'
+        end
+
+        it "should move the floor of an indented line when switching from #{from} to #{to}" do
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', "--adapter=#{from}") }
+          edit_gemfile(old_line, "group :default do\n  #{old_line}\nend")
+          Readline.stubs(:readline).returns('yes')
+          out, = capture_io { generate(:component, '--orm=activerecord', "--adapter=#{to}", "-r=#{@apptmp}/sample_project") }
+          assert_equal ["  #{new_line}"], activerecord_lines
+          refute_includes out, 'Keeping the Gemfile line'
+        end
+      end
+
       it 'should keep a raised activerecord floor when rerun on a mysql2 project' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql2') }
         edit_gemfile("'>= 3.1'", "'>= 7.1'")
