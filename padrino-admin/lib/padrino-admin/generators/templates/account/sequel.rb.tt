@@ -27,7 +27,14 @@ class <%= @model_name %> < Sequel::Model
   #
   def self.authenticate(email, password)
     account = filter(Sequel.function(:lower, :email) => Sequel.function(:lower, email)).first
-    account && account.has_password?(password) ? account : nil
+    return account if account&.has_password?(password)
+
+    # Compare a password hash even when no account matches. The fixed hash uses bcrypt's default
+    # cost (12 since bcrypt 3.1.13), so this does a wrong password's work for accounts hashed at
+    # that cost; accounts hashed at another cost (older projects used 10) differ until re-hashed.
+    @dummy_password_hash ||= ::BCrypt::Password.new('$2a$12$6IIk8le5WZL5p/.VC/4pq.9UTkgGbhp/8s/fHYUiNBQsq6/ChnHV.')
+    @dummy_password_hash.is_password?(password) unless account
+    nil
   end
 
   ##
