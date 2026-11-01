@@ -241,7 +241,7 @@
   renderer: slim
   test: shoulda
   mock: rr
-  script: prototype
+  script: htmx
   stylesheet: tailwind
   server: thin
   add_component:
