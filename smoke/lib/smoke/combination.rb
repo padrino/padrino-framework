@@ -9,9 +9,10 @@ module Smoke
     ADMIN_RENDERERS = %w[erb haml slim].freeze
     ADAPTERS = %w[sqlite postgres mysql2].freeze
     SERVERS = %w[webrick puma thin falcon].freeze
+    SHAPES = %w[tiny lean api].freeze
 
     attr_reader :name, :orm, :adapter, :renderer, :test, :mock, :script, :stylesheet, :server,
-                :ruby, :add_component, :allowed_failure
+                :ruby, :add_component, :allowed_failure, :shape
 
     def self.load(path = ROOT.join('combinations.yml'))
       YAML.safe_load(File.read(path)).map { |attrs| new(attrs) }
@@ -22,7 +23,7 @@ module Smoke
         raise(ArgumentError, "no smoke combination #{name.inspect}; choose one of: #{combos.map(&:name).join(', ')}")
     end
 
-    # Every component, adapter and server, and every orm x renderer and orm x test pair, must appear.
+    # Every component, adapter, server and project shape, and every orm x renderer and orm x test pair, must appear.
     def self.coverage_gaps(combos)
       gaps = []
       COMPONENT_TYPES.each do |type|
@@ -32,6 +33,7 @@ module Smoke
       end
       (ADAPTERS - combos.map(&:adapter)).each { |missing| gaps << "adapter: #{missing}" }
       (SERVERS - combos.map(&:server)).each { |missing| gaps << "server: #{missing}" }
+      (SHAPES - combos.map(&:shape)).each { |missing| gaps << "shape: #{missing}" }
       orms = combos.map(&:orm).uniq
       %w[renderer test].each do |type|
         values = combos.map { |c| c.public_send(type) }.uniq
@@ -52,10 +54,19 @@ module Smoke
       @no_db_clients = attrs.fetch('no_db_clients', false)
       @add_component = attrs.fetch('add_component', {})
       @allowed_failure = attrs['allowed_failure']
+      @shape = attrs['shape']
     end
 
     def admin?
-      orm != 'none' && ADMIN_RENDERERS.include?(renderer)
+      orm != 'none' && ADMIN_RENDERERS.include?(renderer) && !lean? && !api?
+    end
+
+    def lean?
+      shape == 'lean'
+    end
+
+    def api?
+      shape == 'api'
     end
 
     def no_db_clients?
@@ -71,7 +82,8 @@ module Smoke
     end
 
     def generator_flags
-      component_flags + ["--server=#{server}"]
+      flags = component_flags + ["--server=#{server}"]
+      shape ? flags + ["--#{shape}"] : flags
     end
 
     # Flags `padrino g component` takes: it has no --server.
