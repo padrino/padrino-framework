@@ -61,7 +61,7 @@ module Padrino
     #   returns true if Padrino is not already bootstraped otherwise else.
     #
     def load!
-      return false if @_load_lock.mon_owned?
+      return false if @_loaded || @_load_lock.mon_owned?
       @_load_lock.synchronize do
         return false if @_loaded
         began_at = Time.now
