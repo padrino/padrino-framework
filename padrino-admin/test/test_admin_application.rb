@@ -93,11 +93,18 @@ describe 'AdminApplication' do
         set :session_store, store
         enable :sessions
 
-        get('/note') { session[:note] = 'kept'; session.id.to_s }
-        get('/login') { set_current_account(Account.admin); 'logged in' }
-        get('/logout') { set_current_account(nil); session[:after] = 'kept'; 'logged out' }
-        get('/state') { [session.id.to_s, session[:note].inspect, session[:after].inspect, logged_in?].join(' ') }
+        get('/note') { session[:note] = 'kept'; session[:return_to] = '/posts'; session.id.to_s }
+        get('/login/:role') { set_current_account(Account.send(params[:role])); 'logged in' }
+        get('/logout') { set_current_account(nil); 'logged out' }
+        get '/state' do
+          [session.id.to_s, session[:note].inspect, session[:return_to].inspect, session.key?(settings.session_id), logged_in?].join(' ')
+        end
       end
+    end
+
+    def session_state
+      get '/state'
+      %i[id note return_to account_key logged_in].zip(body.split).to_h
     end
 
     [Rack::Session::Cookie, Rack::Session::Pool].each do |store|
@@ -107,29 +114,49 @@ describe 'AdminApplication' do
         before_login = body
         cookie = current_session.cookie_jar['rack.session']
 
-        get '/login'
-        get '/state'
-        session_id, note, _, logged_in = body.split
-        refute_equal before_login, session_id
+        get '/login/admin'
+        state = session_state
+        refute_equal before_login, state[:id]
         refute_equal cookie, current_session.cookie_jar['rack.session']
-        assert_equal '"kept"', note
-        assert_equal 'true', logged_in
+        assert_equal '"kept"', state[:note]
+        assert_equal 'true', state[:logged_in]
       end
 
-      it "should clear the session at logout with #{store.name}" do
+      it "should start a new session when the account changes, not when it is set again, with #{store.name}" do
+        mock_session_app(store)
+        get '/login/admin'
+        logged_in_id = session_state[:id]
+
+        get '/login/admin'
+        assert_equal logged_in_id, session_state[:id]
+
+        get '/login/editor'
+        refute_equal logged_in_id, session_state[:id]
+      end
+
+      it "should remove only the account from the session at logout and start a new one with #{store.name}" do
         mock_session_app(store)
         get '/note'
-        get '/login'
-        get '/state'
-        logged_in_id = body.split.first
+        get '/login/admin'
+        logged_in_id = session_state[:id]
 
         get '/logout'
-        get '/state'
-        session_id, note, after, logged_in = body.split
-        assert_equal 'nil', note
-        assert_equal 'false', logged_in
-        assert_equal '"kept"', after
-        refute_equal logged_in_id, session_id
+        state = session_state
+        assert_equal 'false', state[:account_key]
+        assert_equal 'false', state[:logged_in]
+        assert_equal '"kept"', state[:note]
+        assert_equal '"/posts"', state[:return_to]
+        refute_equal logged_in_id, state[:id]
+      end
+
+      it "should leave the session alone when nobody was logged in with #{store.name}" do
+        mock_session_app(store)
+        get '/note'
+        before = session_state
+
+        get '/logout'
+        assert_equal before, session_state
+        assert_equal '"/posts"', before[:return_to]
       end
     end
   end

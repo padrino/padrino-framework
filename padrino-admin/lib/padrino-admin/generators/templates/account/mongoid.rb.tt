@@ -31,7 +31,8 @@ class <%= @model_name %>
     return account if account&.has_password?(password)
 
     # Compare a password hash even when no account matches, so both cases do the same work.
-    @dummy_password_hash ||= ::BCrypt::Password.create('dummy password')
+    # The fixed hash uses bcrypt's default cost (BCrypt::Engine::DEFAULT_COST, 12), like new passwords.
+    @dummy_password_hash ||= ::BCrypt::Password.new('$2a$12$6IIk8le5WZL5p/.VC/4pq.9UTkgGbhp/8s/fHYUiNBQsq6/ChnHV.')
     @dummy_password_hash.is_password?(password) unless account
     nil
   end

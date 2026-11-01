@@ -48,7 +48,7 @@ describe 'AccountModelGenerator' do
         puts [name, account ? account.email : 'nil', BCrypt::Password::COMPARISONS.size, BCrypt::Password::COMPARISONS.include?('hashed:secret1')].join(' ')
       end
     RUBY
-    env = { 'BUNDLE_GEMFILE' => File.expand_path('../../../Gemfile', __dir__) }
+    env = { 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'] || File.expand_path('../../../Gemfile', __dir__) }
     out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: "#{@apptmp}/sample_project")
     assert status.success?, err
     out.lines.to_h { |line| name, *result = line.split; [name, result] }

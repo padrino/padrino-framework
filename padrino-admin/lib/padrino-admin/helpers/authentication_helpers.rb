@@ -22,16 +22,24 @@ module Padrino
         ##
         # Override the current_account, you must provide an instance of Account model.
         #
-        # Logging in starts a new session (a new session id, keeping the session's data);
-        # logging out (no account) also clears the session.
+        # When the logged-in account changes (logging in, logging out or switching accounts), the
+        # session gets a new id and keeps its other data. Logging out (no account) removes this
+        # app's account key from the session.
         #
         # @example
         #     set_current_account(Account.authenticate(params[:email], params[:password])
         #
         def set_current_account(account = nil)
-          session.clear unless account
-          session[settings.session_id] = account&.id
-          request.session_options[:renew] = true
+          account_id = account&.id
+          # Compared as strings, so an id that the session coder stored as a string still matches.
+          if session[settings.session_id].to_s != account_id.to_s
+            if account_id.nil?
+              session.delete(settings.session_id)
+            else
+              session[settings.session_id] = account_id
+            end
+            request.session_options[:renew] = true
+          end
           @current_account = account
         end
 
@@ -96,6 +104,7 @@ module Padrino
 
         # One leading slash, not followed by another or by a backslash, and no control characters.
         LOCAL_PATH = %r{\A/(?![/\\])[^\x00-\x1f\x7f]*\z}n
+        private_constant :LOCAL_PATH
 
         # True for a path on this site, checked as given and with its path part percent-decoded.
         def local_path?(path)
