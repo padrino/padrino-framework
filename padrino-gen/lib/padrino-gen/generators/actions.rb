@@ -667,6 +667,47 @@ module Padrino
       end
 
       ##
+      # Returns true for an --api project: no sessions or CSRF protection. The Gemfile is the
+      # only record of that: padrino-core, without the padrino gem or the full set of its parts.
+      #
+      # @return [Boolean] true for an --api project.
+      #
+      def api_project?
+        return true if options[:api]
+
+        gemfile_gems.include?('padrino-core') && !(padrino_gem?('padrino-helpers') && padrino_gem?('padrino-mailer'))
+      end
+
+      ##
+      # Returns true when the project loads the named part of padrino, so a generated app can
+      # register it. A Gemfile that lists no padrino-core by name keeps the default, every part.
+      #
+      # @param [String] name
+      #   The gem name, such as 'padrino-mailer'.
+      #
+      # @return [Boolean] true when the project loads the gem.
+      #
+      def padrino_gem?(name)
+        return false if options[:api]
+
+        gems = gemfile_gems
+        !gems.include?('padrino-core') || gems.include?('padrino') || gems.include?(name)
+      end
+
+      ##
+      # Returns the names of the gems the project's Gemfile lists literally, or an empty
+      # array without a readable Gemfile. The padrino-#{g} loop of a --dev Gemfile lists none.
+      #
+      # @return [Array<String>] The gem names.
+      #
+      def gemfile_gems
+        gemfile = destination_root('Gemfile')
+        return [] unless File.file?(gemfile) && File.readable?(gemfile)
+
+        File.binread(gemfile).scan(/^\s*gem[\s(]+['"]([^'"]+)['"]/).flatten
+      end
+
+      ##
       # Generates standard and tiny applications within a project.
       #
       # @param [String] app
@@ -684,8 +725,10 @@ module Padrino
           template 'templates/controller.rb.tt', destination_root(app, 'controllers.rb')
           @helper_name = DEFAULT_HELPER_NAME
           template 'templates/helper.rb.tt', destination_root(app, 'helpers.rb')
-          @short_name = 'notifier'
-          template 'templates/mailer.rb.tt', destination_root(app, 'mailers.rb')
+          if padrino_gem?('padrino-mailer')
+            @short_name = 'notifier'
+            template 'templates/mailer.rb.tt', destination_root(app, 'mailers.rb')
+          end
         else
           empty_directory destination_root(app, 'controllers')
           empty_directory destination_root(app, 'helpers')
