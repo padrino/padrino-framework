@@ -466,6 +466,20 @@ describe 'ComponentGenerator' do
         assert_equal 'jquery', script_choice
       end
 
+      # An --api project has no padrino-helpers, so its layout has neither csrf_meta_tags nor javascript_include_tag.
+      it 'should give a plain script tag for an api project' do
+        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--api', '--script=ujs') }
+        assert_includes out, '<script src="/javascripts/ujs.js"></script>'
+        refute_match(/csrf_meta_tags/, out)
+      end
+
+      it 'should give a plain script tag when added to an api project' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--api') }
+        out, = capture_io { generate(:component, '--script=ujs', "-r=#{@apptmp}/sample_project") }
+        assert_includes out, '<script src="/javascripts/ujs.js"></script>'
+        refute_match(/csrf_meta_tags/, out)
+      end
+
       it 'should keep jquery when no input answers the switch prompt' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
         Timeout.timeout(5) { apply_script('ujs', nil) }
