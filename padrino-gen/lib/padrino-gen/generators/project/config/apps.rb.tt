@@ -35,8 +35,8 @@ Padrino.configure_apps do
 <% if options.api? -%>
   # CSRF protection follows sessions, because without a session it rejects every request.
   # `enable :sessions` above or in an app turns on both, except in the test environment.
-  # A session middleware added in config.ru needs `enable :protect_from_csrf` too; in an app,
-  # give the :sessions setting `use:` and `config:` options rather than a `use` line.
+  # For another session store, give the :sessions setting `use:` and `config:` options, here
+  # or in an app, rather than adding a session middleware in config.ru.
   set :protect_from_csrf, proc { sessions? && Padrino.env != :test }
 <% else -%>
   # CSRF protection is off in the test environment so test requests don't need a
