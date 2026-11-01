@@ -994,6 +994,8 @@ describe 'Routing' do
       end
       get(:top) { 'top' }
     end
+    get '/posts'
+    assert_equal 404, status
     get '/posts', {}, 'HTTP_USER_AGENT' => 'Admin'
     assert_equal 'posts', body
     assert_equal 'admin', response['x-outer']

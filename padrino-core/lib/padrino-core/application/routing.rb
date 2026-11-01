@@ -121,7 +121,8 @@ module Padrino
       #       'Welcome!'
       #     end
       #
-      #     # A controller block nested in this one inherits these conditions, merged with its own.
+      #     # A controller block nested in this one inherits these conditions; its own
+      #     # conditions, and each route's, win over them key by key.
       #   end
       #
       # @example Supply default values:
