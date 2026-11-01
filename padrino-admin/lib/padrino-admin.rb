@@ -34,9 +34,9 @@ module Padrino
         index = segments.index(error.name.to_s)
         return false unless index
 
-        parent = index.zero? ? Object : Object.const_get(segments.first(index).join('::'))
-        error.receiver.equal?(parent)
-      rescue ArgumentError, NameError
+        parent = index.zero? ? 'Object' : segments.first(index).join('::')
+        error.receiver.is_a?(::Module) && error.receiver.name == parent
+      rescue ArgumentError
         false
       end
     end

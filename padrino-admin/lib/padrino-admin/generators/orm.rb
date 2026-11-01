@@ -35,7 +35,7 @@ module Padrino
         # needed when reading the model's columns to generate a page, so destroying a page skips it.
         def check_model_orm
           return unless @columns.nil?
-          raise OrmError, "Model '#{klass_name}' could not be loaded!\n#{@load_error.class}: #{@load_error.message}" if @load_error
+          raise OrmError, "Model '#{klass_name}' could not be loaded#{' because the project failed to load' if @boot_failed}!\n#{@load_error.class}: #{@load_error.message}" if @load_error
           raise OrmError, "Model '#{klass_name}' could not be found!\nPerhaps you would like to run 'bundle exec padrino g model #{klass_name}' to create it first?" if @klass.nil?
 
           base = MODEL_BASES[orm]
@@ -149,7 +149,9 @@ module Padrino
         def load_klass
           @klass_name.constantize
         rescue StandardError => e
-          @load_error = Padrino::Admin.missing_constant?(e, @klass_name) ? Padrino::Generators.boot_error : e
+          missing = Padrino::Admin.missing_constant?(e, @klass_name)
+          @load_error = missing ? Padrino::Generators.boot_error : e
+          @boot_failed = missing && !@load_error.nil?
           nil
         end
       end

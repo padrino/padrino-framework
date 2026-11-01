@@ -109,7 +109,7 @@ describe 'AdminPageGenerator' do
       File.write("#{@apptmp}/sample_project/config/boot.rb", "require_relative '../models/broken_widget'\n")
       capture_io { Padrino::Generators::Cli.new([], root: "#{@apptmp}/sample_project").load_boot }
       _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'broken_widget', "-r=#{@apptmp}/sample_project") }.status }
-      assert_match(/Model 'BrokenWidget' could not be loaded!\nNameError: uninitialized constant Sequel::Modle/, err)
+      assert_match(/Model 'BrokenWidget' could not be loaded because the project failed to load!\nNameError: uninitialized constant Sequel::Modle/, err)
       refute_match(/could not be found/, err)
       assert_no_dir_exists("#{@apptmp}/sample_project/admin/views/broken_widgets")
     ensure
