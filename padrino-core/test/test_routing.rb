@@ -2263,18 +2263,6 @@ describe 'Routing' do
       end
     end
 
-    it 'should apply the outer controller conditions to a nested controller' do
-      mock_protected_app do
-        controller :admin, conditions: { protect: true } do
-          controller(:posts) { get(:index) { 'posts' } }
-        end
-      end
-      get '/posts'
-      assert_equal 403, status
-      get '/posts', ok: 1
-      assert_equal 'posts', body
-    end
-
     it 'should add the nested controller conditions to the outer ones' do
       mock_protected_app do
         controller :admin, conditions: { protect: true } do
@@ -2306,7 +2294,7 @@ describe 'Routing' do
       assert_equal 'posts', body
     end
 
-    it 'should let route options override the inherited conditions' do
+    it 'should apply the outer conditions to a nested controller unless a route overrides them' do
       mock_protected_app do
         controller :admin, conditions: { protect: true } do
           controller :posts do
@@ -2316,7 +2304,9 @@ describe 'Routing' do
         end
       end
       get '/posts'
-      assert_equal 403, status
+      assert_equal 'no ok', body
+      get '/posts', ok: 1
+      assert_equal 'posts', body
       get '/posts/open'
       assert_equal 'open', body
     end
