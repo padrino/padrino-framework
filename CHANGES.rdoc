@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- NEW #2468 Every gem now declares `required_ruby_version >= 2.7.8` (six did not) and link to the changelog, source, issue tracker and guides on rubygems.org. SECURITY.md describes which versions get security fixes and how to report a vulnerability privately (@nesquena)
+- NEW #2468 Every gem now declares `required_ruby_version >= 2.7.8` (six did not) and links to the changelog, source, issue tracker and guides on rubygems.org. SECURITY.md describes which versions get security fixes and how to report a vulnerability privately (@nesquena)
 
 == 0.18.1 (2026-11-01)
 
