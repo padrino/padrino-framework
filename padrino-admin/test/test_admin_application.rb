@@ -171,6 +171,7 @@ describe 'AdminApplication' do
         get('/form') { csrf_token }
         post('/login') { set_current_account(Account.admin); 'logged in' }
         post('/login-and-form') { set_current_account(Account.admin); csrf_token }
+        post('/switch') { set_current_account(Account.editor); 'switched' }
         post('/logout') { set_current_account(nil); 'logged out' }
         post('/action') { 'done' }
       end
@@ -194,6 +195,37 @@ describe 'AdminApplication' do
       get '/form'
       post '/login-and-form', authenticity_token: body
       post '/action', authenticity_token: body
+      assert_equal 200, status
+    end
+
+    { '/logout' => 'logging out', '/switch' => 'switching accounts' }.each do |path, change|
+      it "should reject a token issued before #{change} and accept one issued after" do
+        get '/form'
+        post '/login', authenticity_token: body
+        get '/form'
+        token = body
+        post path, authenticity_token: token
+        assert_equal 200, status
+
+        post '/action', authenticity_token: token
+        assert_equal 403, status
+
+        get '/form'
+        post '/action', authenticity_token: body
+        assert_equal 200, status
+      end
+    end
+
+    it 'should give an XHR login the new token to use in later requests' do
+      get '/form'
+      page_token = body
+      post '/login-and-form', {}, 'HTTP_X_CSRF_TOKEN' => page_token, 'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+      assert_equal 200, status
+      new_token = body
+
+      post '/action', {}, 'HTTP_X_CSRF_TOKEN' => page_token
+      assert_equal 403, status
+      post '/action', {}, 'HTTP_X_CSRF_TOKEN' => new_token
       assert_equal 200, status
     end
 
