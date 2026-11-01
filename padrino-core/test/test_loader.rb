@@ -1,13 +1,37 @@
 require_relative 'helper'
 
 describe 'Padrino loaded state' do
-  before { Padrino.clear! }
-  after { Padrino.clear! }
+  # load! adds constants to the reloader's exclusions and records its caller; clear! resets neither.
+  before do
+    @excluded_constants = Padrino::Reloader.exclude_constants.dup
+    @called_from = Padrino.instance_variable_get(:@_called_from)
+    Padrino.clear!
+  end
 
+  after do
+    Padrino.clear!
+    Padrino::Reloader.exclude_constants.replace(@excluded_constants)
+    Padrino.instance_variable_set(:@_called_from, @called_from)
+  end
+
+  # Runs the block in a new thread and returns its value, raising the thread's error if it raised.
   def in_thread(&block)
     thread = Thread.new(&block)
-    assert thread.join(5), 'thread did not finish'
+    unless thread.join(5)
+      thread.kill
+      flunk 'thread did not finish'
+    end
     thread.value
+  end
+
+  # Pops from the queue that the thread fills, raising the thread's error if it dies first.
+  def pop_from(queue, thread)
+    deadline = Time.now + 5
+    while queue.empty?
+      flunk 'thread ended without a result' if thread.join(0.01) && queue.empty?
+      flunk 'timed out waiting for the thread' if Time.now > deadline
+    end
+    queue.pop
   end
 
   it 'is loaded in another thread after load! in this one' do
@@ -31,14 +55,19 @@ describe 'Padrino loaded state' do
     end
     Padrino.after_load { after_calls += 1 }
 
-    first = Thread.new { Padrino.load! }
-    entered.pop
-    second = Thread.new { Padrino.load! }
-    deadline = Time.now + 5
-    Thread.pass until second.status == 'sleep' || !second.alive? || Time.now > deadline
-    2.times { release << true }
+    begin
+      first = Thread.new { Padrino.load! }
+      pop_from(entered, first)
+      second = Thread.new { Padrino.load! }
+      deadline = Time.now + 5
+      Thread.pass until second.status == 'sleep' || !second.alive? || Time.now > deadline
+      assert_equal 'sleep', second.status, 'the second load! did not wait'
+    ensure
+      2.times { release << true }
+      threads = [first, second].compact
+      threads.each { |thread| thread.kill unless thread.join(5) }
+    end
 
-    assert first.join(5) && second.join(5), 'load! did not finish'
     assert_equal 1, before_calls
     assert_equal 1, after_calls
     assert first.value
@@ -75,6 +104,12 @@ describe 'Padrino loaded state' do
     assert_equal 2, calls
   end
 
+  it 'keeps the loaded state when Loader is extended again' do
+    Padrino.load!
+    Padrino.extend(Padrino::Loader)
+    assert Padrino.loaded?
+  end
+
   it 'is not loaded in any thread after clear!' do
     jobs = Queue.new
     results = Queue.new
@@ -84,14 +119,13 @@ describe 'Padrino loaded state' do
       end
     end
     jobs << -> { Padrino.load! }
-    assert results.pop
+    assert pop_from(results, worker)
 
     Padrino.clear!
     jobs << -> { Padrino.loaded? }
-    refute results.pop
+    refute pop_from(results, worker)
     refute Padrino.loaded?
   ensure
-    jobs << nil
-    worker.join(5)
+    worker&.kill
   end
 end

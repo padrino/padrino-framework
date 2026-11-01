@@ -3,8 +3,9 @@ require 'monitor'
 module Padrino
   module Loader
     # The loaded state and the lock that guards it belong to the extending module (Padrino),
-    # so every thread sees the same state.
+    # so every thread sees the same state. Extending again keeps them.
     def self.extended(base)
+      return if base.instance_variable_defined?(:@_load_lock)
       base.instance_variable_set(:@_load_lock, Monitor.new)
       base.instance_variable_set(:@_loaded, false)
     end
@@ -128,11 +129,13 @@ module Padrino
     ##
     # Determines whether Padrino was loaded with {Padrino.load!}.
     #
+    # A call from another thread while Padrino loads waits for the load to finish.
+    #
     # @return [Boolean]
     #   Specifies whether Padrino was loaded, in any thread.
     #
     def loaded?
-      @_loaded
+      @_load_lock.synchronize { @_loaded }
     end
 
     ##
