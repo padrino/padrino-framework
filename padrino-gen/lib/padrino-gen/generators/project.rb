@@ -68,6 +68,7 @@ module Padrino
           empty_directory destination_root('public/stylesheets')
           store_component_config('.components')
           unless options[:lean]
+            @up_route = true # Only the app this project mounts at /. Apps from `g app` don't get one.
             app_skeleton('app', options[:tiny])
             append_file destination_root('config/apps.rb'), "Padrino.mount('#{@project_name}::#{@app_name}', app_file: Padrino.root('app/app.rb')).to('/')\n"
           end

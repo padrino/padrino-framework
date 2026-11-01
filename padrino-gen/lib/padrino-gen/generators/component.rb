@@ -49,7 +49,9 @@ module Padrino
             choice = @_components[comp]
             existing = fetch_component_choice(comp)
             ask = existing != 'none' && existing != choice
-            !ask || yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
+            accepted = !ask || yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
+            @_components[comp] = '' unless accepted
+            accepted
           end
 
           @project_name = fetch_component_choice(:namespace)
