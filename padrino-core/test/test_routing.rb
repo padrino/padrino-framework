@@ -1028,13 +1028,16 @@ describe 'Routing' do
         get(:show) { 'show' }
       end
       get(:top) { 'top' }
+      controller(:other) { get(:x) { 'x' } }
     end
     show = @app.routes.find { |route| route.action == :show }
     top = @app.routes.find { |route| route.action == :top }
+    other = @app.routes.find { |route| route.action == :x }
     assert_equal :admin_layout, show.use_layout
     assert_equal({ lang: 'en' }, show.default_values)
     assert_nil top.use_layout
     assert_nil top.default_values
+    assert_nil other.use_layout
     get '/manage/show'
     assert_equal 'show', body
     get '/top'
