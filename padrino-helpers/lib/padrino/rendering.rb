@@ -431,7 +431,8 @@ unless defined? Padrino::Rendering::ErubisTemplate
   rescue LoadError
     # do nothing since erubis is not available
   else
-    require 'padrino/rendering/erubis_template'
+    # Tilt 2.5 dropped its Erubis template; without it there is nothing to extend.
+    require 'padrino/rendering/erubis_template' if defined?(Tilt::ErubisTemplate)
   end
 end
 

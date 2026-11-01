@@ -1,6 +1,7 @@
 require_relative 'helper'
 require 'slim'
 require 'liquid'
+require 'open3'
 
 describe 'Rendering' do
   def setup
@@ -818,6 +819,29 @@ describe 'Rendering' do
       end
       get '/'
       assert_equal 'application/xml;charset=utf-8', response['Content-Type']
+    end
+  end
+
+  describe 'with the erubis gem loadable' do
+    it 'should load and render erb when Tilt has no Erubis template' do
+      skip 'this Tilt still ships Erubis support' if defined?(Tilt::ErubisTemplate)
+      script = <<~'RUBY'
+        require 'padrino-core'
+        require 'padrino-helpers'
+        abort 'erubis was not loaded' unless defined?(Erubis::Eruby)
+        app = Sinatra.new(Padrino::Application) do
+          register Padrino::Helpers
+          get('/') { render :erb, '<%= "<b>" %><% content_tag(:p) do %>ok<% end %>' }
+        end
+        print Rack::MockRequest.new(app).get('/').body
+      RUBY
+      Dir.mktmpdir do |dir|
+        File.write(File.join(dir, 'erubis.rb'), "module Erubis; class Eruby; end; end\n")
+        env = { 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
+        out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-I', dir, '-e', script, chdir: dir)
+        assert status.success?, err
+        assert_equal '&lt;b&gt;<p>ok</p>', out
+      end
     end
   end
 
