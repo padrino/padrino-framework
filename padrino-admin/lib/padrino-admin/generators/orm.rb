@@ -49,7 +49,7 @@ module Padrino
 
         def field_type(type)
           type = :string if type.nil?
-          type = type.to_s.demodulize.downcase.to_sym unless type.is_a?(Symbol)
+          type = Padrino::Inflections.demodulize(type).downcase.to_sym unless type.is_a?(Symbol)
 
           case type
           when :integer, :float, :decimal   then :text_field

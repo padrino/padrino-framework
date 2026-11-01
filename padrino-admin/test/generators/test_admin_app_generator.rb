@@ -268,7 +268,54 @@ describe 'AdminAppGenerator' do
             assert_equal '200', code, "#{page} includes #{src}, which is not served"
           end
         end
+
+        it "should load only the admin's own assets on the #{engine} admin pages, with no IE conditional comments" do
+          skip 'the sqlite3 gem is only bundled on MRI' if RUBY_ENGINE == 'jruby'
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{engine}") }
+          capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+          script = <<~'RUBY'
+            ENV['RACK_ENV'] = 'test'
+            %w[sequel haml slim erubi nokogiri rack/test].each { |lib| require lib }
+            Sequel.extension :migration
+            Sequel.sqlite('db/sample_project_test.db') { |db| Sequel::Migrator.run(db, 'db/migrate') }
+            require File.expand_path('config/boot')
+            account_id = Account.dataset.insert(email: 'admin@example.com', role: 'admin', crypted_password: 'unused')
+
+            browser = Rack::Test::Session.new(Padrino.application)
+            check = lambda do |page|
+              browser.get(page)
+              puts "PAGE #{page} #{browser.last_response.status}"
+              html = Nokogiri::HTML(browser.last_response.body)
+              html.css('link[href], script[src]').each { |tag| puts "ASSET #{page} #{tag['href'] || tag['src']}" }
+              html.xpath('//comment()').each { |comment| puts "COMMENT #{page} #{comment.text.split.join(' ')}" }
+            end
+            check.call('/admin/sessions/new')
+            browser.env('rack.session', SampleProject::Admin.session_id => account_id)
+            check.call('/admin/')
+            check.call('/admin/accounts/edit/0')
+          RUBY
+          env = { 'BUNDLE_GEMFILE' => File.expand_path('../../../Gemfile', __dir__) }
+          out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: "#{@apptmp}/sample_project")
+          assert status.success?, err
+          statuses = out.lines.grep(/\APAGE /).map { |line| line.split[1, 2] }
+          assert_equal [['/admin/sessions/new', '200'], ['/admin/', '200'], ['/admin/accounts/edit/0', '404']], statuses
+          assets = out.lines.grep(/\AASSET /).map(&:split)
+          refute_empty assets
+          assets.each do |(_, page, url)|
+            assert url.start_with?('/'), "#{page} loads #{url} from another site"
+          end
+          assert_empty out.lines.grep(/\ACOMMENT .*\[if /)
+        end
       end
+    end
+
+    it 'should name in the admin stylesheet only fonts it loads itself' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', '-e=erb') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      stylesheet = File.read("#{@apptmp}/sample_project/public/admin/stylesheets/application.css")
+      loaded = stylesheet.scan(/@font-face\{font-family:'([^']+)'/).flatten
+      named = stylesheet.scan(/font-family:([^;}]+)/).flatten.flat_map { |list| list.split(',') }.map { |font| font.strip.delete(%q('")) }
+      assert_empty named.uniq - loaded - %w[serif sans-serif monospace system-ui inherit]
     end
 
     it 'should correctly generate a new padrino admin application with a custom model' do

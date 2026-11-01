@@ -203,6 +203,78 @@ describe 'AdminPageGenerator' do
           assert_equal %w[list-menu-wrapper list-menu-wrapper-disabled], classes.call(page.at_css(link).parent)
         end
       end
+
+      # Mongoid reports a boolean field's type as the class Mongoid::Boolean, not as :boolean.
+      [nil, 'Mongoid::Boolean'].each do |type_name|
+        it "should show boolean columns in the list as icons the stylesheet draws (#{renderer}#{", #{type_name}" if type_name})" do
+          Sequel::Model.db.create_table!(:switches) do
+            primary_key :id
+            String :name
+            TrueClass :enabled
+          end
+          Object.const_set(:Switch, Class.new(Sequel::Model(:switches)))
+          Switch.create(name: 'on', enabled: true)
+          Switch.create(name: 'off', enabled: false)
+          if type_name
+            boolean = Class.new
+            boolean.define_singleton_method(:to_s) { type_name }
+            columns = Switch.db_schema.map { |name, info| Padrino::Admin::Generators::Orm::Column.new(name, name == :enabled ? boolean : info[:type]) }
+            Padrino::Admin::Generators::Orm.any_instance.stubs(:columns).returns(columns)
+          end
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
+          capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+          capture_io { generate(:admin_page, 'switch', "--root=#{@apptmp}/sample_project") }
+          views = "#{@apptmp}/sample_project/admin/views"
+          mock_app do
+            set :views, views
+            helpers Padrino::Admin::Helpers::ViewHelpers
+            controllers :switches do
+              get(:index) { @switches = Switch.order(:id).all; render 'switches/index', layout: false }
+              get(:new) {}
+              get(:edit, with: :id) {}
+              delete(:destroy, with: :id) {}
+              delete(:destroy_many) {}
+            end
+          end
+          get '/switches'
+          assert_equal 200, last_response.status
+          page = Nokogiri::HTML(last_response.body)
+          column = page.css('#list thead th').map { |th| th.text.strip }.index('Enabled')
+          on, off = page.css('#list tbody tr').map { |row| row.css('td')[column].css('i.fa').map { |icon| icon['class'].split - ['fa'] } }
+          refute_empty on.flatten
+          refute_empty off.flatten
+          refute_equal on, off
+          stylesheet = File.read("#{@apptmp}/sample_project/public/admin/stylesheets/application.css")
+          undrawn = (on + off).flatten.reject { |icon| stylesheet.include?(".#{icon}:before") }
+          assert_empty undrawn, 'the stylesheet draws no glyph for these icons'
+        ensure
+          Object.send(:remove_const, :Switch) if Object.const_defined?(:Switch, false)
+          Sequel::Model.db.drop_table?(:switches)
+        end
+      end
+    end
+
+    it 'should not carry a flash over to the next page when a record is not found' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', '-e=erb') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      capture_io { generate(:admin_page, 'friend', "--root=#{@apptmp}/sample_project") }
+      mock_app do
+        enable :sessions
+        helpers Padrino::Admin::Helpers::ViewHelpers
+        get(:flash) { flash.keys.join(',') }
+      end
+      Object.const_set(:SampleProject, Module.new).const_set(:Admin, @app)
+      load "#{@apptmp}/sample_project/admin/controllers/friends.rb"
+      get '/friends/edit/999'
+      assert_equal 404, last_response.status
+      put '/friends/update/999'
+      assert_equal 404, last_response.status
+      delete '/friends/destroy/999'
+      assert_equal 404, last_response.status
+      get '/flash'
+      assert_equal '', last_response.body
+    ensure
+      Object.send(:remove_const, :SampleProject) if Object.const_defined?(:SampleProject, false)
     end
 
     it 'should correctly generate a new padrino admin application with multiple models at the same time' do
