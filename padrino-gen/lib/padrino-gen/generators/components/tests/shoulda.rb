@@ -34,6 +34,7 @@ SHOULDA_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(SHOULDA_CON
       end
 
       should "return hello world text" do
+        pend "add some examples to \#{__FILE__}"
         assert_equal "Hello World", last_response.body
       end
     end
@@ -82,6 +83,7 @@ SHOULDA_HELPER_TEST = <<~TEST unless defined?(SHOULDA_HELPER_TEST)
       end
 
       should "return nil" do
+        pend "add some examples to (or delete) \#{__FILE__}"
         assert_equal nil, @helpers.foo
       end
     end
