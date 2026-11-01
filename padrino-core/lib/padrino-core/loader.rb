@@ -129,13 +129,14 @@ module Padrino
     ##
     # Determines whether Padrino was loaded with {Padrino.load!}.
     #
-    # A call from another thread while Padrino loads waits for the load to finish.
+    # It takes no lock, so it's safe from a trap handler; it reads false while a load is
+    # still running.
     #
     # @return [Boolean]
     #   Specifies whether Padrino was loaded, in any thread.
     #
     def loaded?
-      @_load_lock.synchronize { @_loaded }
+      @_loaded
     end
 
     ##
