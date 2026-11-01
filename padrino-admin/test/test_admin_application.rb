@@ -417,6 +417,15 @@ describe 'AdminApplication' do
       assert_equal 'You must define an MissingAdminSample::Account Model', error.message
     end
 
+    it 'should say a missing admin model must be defined when its name repeats a namespace' do
+      Object.const_set(:RepeatedAdminSample, Module.new)
+      mock_admin_app 'RepeatedAdminSample::RepeatedAdminSample'
+      error = assert_raises(Padrino::Admin::AccessControlError) { get '/current' }
+      assert_equal 'You must define an RepeatedAdminSample::RepeatedAdminSample Model', error.message
+    ensure
+      Object.send(:remove_const, :RepeatedAdminSample) if Object.const_defined?(:RepeatedAdminSample, false)
+    end
+
     it 'should raise the error of a top-level admin model whose body names another constant like it' do
       Dir.mktmpdir do |dir|
         File.write("#{dir}/colliding_top_account.rb", <<~RUBY)

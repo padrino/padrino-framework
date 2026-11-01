@@ -31,11 +31,12 @@ module Padrino
         return false unless error.instance_of?(NameError)
 
         segments = name.to_s.sub(/\A::/, '').split('::')
-        index = segments.index(error.name.to_s)
-        return false unless index
+        return false unless error.receiver.is_a?(::Module)
 
-        parent = index.zero? ? 'Object' : segments.first(index).join('::')
-        error.receiver.is_a?(::Module) && error.receiver.name == parent
+        segments.each_index.any? do |index|
+          parent = index.zero? ? 'Object' : segments.first(index).join('::')
+          segments[index] == error.name.to_s && error.receiver.name == parent
+        end
       rescue ArgumentError
         false
       end

@@ -55,6 +55,17 @@ describe 'AdminPageGenerator' do
       assert_no_match_in_file(/project_module :foos/, "#{@apptmp}/sample_project/admin/app.rb")
     end
 
+    it 'should fail without an existent model whose name repeats a namespace' do
+      capture_io { generate(:project, 'sample_project', '-e=slim', "--root=#{@apptmp}", '-d=sequel') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      Object.const_set(:RepeatedPageShop, Module.new)
+      RepeatedPageShop.const_set(:Order, Module.new)
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_page, 'repeated_page_shop/order/order', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/Model 'RepeatedPageShop::Order::Order' could not be found/, err)
+    ensure
+      Object.send(:remove_const, :RepeatedPageShop) if Object.const_defined?(:RepeatedPageShop, false)
+    end
+
     %w[erb haml slim].each do |renderer|
       it "should destroy pages whose models were already removed (#{renderer})" do
         Object.const_set(:GoneWidget, Class.new(Sequel::Model(:friends)))
