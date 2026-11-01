@@ -38,9 +38,10 @@ module Padrino
           name = route.name
           argument == name || name == [scoped_controller_name, argument].join(' ').to_sym
         else
-          # A filter runs if any decoded form matches; an :except filter is skipped only if all do.
+          # A filter runs if any decoded form matches; an :except filter is skipped only if all forms
+          # match exactly (no trailing-slash fallback, which could reach a different route).
           paths = decoded_paths(request)
-          @mode ? paths.any? { |path| path_match?(argument, path) } : paths.all? { |path| path_match?(argument, path) }
+          @mode ? paths.any? { |path| path_match?(argument, path) } : paths.all? { |path| argument === path }
         end
       end
     end

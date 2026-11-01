@@ -420,6 +420,8 @@ describe 'Routing' do
       get('/private') { 'private' }
       get('/files/*path') { "file #{params[:path]}" }
       get('/names/:name') { "name #{params[:name].inspect}" }
+      get(:lazy_id, map: '/u/:id', id: %r{[^/]+?}) { "u #{params[:id].inspect}" }
+      get(%r{/lazy/([^/]+?)(?:\.(json))?}) { "lazy #{params[:captures].first.inspect}" }
       get(%r{/rx}) { 'rx' }
     end
     ['/private%0A', '/private%0A/', '/files/a%0A', '/x%0A/rx', '/rx%0A'].each do |path|
@@ -434,6 +436,12 @@ describe 'Routing' do
     assert_equal 'rx', body
     get '/names/a%0A'
     assert_equal 'name "a\n"', body
+    get '/u/a%0A'
+    assert_equal 'u "a\n"', body
+    get '/lazy/a%0A'
+    assert_equal 'lazy "a\n"', body
+    get '/lazy/a.json'
+    assert_equal 'lazy "a"', body
   end
 
   it 'should not find a route for a path that does not decode to valid UTF-8' do

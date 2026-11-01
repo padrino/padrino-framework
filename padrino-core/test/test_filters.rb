@@ -192,34 +192,48 @@ describe 'Filters' do
     assert_equal 'file files/public', body
   end
 
-  it 'should skip an except filter only for paths the router matches to the excepted path' do
+  it 'should skip an except filter only for the excepted path in its decoded forms' do
     mock_app do
       before(except: '/public/page') { halt 403, 'filtered' }
       get('/public/page') { 'public' }
       get('/:name') { "name #{params[:name]}" }
     end
-    ['/public/page', '/%70ublic/page', '/public/page/'].each do |path|
+    ['/public/page', '/%70ublic/page'].each do |path|
       get path
       assert_equal [200, 'public'], [status, body], path
     end
-    get '/public%2Fpage'
-    assert_equal [403, 'filtered'], [status, body]
+    ['/public%2Fpage', '/public/page/'].each do |path|
+      get path
+      assert_equal [403, 'filtered'], [status, body], path
+    end
   end
 
-  it 'should skip an except filter with a Regexp only for paths the router matches to it' do
+  it 'should skip an except filter with a Regexp only for the paths it matches in every decoded form' do
     mock_app do
       before(except: %r{\A/public/page\z}) { halt 403, 'filtered' }
       get('/public/page') { 'public' }
       get('/:name') { "name #{params[:name]}" }
     end
-    ['/public/page', '/%70ublic/page', '/public/page/'].each do |path|
+    ['/public/page', '/%70ublic/page'].each do |path|
       get path
       assert_equal [200, 'public'], [status, body], path
     end
-    ['/public%2Fpage', '/public%252Fpage', '/public%2Fpage/'].each do |path|
+    ['/public%2Fpage', '/public%252Fpage', '/public%2Fpage/', '/public/page/'].each do |path|
       get path
       assert_equal [403, 'filtered'], [status, body], path
     end
+  end
+
+  it 'should not skip an except filter for the excepted path with a trailing slash' do
+    mock_app do
+      before(except: '/admin') { halt 401, 'auth' }
+      get(%r{/admin/}) { 'admin slash' }
+      get(%r{/admin}) { 'admin' }
+    end
+    get '/admin'
+    assert_equal [200, 'admin'], [status, body]
+    get '/admin/'
+    assert_equal [401, 'auth'], [status, body]
   end
 
   it 'should filter by path on the request path as it is when the filter runs' do
