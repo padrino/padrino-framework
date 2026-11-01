@@ -20,9 +20,10 @@ module <%= @project_name %>
 <% if @up_route -%>
 
     # Health check for load balancers and containers. It doesn't touch the database and sets no
-    # session cookie (a server-side session store may still see the request). The path follows
-    # the mount point of this app, and filters and host rules set for the whole app apply to it.
-    # It answers before any controller's /up route; remove it to serve /up from a controller.
+    # session cookie, though a server-side session store still saves a new session for each probe.
+    # The path follows the mount point of this app, and filters and host rules set for the whole
+    # app apply to it. It answers before a controller's /up route unless that route sets
+    # `priority: :high`; remove it to serve /up from a controller.
     get '/up' do
       request.session_options[:skip] = true
       content_type :text
