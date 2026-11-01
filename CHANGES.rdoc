@@ -3,6 +3,8 @@
 == Unreleased
 
 - NEW #2468 Every gem now declares `required_ruby_version >= 2.7.8` (six did not) and links to the changelog, source, issue tracker and documentation on rubygems.org. SECURITY.md describes which versions get security fixes and how to report a vulnerability privately (@nesquena)
+- FIX #2446 `padrino g project --tiny` projects with minitest, testunit, shoulda or bacon pass their own `rake`, and the placeholder tests from `padrino g controller` and `g helper` with those components report as skipped, pending or missing instead of failing, as RSpec's do (@achiurizo)
+- FIX #2446 `padrino g admin` and `g admin_page` in a project without an `app/` application, such as a `--lean` project, print a message and exit 1 instead of a backtrace (@achiurizo)
 
 == 0.18.1 (2026-10-31)
 
