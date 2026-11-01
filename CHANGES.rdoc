@@ -2,7 +2,7 @@
 
 == Unreleased
 
-- FIX #XXXX `require 'padrino-helpers'` no longer fails with `uninitialized constant Tilt::ErubisTemplate` when the `erubis` gem is installed and Tilt is 2.5 or newer, which has no Erubis support. ERB templates then render with Erubi when it is bundled, otherwise with Ruby's ERB; with Tilt 2.4 or older Erubis is still used as before (@nesquena)
+- FIX #2470 `require 'padrino-helpers'` no longer fails with `uninitialized constant Tilt::ErubisTemplate` when the `erubis` gem is installed and Tilt is 2.5 or newer, which has no Erubis support. ERB templates then render with Erubi when it is bundled, otherwise with Ruby's ERB; with Tilt 2.4 or older Erubis is still used as before (@nesquena)
 
 == 0.18.1 (2026-11-01)
 
