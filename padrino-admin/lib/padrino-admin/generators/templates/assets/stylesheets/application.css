@@ -139,7 +139,6 @@ footer p {
 
 /* -- Begin Errors -- */
 .custom-error {
-  font-family: 'Varela', sans-serif;
   font-size: 1.5em;
   width: 500px;
   margin: 100px auto 0;
@@ -218,7 +217,6 @@ footer p {
   margin-top: 10px;
   height: 20px; /* Bootstrap 3.4 makes it 50px, which pushes the navbar down */
   padding: 0px 15px;
-  font-family: 'Varela', sans-serif;
   text-transform: uppercase;
   font-size: 2.5em;
   line-height: 1em;
@@ -318,7 +316,6 @@ footer p {
 /* --- End Application::List --- */
 /* --- Begin Application::Base --- */
 .base-text {
-  font-family: 'Varela', sans-serif;
   width: 730px;
   margin: 40px auto 0;
   font-size: 1.45em;

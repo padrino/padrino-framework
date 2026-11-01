@@ -30,7 +30,6 @@
     if @<%= @orm.name_singular %>
       render '<%= @orm.name_plural %>/edit'
     else
-      flash[:warning] = pat(:create_error, model: '<%= @orm.name_singular %>', id: params[:id])
       halt 404
     end
   end
@@ -49,7 +48,6 @@
         render '<%= @orm.name_plural %>/edit'
       end
     else
-      flash[:warning] = pat(:update_warning, model: '<%= @orm.name_singular %>', id: params[:id])
       halt 404
     end
   end
@@ -65,7 +63,6 @@
       end
       redirect url(:<%= @orm.name_plural %>, :index)
     else
-      flash[:warning] = pat(:delete_warning, model: '<%= @orm.name_singular %>', id: params[:id])
       halt 404
     end
   end
