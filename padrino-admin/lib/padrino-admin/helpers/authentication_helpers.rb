@@ -99,7 +99,9 @@ module Padrino
 
         def admin_model_obj
           @_admin_model_obj ||= Padrino::Inflections.constantize(settings.admin_model)
-        rescue NameError
+        rescue NameError => e
+          raise unless settings.admin_model.split('::').include?(e.name.to_s)
+
           raise Padrino::Admin::AccessControlError, "You must define an #{settings.admin_model} Model"
         end
       end

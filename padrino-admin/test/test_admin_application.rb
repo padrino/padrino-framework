@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'tmpdir'
 
 describe 'AdminApplication' do
   def setup
@@ -214,6 +215,44 @@ describe 'AdminApplication' do
     # Paths are compared after percent-decoding.
     refute @app.access_control.allowed?(Account.editor, '/%70osts_admin')
     assert @app.access_control.allowed?(Account.editor, '/%70osts')
+  end
+
+  describe 'the admin model lookup' do
+    def lookup(model)
+      helper = Object.new.extend(Padrino::Admin::Helpers::AuthenticationHelpers)
+      helper.define_singleton_method(:settings) { Struct.new(:admin_model).new(model) }
+      helper.send(:admin_model_obj)
+    end
+
+    def with_model_file(name, body)
+      Dir.mktmpdir do |dir|
+        file = File.join(dir, 'model.rb')
+        File.write(file, body)
+        Object.autoload(name, file)
+        begin
+          yield
+        ensure
+          Object.send(:remove_const, name) if Object.const_defined?(name, false) || Object.autoload?(name)
+        end
+      end
+    end
+
+    it 'should say the model is missing when it is' do
+      error = assert_raises(Padrino::Admin::AccessControlError) { lookup('MissingAccount') }
+      assert_match(/You must define an MissingAccount Model/, error.message)
+      assert_raises(Padrino::Admin::AccessControlError) { lookup('MissingNamespace::Account') }
+    end
+
+    it 'should keep the error of a model that fails to load' do
+      with_model_file(:BrokenMethodAccount, "class BrokenMethodAccount\n  no_such_macro :name\nend\n") do
+        error = assert_raises(NameError) { lookup('BrokenMethodAccount') }
+        assert_equal :no_such_macro, error.name
+      end
+      with_model_file(:BrokenConstantAccount, "class BrokenConstantAccount < NoSuchBase\nend\n") do
+        error = assert_raises(NameError) { lookup('BrokenConstantAccount') }
+        assert_equal :NoSuchBase, error.name
+      end
+    end
   end
 
   it 'should allow decoded non-ASCII paths and prefixes ending in a dot' do
