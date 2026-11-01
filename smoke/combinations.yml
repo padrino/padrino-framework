@@ -68,6 +68,15 @@
   server: puma
   add_component:
     mock: rr
+- name: sequel-trilogy-erb-minitest
+  orm: sequel
+  adapter: trilogy
+  renderer: erb
+  test: minitest
+  mock: mocha
+  script: none
+  stylesheet: none
+  server: puma
 - name: activerecord-sqlite-haml-minitest
   orm: activerecord
   adapter: sqlite
@@ -136,6 +145,15 @@
   server: falcon
   add_component:
     mock: rr
+- name: activerecord-trilogy-erb-minitest
+  orm: activerecord
+  adapter: trilogy
+  renderer: erb
+  test: minitest
+  mock: mocha
+  script: none
+  stylesheet: none
+  server: puma
 - name: mongoid-liquid-minitest
   orm: mongoid
   renderer: liquid

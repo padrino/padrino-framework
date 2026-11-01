@@ -177,7 +177,7 @@ describe 'Cli' do
 
       assert_stopped_without_backtrace(message, *run_without_input(padrino_gen_bin, 'project', 'demo', '-c', 'bogus'))
       assert_stopped_without_backtrace(message, *run_without_input(padrino_bin, 'g', 'project', 'demo', '-c', 'bogus'))
-      assert_stopped_without_backtrace('No input left to choose a valid --adapter; pass one of: mysql, mysql2, mysql-gem, postgres, sqlite',
+      assert_stopped_without_backtrace('No input left to choose a valid --adapter; pass one of: mysql, mysql2, mysql-gem, trilogy, postgres, sqlite',
                                        *run_without_input(padrino_gen_bin, 'project', 'demo', '-d', 'sequel', '-a', 'bogus'))
       assert_no_dir_exists("#{@apptmp}/demo")
 

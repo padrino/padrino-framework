@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- NEW #2490 `--adapter=trilogy` for Active Record (7.1 or newer) and Sequel projects, in `g project`, `g component` and the `ar:` and `sq:` database tasks, including `ar:dump` (@achiurizo)
 - FIX #2486 `Padrino.loaded?` is true in every thread once Padrino has loaded, instead of only in the thread that called `Padrino.load!`, and `Padrino.clear!` resets it for every thread. Concurrent `Padrino.load!` calls load once: calls from other threads wait for it, then return false, or run the load themselves if it raised. A `Padrino.load!` called again while loading from the loading thread (a load hook, a loaded file, or another fiber of that thread such as an Async task) returns false instead of running the whole load (and its hooks) a second time (@nesquena)
 - WARN #2486 `MyApp.run!` called from another thread once Padrino has loaded now returns nil without starting a server, as it already did in the thread that loaded; it used to load everything again and start one. To start a server from that thread, mount the app (`Padrino.mount(MyApp).to('/')`) and call `Padrino.run!`, which starts it whether or not it loads (@nesquena)
 - NEW #2489 New projects answer `GET /up` with 200 `OK` for load balancer and container health checks. It skips the session cookie, follows the app's mount point, and is left out of `--lean` projects and apps from `padrino g app`. Existing projects don't change: add the route to `app/app.rb` yourself (@achiurizo)
