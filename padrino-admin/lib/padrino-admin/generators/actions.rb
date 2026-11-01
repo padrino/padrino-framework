@@ -69,6 +69,7 @@ module Padrino
         #
         # @api public
         def fetch_app_name(app = 'app')
+          check_app_existence(app)
           app_path = destination_root(app, 'app.rb')
           @app_name ||= File.read(app_path).scan(/module\s(.*?)\n/).flatten[0]
         end
