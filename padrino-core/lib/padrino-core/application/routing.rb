@@ -120,6 +120,8 @@ module Padrino
       #     get :index, protect: false do
       #       'Welcome!'
       #     end
+      #
+      #     # A controller block nested in this one inherits these conditions, merged with its own.
       #   end
       #
       # @example Supply default values:
@@ -419,6 +421,7 @@ module Padrino
       def with_new_options(*args)
         original = {}
         options = args.last.is_a?(Hash) ? args.pop : {}
+        options[:conditions] = @_conditions.merge(options[:conditions] || {}) if @_conditions
 
         CONTROLLER_OPTIONS.each { |key| replace_instance_variable(original, "@_#{key}", options.delete(key)) }
         replace_instance_variable(original, :@_controller, args)
