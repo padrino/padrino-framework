@@ -212,7 +212,8 @@ describe 'AdminPageGenerator' do
             String :name
             TrueClass :enabled
           end
-          Object.const_set(:Switch, Class.new(Sequel::Model(:switches)))
+          # JRuby's jdbc-sqlite stores booleans as integers and loads 0 as 0, which is truthy.
+          Object.const_set(:Switch, Class.new(Sequel::Model(:switches)) { plugin :typecast_on_load, :enabled })
           Switch.create(name: 'on', enabled: true)
           Switch.create(name: 'off', enabled: false)
           Switch.create(name: 'unset', enabled: nil)
