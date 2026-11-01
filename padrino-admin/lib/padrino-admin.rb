@@ -20,6 +20,26 @@ module Padrino
         I18n.load_path += Dir["#{__dir__}/padrino-admin/locale/**/*.yml"]
       end
       alias included registered
+
+      ##
+      # Whether +error+, raised looking up the constant +name+, says that constant (or one of its
+      # namespaces) is not defined, rather than coming from the code that defining it ran. The
+      # error must name a segment of +name+ and have been raised on that segment's parent, so a
+      # model whose body references another constant with the same short name isn't "missing".
+      #
+      def missing_constant?(error, name)
+        return false unless error.instance_of?(NameError)
+
+        segments = name.to_s.sub(/\A::/, '').split('::')
+        return false unless error.receiver.is_a?(::Module)
+
+        segments.each_index.any? do |index|
+          parent = index.zero? ? 'Object' : segments.first(index).join('::')
+          segments[index] == error.name.to_s && error.receiver.name == parent
+        end
+      rescue ArgumentError
+        false
+      end
     end
   end
 end

@@ -24,6 +24,11 @@ module Padrino
 
     class << self
       ##
+      # The error the project's config/boot.rb raised when the generator CLI loaded it, or nil.
+      #
+      attr_accessor :boot_error
+
+      ##
       # Store our generators paths.
       #
       def load_paths

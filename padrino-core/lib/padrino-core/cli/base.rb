@@ -62,8 +62,10 @@ module Padrino
         ARGV.shift
         ARGV << 'help' if ARGV.empty?
         exit 1 unless Padrino.bin_gen(*ARGV)
-      rescue StandardError
-        puts '<= You need padrino-gen! Run: gem install padrino-gen'
+      rescue LoadError => e
+        raise unless (e.path || e.message[/-- (\S+)\z/, 1]) == 'padrino-gen/command'
+
+        abort "<= padrino g needs padrino-gen. Add gem 'padrino-gen' to your Gemfile and run bundle install, or run: gem install padrino-gen"
       end
 
       desc 'version', 'Show current Padrino version.'
