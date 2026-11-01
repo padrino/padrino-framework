@@ -30,7 +30,8 @@ BACON_CONTROLLER_TEST = <<~TEST.gsub(/^ {10}/, '') unless defined?(BACON_CONTROL
   describe "!PATH!" do
     it 'returns text at root' do
       get "!EXPANDED_PATH!"
-      last_response.body.should == "some text"
+      # Bacon reports a spec without requirements as missing. Add some, such as:
+      # last_response.body.should == "some text"
     end
   end
 TEST
@@ -74,7 +75,8 @@ BACON_HELPER_TEST = <<~TEST unless defined?(BACON_HELPER_TEST)
     end
 
     it "should return nil" do
-      @helpers.foo.should.equal nil
+      # Bacon reports a spec without requirements as missing. Add some, or delete this file:
+      # @helpers.foo.should.equal nil
     end
   end
 TEST

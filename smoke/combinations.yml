@@ -256,3 +256,25 @@
   server: falcon
   add_component:
     mock: rr
+- name: sequel-sqlite-erb-testunit-tiny
+  orm: sequel
+  adapter: sqlite
+  renderer: erb
+  test: testunit
+  shape: tiny
+- name: none-erb-minitest-tiny
+  renderer: erb
+  test: minitest
+  shape: tiny
+- name: sequel-sqlite-erb-minitest-lean
+  orm: sequel
+  adapter: sqlite
+  renderer: erb
+  test: minitest
+  shape: lean
+- name: sequel-sqlite-erb-minitest-api
+  orm: sequel
+  adapter: sqlite
+  renderer: erb
+  test: minitest
+  shape: api

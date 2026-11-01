@@ -7,9 +7,9 @@ module Smoke
   # The steps that build and exercise one generated project.
   class Project
     VIEW_EXTENSIONS = { 'erb' => 'erb', 'haml' => 'haml', 'liquid' => 'liquid', 'slim' => 'slim' }.freeze
-    # The body the generated controller test for each test component expects from GET /posts. RSpec's
-    # placeholders are pending, and a pending example that passes fails the run, so its body differs.
-    EXPECTED_BODY = Hash.new('Hello World').merge('bacon' => 'some text', 'rspec' => 'Smoke rspec').freeze
+    # The body of GET /posts. RSpec's placeholders are pending, and a pending example that passes fails
+    # the run, so its body differs from the one its placeholder expects.
+    EXPECTED_BODY = Hash.new('Hello World').merge('rspec' => 'Smoke rspec').freeze
     # Cucumber's sample feature drives a calculator page no project has; a developer replaces it.
     CUCUMBER_SAMPLE = %w[features/add.feature features/step_definitions/add_steps.rb].freeze
 
@@ -106,12 +106,16 @@ module Smoke
     end
 
     def scaffold!
+      return if combination.lean?
+
       padrino('scaffold', %w[g controller posts get:index])
       write("app/views/posts/index.#{VIEW_EXTENSIONS.fetch(combination.renderer)}", view_source)
-      edit('app/controllers/posts.rb') { |source| source.sub(/get :index do\s*end/, "get :index do\n    render('posts/index').strip\n  end") }
+      # An API project has neither padrino-helpers, which renders views, nor padrino-mailer.
+      body = combination.api? ? marker.inspect : "render('posts/index').strip"
+      edit('app/controllers/posts.rb') { |source| source.sub(/get :index do\s*end/, "get :index do\n    #{body}\n  end") }
       fill_in_placeholders
       padrino('scaffold', %w[g model post title:string body:text]) unless combination.orm == 'none'
-      padrino('scaffold', %w[g mailer notifier])
+      padrino('scaffold', %w[g mailer notifier]) unless combination.api?
       build_vite if combination.vite?
     end
 
@@ -165,7 +169,7 @@ module Smoke
     def boot!
       port = free_port
       pid = Shell.spawn(%w[bundle exec padrino start -a] + [combination.server, '-p', port.to_s], chdir: path)
-      expect_response('boot', port, '/posts', '200', marker)
+      combination.lean? ? expect_response('boot', port, '/', '404') : expect_response('boot', port, '/posts', '200', marker)
       expect_response('boot', port, '/admin', '302') if combination.admin?
       Process.kill('TERM', pid)
       status = wait_for(pid, 10)
@@ -182,7 +186,9 @@ module Smoke
       run('rerun', %w[git init -q])
       run('rerun', %w[git add -A])
       run('rerun', %w[git -c user.email=smoke@example.com -c user.name=smoke commit -q -m base])
-      padrino('rerun', %w[g component] + combination.component_flags)
+      # A test component belongs to an app, so `g component` refuses --test in a project without one.
+      flags = combination.lean? ? combination.component_flags.grep_v(/\A--test=/) : combination.component_flags
+      padrino('rerun', %w[g component] + flags)
       changes = run('rerun', %w[git status --porcelain])
       raise StepFailed.new('rerun', %w[git status --porcelain], path, 'project changed', changes + run('rerun', %w[git diff])) unless changes.empty?
     end
@@ -265,11 +271,8 @@ module Smoke
       ''
     end
 
-    # Do what a developer does with the generated placeholder tests: give them the code they describe.
+    # Do what a developer does with cucumber's sample feature: replace it with one for this project.
     def fill_in_placeholders
-      unless combination.test == 'rspec'
-        edit('app/helpers/posts_helper.rb') { |source| source.sub('# def simple_helper_method', "def foo; end\n\n      # def simple_helper_method") }
-      end
       return unless combination.test == 'cucumber'
 
       CUCUMBER_SAMPLE.each { |file| FileUtils.rm_f(File.join(path, file)) }
