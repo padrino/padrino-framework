@@ -118,6 +118,7 @@ module Padrino
 
         def serve_cached_response
           if settings.caching? && (cached_response = load_cached_response)
+            env['sinatra.route'] = "#{request.request_method} #{@route.sinatra_pattern}"
             content_type cached_response[:content_type]
             halt 200, cached_response[:body]
           end

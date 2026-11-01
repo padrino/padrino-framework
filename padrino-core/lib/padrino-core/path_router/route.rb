@@ -58,9 +58,15 @@ module Padrino
       ##
       # Returns the pattern as Sinatra writes it in env['sinatra.route']. Sinatra
       # stringifies a Regexp through Mustermann, which drops the (?-mix:) wrapper.
+      # The root route is stored as an empty path; Sinatra names it "/".
       #
       def sinatra_pattern
-        @sinatra_pattern ||= @path.is_a?(Regexp) ? Mustermann.new(@path, check_anchors: false).to_s : @path.to_s
+        @sinatra_pattern ||=
+          if @path.is_a?(Regexp)
+            Mustermann.new(@path, check_anchors: false).to_s
+          else
+            @path.to_s.empty? ? '/' : @path.to_s
+          end
       end
 
       SIGNIFICANT_VARIABLES_REGEX = /(^|[^\\])[:*]([a-zA-Z0-9_]+)/

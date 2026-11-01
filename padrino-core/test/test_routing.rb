@@ -2601,6 +2601,17 @@ describe 'Routing' do
   end
 
   describe "env['sinatra.route']" do
+    it 'names the root route /' do
+      mock_app do
+        get(:index) { env['sinatra.route'] }
+        controller(:admin) { get(:index) { env['sinatra.route'] } }
+      end
+      get '/'
+      assert_equal 'GET /', body
+      get '/admin'
+      assert_equal 'GET /admin', body
+    end
+
     it 'holds the verb and the pattern, as Sinatra writes it' do
       mock_app do
         get(:index, map: '/posts') { env['sinatra.route'] }
