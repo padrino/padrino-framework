@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #XXXX `Padrino.loaded?` is true in every thread once Padrino has loaded, instead of only in the thread that called `Padrino.load!`, and `Padrino.clear!` resets it for every thread. Concurrent `Padrino.load!` calls load once: the others wait for it, then return false, as does a `Padrino.load!` called from a load hook or a loaded file while loading (@nesquena)
 - WARN #2479 A `controller` block nested inside another now inherits the outer block's `conditions:` (merged, the inner block's keys winning), as it already inherited its filters. If a nested block's routes must not have an outer condition, turn it off in the inner block's `conditions:` (for example `conditions: { protect: false }`) or in the route's options (`protect: false`), for a condition that skips itself when given false, or move the block out of the outer one (@nesquena)
 
 == 0.18.2 (2026-11-01)

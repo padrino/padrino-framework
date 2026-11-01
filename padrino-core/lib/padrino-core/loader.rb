@@ -1,5 +1,14 @@
+require 'monitor'
+
 module Padrino
   module Loader
+    # The loaded state and the lock that guards it belong to the extending module (Padrino),
+    # so every thread sees the same state.
+    def self.extended(base)
+      base.instance_variable_set(:@_load_lock, Monitor.new)
+      base.instance_variable_set(:@_loaded, false)
+    end
+
     ##
     # Hooks to be called before a load/reload.
     #
@@ -44,21 +53,27 @@ module Padrino
     # Requires necessary dependencies as well as application files from root
     # lib and models.
     #
+    # Concurrent calls load once: the others wait for it to finish, then return false.
+    # A call made while loading, from the loading thread, returns false.
+    #
     # @return [Boolean]
     #   returns true if Padrino is not already bootstraped otherwise else.
     #
     def load!
-      return false if loaded?
-      began_at = Time.now
-      @_called_from = first_caller
-      Padrino.logger
-      Reloader.lock!
-      before_load.each(&:call)
-      require_dependencies(*dependency_paths)
-      after_load.each(&:call)
-      logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
-      precompile_all_routes!
-      Thread.current[:padrino_loaded] = true
+      return false if @_load_lock.mon_owned?
+      @_load_lock.synchronize do
+        return false if @_loaded
+        began_at = Time.now
+        @_called_from = first_caller
+        Padrino.logger
+        Reloader.lock!
+        before_load.each(&:call)
+        require_dependencies(*dependency_paths)
+        after_load.each(&:call)
+        logger.devel "Loaded Padrino in #{Time.now - began_at} seconds"
+        precompile_all_routes!
+        @_loaded = true
+      end
     end
 
     ##
@@ -79,14 +94,17 @@ module Padrino
     # @return [NilClass]
     #
     def clear!
-      clear_middleware!
-      mounted_apps.clear
-      @_dependency_paths = nil
-      before_load.clear
-      after_load.clear
-      global_configurations.clear
-      Reloader.clear!
-      Thread.current[:padrino_loaded] = nil
+      @_load_lock.synchronize do
+        clear_middleware!
+        mounted_apps.clear
+        @_dependency_paths = nil
+        before_load.clear
+        after_load.clear
+        global_configurations.clear
+        Reloader.clear!
+        @_loaded = false
+      end
+      nil
     end
 
     ##
@@ -111,10 +129,10 @@ module Padrino
     # Determines whether Padrino was loaded with {Padrino.load!}.
     #
     # @return [Boolean]
-    #   Specifies whether Padrino was loaded.
+    #   Specifies whether Padrino was loaded, in any thread.
     #
     def loaded?
-      Thread.current[:padrino_loaded]
+      @_loaded
     end
 
     ##
