@@ -64,7 +64,10 @@ module Padrino
           @model_plural   = @model_singular.pluralize
           model_path      = destination_root('models', "#{@model_singular}.rb")
 
-          stop_for_model_without_login(model_path) unless options[:destroy]
+          # A plain app (g app admin) or a missing one: an admin app has access control once generated.
+          first_install = !line_in_file?(destination_root(@admin_path, 'app.rb'), /Padrino::Admin::AccessControl/)
+
+          stop_for_model_without_login(model_path) if first_install && !options[:destroy]
 
           store_component_choice(:admin_renderer, tmp_ext)
 
@@ -82,7 +85,7 @@ module Padrino
             RUBY
           end
 
-          unless options[:destroy] || orm != :activerecord || line_in_file?(destination_root(@admin_path, 'app.rb'), /^\s*use ConnectionPoolManagement\b/)
+          unless options[:destroy] || orm != :activerecord || line_in_file?(destination_root(@admin_path, 'app.rb'), /^\s*use[\s(]+ConnectionPoolManagement\b/)
             insert_middleware 'ConnectionPoolManagement', @admin_path
           end
 
@@ -122,7 +125,7 @@ module Padrino
           # Seeds of the admin model stay in place; moving others aside never replaces an earlier move.
           seed_destination = destination_root('db', 'seeds.rb')
           seed_backup      = destination_root('db/seeds.old')
-          if File.exist?(seed_destination) && !File.exist?(seed_backup) && !line_in_file?(seed_destination, /\b#{@model_name}\b/)
+          if first_install && File.exist?(seed_destination) && !File.exist?(seed_backup) && !line_in_file?(seed_destination, /\b#{@model_name}\b/)
             run "mv #{seed_destination} #{seed_backup}"
           end
           template 'templates/account/seeds.rb.tt', seed_destination
@@ -146,10 +149,10 @@ module Padrino
           gemfile = destination_root('Gemfile')
           unless options[:destroy]
             add_missing_project_module @model_plural
-            require_dependencies('bcrypt') unless line_in_file?(gemfile, /^\s*gem\s+['"]bcrypt['"]/)
+            require_dependencies('bcrypt') unless line_in_file?(gemfile, /^\s*gem[\s(]+['"]bcrypt['"]/)
           end
 
-          require_dependencies 'activesupport', version: '>= 3.1' if options[:destroy] || !line_in_file?(gemfile, /^\s*gem\s+['"]activesupport['"]/)
+          require_dependencies 'activesupport', version: '>= 3.1' if options[:destroy] || !line_in_file?(gemfile, /^\s*gem[\s(]+['"]activesupport['"]/)
 
           # A nicer select box.
           # TODO FIXME This doesn't make much sense in here. Review.

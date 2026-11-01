@@ -38,7 +38,7 @@ module Padrino
         # Adds the access_control permission unless the app has one for the controller, edited or not.
         #
         def add_missing_project_module(controller)
-          add_project_module(controller) unless line_in_file?(destination_root("#{@admin_path}/app.rb"), /^\s*role\.project_module\s+:#{controller}\b/)
+          add_project_module(controller) unless line_in_file?(destination_root("#{@admin_path}/app.rb"), /^\s*role\.project_module[\s(]+:#{controller}\b/)
         end
 
         ##

@@ -72,6 +72,51 @@ describe 'AdminRerun' do
         assert_match_in_file(/account != current_account && account\.destroy/, "#{@project}/admin/controllers/accounts.rb")
       end
 
+      it 'should keep edited seeds that delegate to another file at the end of input' do
+        File.write("#{@project}/db/seeds.rb", "load 'db/seeds/staff.rb'\n")
+        edited = snapshot
+        capture_io { with_answers { generate(:admin_app, "--root=#{@project}") } }
+        assert_equal edited, snapshot
+      end
+
+      it 'should send delegating seeds through the overwrite prompt' do
+        File.write("#{@project}/db/seeds.rb", "load 'db/seeds/staff.rb'\n")
+        capture_io { with_answers(*['y'] * 50) { generate(:admin_app, "--root=#{@project}") } }
+        assert_match_in_file(/Account\.new\(/, "#{@project}/db/seeds.rb")
+        assert_no_file_exists("#{@project}/db/seeds.old")
+      end
+
+      it 'should move seeds without the model aside for the first install of another admin app' do
+        File.write("#{@project}/db/seeds.rb", "load 'db/seeds/staff.rb'\n")
+        capture_io { with_answers { generate(:admin_app, "--root=#{@project}", '-a=other') } }
+        assert_match_in_file(/staff\.rb/, "#{@project}/db/seeds.old")
+        assert_match_in_file(/Account\.new\(/, "#{@project}/db/seeds.rb")
+      end
+
+      it 'should keep gems declared with parentheses' do
+        edit('Gemfile') do |content|
+          content.sub(/^gem 'bcrypt'.*$/, "gem('bcrypt', '>= 3.1')").sub(/^gem 'activesupport'.*$/, "gem('activesupport', '>= 3.1')")
+        end
+        edited = snapshot
+        capture_io { with_answers { generate(:admin_app, "--root=#{@project}") } }
+        assert_equal edited, snapshot
+        assert_equal 1, File.read("#{@project}/Gemfile").scan(/bcrypt/).size
+        assert_equal 1, File.read("#{@project}/Gemfile").scan(/activesupport/).size
+      end
+
+      it 'should not stop a re-run for a model that gets authenticate elsewhere' do
+        File.write("#{@project}/models/account.rb", "class Account\n  extend Credentials\nend\n")
+        edited = snapshot
+        capture_io do
+          with_stdin('') do
+            with_answers { generate(:admin_app, "--root=#{@project}") }
+          rescue SystemExit => e
+            flunk "the admin generator exited with status #{e.status}"
+          end
+        end
+        assert_equal edited, snapshot
+      end
+
       it 'should leave a removed destroy guard removed at the end of input' do
         edit('admin/controllers/accounts.rb') { |content| content.sub('account != current_account && ', '') }
         edited = snapshot
@@ -116,6 +161,17 @@ describe 'AdminRerun' do
         assert_equal "# partial\n", File.read("#{@project}/admin/app.rb")
         assert_match_in_file(%r{Padrino\.mount\('SampleProject::Admin'.*\.to\('/admin'\)}, "#{@project}/config/apps.rb")
         assert_match_in_file(/gem 'bcrypt'/, "#{@project}/Gemfile")
+      end
+
+      it 'should stop for a plain model after g app admin at the end of input' do
+        capture_io { generate(:app, 'admin', "-r=#{@project}") }
+        FileUtils.mkdir_p("#{@project}/models")
+        File.write("#{@project}/models/account.rb", "class Account\nend\n")
+        before_run = snapshot
+        capture_io do
+          with_stdin('') { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "--root=#{@project}") }.status }
+        end
+        assert_equal before_run, snapshot
       end
 
       it 'should add every line after g app admin and a yes' do
