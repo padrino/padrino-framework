@@ -76,12 +76,17 @@ module Padrino
         end
 
         ##
-        # Store in session[:return_to] the path of the request, with its query string,
-        # under ENV['RACK_BASE_URI'] when that is set.
+        # Store in session[:return_to] the path of the request (with SCRIPT_NAME and the query
+        # string), under ENV['RACK_BASE_URI'] when that is set and SCRIPT_NAME doesn't already
+        # start with it.
         #
         def store_location!
           path = request.fullpath
-          session[:return_to] = ENV['RACK_BASE_URI'] ? File.join(ENV['RACK_BASE_URI'], path) : path
+          base_uri = File.join('/', ENV['RACK_BASE_URI'].to_s).chomp('/')
+          unless base_uri.empty? || request.script_name == base_uri || request.script_name.start_with?("#{base_uri}/")
+            path = File.join(base_uri, path)
+          end
+          session[:return_to] = path
         end
 
         ##
@@ -109,11 +114,15 @@ module Padrino
         LOCAL_PATH = %r{\A/(?![/\\])[^\x00-\x1f\x7f]*\z}n
         private_constant :LOCAL_PATH
 
-        # True for a path on this site, checked as given and with its path part percent-decoded.
+        # True for a path on this site, checked as given and with its path part percent-decoded,
+        # each as UTF-8 bytes.
         def local_path?(path)
-          return false unless path.is_a?(String) && path.valid_encoding?
+          return false unless path.is_a?(String)
 
-          [path, Rack::Utils.unescape_path(path[/\A[^?#]*/])].all? { |candidate| candidate.b.match?(LOCAL_PATH) }
+          bytes = path.b
+          [bytes, Rack::Utils.unescape_path(bytes[/\A[^?#]*/n])].all? do |candidate|
+            candidate.b.force_encoding(Encoding::UTF_8).valid_encoding? && candidate.b.match?(LOCAL_PATH)
+          end
         end
 
         def login_page

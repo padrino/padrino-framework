@@ -244,13 +244,14 @@ describe 'AdminApplication' do
         register Padrino::Admin::AccessControl
         enable :sessions
         set :absolute_redirects, absolute_redirects
-        get('/remember') { session[:return_to] = params[:to]; 'remembered' }
+        # binary: store the value as an ASCII-8BIT string, as params arrive as UTF-8.
+        get('/remember') { session[:return_to] = params[:binary] ? params[:to].b : params[:to]; 'remembered' }
         get('/back') { redirect_back_or_default('/default') }
       end
     end
 
     def redirect_back_from(return_to)
-      get '/remember', to: return_to
+      get '/remember', to: return_to, binary: (true if return_to.encoding == Encoding::BINARY)
       get '/back'
       last_response.location
     end
@@ -267,7 +268,7 @@ describe 'AdminApplication' do
         mock_redirect_app(absolute_redirects)
         ['//example.com', '///example.com', '/\\example.com', "/\t/example.com", '/%2F%2Fexample.com', '/%2f/example.com',
          '/%5Cexample.com', '/%09/example.com', 'https://example.com', 'https://example.com/posts', 'javascript:alert(1)',
-         'example.com', '', "/\xff".dup.force_encoding('UTF-8')].each do |return_to|
+         'example.com', '', "/\xff".dup.force_encoding('UTF-8'), "/\xff".b, '/%FF', '/posts%FF?page=2'].each do |return_to|
           assert_equal default, redirect_back_from(return_to), return_to.inspect
         end
       end
@@ -306,6 +307,40 @@ describe 'AdminApplication' do
         get '/login'
         assert_equal location, last_response.location, "RACK_BASE_URI=#{base_uri.inspect}, REQUEST_URI=#{request_uri}"
       end
+    end
+  ensure
+    ENV['RACK_BASE_URI'] = saved_base_uri
+  end
+
+  it 'should store the path of a mounted app, with RACK_BASE_URI once, and redirect back to it after login' do
+    saved_base_uri = ENV['RACK_BASE_URI']
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :store_location
+      enable :sessions
+      set :login_page, '/login'
+
+      access_control.roles_for :any do |role|
+        role.protect '/posts'
+      end
+
+      get('/login') { set_current_account(Account.admin); redirect_back_or_default('/default') }
+      get('/posts') { 'posts' }
+    end
+
+    # [RACK_BASE_URI, SCRIPT_NAME, stored path]: mounted at /admin; behind a proxy that strips
+    # /base; and under /app that the server puts in SCRIPT_NAME (with RACK_BASE_URI set for url()).
+    [[nil, '/admin', '/admin/posts?page=2'],
+     ['/base', '/admin', '/base/admin/posts?page=2'],
+     ['base/', '/admin', '/base/admin/posts?page=2'],
+     ['/app', '/app/admin', '/app/admin/posts?page=2'],
+     ['/app', '/application/admin', '/app/application/admin/posts?page=2']].each do |base_uri, script_name, stored|
+      ENV['RACK_BASE_URI'] = base_uri
+      clear_cookies
+      get '/posts?page=2', {}, 'SCRIPT_NAME' => script_name
+      assert_equal 302, status
+      get '/login'
+      assert_equal "http://example.org#{stored}", last_response.location, "RACK_BASE_URI=#{base_uri.inspect}, SCRIPT_NAME=#{script_name}"
     end
   ensure
     ENV['RACK_BASE_URI'] = saved_base_uri
