@@ -713,6 +713,14 @@ describe 'ComponentGenerator' do
       assert_match(/^\s+= csrf_meta_tags$/, out)
     end
 
+    it 'should print the layout lines for the stored renderer when the switch is declined' do
+      capture_io { generate(:project, 'sample_project', '--renderer=erb', "--root=#{@apptmp}") }
+      out, = apply_component('--script=htmx', '--renderer=haml', answer: 'no')
+      assert_match(%r{layouts/application\.erb}, out)
+      assert_match(/<%= csrf_meta_tags %>/, out)
+      assert_equal 'erb', YAML.load_file(project_file('.components'))[:renderer]
+    end
+
     it 'should read the token where csrf_meta_tags writes it' do
       capture_io { generate(:project, 'sample_project', '--script=htmx', "--root=#{@apptmp}") }
       script = File.read(project_file('public/javascripts/htmx-csrf.js'))
