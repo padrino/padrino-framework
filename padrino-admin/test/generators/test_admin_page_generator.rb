@@ -231,7 +231,10 @@ describe 'AdminPageGenerator' do
             set :views, views
             helpers Padrino::Admin::Helpers::ViewHelpers
             controllers :switches do
-              get(:index) { @switches = Switch.order(:id).all; render 'switches/index', layout: false }
+              get(:index) do
+                @switches = Switch.order(:id).all
+                render 'switches/index', layout: false
+              end
               get(:new) {}
               get(:edit, with: :id) {}
               delete(:destroy, with: :id) {}
