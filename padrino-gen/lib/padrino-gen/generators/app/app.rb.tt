@@ -1,13 +1,22 @@
 module <%= @project_name %>
   class <%= @app_name %> < Padrino::Application
-<% unless options.api? -%>
+<% if padrino_gem?('padrino-mailer') -%>
     register Padrino::Mailer
+<% end -%>
+<% if padrino_gem?('padrino-helpers') -%>
     register Padrino::Helpers
 <% end -%>
+<% if api_project? -%>
+    # CSRF protection follows sessions, because without a session it rejects every request.
+    # `enable :sessions` here turns on both, except in the test environment. For another session
+    # store, give the :sessions setting `use:` and `config:` options rather than a `use` line.
+    set :protect_from_csrf, proc { sessions? && Padrino.env != :test }
+<% else -%>
     # The session cookie is Secure (sent over HTTPS only) in production. Over plain HTTP
     # the app then sends no session cookie, so logins and CSRF-protected forms fail. Behind
     # a proxy that terminates TLS, have it send X-Forwarded-Proto: https, or set secure: false.
     set :sessions, same_site: :lax, secure: Padrino.env == :production
+<% end -%>
 
     ##
     # Caching support.
