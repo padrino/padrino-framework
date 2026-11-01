@@ -4,19 +4,22 @@ module Padrino
     PADRINO_IGNORE_CALLERS = [
       *Sinatra::Base.callers_to_ignore,                            # Inherit Sinatra's default ignore patterns
       Regexp.new(Regexp.escape(RbConfig::CONFIG['rubylibdir'])),   # Ignore the Ruby standard lib path
-      %r{lib/padrino-.*$},
-      %r{/padrino-.*/(lib|bin)},
+      %r{/lib/padrino-(admin|cache|core|gen|helpers|mailer|performance|support)/},
+      %r{/lib/padrino/(core_ext|rendering|safe_buffer)},
+      %r{/lib/padrino(-[^/]+)?\.rb$},
+      %r{/padrino-[^/]+/(lib|bin)/},
       %r{/bin/padrino$},
-      %r{lib/rack.*\.rb$},
-      %r{lib/mongrel.*\.rb$},
-      %r{lib/shotgun.*\.rb$},
+      %r{/lib/rack(up)?(\.rb$|/)},
+      %r{/lib/mongrel(\.rb$|/)},
+      %r{/lib/shotgun(\.rb$|/)},
       %r{bin/shotgun$},
       %r{shoulda/context\.rb$},
-      %r{mocha/integration},
-      %r{test/unit},
+      %r{/lib/mocha/integration},
+      %r{/lib/test/unit},
       /rake_test_loader\.rb/,
       /custom_require\.rb$/,
-      %r{/thor}
+      %r{/lib/thor(\.rb$|/)},
+      %r{/bin/thor$}
     ]
 
     ##
