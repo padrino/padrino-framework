@@ -99,6 +99,19 @@ module Padrino
         route_path = decode_route_path(path)
         [route_path, decode_path(path), decode_path(route_path)].map(&:scrub).uniq
       end
+
+      ##
+      # Returns +path+ up to its last character that matches +keep+, so without
+      # its trailing slashes by default. A path with no such character gives ''.
+      #
+      # @example
+      #   Padrino::Routing.strip_trailing('/posts//') # => "/posts"
+      #
+      # @api private
+      def strip_trailing(path, keep = %r{[^/]})
+        index = path.rindex(keep)
+        index ? path[0..index] : ''
+      end
     end
 
     # Class methods responsible for enhanced routing for controllers.
@@ -1000,7 +1013,20 @@ module Padrino
         base.filters[type].each { |block| instance_eval(&block) }
       end
 
+      # Runs the app's before filters for the route being tried. Each runs to its end at most once
+      # for a level of routes, so one with no match on a route, or that passed on it, gets another
+      # chance on the next, and a request that ends up elsewhere doesn't run them again.
+      def before_filter!(base = settings)
+        before_filter!(base.superclass) if base.superclass.respond_to?(:filters)
+        base.filters[:before].each do |block|
+          next if @_ran_filters[block]
+
+          @_ran_filters[block] = true unless Filter::SKIPPED.equal?(instance_eval(&block))
+        end
+      end
+
       def dispatch!
+        @_ran_filters = {}.compare_by_identity
         @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
         force_encoding(@params)
         invoke do
@@ -1008,7 +1034,7 @@ module Padrino
           route!
         end
       rescue ::Exception => e
-        filter! :before if e.is_a? ::Sinatra::NotFound
+        catch(:pass) { before_filter! } if e.is_a? ::Sinatra::NotFound
         invoke { @boom_handled = handle_exception!(e) }
       ensure
         @boom_handled || begin
@@ -1064,7 +1090,12 @@ module Padrino
         @params[:format] = params[:format] if params[:format]
         @params[:captures] = captured_params if !captured_params.empty? && route.path.is_a?(Regexp)
 
-        filter! :before if first_time
+        @_ran_filters.clear if first_time
+        passed = catch(:pass) do
+          before_filter!
+          :filtered
+        end
+        return passed unless passed == :filtered
 
         catch(:pass) do
           (route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }
