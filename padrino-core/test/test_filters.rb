@@ -246,6 +246,71 @@ describe 'Filters' do
     assert_equal 'new filter', body
   end
 
+  it 'should give 404 for a path that decodes to a newline with a Regexp filter' do
+    mock_app do
+      before(%r{\A/admin/.*\z}) { halt 401, 'stopped' }
+      before(%r{^/staff/.+$}) { halt 401, 'stopped' }
+      after(%r{\A/admin/.*\z}) { response.status = 401 }
+      get('/admin/:id') { 'admin' }
+      get('/staff/:id') { 'staff' }
+      get('/other/:id') { 'other' }
+    end
+    get '/other/1'
+    assert_equal 'other', body
+    ['/admin/1', '/staff/1'].each do |path|
+      get path
+      assert_equal 401, status, path
+    end
+    ['/admin/a%0Ab', '/staff/%0Ab', '/other/a%0Ab'].each do |path|
+      get path
+      assert_equal 404, status, path
+    end
+  end
+
+  it 'should run an except filter for a path that decodes to a newline' do
+    mock_app do
+      before(except: %r{\A/public$}) { halt 401, 'stopped' }
+      after(except: %r{\A/public$}) { response.status = 401 }
+      get('/public') { 'public' }
+      get('/:x/:y') { 'two' }
+    end
+    get '/public'
+    assert_equal 'public', body
+    get '/public/report'
+    assert_equal 401, status
+    get '/public%0A/report'
+    assert_equal [401, 'stopped'], [status, body]
+  end
+
+  it 'should keep a guard filter for a path with a control character' do
+    mock_app do
+      before('/login') { @public = true }
+      before(except: %r{\A/admin}) { @public = true }
+      before { halt 401, 'login' unless @public }
+      get('/admin/:id') { 'admin' }
+      get('/login') { 'form' }
+    end
+    get '/login'
+    assert_equal 'form', body
+    ['/admin/1', '/admin/1%09', '/admin/1%0D'].each do |path|
+      get path
+      assert_equal [401, 'login'], [status, body], path
+    end
+    get '/admin/1%0A'
+    assert_equal 404, status
+  end
+
+  it 'should run an except filter for a path that decodes to a newline under a mounted sub-path' do
+    mock_app do
+      before(except: %r{^/public}) { halt 401, 'stopped' }
+      get('/users/:id/:tab') { 'user' }
+    end
+    request = Rack::MockRequest.new(Padrino::Router.new({ path: '/blog', to: @app }, { path: '/', to: @app }))
+    assert_equal 401, request.get('/blog/users/1/public').status
+    assert_equal 401, request.get('/blog/users/1%0A/public').status
+    assert_equal 401, request.get('/users/1%0A/public').status
+  end
+
   it 'should be able to filter based on a symbol' do
     mock_app do
       before(:index) { @test = 'before' }

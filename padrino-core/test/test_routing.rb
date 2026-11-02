@@ -414,32 +414,63 @@ describe 'Routing' do
     assert_equal 'cpp', body
   end
 
+  it 'should give 404 for a path that decodes to a newline' do
+    mock_app do
+      get('/files/*path') { "file #{params[:path].inspect}" }
+      get(%r{/rx/(.+)}) { "rx #{params[:captures].first.inspect}" }
+      get('/names/:name') { "name #{params[:name].inspect}" }
+      post('/names/:name') { "posted #{params[:name].inspect}" }
+    end
+    request = Rack::MockRequest.new(Padrino::Router.new({ path: '/blog', to: @app }, { path: '/', to: @app }))
+    ['', '/blog'].each do |mount|
+      ['/files/a%0Ab', '/files/a%250Ab', '/rx/a%0Ab', '/rx/a%250Ab', '/names/a%0A', '/names/a%0a', '/names/a%250A', '/names/%0A/'].each do |path|
+        assert_equal 404, request.get("#{mount}#{path}").status, "#{mount}#{path}"
+      end
+      assert_equal 404, request.post("#{mount}/names/a%0A").status, mount
+      { '/files/a%09b' => 'file "a\tb"', '/rx/a%0Db' => 'rx "a\rb"', '/names/a%00' => 'name "a\u0000"',
+        '/names/a%7F' => 'name "a\u007F"', '/names/a%250D' => 'name "a\r"' }.each do |path, served|
+        assert_equal served, request.get("#{mount}#{path}").body, "#{mount}#{path}"
+      end
+    end
+  end
+
+  it 'should cascade a path with a control character to the next app at the same mount' do
+    first = mock_app do
+      before('/admin') { halt 401, 'first' }
+      get('/admin') { 'admin' }
+    end
+    second = mock_app do
+      get('/files/:name') { "file #{params[:name].inspect}" }
+    end
+    request = Rack::MockRequest.new(Padrino::Router.new({ path: '/', to: first }, { path: '/', to: second }))
+    assert_equal 'file "a\tb"', request.get('/files/a%09b').body
+    assert_equal 404, request.get('/files/a%0Ab').status
+    assert_equal 401, request.get('/admin').status
+  end
+
   it 'should match the whole path, not up to a trailing newline' do
     mock_app do
-      before('/private') { halt 403, 'filtered' }
-      get('/private') { 'private' }
+      before('/staff') { halt 403, 'filtered' }
+      get('/staff') { 'staff' }
       get('/files/*path') { "file #{params[:path]}" }
       get('/names/:name') { "name #{params[:name].inspect}" }
       get(:lazy_id, map: '/u/:id', id: %r{[^/]+?}) { "u #{params[:id].inspect}" }
       get(%r{/lazy/([^/]+?)(?:\.(json))?}) { "lazy #{params[:captures].first.inspect}" }
       get(%r{/rx}) { 'rx' }
     end
-    ['/private%0A', '/private%0A/', '/files/a%0A', '/x%0A/rx', '/rx%0A'].each do |path|
+    ['/staff%0A', '/staff%0A/', '/files/a%0A', '/x%0A/rx', '/rx%0A', '/names/a%0A', '/names/a%250A',
+     '/u/a%0A', '/lazy/a%0A', '/lazy/a%0a'].each do |path|
       get path
       assert_equal 404, status, path
     end
-    get '/private'
+    get '/staff'
     assert_equal [403, 'filtered'], [status, body]
     get '/files/a/b'
     assert_equal 'file a/b', body
     get '/rx'
     assert_equal 'rx', body
-    get '/names/a%0A'
-    assert_equal 'name "a\n"', body
-    get '/u/a%0A'
-    assert_equal 'u "a\n"', body
-    get '/lazy/a%0A'
-    assert_equal 'lazy "a\n"', body
+    get '/names/a%09'
+    assert_equal 'name "a\t"', body
     get '/lazy/a.json'
     assert_equal 'lazy "a"', body
   end

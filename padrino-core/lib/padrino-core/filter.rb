@@ -59,14 +59,8 @@ module Padrino
     # '/posts.json' from a route that captures a format.
     def path_match?(argument, path, suffixes)
       forms = [path, *suffixes.map { |suffix| path.delete_suffix(suffix) }]
-      forms += forms.flat_map { |form| without_extra_slashes(form) }
+      forms += forms.flat_map { |form| Routing.without_extra_slashes(form) }
       forms.any? { |form| argument === form }
-    end
-
-    # A path with trailing slashes also counts with none and with one.
-    def without_extra_slashes(form)
-      stripped = Routing.strip_trailing(form)
-      stripped == form ? [] : [stripped, "#{stripped}/"]
     end
 
     # What each form of the path has after what the route being run takes as the format-less path.

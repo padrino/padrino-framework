@@ -112,6 +112,56 @@ module Padrino
         index = path.rindex(keep)
         index ? path[0..index] : ''
       end
+
+      ##
+      # A path with trailing slashes also counts with none and with one, as the
+      # router serves '/posts/' from a '/posts' route. A path that doesn't end
+      # in a slash gives [].
+      #
+      # @example
+      #   Padrino::Routing.without_extra_slashes('/posts//') # => ["/posts", "/posts/"]
+      #
+      # @api private
+      def without_extra_slashes(path)
+        stripped = strip_trailing(path)
+        stripped == path ? [] : [stripped, "#{stripped}/"]
+      end
+
+      ##
+      # Yields the forms the router may serve a request path as, without
+      # knowing the route: each of +forms+ (path_forms) and, for each form
+      # found, the form without its trailing slashes and with one
+      # (without_extra_slashes), and the form up to the last dot of its last
+      # segment, as a route can capture what follows as a format. Walking
+      # those in turn gives the form up to each such dot; the form up to the
+      # first one is taken early, as a format that takes the rest of the
+      # segment starts there. Each form is yielded once, as it is found, so a
+      # caller can stop early. Returns an Enumerator without a block.
+      #
+      # @example
+      #   Padrino::Routing.served_forms(['/feed.json//']).to_a # => ["/feed.json//", "/feed.json", "/feed.json/", "/feed"]
+      #
+      # @api private
+      def served_forms(forms)
+        return enum_for(__method__, forms) unless block_given?
+
+        seen = {}
+        queue = forms.dup
+        while (form = queue.shift)
+          next if seen.key?(form)
+
+          seen[form] = true
+          yield form
+          queue.concat(without_extra_slashes(form).reject(&:empty?))
+          slash = form.rindex('/').to_i
+          last = form.rindex('.')
+          next unless last && last > slash
+
+          first = form.index('.', slash)
+          queue << form[0, last]
+          queue << form[0, first] if first < last
+        end
+      end
     end
 
     # Class methods responsible for enhanced routing for controllers.

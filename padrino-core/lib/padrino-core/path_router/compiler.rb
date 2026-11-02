@@ -93,12 +93,15 @@ module Padrino
       # Decode env["PATH_INFO"]. Returns nil when the path doesn't decode to valid text
       # (a malformed or non-UTF-8 escape such as "/%ff"), so it matches no route.
       #
+      # A path that decodes to a newline, as routes see it or as route params decode it again
+      # (a '%0A' left by '%250A'), matches no route either.
+      #
       def decode_pattern(pattern)
         pattern = pattern.encode(Encoding.default_external)
         return if pattern.match?(/%(?!\h\h)/)
 
         decoded = Padrino::Routing.decode_route_path(pattern)
-        decoded if decoded.valid_encoding?
+        decoded if decoded.valid_encoding? && !decoded.match?(/\n|%0a/i)
       rescue ArgumentError, EncodingError
         nil
       end

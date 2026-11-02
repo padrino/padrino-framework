@@ -183,6 +183,23 @@ describe 'Application' do
         assert_equal 403, status
       end
 
+      it 'should answer 403 for a path that decodes to a newline before filters run' do
+        seen = []
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [%r{^/api/}]
+          before { seen << params[:tenant] }
+          not_found do
+            seen << :not_found
+            'missing'
+          end
+          post('/:tenant/api/:id') { 'tenant' }
+        end
+        post '/acme%0A/api/b'
+        assert_equal 403, status
+        assert_empty seen
+      end
+
       it 'should not raise without a path' do
         env = Rack::MockRequest.env_for('/')
         env.delete('PATH_INFO')
@@ -263,6 +280,20 @@ describe 'Application' do
           end
           post path
           assert_equal 403, status
+        end
+      end
+
+      it 'should stay on for a path with trailing slashes unless the path with one is exempt too' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [%r{\A/x(//)?\z}]
+          post('/x') { 'x' }
+        end
+        post '/x'
+        assert_equal 200, status
+        %w[/x/ /x//].each do |path|
+          post path
+          assert_equal 403, status, path
         end
       end
 
