@@ -78,6 +78,7 @@ describe 'AdminAppGenerator' do
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       script = <<~RUBY
         require 'thor'
+        require 'sequel'
         # Thor's line editor can echo or buffer piped input, so without a terminal the
         # seeds must not ask through it.
         class NoAskShell < Thor::Base.shell
@@ -90,6 +91,10 @@ describe 'AdminAppGenerator' do
           @shell ||= NoAskShell.new
         end
         class Account
+          def self.where(_conditions)
+            []
+          end
+
           def initialize(attributes)
             @attributes = attributes
           end
@@ -100,6 +105,7 @@ describe 'AdminAppGenerator' do
 
           def save
             puts "SAVED \#{@attributes[:email]} \#{@attributes[:password] == 'secret123'}"
+            true
           end
         end
         load 'db/seeds.rb'

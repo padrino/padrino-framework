@@ -90,7 +90,7 @@ module Padrino
           end
 
           params = [
-            @model_singular, 'name:string', 'surname:string', 'email:string', 'crypted_password:string', 'role:string',
+            @model_singular, 'name:string', 'surname:string', 'email:string:uniq', 'crypted_password:string', 'role:string',
             "-r=#{options[:root]}"
           ]
           params << '-s' if options[:skip_migration]

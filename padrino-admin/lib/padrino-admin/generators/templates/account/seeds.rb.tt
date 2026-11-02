@@ -5,30 +5,46 @@
 #   name = shell.ask("What's your name?")
 #   shell.say name
 #
+# The admin account's email and password come from ADMIN_EMAIL and ADMIN_PASSWORD when they are set
+# and not blank. Otherwise they are asked for in a terminal, or read from piped input (CI, Docker):
+# the email on the first line and the password on the second, where a variable that is set takes
+# the place of its line.
+email    = ENV['ADMIN_EMAIL'].to_s.strip
+password = ENV['ADMIN_PASSWORD'].to_s.strip
 if $stdin.tty?
-  email    = shell.ask "Which email do you want use for logging into admin?"
-  password = shell.ask "Tell me the password to use:", echo: false
+  email = shell.ask("Which email do you want use for logging into admin?").to_s.strip if email.empty?
 else
-  # Piped input (CI, Docker): the email and the password on two lines, not echoed.
-  email, password = 2.times.map { $stdin.gets.to_s.strip }
+  piped_email, piped_password = 2.times.map { $stdin.gets.to_s.strip }
+  email    = piped_email    if email.empty?
+  password = piped_password if password.empty?
 end
 
-shell.say ""
+# Seeding again leaves an account with this email, in any case, as it is.
+<%- if orm == :activerecord -%>
+existing = <%= @model_name %>.where('lower(email) = lower(?)', email).first
+<%- elsif orm == :sequel -%>
+existing = <%= @model_name %>.where(Sequel.function(:lower, :email) => Sequel.function(:lower, email)).first
+<%- else -%>
+existing = <%= @model_name %>.where(email: /\A#{Regexp.escape(email)}\z/i).first
+<%- end -%>
+if existing
+  shell.say ""
+  shell.say "<%= @model_name %> #{email} already exists; nothing to do."
+else
+  password = shell.ask("Tell me the password to use:", echo: false).to_s.strip if password.empty? && $stdin.tty?
+  shell.say ""
 
-account = <%= @model_name %>.new(email: email, name: "Foo", surname: "Bar", password: password, password_confirmation: password, role: "admin")
+  account = <%= @model_name %>.new(email: email, name: "Foo", surname: "Bar", password: password, password_confirmation: password, role: "admin")
+  unless account.valid? && account.save
+    messages = account.errors.full_messages.map { |m| "   - #{m}" }
+    abort ["<%= @model_name %> could not be created:", *messages, "Set ADMIN_EMAIL and ADMIN_PASSWORD, or enter them when asked."].join("\n")
+  end
 
-if account.valid?
-  account.save
   shell.say "================================================================="
   shell.say "<%= @model_name %> has been successfully created, now you can login with:"
   shell.say "================================================================="
   shell.say "   email: #{email}"
   shell.say "   password: #{?* * password.length}"
   shell.say "================================================================="
-else
-  shell.say "Sorry, but something went wrong!"
-  shell.say ""
-  account.errors.full_messages.each { |m| shell.say "   - #{m}" }
 end
-
 shell.say ""
