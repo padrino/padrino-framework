@@ -105,7 +105,7 @@ describe 'AccountModelGenerator' do
     RUBY
     out, err, status = run_in_project(script)
     assert status.success?, err
-    out.lines.to_h { |line| JSON.parse(line) }
+    out.lines.grep(/\A\[/).to_h { |line| JSON.parse(line) }
   end
 
   def assert_validates(results, unique_email: true)
