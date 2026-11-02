@@ -20,7 +20,7 @@ module Padrino
         return if compiled?
         @routes.each_with_index do |route, index|
           route.index = index
-          route.regexp = /(?<_#{index}>#{route.matcher.to_regexp})/
+          route.regexp = /\A(?<_#{index}>#{route.matcher.to_regexp})\z/
         end
         @compiled = true
       end
@@ -94,24 +94,13 @@ module Padrino
       # (a malformed or non-UTF-8 escape such as "/%ff"), so it matches no route.
       #
       def decode_pattern(pattern)
-        decoded = decode_uri(encode_default_external(pattern))
+        pattern = pattern.encode(Encoding.default_external)
+        return if pattern.match?(/%(?!\h\h)/)
+
+        decoded = Padrino::Routing.decode_route_path(pattern)
         decoded if decoded.valid_encoding?
       rescue ArgumentError, EncodingError
         nil
-      end
-
-      ##
-      # Encode string with Encoding.default_external
-      #
-      def encode_default_external(string)
-        string.encode(Encoding.default_external)
-      end
-
-      ##
-      # Decode uri escape sequences
-      #
-      def decode_uri(string)
-        string.split(/%2F|%2f/, -1).map { |part| Rack::Utils.unescape(part.gsub('+', '%2B')) }.join('%2F')
       end
     end
   end

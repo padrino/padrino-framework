@@ -50,6 +50,75 @@ describe 'AdminApplication' do
     assert_equal 'unauthenticated', body
   end
 
+  it 'should require login for a protected path with an encoded letter' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/foo'
+      end
+
+      get('/foo') { 'foo' }
+      get('/bar') { 'bar' }
+    end
+
+    ['/%66oo', '/f%6Fo', '/%66oo/'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+    end
+
+    get '/%62ar'
+    assert_equal 'bar', body
+  end
+
+  it 'should keep an encoded slash inside the path segment it is in' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/sessions'
+      end
+
+      get('/sessions/:id') { 'session' }
+      get('/:page') { "page #{params[:page]}" }
+    end
+
+    get '/sessions/new'
+    assert_equal 'session', body
+    ['/sessions%2Fnew', '/sessions%2fnew', '/%73essions%2Fnew'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+    end
+    assert @app.access_control.allowed?(nil, '/sessions/a%2Fb')
+    refute @app.access_control.allowed?(nil, '/sessions%2F')
+  end
+
+  it 'should deny a protected path whose encoded slash a splat route decodes' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/files/secret'
+      end
+
+      get('/files/:name') { "name #{params[:name]}" }
+      get('/*path') { "file #{params[:path]}" }
+    end
+
+    ['/files/secret', '/files%2Fsecret', '/files%2fsecret', '/%66iles%2Fsecret/1',
+     '/files%252Fsecret', '/files/%2573ecret', '/%2566iles/secret', '/files/sec%2572et'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+      refute @app.access_control.allowed?(nil, path), path
+    end
+    get '/files/public'
+    assert_equal 'name public', body
+  end
+
   it 'should set basic roles with store location and login page' do
     mock_app do
       set    :app_name, :basic_app

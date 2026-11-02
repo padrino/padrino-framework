@@ -51,6 +51,67 @@ module Padrino
         app.extend(ClassMethods)
       end
       alias included registered
+
+      ##
+      # Decodes the %XX escapes in a request path, %2F included; a '+' stays a
+      # plus, as it does for the router and Sinatra. Returns a new UTF-8 string
+      # and leaves +path+ untouched.
+      #
+      # Invalid UTF-8 (such as '/%ff') is kept byte for byte, so the result's
+      # +valid_encoding?+ is false: replacing it would name a different file.
+      # The router matches no route for such a path; callers that compare the
+      # result with Regexps scrub it first.
+      #
+      # @example
+      #   Padrino::Routing.decode_path('/caf%C3%A9/a+b') # => "/café/a+b"
+      #
+      # @api private
+      def decode_path(path)
+        Rack::Utils.unescape_path(path.b).force_encoding(Encoding::UTF_8)
+      end
+
+      ##
+      # Decodes a request path into the form routes are matched against: like
+      # decode_path, but an encoded slash stays '%2F' (from '%2F' or '%2f'), so
+      # it can't split a path segment. Invalid UTF-8 and malformed escapes are
+      # kept as they are; the router matches no route for such a path.
+      #
+      # @example
+      #   Padrino::Routing.decode_route_path('/%70osts%2F1') # => "/posts%2F1"
+      #
+      # @api private
+      def decode_route_path(path)
+        path.b.split(/%2F/i, -1).map { |segment| decode_path(segment) }.join('%2F').force_encoding(Encoding::UTF_8)
+      end
+
+      ##
+      # The forms a request path is compared in, router form first: as the
+      # router matches it (decode_route_path), fully decoded (decode_path), and
+      # as route params receive it (the router form decoded again, as a splat
+      # or param value is). Invalid UTF-8 is scrubbed so Regexps can match it;
+      # duplicates are dropped.
+      #
+      # @example
+      #   Padrino::Routing.path_forms('/files%252Fsecret') # => ["/files%2Fsecret", "/files/secret"]
+      #
+      # @api private
+      def path_forms(path)
+        route_path = decode_route_path(path)
+        [route_path, decode_path(path), decode_path(route_path)].map(&:scrub).uniq
+      end
+
+      ##
+      # Returns +path+ up to its last character that matches +keep+, so without
+      # its trailing slashes by default. A path with no such character gives ''.
+      #
+      # @example
+      #   Padrino::Routing.strip_trailing('/posts//') # => "/posts"
+      #
+      # @api private
+      def strip_trailing(path, keep = %r{[^/]})
+        index = path.rindex(keep)
+        index ? path[0..index] : ''
+      end
     end
 
     # Class methods responsible for enhanced routing for controllers.
@@ -880,8 +941,7 @@ module Padrino
       #
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
-        # Decode the path the way Sinatra's static! and the router do: %XX only, so '+' stays a plus.
-        file = Rack::Utils.unescape_path(path_info.b).force_encoding(Encoding::UTF_8)
+        file = Routing.decode_path(path_info)
         [File.expand_path(public_dir), settings.shared_public_folder].compact.each do |dir|
           path = "#{dir}#{file}"
           next unless Rack::Utils.valid_path?(path)
@@ -953,7 +1013,20 @@ module Padrino
         base.filters[type].each { |block| instance_eval(&block) }
       end
 
+      # Runs the app's before filters for the route being tried. Each runs to its end at most once
+      # for a level of routes, so one with no match on a route, or that passed on it, gets another
+      # chance on the next, and a request that ends up elsewhere doesn't run them again.
+      def before_filter!(base = settings)
+        before_filter!(base.superclass) if base.superclass.respond_to?(:filters)
+        base.filters[:before].each do |block|
+          next if @_ran_filters[block]
+
+          @_ran_filters[block] = true unless Filter::SKIPPED.equal?(instance_eval(&block))
+        end
+      end
+
       def dispatch!
+        @_ran_filters = {}.compare_by_identity
         @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
         force_encoding(@params)
         invoke do
@@ -961,7 +1034,7 @@ module Padrino
           route!
         end
       rescue ::Exception => e
-        filter! :before if e.is_a? ::Sinatra::NotFound
+        catch(:pass) { before_filter! } if e.is_a? ::Sinatra::NotFound
         invoke { @boom_handled = handle_exception!(e) }
       ensure
         @boom_handled || begin
@@ -1017,7 +1090,12 @@ module Padrino
         @params[:format] = params[:format] if params[:format]
         @params[:captures] = captured_params if !captured_params.empty? && route.path.is_a?(Regexp)
 
-        filter! :before if first_time
+        @_ran_filters.clear if first_time
+        passed = catch(:pass) do
+          before_filter!
+          :filtered
+        end
+        return passed unless passed == :filtered
 
         catch(:pass) do
           (route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }

@@ -146,6 +146,230 @@ describe 'Application' do
       end
     end
 
+    describe 'with :except option and an encoded path' do
+      before do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: ['/hook', %r{\A/(?!admin)}]
+          post('/hook') { 'hook' }
+          post('/admin') { 'admin' }
+        end
+      end
+
+      it 'should compare the path the router matches' do
+        post '/hook'
+        assert_equal 200, status
+        post '/%68ook'
+        assert_equal 200, status
+        post '/admin'
+        assert_equal 403, status
+        post '/%61dmin'
+        assert_equal 403, status
+      end
+
+      it 'should stay on for a path with a newline' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [%r{^/api/}, "/hook\nx"]
+          post('/:tenant/api/:id') { 'tenant' }
+          post('/api/x') { 'api' }
+          post('/hook:rest') { 'hook' }
+        end
+        post '/api/x'
+        assert_equal 200, status
+        post '/acme%0A/api/b'
+        assert_equal 403, status
+        post '/hook%0Ax'
+        assert_equal 403, status
+      end
+
+      it 'should not raise without a path' do
+        env = Rack::MockRequest.env_for('/')
+        env.delete('PATH_INFO')
+        token = Padrino::AuthenticityToken.new(->(_env) { [200, {}, []] }, except: ['/a'])
+        refute token.send(:except?, env)
+      end
+    end
+
+    describe 'with :except option on every form of a path' do
+      def mock_anchored_app(*except)
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: except
+          post('/admin(.:format)?') { 'admin' }
+          post('/other(.:format)?') { 'other' }
+          post('/') { 'root' }
+        end
+      end
+
+      %w[/admin /%61dmin /admin/ /%61dmin/ /admin.json /admin%2Ejson /admin.json/ /admin.a.b].each do |path|
+        it "should stay on for #{path}" do
+          mock_anchored_app('/hook', %r{\A/(?!admin\z)})
+          post path
+          assert_equal 403, status
+        end
+      end
+
+      %w[/other /other/ /other.json /%6Fther.json].each do |path|
+        it "should stay off for #{path}" do
+          mock_anchored_app('/hook', %r{\A/(?!admin\z)})
+          post path
+          assert_equal 200, status
+        end
+      end
+
+      it 'should stay on for a suffix of a dotted name' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [%r{\A/(?!admin\.v1\z)}]
+          post('/admin.v1(.:format)?') { 'admin' }
+        end
+        post '/admin.v1.json'
+        assert_equal 403, status
+      end
+
+      it 'should keep exact String entries' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: ['/hook', '/', '/feed.json']
+          post('/hook') { 'hook' }
+          post('/feed.json') { 'feed' }
+          post('/') { 'root' }
+        end
+        %w[/hook / /feed.json].each do |path|
+          post path
+          assert_equal 200, status, path
+        end
+        post '/hook/'
+        assert_equal 403, status
+      end
+
+      it 'should take the forms of a path from different entries' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: ['/hook/', '/hook']
+          post('/hook') { 'hook' }
+        end
+        post '/hook/'
+        assert_equal 200, status
+      end
+
+      %w[/api/.json /api/.json/ /api// /api/].each do |path|
+        it "should stay on for #{path} with a slash in the Regexp" do
+          mock_app do
+            enable :sessions
+            set :protect_from_csrf, except: [%r{^/api/}]
+            post('/api/?', provides: :any) { 'api' }
+          end
+          post path
+          assert_equal 403, status
+        end
+      end
+
+      it 'should keep String entries written with a trailing slash' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: ['/api/', '/hook/']
+          post('/api/?') { 'api' }
+          post('/hook/?') { 'hook' }
+        end
+        %w[/api/ /hook/ /%68ook/].each do |path|
+          post path
+          assert_equal 200, status, path
+        end
+        post '/hook'
+        assert_equal 403, status
+      end
+
+      it 'should exempt only what a String entry with an encoded slash names' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: ['/a%2Fb']
+          post('/*rest') { 'rest' }
+        end
+        post '/a%2Fb'
+        assert_equal 403, status
+        post '/a/b'
+        assert_equal 403, status
+      end
+
+      it 'should take a path from both of its decoded forms' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: ['/a%2Fb', '/a/b']
+          post('/*rest') { 'rest' }
+        end
+        post '/a%2Fb'
+        assert_equal 200, status
+      end
+
+      it 'should strip a dot suffix from the last segment only' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [%r{\A/v1\.2/}]
+          post('/v1.2/hook') { 'hook' }
+          post('/v1.2/hook.json') { 'hook' }
+        end
+        %w[/v1.2/hook /v1.2/hook.json].each do |path|
+          post path
+          assert_equal 200, status, path
+        end
+      end
+
+      it 'should stay on for a long path of dots' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: ['/hook', %r{\A/(?!admin\z)}]
+          post('/:name') { 'name' }
+        end
+        post "/#{'.' * 80_000}"
+        assert_equal 403, status
+        post "/admin#{'.x' * 40_000}"
+        assert_equal 403, status
+      end
+
+      it 'should keep a String entry for a path of many dots' do
+        path = "/#{(['a'] * 40).join('.')}"
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [path]
+          post('/:name') { 'name' }
+        end
+        post path
+        assert_equal 200, status
+      end
+
+      it 'should exempt a path with a few dots' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [%r{\A/a}]
+          post('/:name') { 'name' }
+        end
+        post "/a#{'.a' * 15}"
+        assert_equal 200, status
+      end
+
+      it 'should keep a Regexp prefix on a path with a dot' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [%r{\A/webhooks/}]
+          post('/webhooks/stripe.json') { 'stripe' }
+        end
+        post '/webhooks/stripe.json'
+        assert_equal 200, status
+      end
+
+      it 'should stay on for a Regexp that needs the dot suffix' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [/\.json\z/]
+          post('/feed.json') { 'feed' }
+        end
+        post '/feed.json'
+        assert_equal 403, status
+      end
+    end
+
     describe 'with custom protection options' do
       before do
         @token =
