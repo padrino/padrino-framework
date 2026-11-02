@@ -8,13 +8,14 @@
 # The admin account's email and password come from ADMIN_EMAIL and ADMIN_PASSWORD when they are set
 # and not blank. Otherwise they are asked for in a terminal, or read from piped input (CI, Docker):
 # the email on the first line and the password on the second, where a variable that is set takes
-# the place of its line.
+# the place of its line. Only the lines needed are read.
 email    = ENV['ADMIN_EMAIL'].to_s.strip
 password = ENV['ADMIN_PASSWORD'].to_s.strip
 if $stdin.tty?
   email = shell.ask("Which email do you want use for logging into admin?").to_s.strip if email.empty?
-else
-  piped_email, piped_password = 2.times.map { $stdin.gets.to_s.strip }
+elsif email.empty? || password.empty?
+  piped_email    = $stdin.gets.to_s.strip
+  piped_password = password.empty? ? $stdin.gets.to_s.strip : ''
   email    = piped_email    if email.empty?
   password = piped_password if password.empty?
 end

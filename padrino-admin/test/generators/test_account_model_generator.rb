@@ -1,5 +1,6 @@
 require_relative '../helper'
 require 'open3'
+require 'tempfile'
 
 describe 'AccountModelGenerator' do
   before do
@@ -36,8 +37,39 @@ describe 'AccountModelGenerator' do
 
   # Runs +script+ in a separate process in the generated project, after the BCrypt stand-in.
   def run_in_project(script, env: {}, stdin: '')
+    Open3.capture3(*project_command(script, env), chdir: "#{@apptmp}/sample_project", stdin_data: stdin)
+  end
+
+  def project_command(script, env)
     env = { 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'] || File.expand_path('../../../Gemfile', __dir__) }.merge(env)
-    Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', BCRYPT_STAND_IN + script, chdir: "#{@apptmp}/sample_project", stdin_data: stdin)
+    [env, RbConfig.ruby, '-rbundler/setup', '-e', BCRYPT_STAND_IN + script]
+  end
+
+  # Runs +script+ like run_in_project, with a stdin that receives +stdin+ and then stays open
+  # without an end of file, as under a process manager. Returns the exit status and the output,
+  # or nil for the status when the script was still running after +timeout+ seconds, in which
+  # case it is killed.
+  def run_with_open_stdin(script, env, stdin, timeout: 30)
+    reader, writer = IO.pipe
+    output = Tempfile.new('padrino-seed')
+    pid = Process.spawn(*project_command(script, env), chdir: "#{@apptmp}/sample_project", in: reader, out: output.path, err: %i[child out])
+    reader.close
+    writer.write(stdin)
+    writer.flush
+    deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + timeout
+    status = nil
+    while status.nil? && Process.clock_gettime(Process::CLOCK_MONOTONIC) < deadline
+      _, status = Process.wait2(pid, Process::WNOHANG)
+      sleep 0.1 unless status
+    end
+    unless status
+      Process.kill('KILL', pid)
+      Process.wait(pid)
+    end
+    [status, File.read(output.path)]
+  ensure
+    writer&.close
+    output&.close!
   end
 
   # Loads the generated account model after +setup+ (Ruby code that defines its ORM and the
@@ -131,7 +163,13 @@ describe 'AccountModelGenerator' do
   # email, whether the password envpassword authenticates and whether the email itself does),
   # its output and how many questions were asked. +patch+ runs after the model loads.
   def seed_results(setup, env, stdin = '', rerun_env: nil, tty_answers: nil, patch: nil)
-    script = <<~RUBY
+    env = { 'ADMIN_EMAIL' => nil, 'ADMIN_PASSWORD' => nil }.merge(env)
+    out, err, status = run_in_project(seed_script(setup, rerun_env: rerun_env, tty_answers: tty_answers, patch: patch), env: env, stdin: stdin)
+    [status, err, out[/^ACCOUNTS (.*)$/, 1].to_s, out, out[/^ASKED (\d+)$/, 1].to_i]
+  end
+
+  def seed_script(setup, rerun_env: nil, tty_answers: nil, patch: nil)
+    <<~RUBY
       #{setup}
       load 'models/account.rb'
       #{patch}
@@ -159,9 +197,6 @@ describe 'AccountModelGenerator' do
       load 'db/seeds.rb'
       #{"ENV.update(#{rerun_env.inspect})\nload 'db/seeds.rb'" if rerun_env}
     RUBY
-    env = { 'ADMIN_EMAIL' => nil, 'ADMIN_PASSWORD' => nil }.merge(env)
-    out, err, status = run_in_project(script, env: env, stdin: stdin)
-    [status, err, out[/^ACCOUNTS (.*)$/, 1].to_s, out, out[/^ASKED (\d+)$/, 1].to_i]
   end
 
   def assert_seeds(setup)
@@ -179,6 +214,17 @@ describe 'AccountModelGenerator' do
       status, err, accounts = seed_results(setup, seed_env, stdin)
       assert status.success?, err
       assert_equal expected, accounts, [seed_env, stdin].inspect
+    end
+
+    # Only the lines for values the environment doesn't set are read, so a stdin that stays
+    # open without sending them doesn't hold the seeds up: with both set, nothing is read, and
+    # with only the password set, only the first line (once for each of the two runs).
+    { [env, ''] => created, [{ 'ADMIN_PASSWORD' => 'envpassword' }, "env@example.com\nENV@example.com\n"] => created }.each do |(seed_env, stdin), expected|
+      status, out = run_with_open_stdin(seed_script(setup, rerun_env: {}), { 'ADMIN_EMAIL' => nil }.merge(seed_env), stdin)
+      refute_nil status, "the seeds waited for input with #{seed_env.inspect}"
+      assert status.success?, out
+      assert_match(/successfully created.*already exists; nothing to do/m, out)
+      assert_equal expected, out[/^ACCOUNTS (.*)$/, 1]
     end
 
     # Seeding again with the same email, in any case, keeps the account and its password.
