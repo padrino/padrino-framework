@@ -102,15 +102,15 @@ describe 'AdminApplication' do
       enable :sessions
 
       access_control.roles_for :any do |role|
-        role.protect '/files/secret'
+        role.protect '/files/report'
       end
 
       get('/files/:name') { "name #{params[:name]}" }
       get('/*path') { "file #{params[:path]}" }
     end
 
-    ['/files/secret', '/files%2Fsecret', '/files%2fsecret', '/%66iles%2Fsecret/1',
-     '/files%252Fsecret', '/files/%2573ecret', '/%2566iles/secret', '/files/sec%2572et'].each do |path|
+    ['/files/report', '/files%2Freport', '/files%2freport', '/%66iles%2Freport/1',
+     '/files%252Freport', '/files/%2572eport', '/%2566iles/report', '/files/rep%256Frt'].each do |path|
       get path
       assert_equal "You don't have permission for this resource", body, path
       refute @app.access_control.allowed?(nil, path), path

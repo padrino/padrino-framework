@@ -163,30 +163,35 @@ describe 'Filters' do
     end
   end
 
-  it 'should filter by path a request whose route params decode an escape again' do
+  it 'should filter by path the path the router matches, not what route params decode again' do
     mock_app do
-      before('/files/secret') { halt 403, 'filtered' }
+      before('/files/report') { halt 403, 'filtered' }
       get('/files/:name') { "param #{params[:name]}" }
       get('/*path') { "splat #{params[:path]}" }
     end
-    ['/files%252Fsecret', '/files/%2573ecret', '/%2566iles/secret', '/files/sec%2572et'].each do |path|
+    get '/files/report'
+    assert_equal [403, 'filtered'], [status, body]
+    { '/files%252Freport' => 'splat files/report', '/files/%2572eport' => 'param report',
+      '/%2566iles/report' => 'splat files/report', '/files/rep%256Frt' => 'param report' }.each do |path, served|
       get path
-      assert_equal [403, 'filtered'], [status, body], path
+      assert_equal served, body, path
     end
-    get '/files%25252Fsecret'
-    assert_equal 'splat files%2Fsecret', body
-    get '/files/%252573ecret'
-    assert_equal 'param %73ecret', body
+    get '/files%25252Freport'
+    assert_equal 'splat files%2Freport', body
+    get '/files/%252572eport'
+    assert_equal 'param %72eport', body
   end
 
-  it 'should filter by path a request whose encoded slash a splat route decodes' do
+  it 'should filter by path with an encoded slash kept inside its segment' do
     mock_app do
-      before('/files/secret') { halt 403, 'filtered' }
+      before('/files/report') { halt 403, 'filtered' }
       get('/*path') { "file #{params[:path]}" }
     end
-    ['/files/secret', '/files%2Fsecret', '/files%2fsecret'].each do |path|
+    get '/files/report'
+    assert_equal [403, 'filtered'], [status, body]
+    ['/files%2Freport', '/files%2freport'].each do |path|
       get path
-      assert_equal [403, 'filtered'], [status, body], path
+      assert_equal 'file files/report', body, path
     end
     get '/files/public'
     assert_equal 'file files/public', body
@@ -309,6 +314,43 @@ describe 'Filters' do
     assert_equal 401, request.get('/blog/users/1/public').status
     assert_equal 401, request.get('/blog/users/1%0A/public').status
     assert_equal 401, request.get('/users/1%0A/public').status
+  end
+
+  it 'should compare a path filter with the path the router matches' do
+    mock_app do
+      before('/pages/about') { @public = true }
+      before(%r{\A/public/}) { @public = true }
+      before(path_info: '/docs/about') { @public = true }
+      before { halt 401, 'login' unless @public }
+      get('/pages/about') { 'about' }
+      get('/public/:file') { 'public' }
+      get('/docs/about') { 'docs' }
+      get('/:slug') { "member #{params[:slug]}" }
+    end
+    { '/pages/about' => 'about', '/public/x' => 'public', '/docs/about' => 'docs' }.each do |path, served|
+      get path
+      assert_equal served, body, path
+    end
+    ['/pages%2Fabout', '/pages%252Fabout', '/pages%2fabout', '/public%2Fx', '/docs%2Fabout', '/docs%252Fabout'].each do |path|
+      get path
+      assert_equal [401, 'login'], [status, body], path
+    end
+  end
+
+  it 'should compare a path option with a binary path' do
+    mock_app do
+      before(path_info: /café/) { halt 401, 'stopped' }
+      before(path: '/café') { halt 401, 'stopped' }
+      get('/*rest') { 'shown' }
+    end
+    env = Rack::MockRequest.env_for('/')
+    env['PATH_INFO'] = "/\xFF".b
+    status, = @app.call(env)
+    refute_equal 500, status
+    env = Rack::MockRequest.env_for('/')
+    env['PATH_INFO'] = '/café'.b
+    status, = @app.call(env)
+    assert_equal 401, status
   end
 
   it 'should be able to filter based on a symbol' do
@@ -597,31 +639,148 @@ describe 'Filters' do
       end
     end
 
-    it 'should cover every way a route captures a format' do
+    it 'should cover a format the route makes optional' do
       mock_app do
         before('/data') { halt 401, 'stopped' }
-        before('/e') { halt 401, 'stopped' }
-        before('/f') { halt 401, 'stopped' }
-        get('/data(.:format)?') { 'open' }
-        get('/e.:format') { 'open' }
-        get('/f(.:format)') { 'open' }
+        get('/data(.:format)?') { 'shown' }
       end
-      %w[/data.json /data.a.b /e.json /f.json].each do |path|
+      %w[/data.json /data.a.b /data.json/ /data/].each do |path|
         get path
         assert_equal 401, status, path
       end
     end
 
-    it 'should cover a format after a trailing slash' do
+    [
+      ['/e', '/e.json', proc { get('/e.:format') { 'shown' } }],
+      ['/f', '/f.json', proc { get('/f(.:format)') { 'shown' } }],
+      ['/data', '/data_json', proc { get('/data_:format') { 'shown' } }],
+      ['/data', '/data.json', proc { get('/data.:format') { 'shown' }; get('/data') { 'html' } }],
+      ['/data', '/data.json', proc { get('/data') { 'html' }; get('/data.:format') { 'shown' } }],
+      ['/reports', '/reports.json/', proc { get('/reports.:format?/') { 'shown' } }]
+    ].each_with_index do |(guard, path, routes), index|
+      it "should not run a filter for #{guard} on #{path}, which its route does not serve without the format (#{index})" do
+        seen = []
+        mock_app do
+          before(guard) { halt 401, 'stopped' }
+          before(path: guard) { halt 401, 'stopped' }
+          before(path_info: guard) { halt 401, 'stopped' }
+          after(guard) { seen << :after }
+          instance_eval(&routes)
+        end
+        get path
+        assert_equal 'shown', body
+        assert_empty seen
+      end
+    end
+
+    [
+      ['provides:', proc { get('/list', provides: %i[html json]) { 'list' } }],
+      ['map: and provides:', proc { get(:list, map: '/list', provides: :json) { 'list' } }],
+      ['controller provides:', proc { controller(:list, provides: %i[html json]) { get(:index) { 'list' } } }],
+      ['provides', proc { provides :json; get('/list') { 'list' } }]
+    ].each do |label, routes|
+      it "should not run a filter for a format the route does not provide (#{label})" do
+        mock_app do
+          before('/list') { @public = true }
+          before { halt 401, 'login' unless @public }
+          instance_eval(&routes)
+          get('/list.:format') { 'member' }
+        end
+        get '/list'
+        assert_equal 'list', body
+        %w[/list.xml /list.JSON].each do |path|
+          get path
+          assert_equal [401, 'login'], [status, body], path
+        end
+      end
+    end
+
+    it 'should run a filter for a format the route provides' do
+      mock_app do
+        before('/list') { halt 403, 'stopped' }
+        before('/data') { halt 403, 'stopped' }
+        before('/any') { halt 403, 'stopped' }
+        get('/list', provides: :json) { 'list' }
+        get('/data(.:format)?', provides: :json) { 'data' }
+        get('/any', provides: :any) { 'any' }
+        get('/:id.:format') { 'member' }
+      end
+      %w[/list.json /data.json /any.xml].each do |path|
+        get path
+        assert_equal [403, 'stopped'], [status, body], path
+      end
+    end
+
+    { 'a path' => ['/list', 401], 'the path_info option' => [{ path_info: '/list' }, 402] }.each do |label, (filter, code)|
+      it "should decide a provided format as route params receive it, for #{label}" do
+        mock_app do
+          before(filter) { halt code, 'stopped' }
+          get('/list', provides: :json) { 'list' }
+        end
+        %w[/list.%256Ason /list.j%2573on /list.%256A%2573on /list.js%256Fn /list.js%256Fn/].each do |path|
+          get path
+          assert_equal [code, 'stopped'], [status, body], path
+        end
+        head '/list.js%256Fn'
+        assert_equal code, status
+      end
+    end
+
+    it 'should not run a filter for an encoded format the route does not provide' do
+      mock_app do
+        before('/list') { @public = true }
+        before { halt 401, 'login' unless @public }
+        get('/list', provides: :json) { 'list' }
+        get('/list.:format') { "member #{params[:format]}" }
+      end
+      %w[/list.%2578ml /list.x%256Dl].each do |path|
+        get path
+        assert_equal [401, 'login'], [status, body], path
+      end
+    end
+
+    it 'should run a filter for a format the route answers itself with treat_format_as_accept' do
+      mock_app do
+        enable :treat_format_as_accept
+        before('/list') { halt 401, 'stopped' }
+        get('/list', provides: %i[html json]) { 'list' }
+      end
+      get '/list.xml'
+      assert_equal [401, 'stopped'], [status, body]
+    end
+
+    it 'should decide a format for each app that runs a shared route' do
+      base = Class.new(Padrino::Application) do
+        set :environment, :test
+        set(:only_for) { |tag| condition { settings.tag == tag } }
+        get('/list', only_for: :b, provides: :json) { 'list' }
+        get('/list.:format', only_for: :b) { "flag #{@flag.inspect}" }
+      end
+      a = Class.new(base) do
+        set :tag, :a
+        enable :treat_format_as_accept
+        before('/list') { @flag = true }
+      end
+      b = Class.new(base) do
+        set :tag, :b
+        before('/list') { @flag = true }
+      end
+      response = Rack::MockRequest.new(Padrino::Router.new({ path: '/', to: a }, { path: '/', to: b })).get('/list.xml')
+      assert_equal [200, 'flag nil'], [response.status, response.body]
+    end
+
+    it 'should cut a format after a trailing slash at that slash' do
       mock_app do
         before('/data') { halt 401, 'stopped' }
         before(%r{\A/report\z}) { halt 401, 'stopped' }
-        get('/data/?', provides: %i[html json]) { 'open' }
-        get('/report/?', provides: %i[html json]) { 'open' }
+        get('/data/?', provides: %i[html json]) { 'shown' }
+        get('/report/?', provides: %i[html json]) { 'shown' }
       end
-      %w[/data/ /data// /data/.json /data.json/ /report// /report/.json].each do |path|
+      get '/data.json/'
+      assert_equal [401, 'stopped'], [status, body]
+      %w[/data/.json /report/.json /data/ /data// /report//].each do |path|
         get path
-        refute_equal 'open', body, path
+        assert_equal 'shown', body, path
       end
     end
 
@@ -649,37 +808,39 @@ describe 'Filters' do
       end
     end
 
-    it 'should cover a dot left by an optional format' do
+    it 'should cover a format after a dot for the path with the dot' do
       mock_app do
-        before('/data') { halt 401, 'stopped' }
-        get('/data.:format?') { 'open' }
+        before('/data') { halt 403, 'other' }
+        before('/data.') { halt 401, 'stopped' }
+        get('/data.:format?') { 'shown' }
       end
-      %w[/data /data. /data./ /data%2E /data.json].each do |path|
+      %w[/data. /data./ /data%2E /data.json /data.json/].each do |path|
         get path
-        assert_equal 401, status, path
+        assert_equal [401, 'stopped'], [status, body], path
       end
     end
 
-    it 'should cover a format with an optional dot' do
+    it 'should cover a format with an optional dot for the longest path the route serves without it' do
       mock_app do
         before('/data') { halt 401, 'stopped' }
-        get('/data.?:format?') { 'open' }
+        before('/data.') { halt 403, 'dot' }
+        get('/data.?:format?') { 'shown' }
       end
-      %w[/data /data. /datajson /data.json].each do |path|
+      { '/data' => [401, 'stopped'], '/datajson' => [401, 'stopped'], '/data.' => [403, 'dot'], '/data.json' => [403, 'dot'] }.each do |path, expected|
         get path
-        assert_equal 401, status, path
+        assert_equal expected, [status, body], path
       end
     end
 
-    it 'should take a format after a slash for another path' do
+    it 'should take a format after a slash for another segment' do
       mock_app do
         before('/data') { halt 401, 'stopped' }
-        get('/data/:format?') { 'open' }
+        get('/data/:format?') { 'served' }
       end
-      get '/data/json'
-      assert_equal 'open', body
-      get '/data/'
-      assert_equal 401, status
+      %w[/data/json /data/].each do |path|
+        get path
+        assert_equal 'served', body, path
+      end
     end
 
     it 'should not strip a format from the middle of a route' do
@@ -713,10 +874,7 @@ describe 'Filters' do
     end
 
     [
-      ['/files/', '/files/*path', {}, '/files//'],
       ['/data/', '/data/:id?', {}, '/data//'],
-      ['/a/b/', '/a/*rest', {}, '/a/b//'],
-      [%r{/a/b/\z}, '/a/*rest', {}, '/a/b//'],
       ['/data/', '/data/?', { provides: :json }, '/data/.json']
     ].each do |guard, pattern, options, path|
       describe "with a guard #{guard.inspect} that ends in a slash on #{pattern}" do
@@ -740,17 +898,30 @@ describe 'Filters' do
           assert_equal [:after], seen
         end
 
-        it "should apply the path and path_info options for #{path}" do
-          %i[path path_info].each do |name|
+        %i[path path_info].each do |name|
+          it "should apply the #{name} option for #{path}" do
             mock_app do
               before(name => guard) { halt 401, 'stopped' }
               get(pattern, options) { 'open' }
             end
             get path
-            assert_equal 401, status, name
+            assert_equal 401, status
           end
         end
       end
+    end
+
+    it 'should cover a trailing slash only where the router drops it for the same route' do
+      mock_app do
+        before('/files/') { halt 401, 'stopped' }
+        before('/a/b/') { halt 401, 'stopped' }
+        get('/files/*path') { "files #{params[:path].inspect}" }
+        get('/a/*rest') { "a #{params[:rest].inspect}" }
+      end
+      get '/files//'
+      assert_equal 'files "/"', body
+      get '/a/b//'
+      assert_equal 'a "b//"', body
     end
 
     it 'should keep a guard that ends in a slash off the path without one' do
@@ -823,8 +994,8 @@ describe 'Filters' do
       mock_app do
         before(path: '/g') { halt 401, 'stopped' }
         before(path_info: %r{\A/h\z}) { halt 401, 'stopped' }
-        get('/g(.:format)') { 'open' }
-        get('/h(.:format)') { 'open' }
+        get('/g(.:format)?') { 'shown' }
+        get('/h(.:format)?') { 'shown' }
       end
       %w[/g.json /h.json].each do |path|
         get path
@@ -867,11 +1038,459 @@ describe 'Filters' do
       seen = []
       mock_app do
         after('/data') { seen << :after }
-        get('/data(.:format)') { 'open' }
+        get('/data(.:format)?') { 'shown' }
       end
       get '/data.json'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       assert_equal [:after], seen
+    end
+  end
+
+  describe 'on a route with a part after a delimiter' do
+    def mounted_request
+      Rack::MockRequest.new(Padrino::Router.new({ path: '/blog', to: @app }, { path: '/', to: @app }))
+    end
+
+    [
+      ['/data', '/data(-:format)?', '/data-json'],
+      ['/data', '/data(,:format)?', '/data,json'],
+      ['/data', '/data(_:format)?', '/data_json'],
+      ['/data', '/data(~:format)?', '/data~json'],
+      ['/data', '/data(--:format)?', '/data--json']
+    ].each do |guard, pattern, path|
+      describe "with a guard #{guard} on #{pattern}" do
+        it "should run a before filter for #{path}" do
+          mock_app do
+            before(guard) { halt 401, 'stopped' }
+            get(pattern) { 'shown' }
+          end
+          get path
+          assert_equal [401, 'stopped'], [status, body]
+        end
+
+        it "should run a before filter for #{path} under a mounted sub-path" do
+          mock_app do
+            before(guard) { halt 401, 'stopped' }
+            get(pattern) { 'shown' }
+          end
+          assert_equal 401, mounted_request.get("/blog#{path}").status
+        end
+
+        it "should run an after filter for #{path}" do
+          seen = []
+          mock_app do
+            after(guard) { seen << :after }
+            get(pattern) { 'shown' }
+          end
+          get path
+          assert_equal 'shown', body
+          assert_equal [:after], seen
+        end
+
+        it "should keep an except filter running for #{path}" do
+          seen = []
+          mock_app do
+            before(except: guard) { seen << :before }
+            after(except: guard) { seen << :after }
+            get(pattern) { 'shown' }
+          end
+          get path
+          assert_equal 'shown', body
+          assert_equal %i[before after], seen
+        end
+
+        it "should apply the path option for #{path} under a mounted sub-path" do
+          mock_app do
+            before(path: "/blog#{guard}") { halt 401, 'stopped' }
+            get(pattern) { 'shown' }
+          end
+          assert_equal 401, mounted_request.get("/blog#{path}").status
+          assert_equal 401, mounted_request.get("/blog#{guard}").status
+        end
+      end
+    end
+
+    it 'should take a part after a slash for another segment' do
+      mock_app do
+        before('/data') { halt 401, 'stopped' }
+        get('/data/:format?') { 'shown' }
+        get('/files/x(-:format)?') { 'file' }
+      end
+      get '/data/json'
+      assert_equal 'shown', body
+      get '/files/x-json'
+      assert_equal 'file', body
+    end
+
+    it 'should not cover a part the route requires' do
+      mock_app do
+        before('/posts/2024') { halt 403, 'stopped' }
+        before('/data') { halt 401, 'stopped' }
+        before('/file') { halt 401, 'stopped' }
+        get('/posts/:year-:month') { "posts #{params[:year]} #{params[:month]}" }
+        get('/data-:id') { 'data' }
+        get('/file(.:ext)') { "file #{params[:ext]}" }
+      end
+      get '/posts/2024-05'
+      assert_equal 'posts 2024 05', body
+      get '/data-5'
+      assert_equal 'data', body
+      get '/file.txt'
+      assert_equal 'file txt', body
+    end
+
+    [
+      ['/doc', proc { get('/doc') { 'public' }; get('/:slug(.:format)?') { 'member' } }, %w[/doc.json /doc.raw]],
+      ['/profile', proc { get('/profile') { 'public' }; get('/:username(.:format)?') { 'member' } }, %w[/profile.json]],
+      ['/doc', proc { get(:doc, map: '/doc') { 'public' }; get('/:slug', provides: %i[html json]) { 'member' } }, %w[/doc.json]],
+      ['/about', proc { get('/:id.:format') { 'member' }; get('/:page(.:format)?') { 'public' } }, %w[/about.json]],
+      ['/reports', proc { get('/reports') { 'public' }; get('/reports(.:v)?') { 'member' } }, %w[/reports.internal]],
+      ['/api/users', proc { get('/api/users') { 'public' }; get('/api(.:format)?/users') { 'member' } }, %w[/api.admin/users]],
+      ['/c', proc { get('/c') { 'public' }; get('/c++(.:format)?') { 'member' } }, %w[/c++.json]],
+      ['/', proc { get('/') { 'public' }; get('/~(.:format)?') { 'member' } }, %w[/~.json]],
+      ['/a', proc { get('/a') { 'public' }; get('/a.(.:format)?') { 'member' } }, %w[/a. /a..json]]
+    ].each do |guard, routes, paths|
+      it "should not apply a filter for #{guard} to #{paths.join(', ')}" do
+        mock_app do
+          before(guard) { @public = true }
+          before { halt 401, 'login' unless @public }
+          instance_eval(&routes)
+        end
+        get guard
+        assert_equal 'public', body
+        paths.each do |path|
+          get path
+          assert_equal [401, 'login'], [status, body], path
+        end
+      end
+    end
+
+    it 'should cut the path the route writes before its format' do
+      mock_app do
+        before('/c++') { halt 401, 'c' }
+        before('/~') { halt 401, 'tilde' }
+        before('/a.') { halt 401, 'a' }
+        before('/naïve') { halt 401, 'naive' }
+        before('/v') { halt 401, 'v' }
+        get('/c++(.:format)?') { 'shown' }
+        get('/naïve(.:format)?') { 'shown' }
+        get('/v:format?') { 'shown' }
+        get('/~(.:format)?') { 'shown' }
+        get('/a.(.:format)?') { 'shown' }
+      end
+      { '/c++.json' => 'c', '/~.json' => 'tilde', '/a..json' => 'a', '/a.' => 'a', '/na%C3%AFve.json' => 'naive', '/vjson' => 'v' }.each do |path, filter|
+        get path
+        assert_equal [401, filter], [status, body], path
+      end
+    end
+
+    it 'should cut a format after a path with non-ASCII characters' do
+      mock_app do
+        before('/ééé') { @seen = 'eee' }
+        before('/日本語') { @seen = 'jp' }
+        before('/naïve') { @seen = 'naive' }
+        get('/ééé', provides: %i[html json]) { "eee #{@seen}" }
+        get('/日本語(.:format)?') { "jp #{@seen}" }
+        get('/naïve(.:format)?') { "naive #{@seen}" }
+      end
+      { '/%C3%A9%C3%A9%C3%A9' => 'eee eee', '/%C3%A9%C3%A9%C3%A9.json' => 'eee eee',
+        '/%E6%97%A5%E6%9C%AC%E8%AA%9E.json' => 'jp jp', '/na%C3%AFve' => 'naive naive',
+        '/na%C3%AFve.json' => 'naive naive' }.each do |path, served|
+        get path
+        assert_equal [200, served], [status, body], path
+      end
+    end
+
+    it 'should cut a format at the path the route serves without it' do
+      mock_app do
+        before('/c') { halt 403, 'shorter' }
+        before('/doc') { halt 403, 'shorter' }
+        before('/c+') { halt 401, 'c' }
+        before('/doc~') { halt 401, 'doc' }
+        get('/c+:format?') { 'c' }
+        get('/doc~:format?') { 'doc' }
+      end
+      { '/c+json' => 'c', '/doc~json' => 'doc' }.each do |path, filter|
+        get path
+        assert_equal [401, filter], [status, body], path
+      end
+    end
+
+    [
+      ['/reports/', '/reports/:format', '/reports/csv'],
+      ['/', '/:format', '/csv'],
+      ['/data-', '/data--:format', '/data--json'],
+      ['/data', '/data-:format?', '/data-json']
+    ].each do |guard, pattern, path|
+      it "should not run a filter for #{guard} on #{path} from #{pattern}" do
+        mock_app do
+          before(guard) { @public = true }
+          before { halt 401, 'login' unless @public }
+          get(pattern) { 'member' }
+          get(guard) { 'public' }
+        end
+        get guard
+        assert_equal 'public', body
+        get path
+        assert_equal [401, 'login'], [status, body]
+      end
+    end
+
+    [
+      ['/reports/', '/reports/:format?', '/reports/csv'],
+      ['/', '/:format?', '/csv'],
+      ['/data-', '/data-:format?', '/data-json'],
+      ['/doc/', '/doc/(-:format)?', '/doc/-json'],
+      ['/doc/', '/doc/(-:format)?', '/doc/-json/']
+    ].each do |guard, pattern, path|
+      it "should run a filter for #{guard} on #{path} from #{pattern}, which serves #{guard}" do
+        mock_app do
+          before(guard) { halt 403, 'stopped' }
+          get(pattern) { 'shown' }
+        end
+        get path
+        assert_equal [403, 'stopped'], [status, body]
+      end
+    end
+
+    it 'should not run a filter for the path before a format the route requires, with or without a trailing slash' do
+      mock_app do
+        before('/doc/') { halt 403, 'stopped' }
+        get('/doc/.:format') { 'shown' }
+      end
+      %w[/doc/.json /doc/.json/].each do |path|
+        get path
+        assert_equal 'shown', body, path
+      end
+    end
+
+    it 'should not cut a route of another verb whose path comes from a param' do
+      mock_app do
+        before('/about') { @public = true }
+        before { halt 401, 'login' unless @public }
+        get('/about') { 'public' }
+        post('/:id.:format') { 'member' }
+        delete('/:id.:format') { 'member' }
+      end
+      post '/about.json'
+      assert_equal [401, 'login'], [status, body]
+      delete '/about.json'
+      assert_equal [401, 'login'], [status, body]
+    end
+
+    it 'should not cut a route whose path comes from a param, after a catch-all that passes' do
+      mock_app do
+        before('/about') { @public = true }
+        get('/:page') { pass unless params[:page] == 'about'; 'public' }
+        get('/:id.:format') { halt 401, 'login' unless @public; 'member' }
+      end
+      get '/about'
+      assert_equal 'public', body
+      get '/about.json'
+      assert_equal [401, 'login'], [status, body]
+    end
+
+    it 'should run a filter for a format the route provides when another route serves the path without it' do
+      mock_app do
+        before('/data') { halt 403, 'stopped' }
+        get('/data', provides: :csv) { 'csv' }
+        get('/data') { 'html' }
+      end
+      %w[/data /data.csv].each do |path|
+        get path
+        assert_equal [403, 'stopped'], [status, body], path
+      end
+    end
+
+    it 'should not cut a superclass route whose path comes from a param' do
+      base = Class.new(Padrino::Application) do
+        set :environment, :test
+        get('/:slug(.:format)?') { 'member' }
+      end
+      mock_app(base) do
+        before('/doc') { @public = true }
+        before { halt 401, 'login' unless @public }
+        get('/doc') { 'public' }
+      end
+      get '/doc'
+      assert_equal 'public', body
+      %w[/doc.json /doc.raw].each do |path|
+        get path
+        assert_equal [401, 'login'], [status, body], path
+      end
+    end
+
+    it 'should not cut a route with two splats, an empty param or a Regexp route' do
+      mock_app do
+        before('/x/data') { @public = true }
+        before('/doc') { @public = true }
+        before('/view') { @public = true }
+        before { halt 401, 'login' unless @public }
+        get('/x/data') { 'public' }
+        get('/*/data*(.:format)?') { 'member' }
+        get('/doc') { 'public' }
+        get('/:x?view(.:format)?') { 'member' }
+        get(%r{/[a-z]+(?:\.(?<format>json))?}) { 'member' }
+      end
+      %w[/x/data /doc].each do |path|
+        get path
+        assert_equal 'public', body, path
+      end
+      %w[/x/data.json /doc.json /view.json].each do |path|
+        get path
+        assert_equal [401, 'login'], [status, body], path
+      end
+    end
+
+    [
+      proc { get('/:section/:page?') { 'member' }; get('/about') { 'public' } },
+      proc { get('/about/:id?') { 'member' }; get('/about') { 'public' } }
+    ].each_with_index do |routes, index|
+      it "should not run a filter for a trailing slash that another route takes (#{index})" do
+        mock_app do
+          before('/about') { @public = true }
+          before { halt 401, 'login' unless @public }
+          instance_eval(&routes)
+        end
+        get '/about'
+        assert_equal 'public', body
+        %w[/about/ /about//].each do |path|
+          get path
+          assert_equal [401, 'login'], [status, body], path
+        end
+      end
+    end
+
+    [
+      ['/reports/:format?', '/reports/'],
+      ['/reports/(:format)?', '/reports/'],
+      ['/reports/(-:format)?', '/reports/'],
+      ['/reports/(-:format)?', '/reports/-json'],
+      ['/reports/.:format', '/reports/.json'],
+      ['/reports/.:format', '/reports/.json/'],
+      ['/reports/(-:format)?', '/reports/-json/'],
+      ['/reports/-:format', '/reports/-csv/'],
+      ['/reports//(.:format)?', '/reports/.json/']
+    ].each do |pattern, path|
+      it "should not run a filter for the path before the slash of a format on #{pattern} (#{path})" do
+        mock_app do
+          before('/reports') { @index = true }
+          before { halt 401, 'login' unless @index }
+          get(pattern) { "export #{params[:format].inspect}" }
+          get('/reports') { 'index' }
+        end
+        get '/reports'
+        assert_equal 'index', body
+        %i[get head].each do |verb|
+          send(verb, path)
+          assert_equal 401, status, "#{verb} #{path}"
+        end
+      end
+    end
+
+    it 'should not run a filter for slashes after a path without a format that an earlier route serves' do
+      mock_app do
+        before('/doc') { @public = true }
+        before { halt 401, 'login' unless @public }
+        get('/doc') { 'public' }
+        get('/doc/?(.:format)?') { 'member' }
+      end
+      get '/doc'
+      assert_equal 'public', body
+      get '/doc//'
+      assert_equal [401, 'login'], [status, body]
+    end
+
+    it 'should not run a filter for the path before the slash of a format under a mounted sub-path' do
+      mock_app do
+        before('/reports') { @index = true }
+        before { halt 401, 'login' unless @index }
+        get(:export, map: '/reports/:format?') { "export #{params[:format].inspect}" }
+        get(:index, map: '/reports') { 'index' }
+      end
+      request = Rack::MockRequest.new(Padrino::Router.new({ path: '/blog', to: @app }))
+      assert_equal 'index', request.get('/blog/reports').body
+      assert_equal 401, request.get('/blog/reports/').status
+    end
+
+    %i[path path_info].each do |name|
+      it "should not run a #{name} option filter for a trailing slash that another route takes" do
+        mock_app do
+          before(name => '/about') { @index = true }
+          before { halt 401, 'login' unless @index }
+          get('/:section/:page?') { 'section' }
+          get('/about') { 'about' }
+        end
+        get '/about'
+        assert_equal 'about', body
+        get '/about/'
+        assert_equal [401, 'login'], [status, body]
+      end
+
+      it "should run a #{name} option filter for the trailing slash the router drops for the same route" do
+        mock_app do
+          before(name => '/about') { @index = true }
+          before { halt 401, 'login' unless @index }
+          get('/about') { 'about' }
+        end
+        get '/about/'
+        assert_equal 'about', body
+      end
+    end
+
+    it 'should cover only a format that ends the path, in a route with no other capture' do
+      mock_app do
+        before('/v') { halt 403, 'stopped' }
+        before('/m/x') { halt 403, 'stopped' }
+        before('/d') { halt 403, 'stopped' }
+        get('/v(.:v)?') { 'v' }
+        get('/m(.:format)?/x') { 'm' }
+        get('/d(.:v)?.:format') { 'd' }
+      end
+      { '/v.1' => 'v', '/m.json/x' => 'm', '/d.json' => 'd', '/d.v1.json' => 'd' }.each do |path, served|
+        get path
+        assert_equal served, body, path
+      end
+    end
+
+    it 'should cover the forms the same route serves' do
+      mock_app do
+        before('/data') { halt 401, 'stopped' }
+        before('/s') { halt 401, 'stopped' }
+        get('/data(.:format)?') { 'data' }
+        get('/s') { 's' }
+        get('/:slug(.:format)?') { 'slug' }
+      end
+      %w[/data /data.json /data.json/ /s /s/ /s//].each do |path|
+        get path
+        assert_equal [401, 'stopped'], [status, body], path
+      end
+    end
+
+    it 'should not cover a part a greedy capture before it takes' do
+      mock_app do
+        before('/posts/2024-05') { halt 403, 'stopped' }
+        get('/posts/:year-:month') { "posts #{params[:year]} #{params[:month]}" }
+      end
+      get '/posts/2024-05-01'
+      assert_equal 'posts 2024-05 01', body
+      get '/posts/2024-05'
+      assert_equal 403, status
+    end
+
+    it 'should not cover an optional part after a delimiter other than a dot' do
+      seen = []
+      mock_app do
+        before('/users/john') { seen << :before }
+        get('/users/:first(-:last)?') { "user #{params[:first]} #{params[:last]}" }
+      end
+      get '/users/john-smith'
+      assert_equal 'user john smith', body
+      get '/users/john.'
+      assert_equal 'user john. ', body
+      assert_empty seen
+      get '/users/john'
+      assert_equal [:before], seen
     end
   end
 
@@ -1151,7 +1770,7 @@ describe 'Filters' do
       assert_equal 'from the block', body
     end
 
-    it 'should run a controller filter once' do
+    it 'should run a controller filter once per route tried' do
       runs = []
       mock_app do
         controller :posts do

@@ -244,7 +244,7 @@ describe 'Routing' do
     it 'lists the router form, the full decode and the form route params receive' do
       assert_equal ['/posts'], Padrino::Routing.path_forms('/%70osts')
       assert_equal ['/a%2Fb', '/a/b'], Padrino::Routing.path_forms('/a%2fb')
-      assert_equal ['/files%2Fsecret', '/files/secret'], Padrino::Routing.path_forms('/files%252Fsecret')
+      assert_equal ['/files%2Freport', '/files/report'], Padrino::Routing.path_forms('/files%252Freport')
       assert_equal ['/x%41', '/xA'], Padrino::Routing.path_forms('/x%2541')
       assert_equal ["/\u{FFFD}"], Padrino::Routing.path_forms('/%ff')
     end
@@ -845,6 +845,16 @@ describe 'Routing' do
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
     assert_equal 'js', body
+  end
+
+  it 'should return the conditions from provides' do
+    returned = conditions = nil
+    mock_app do
+      returned = provides(:json)
+      conditions = @conditions
+      get('/a') { 'a' }
+    end
+    assert_same conditions, returned
   end
 
   it 'should return the first content type in provides if accept header is empty' do
