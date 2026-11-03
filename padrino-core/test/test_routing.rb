@@ -3028,4 +3028,40 @@ describe 'Routing' do
       assert_equal 'GET /posts/:id', outer_env['sinatra.route']
     end
   end
+
+  describe 'route matching' do
+    it 'matches the path a route rewrote before passing' do
+      mock_app do
+        get(:rewrite, map: '/rewrite/:id') do
+          request.path_info = '/target'
+          pass
+        end
+        get(:in_place, map: '/in_place/:id') do
+          request.path_info.replace('/target')
+          pass
+        end
+        get(:target, map: '/target') { 'target' }
+      end
+      get '/rewrite/1'
+      assert_equal 200, status
+      assert_equal 'target', body
+      get '/in_place/1'
+      assert_equal 200, status
+      assert_equal 'target', body
+    end
+
+    it 'keeps serving its routes when a route is added after a request' do
+      mock_app do
+        get('/first') { 'first' }
+      end
+      get '/first'
+      @app.get('/second') { 'second' }
+      get '/first'
+      assert_equal 'first', body
+      get '/m'
+      assert_equal 404, status
+      get '/missing'
+      assert_equal 404, status
+    end
+  end
 end

@@ -46,11 +46,15 @@ module Padrino
       # Calls routes by using request.
       #
       def call_by_request(request)
+        path_info = pattern = nil
         rotation do |offset|
-          pattern = decode_pattern(request.path_info)
+          # A route's filters may change the path before passing; decode it again only then.
+          unless path_info && path_info == request.path_info
+            path_info = request.path_info.dup
+            pattern = decode_pattern(path_info)
+          end
           if (route = match?(offset, pattern))
-            params = route.params_for(pattern, request.params)
-            yield(route, params) if route.verb == request.request_method
+            yield(route, route.params_for(pattern, request.params)) if route.verb == request.request_method
             route
           end
         end
@@ -72,8 +76,13 @@ module Padrino
       def match?(offset, path)
         return unless path
 
-        @routes[offset..].find do |route|
-          route.regexp === path || (path.end_with?('/') && route.regexp === path[0..-2])
+        trimmed = path[0..-2] if path.end_with?('/')
+        routes = @routes
+        while (route = routes[offset])
+          regexp = route.regexp
+          # A route added after compiling has no regexp and matches nothing.
+          return route if regexp && (regexp.match?(path) || (trimmed && regexp.match?(trimmed)))
+          offset += 1
         end
       end
 
@@ -82,11 +91,12 @@ module Padrino
       #
       def rotation(offset = 0)
         compile! unless compiled?
-        loop.with_object([]) do |_, candidacies|
-          return candidacies unless (route = yield(offset))
+        candidacies = []
+        while (route = yield(offset))
           candidacies << route
           offset = route.index.next
         end
+        candidacies
       end
 
       ##
@@ -94,6 +104,11 @@ module Padrino
       # (a malformed or non-UTF-8 escape such as "/%ff"), so it matches no route.
       #
       def decode_pattern(pattern)
+        # Without an escape, decoding an ASCII path only changes its encoding.
+        if pattern.ascii_only? && !pattern.include?('%') && Encoding.default_external.ascii_compatible?
+          return pattern.dup.force_encoding(Encoding::UTF_8)
+        end
+
         decoded = decode_uri(encode_default_external(pattern))
         decoded if decoded.valid_encoding?
       rescue ArgumentError, EncodingError
