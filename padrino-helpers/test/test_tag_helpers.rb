@@ -52,6 +52,20 @@ describe 'TagHelpers' do
       actual_html = tag(:p, data: { foo: %i[bar baz] })
       assert_html_has_tag(actual_html, 'p', 'data-foo': 'bar baz')
     end
+
+    it 'should build the exact attribute string' do
+      assert_equal '<div class="x" />', tag(:div, data: {}, class: 'x')
+      assert_equal '<br />', tag(:br, id: nil, hidden: false)
+      assert_equal '<input checked="checked" name="a" />', tag(:input, checked: true, 'name' => 'a')
+      assert_equal '<a href="/x" data-method="delete" rel="nofollow" data-confirm="Sure?" />',
+                   tag(:a, href: '/x', method: :delete, confirm: 'Sure?')
+    end
+
+    it 'should not change the options it is given' do
+      options = { class: 'btn', method: :delete }
+      2.times { assert_equal '<a class="btn" data-method="delete" rel="nofollow" />', tag(:a, options) }
+      assert_equal({ class: 'btn', method: :delete }, options)
+    end
   end
 
   describe 'for #content_tag method' do
