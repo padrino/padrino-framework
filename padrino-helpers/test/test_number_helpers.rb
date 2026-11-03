@@ -102,6 +102,25 @@ describe 'NumberHelpers' do
       assert_equal '1.231,83',  number_with_precision(1231.826, precision: 2, separator: ',', delimiter: '.')
     end
 
+    it 'should not look up the locale when every format option is given' do
+      I18n.backend.expects(:translate).never
+      assert_equal '1.234.567,89',  number_with_precision(1_234_567.891, precision: 2, separator: ',', delimiter: '.')
+      assert_equal '1.234.567,891', number_with_delimiter(1_234_567.891, separator: ',', delimiter: '.')
+      assert_equal '1.235',         number_with_precision(1234.5, precision: 0, separator: ',', delimiter: '.')
+      assert_equal '123457',        number_with_precision(1234.567, precision: 2, separator: '', delimiter: '')
+      assert_equal '1234567,5',     number_with_delimiter(1_234_567.5, separator: ',', delimiter: '')
+      assert_equal '1.234.5675',    number_with_delimiter(1_234_567.5, separator: '', delimiter: '.')
+    end
+
+    it 'should take the format options not given from the locale' do
+      assert_equal '1234567,89',    number_with_precision(1_234_567.891, precision: 2, locale: :de)
+      assert_equal '1234567.89',    number_with_precision(1_234_567.891, precision: 2, separator: '.', locale: :de)
+      assert_equal '1 234 567,89',  number_with_precision(1_234_567.891, separator: ',', delimiter: ' ', locale: :de)
+      assert_equal '1.234.567,891', number_with_delimiter(1_234_567.891, delimiter: '.', locale: :de)
+      assert_equal '1 234 567,891', number_with_delimiter(1_234_567.891, delimiter: ' ', locale: :de)
+      assert_equal '1.234.567;891', number_with_delimiter(1_234_567.891, separator: ';', locale: :de)
+    end
+
     it 'should display number_to_human_size' do
       assert_equal '0 Bytes',   number_to_human_size(0)
       assert_equal '1 Byte',    number_to_human_size(1)
