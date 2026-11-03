@@ -19,11 +19,17 @@ module Padrino
       # Matches a pattern with the route matcher.
       #
       def match(pattern)
-        if (match_data = handler.match(pattern))
+        if (match_data = whole_regexp.match(pattern))
           match_data
         elsif pattern != '/' && pattern.end_with?('/')
-          handler.match(pattern[0..-2])
+          whole_regexp.match(pattern[0..-2])
         end
+      end
+
+      # The handler, anchored to the whole path as PathRouter::Compiler matches routes
+      # (Mustermann's \Z and a Regexp route's ^$ stop before a newline).
+      def whole_regexp
+        @whole_regexp ||= to_regexp.is_a?(Regexp) ? /\A(?:#{to_regexp})\z/ : handler
       end
 
       ##
