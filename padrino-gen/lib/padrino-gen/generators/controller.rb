@@ -52,7 +52,7 @@ module Padrino
           block_opts << "provides: [#{options[:provides]}]" if options[:provides] && !options[:provides].empty?
           @block_opts_string = block_opts.join(', ') unless block_opts.empty?
 
-          exit_if_test_component_removed!
+          exit_unless_test_component_available!
           self.behavior = :revoke if options[:destroy]
           template 'templates/controller.rb.tt', destination_root(app, 'controllers', "#{name.to_s.underscore}.rb")
           empty_directory destination_root(app, "/views/#{name.to_s.underscore}")

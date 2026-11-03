@@ -418,15 +418,14 @@ module Padrino
       end
 
       ##
-      # Says what to use instead and exits with status 1 if the project's .components names a test component
-      # that was removed. Generators that apply the test component call it before writing anything.
+      # Exits with status 1, saying why, unless the project's .components names a test component Padrino has
+      # (or none). Generators that apply the test component call it before writing anything.
       #
-      def exit_if_test_component_removed!
-        removed = removed_component_message(:test, fetch_component_choice(:test))
-        return unless removed
+      def exit_unless_test_component_available!
+        choice = fetch_component_choice(:test)
+        return if choice.to_s == 'none' || File.exist?(File.expand_path("#{__dir__}/components/tests/#{choice}.rb"))
 
-        say removed
-        exit 1
+        apply_component_for(choice, :test)
       end
 
       ##

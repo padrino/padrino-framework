@@ -45,6 +45,8 @@ module Padrino
           # Settle every choice, switch and check before applying any, so a failure leaves the project unchanged.
           chosen = self.class.component_types.reject { |comp| @_components[comp].empty? }
           chosen.each { |comp| @_components[comp] = resolve_valid_choice(comp) }
+          # A mock is set up for the project's test component.
+          exit_unless_test_component_available! if chosen.include?(:mock) && !chosen.include?(:test) && @_components[:mock].to_s != 'none'
           chosen.select! do |comp|
             choice = @_components[comp]
             existing = fetch_component_choice(comp)
@@ -54,8 +56,6 @@ module Padrino
             accepted
           end
 
-          # A mock is set up for the project's test component.
-          exit_if_test_component_removed! if chosen.include?(:mock) && !chosen.include?(:test)
           @project_name = fetch_component_choice(:namespace)
           if chosen.include?(:test) && !already_exists?(@app_name, @project_name)
             say "#{@project_name}::#{@app_name} does not exist."

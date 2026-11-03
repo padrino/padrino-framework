@@ -132,6 +132,21 @@ describe 'ControllerGenerator' do
       assert_no_file_exists(@helper_path)
     end
 
+    {
+      'riot' => /The riot test component is no longer available in Padrino \(available: .*\bminitest\b/,
+      nil => /The project's .components sets no test component \(available: .*\bminitest\b/
+    }.each do |stored, message|
+      it "should stop without writing when .components names no test component Padrino has (#{stored.inspect})" do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
+        components = "#{@apptmp}/sample_project/.components"
+        File.write(components, File.read(components).sub(":test: minitest\n", stored ? ":test: #{stored}\n" : ''))
+        out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }.status }
+        assert_match(message, out)
+        assert_no_file_exists(@controller_path)
+        assert_no_dir_exists("#{@apptmp}/sample_project/app/views/demo_items")
+      end
+    end
+
     it 'should generate controller test for minitest' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }

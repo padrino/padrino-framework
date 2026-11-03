@@ -605,6 +605,24 @@ describe 'ComponentGenerator' do
       end
     end
 
+    it 'should stop before asking to switch the mock in a project whose test component was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
+      Thor::LineEditor.stubs(:readline).raises(RuntimeError, 'asked to switch the mock')
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--mock=rr', "-r=#{@apptmp}/sample_project") }.status }
+      assert_equal 'The bacon test component was removed from Padrino; use minitest or rspec instead.', out.strip
+    end
+
+    it 'should still switch the mock to none in a project whose test component was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
+      Readline.stubs(:readline).returns('yes').once
+      capture_io { generate(:component, '--mock=none', "-r=#{@apptmp}/sample_project") }
+      assert_equal 'none', YAML.load_file(components)[:mock]
+    end
+
     describe 'switching the mock component' do
       # The setup lines each mock adds to the helper of each test component.
       def mock_setup
