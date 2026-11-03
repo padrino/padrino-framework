@@ -614,6 +614,18 @@ describe 'ComponentGenerator' do
       assert_equal 'The bacon test component was removed from Padrino; use minitest or rspec instead.', out.strip
     end
 
+    it 'should stop before setting up the mock when the test switch is declined in a project whose test component was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
+      snapshot = -> { Dir["#{@apptmp}/sample_project/**/*", components].to_h { |path| [path, File.file?(path) && File.read(path)] } }
+      before = snapshot.call
+      Readline.stubs(:readline).returns('no').once
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--test=minitest', '--mock=rr', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/The bacon test component was removed from Padrino; use minitest or rspec instead\./, out)
+      assert_equal before, snapshot.call
+    end
+
     it 'should still switch the mock to none in a project whose test component was removed' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
       components = "#{@apptmp}/sample_project/.components"
