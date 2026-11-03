@@ -259,6 +259,84 @@ describe 'Email' do
       assert_equal 'B[beta hello]', @app.deliver(:beta, :boxed).body.to_s.strip
     end
 
+    it 'should compile a mailer template once for all its deliveries' do
+      mailer_app(mailer_views('site'))
+      @app.set :reload_templates, false
+      compiled = 0
+      engine = Tilt[:erb]
+      new_template = engine.method(:new)
+      engine.stub(:new, lambda { |*args, &block|
+        compiled += 1
+        new_template.call(*args, &block)
+      }) do
+        2.times { assert_equal 'alpha hello', @app.deliver(:alpha, :hello).body.to_s }
+      end
+      assert_equal 1, compiled
+    end
+
+    it 'should read an edited mailer template when templates reload' do
+      views = mailer_views('site')
+      mailer_app(views)
+      @app.set :reload_templates, false
+      assert_equal 'alpha hello', @app.deliver(:alpha, :hello).body.to_s
+      File.write(File.join(views, 'mailers', 'alpha', 'hello.erb'), 'alpha edited')
+      @app.set :reload_templates, true
+      assert_equal 'alpha edited', @app.deliver(:alpha, :hello).body.to_s
+    end
+
+    it 'should read an edited part template when templates reload' do
+      views = mailer_views('site')
+      mailer_app(views)
+      @app.set :reload_templates, true
+      assert_equal 'gamma plain', @app.deliver(:gamma, :hello).parts.first.body.to_s
+      File.write(File.join(views, 'mailers', 'gamma', 'hello.plain.erb'), 'gamma plain edited')
+      assert_equal 'gamma plain edited', @app.deliver(:gamma, :hello).parts.first.body.to_s
+    end
+
+    it 'should compile part templates once for all their deliveries' do
+      mailer_app(mailer_views('site'))
+      @app.set :reload_templates, false
+      compiled = 0
+      engine = Tilt[:erb]
+      new_template = engine.method(:new)
+      engine.stub(:new, lambda { |*args, &block|
+        compiled += 1
+        new_template.call(*args, &block)
+      }) do
+        2.times do
+          assert_equal(['gamma plain', 'gamma html'], @app.deliver(:gamma, :hello).parts.map { |part| part.body.to_s })
+        end
+      end
+      assert_equal 2, compiled
+    end
+
+    it 'should not dump the templates other messages share' do
+      mailer_app(mailer_views('site'))
+      @app.set :reload_templates, false
+      @app.deliver(:beta, :hello)
+      message = build_message(:alpha)
+      assert_equal 'alpha hello', message.send(:render, :hello)
+      yaml = message.to_yaml
+      refute_includes yaml, 'beta hello'
+      refute_includes yaml, 'Mutex'
+    end
+
+    it 'should keep the shared templates when a message of another app reloads them' do
+      views = mailer_views('site')
+      cached = mailer_app(views)
+      cached.set :reload_templates, false
+      reloading = mailer_app(views)
+      reloading.set :reload_templates, true
+      assert_equal 'alpha hello', cached.deliver(:alpha, :hello).body.to_s
+      File.write(File.join(views, 'mailers', 'alpha', 'hello.erb'), 'alpha edited')
+      @app = cached
+      waiting = build_message(:alpha)
+      @app = reloading
+      assert_equal 'alpha edited', build_message(:alpha).send(:render, :hello)
+      assert_equal 'alpha hello', waiting.send(:render, :hello)
+      assert_equal 'alpha hello', cached.deliver(:alpha, :hello).body.to_s
+    end
+
     MailerFormUser = Struct.new(:name) unless defined?(MailerFormUser)
 
     it 'should build forms with form_for in a mailer template' do
