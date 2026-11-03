@@ -107,6 +107,15 @@ describe 'OutputHelpers' do
       assert_response_has_tag 'p', content: 'The slim block passed in is a template', class: 'is_template', count: 1
       assert_response_has_no_tag 'p', content: 'The ruby block passed in is a template', class: 'is_template'
     end
+
+    %w[erb haml slim].each do |engine|
+      it "should return true for a #{engine} template block and false for a Ruby block" do
+        get "/#{engine}/block_is_template"
+        html = Nokogiri::HTML(last_response.body)
+        assert_equal 'true', html.at_css('p.template').text
+        assert_equal 'false', html.at_css('p.ruby').text
+      end
+    end
   end
 
   describe 'for #current_engine method' do
