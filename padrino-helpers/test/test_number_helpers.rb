@@ -96,6 +96,10 @@ describe 'NumberHelpers' do
       I18n.backend.expects(:translate).never
       assert_equal '1.234.567,89',  number_with_precision(1_234_567.891, precision: 2, separator: ',', delimiter: '.')
       assert_equal '1.234.567,891', number_with_delimiter(1_234_567.891, separator: ',', delimiter: '.')
+      assert_equal '1.235',         number_with_precision(1234.5, precision: 0, separator: ',', delimiter: '.')
+      assert_equal '123457',        number_with_precision(1234.567, precision: 2, separator: '', delimiter: '')
+      assert_equal '1234567,5',     number_with_delimiter(1_234_567.5, separator: ',', delimiter: '')
+      assert_equal '1.234.5675',    number_with_delimiter(1_234_567.5, separator: '', delimiter: '.')
     end
 
     it 'should take the format options not given from the locale' do
