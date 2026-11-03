@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2507 The token `form_tag`, `csrf_token_field` and `csrf_meta_tags` write into a new session is now accepted on POST; with `disable :protection`, a form first rendered on a `protect_from_csrf except:` path made every later POST in that session return 403 (@nesquena)
 - FIX #2506 `tag`, `content_tag` and the helpers built on them (`link_to`, form fields, ...) render faster; their output is unchanged (@nesquena)
 - FIX #2505 Helpers that take a block (`content_tag`, `form_tag`, `link_to`, ...) are faster: they check whether the block comes from a template without evaluating code, and `block_is_template?` now returns true or false for a block in a template instead of a string or nil (@nesquena)
 - FIX #2503 `number_to_currency`, `number_to_percentage`, `number_to_human_size` and `number_with_precision` are faster, and so is `number_with_delimiter` when given both `separator:` and `delimiter:`; their output is unchanged (@nesquena)
