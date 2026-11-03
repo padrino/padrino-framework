@@ -33,6 +33,57 @@ describe 'Padrino::Reloader::Storage' do
 
       assert_includes Padrino::Reloader::Storage.send(:object_classes), child
     end
+
+    it 'should walk to every class the heap holds' do
+      skip 'this Ruby scans the heap' unless Padrino::Reloader::Storage.const_get(:SUBCLASSES)
+      gc_was_disabled = GC.disable
+      heap = Set.new(ObjectSpace.each_object(Class).reject(&:singleton_class?))
+      assert_equal heap, Set.new(Padrino::Reloader::Storage.send(:all_classes))
+    ensure
+      GC.enable unless gc_was_disabled
+    end
+  end
+
+  describe '#native_class_method' do
+    before do
+      @storage = Padrino::Reloader::Storage
+      skip 'this Ruby scans the heap' unless @storage.const_get(:SUBCLASSES)
+    end
+
+    def assert_native(method)
+      assert_equal ::Class, method.owner
+      assert_nil method.source_location
+    end
+
+    it 'should pass over a subclasses method prepended in front of the native one' do
+      klass = Class.new
+      prepended = Module.new do
+        def subclasses
+          super.reject { |klass| klass.name.nil? }
+        end
+      end
+      klass.singleton_class.prepend(prepended)
+      assert_native @storage.send(:native_class_method, klass.method(:subclasses).unbind)
+    end
+
+    it 'should pass over a subclasses method written in Ruby' do
+      klass = Class.new do
+        def self.subclasses
+          []
+        end
+      end
+      assert_native @storage.send(:native_class_method, klass.method(:subclasses).unbind)
+    end
+
+    it 'should return nil when no native method is underneath' do
+      ruby_only = Module.new do
+        def subclasses
+          []
+        end
+      end
+      method = ruby_only.instance_method(:subclasses)
+      assert_nil @storage.send(:native_class_method, method)
+    end
   end
 
   describe '#new_classes' do

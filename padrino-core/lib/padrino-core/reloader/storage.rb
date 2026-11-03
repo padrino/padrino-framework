@@ -85,12 +85,21 @@ module Padrino
         Set.new(klasses)
       end
 
-      # Ruby's own Class#subclasses (Ruby 3.1+), passing over versions that a library
-      # prepended (ActiveSupport hides reloaded classes) or wrote in Ruby. CRuby only: other
-      # engines keep the heap scan until their subclass lists are known to be complete.
-      subclasses = ::Class.instance_method(:subclasses) if RUBY_ENGINE == 'ruby' && ::Class.method_defined?(:subclasses)
-      subclasses = subclasses.super_method while subclasses && (subclasses.owner != ::Class || subclasses.source_location)
-      SUBCLASSES = subclasses
+      ##
+      # Follows a method past the versions that a library prepended or wrote in Ruby, to the
+      # one Class defines natively, or nil when there is none.
+      #
+      def native_class_method(method)
+        method = method.super_method while method && (method.owner != ::Class || method.source_location)
+        method
+      end
+
+      # Ruby's own Class#subclasses (Ruby 3.1+), so a version that ActiveSupport prepends to hide
+      # reloaded classes is bypassed. CRuby only: other engines keep the heap scan until their
+      # subclass lists are known to be complete.
+      SUBCLASSES = if RUBY_ENGINE == 'ruby' && ::Class.method_defined?(:subclasses)
+                     native_class_method(::Class.instance_method(:subclasses))
+                   end
       private_constant :SUBCLASSES
 
       ##
