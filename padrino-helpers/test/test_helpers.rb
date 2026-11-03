@@ -26,7 +26,7 @@ describe 'Padrino::Helpers' do
       post('/save') { 'saved' }
     end
     get '/signup'
-    token = last_response.body[/name="authenticity_token" value="([^"]+)"/, 1]
+    token = Nokogiri::HTML(last_response.body).at_css('input[name="authenticity_token"]')['value']
     post '/save', authenticity_token: token
     assert_equal 200, last_response.status
     assert_equal 'saved', last_response.body
