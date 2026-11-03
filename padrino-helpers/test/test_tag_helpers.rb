@@ -72,6 +72,20 @@ describe 'TagHelpers' do
                    tag(:input, name: 'user[name]', value: 'Tom & <Jerry> "TJ"', class: 'input')
     end
 
+    it 'should escape a value whose only special character is a quote or an angle bracket' do
+      assert_equal '<a title="say &quot;hi&quot;" />', tag(:a, title: 'say "hi"')
+      assert_equal '<a title="&lt;b&gt;" />', tag(:a, title: '<b>')
+      assert_equal '<a title="a&lt;b" />', tag(:a, title: 'a<b')
+      assert_equal '<a title="a&gt;b" />', tag(:a, title: 'a>b')
+    end
+
+    it 'should write data attributes added to DATA_ATTRIBUTES' do
+      Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
+      assert_equal '<a data-dialog="true" />', tag(:a, dialog: true)
+    ensure
+      Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.delete(:dialog)
+    end
+
     it 'should write Array, Symbol and Integer values' do
       assert_equal '<td class="a &amp; b c" id="cell" colspan="2" />', tag(:td, class: ['a & b', :c], id: :cell, colspan: 2)
     end
