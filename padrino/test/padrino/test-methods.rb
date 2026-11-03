@@ -32,6 +32,7 @@ module Padrino
     end
 
     def assert_has_no_selector(html, selector, attributes)
+      attributes.delete(:count)
       message = "'#{selector}' with attributes #{attributes} in html\n#{html}"
       matched_count = html_matched_tags(html, selector.to_s, attributes)
       assert matched_count.zero?, "expected no tags #{message}"
