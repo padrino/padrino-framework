@@ -129,7 +129,8 @@ module Padrino
       ##
       # The routes by name, in the order of +routes+, rebuilt when +routes+ changes size so
       # that a route added to or deleted from +routes+ directly is seen.
-      # ceiling: a direct edit that keeps the size (one route swapped for another) isn't seen;
+      # ceiling: a direct edit that keeps the size (one route swapped for another) isn't seen,
+      # nor is a rename of a route this router shares with, or took from, another router;
       # rebuild on every call if that has to work.
       #
       def named_routes

@@ -3072,6 +3072,17 @@ describe 'Routing' do
       assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:old) }
     end
 
+    it 'keeps the router a route was added to when another router indexes it' do
+      owner = Padrino::PathRouter.new
+      route = owner.add(:get, '/shared', name: :old)
+      owner.path(:old)
+      other = Padrino::PathRouter.new
+      other.routes << route
+      other.path(:old)
+      route.name = :new
+      assert_equal '/shared', owner.path(:new)
+    end
+
     it 'finds a route added to the router with a name' do
       router = Padrino::PathRouter.new
       router.add(:get, '/one', name: :one)
