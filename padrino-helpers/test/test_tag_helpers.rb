@@ -52,6 +52,49 @@ describe 'TagHelpers' do
       actual_html = tag(:p, data: { foo: %i[bar baz] })
       assert_html_has_tag(actual_html, 'p', 'data-foo': 'bar baz')
     end
+
+    it 'should build the exact attribute string' do
+      assert_equal '<div class="x" />', tag(:div, data: {}, class: 'x')
+      assert_equal '<br />', tag(:br, id: nil, hidden: false)
+      assert_equal '<input checked="checked" name="a" />', tag(:input, checked: true, 'name' => 'a')
+      assert_equal '<a href="/x" data-method="delete" rel="nofollow" data-confirm="Sure?" />',
+                   tag(:a, href: '/x', method: :delete, confirm: 'Sure?')
+    end
+
+    it 'should not change the options it is given' do
+      options = { class: 'btn', method: :delete }
+      2.times { assert_equal '<a class="btn" data-method="delete" rel="nofollow" />', tag(:a, options) }
+      assert_equal({ class: 'btn', method: :delete }, options)
+    end
+
+    it 'should escape the values that need it and leave the others as they are' do
+      assert_equal '<input name="user[name]" value="Tom &amp; &lt;Jerry&gt; &quot;TJ&quot;" class="input" />',
+                   tag(:input, name: 'user[name]', value: 'Tom & <Jerry> "TJ"', class: 'input')
+    end
+
+    it 'should escape a value whose only special character is a quote or an angle bracket' do
+      assert_equal '<a title="say &quot;hi&quot;" />', tag(:a, title: 'say "hi"')
+      assert_equal '<a title="&lt;b&gt;" />', tag(:a, title: '<b>')
+      assert_equal '<a title="a&lt;b" />', tag(:a, title: 'a<b')
+      assert_equal '<a title="a&gt;b" />', tag(:a, title: 'a>b')
+    end
+
+    it 'should write data attributes added to DATA_ATTRIBUTES' do
+      Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
+      assert_equal '<a data-dialog="true" />', tag(:a, dialog: true)
+    ensure
+      Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.delete(:dialog)
+    end
+
+    it 'should write Array, Symbol and Integer values' do
+      assert_equal '<td class="a &amp; b c" id="cell" colspan="2" />', tag(:td, class: ['a & b', :c], id: :cell, colspan: 2)
+    end
+
+    it 'should write data attributes only for the options that ask for them' do
+      assert_equal '<a href="/x" class="link" />', tag(:a, href: '/x', class: 'link')
+      assert_equal '<a href="/x" data-method="post" rel="nofollow" data-remote="true" data-confirm="Sure &amp; certain?" />',
+                   tag(:a, href: '/x', method: :post, remote: true, confirm: 'Sure & certain?')
+    end
   end
 
   describe 'for #content_tag method' do

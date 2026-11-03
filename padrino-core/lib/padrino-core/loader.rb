@@ -118,6 +118,7 @@ module Padrino
         global_configurations.clear
         Reloader.clear!
         @_loaded = false
+        @_session_secret_warned = nil
       end
       nil
     end
