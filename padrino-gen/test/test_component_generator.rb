@@ -466,15 +466,17 @@ describe 'ComponentGenerator' do
         assert_equal 'jquery', script_choice
       end
 
-      # An --api project has no padrino-helpers, so its layout has neither csrf_meta_tags nor javascript_include_tag.
-      it 'should give a plain script tag for an api project' do
-        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--api', '--script=ujs') }
-        assert_includes out, '<script src="/javascripts/ujs.js"></script>'
-        refute_match(/csrf_meta_tags/, out)
+      it 'should stop for an api project, which has no views' do
+        _, err = capture_io { assert_raises(SystemExit) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--api', '--script=ujs') } }
+        assert_match(/no script component \(--script=ujs\)/, err)
+        assert_no_file_exists(ujs_file)
       end
 
-      it 'should give a plain script tag when added to an api project' do
+      # A project without padrino-helpers has neither csrf_meta_tags nor javascript_include_tag in its layout.
+      it 'should give a plain script tag to a project without padrino-helpers' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--api') }
+        components = "#{@apptmp}/sample_project/.components"
+        File.write(components, File.read(components).sub(':api: true', ':api: false'))
         out, = capture_io { generate(:component, '--script=ujs', "-r=#{@apptmp}/sample_project") }
         assert_includes out, '<script src="/javascripts/ujs.js"></script>'
         refute_match(/csrf_meta_tags/, out)
@@ -883,18 +885,19 @@ describe 'ComponentGenerator' do
       assert_no_dir_exists(project_file('app'))
     end
 
-    it 'should print a plain script tag for an api project, which has no helpers' do
-      out, = capture_io { generate(:project, 'sample_project', '--script=htmx', '--api', "--root=#{@apptmp}") }
-      assert_match(%r{<script src="/javascripts/htmx\.js"></script>}, out)
-      refute_match(/csrf_meta_tags/, out)
-      assert_file_exists(project_file('public/javascripts/htmx.js'))
+    it 'should stop for an api project, which has no views' do
+      _, err = capture_io { assert_raises(SystemExit) { generate(:project, 'sample_project', '--script=htmx', '--api', "--root=#{@apptmp}") } }
+      assert_match(/no script component \(--script=htmx\)/, err)
+      assert_no_dir_exists(project_file('.'))
     end
 
-    it 'should print a plain script tag when added to an existing api project' do
+    it 'should print a plain script tag for a project without padrino-helpers' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      File.write(project_file('.components'), File.read(project_file('.components')).sub(':api: true', ':api: false'))
       out, = apply_component('--script=htmx')
       assert_match(%r{<script src="/javascripts/htmx\.js"></script>}, out)
       refute_match(/csrf_meta_tags/, out)
+      assert_file_exists(project_file('public/javascripts/htmx.js'))
     end
 
     it 'should print the layout lines for a renderer applied in the same run' do
@@ -964,6 +967,54 @@ describe 'ComponentGenerator' do
       out, = capture_io { generate(:component, '--script=ujs', "-r=#{@apptmp}/sample_project") }
       assert_match(/applying.*?ujs.*?script/, out)
       assert_equal 'ujs', YAML.load_file(components_file)[:script]
+    end
+  end
+
+  describe 'an api project' do
+    def project_file(path)
+      "#{@apptmp}/sample_project/#{path}"
+    end
+
+    def project_snapshot
+      Dir[project_file('**/*'), project_file('.components')].to_h { |path| [path, File.file?(path) && File.read(path)] }
+    end
+
+    def setup
+      super
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+    end
+
+    { '--renderer=haml' => 'renderer', '--script=jquery' => 'script', '--stylesheet=sass' => 'stylesheet' }.each do |flag, type|
+      it "should stop on #{flag} without changing the project" do
+        before = project_snapshot
+        stop = nil
+        _, err = capture_io { stop = assert_raises(SystemExit) { generate(:component, flag, '--orm=sequel', "-r=#{project_file('')}") } }
+        assert_equal 1, stop.status
+        assert_match(/An --api project has no views, so it takes no #{type} component \(#{flag}\)\./, err)
+        assert_match(/set `:api: false` in its \.components/, err)
+        assert_equal before, project_snapshot
+      end
+    end
+
+    it 'should stop in an older api project, which .components does not mark' do
+      File.write(project_file('.components'), File.read(project_file('.components')).sub(":api: true\n", ''))
+      before = project_snapshot
+      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=haml', "-r=#{project_file('')}") } }
+      assert_match(/no renderer component/, err)
+      assert_equal before, project_snapshot
+    end
+
+    it 'should apply a view component once .components says the project is not an api project' do
+      File.write(project_file('.components'), File.read(project_file('.components')).sub(':api: true', ':api: false'))
+      capture_io { generate(:component, '--renderer=haml', "-r=#{project_file('')}") }
+      assert_equal 'haml', YAML.load_file(project_file('.components'))[:renderer]
+    end
+
+    it 'should apply other components and none for a view component' do
+      capture_io { generate(:component, '--orm=sequel', '--renderer=none', "-r=#{project_file('')}") }
+      components = YAML.load_file(project_file('.components'))
+      assert_equal 'sequel', components[:orm]
+      assert_same true, components[:api]
     end
   end
 

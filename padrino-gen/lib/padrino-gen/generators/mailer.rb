@@ -34,6 +34,14 @@ module Padrino
         if in_app_root?
           app = options[:app]
           check_app_existence(app)
+          # Mail messages render with padrino-helpers' Padrino::Rendering, so a mailer needs both gems.
+          # ceiling: checks the Gemfile, not that the app registers Padrino::Mailer; reading the app's settings needs a boot.
+          if !options[:destroy] && api_project? && !(padrino_gem?('padrino-mailer') && padrino_gem?('padrino-helpers'))
+            say "A mailer needs padrino-mailer and padrino-helpers, which this --api project's Gemfile doesn't both have. " \
+                "Add gem 'padrino-mailer' and gem 'padrino-helpers' to the Gemfile and `register Padrino::Mailer` to the app, " \
+                "then generate the mailer again. #{NOT_API_HINT}"
+            exit 1
+          end
           self.behavior    = :revoke if options[:destroy]
           @project_name    = options[:namespace].underscore.camelize
           @project_name    = fetch_project_name(app) if @project_name.empty?

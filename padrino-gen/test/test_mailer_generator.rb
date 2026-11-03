@@ -23,6 +23,24 @@ describe 'MailerGenerator' do
       assert_match(%r{Namespace 'wrong/name' must consist only of alphanumeric characters or '_'}, err)
     end
 
+    ['', "gem 'padrino-mailer'\n", "gem 'padrino-helpers'\n"].each do |added|
+      it "should stop without writing anything in an api project whose Gemfile adds #{added.empty? ? 'nothing' : added.chomp}" do
+        capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+        File.write("#{@apptmp}/sample_project/Gemfile", added, mode: 'a')
+        out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project") }.status }
+        assert_match(/Add gem 'padrino-mailer' and gem 'padrino-helpers' to the Gemfile and `register Padrino::Mailer` to the app/, out)
+        assert_no_file_exists("#{@apptmp}/sample_project/app/mailers/demo.rb")
+        assert_no_dir_exists("#{@apptmp}/sample_project/app/views/mailers")
+      end
+    end
+
+    it 'should generate a mailer in an api project whose Gemfile has padrino-mailer and padrino-helpers' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/Gemfile", "gem 'padrino-mailer'\ngem 'padrino-helpers'\n", mode: 'a')
+      capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project") }
+      assert_match_in_file(/SampleProject::App.mailer :demo/m, "#{@apptmp}/sample_project/app/mailers/demo.rb")
+    end
+
     it 'should generate mailer in specified app' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }

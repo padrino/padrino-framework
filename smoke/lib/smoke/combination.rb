@@ -37,6 +37,7 @@ module Smoke
       orms = combos.map(&:orm).uniq
       %w[renderer test].each do |type|
         values = combos.map { |c| c.public_send(type) }.uniq
+        values.delete('none') if type == 'renderer' # only api rows have none, and they take no renderer
         orms.product(values).each do |orm, value|
           next if combos.any? { |c| c.orm == orm && c.public_send(type) == value }
           gaps << "orm x #{type}: #{orm} x #{value}"

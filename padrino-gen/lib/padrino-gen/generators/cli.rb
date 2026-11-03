@@ -56,6 +56,10 @@ module Padrino
             exit 1
           end
           generator_class.start(ARGV)
+        elsif %i[admin admin_page].include?(generator_kind) && !Padrino::Generators.boot_error
+          puts "<= padrino g #{generator_kind} needs padrino-admin, which this project doesn't load. Add gem 'padrino-admin' " \
+               "to its Gemfile; an --api project can't take an admin, which needs sessions and views."
+          exit 1
         else
           puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(', ')})"
           exit 1 unless generator_kind == :help

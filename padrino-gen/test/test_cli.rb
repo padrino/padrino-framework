@@ -32,6 +32,16 @@ describe 'Cli' do
       assert_match(/Please specify generator to use/, out)
     end
 
+    it 'should name padrino-admin for the admin generators when the project does not load it' do
+      without_admin = Padrino::Generators.mappings.reject { |kind, _| %i[admin admin_page].include?(kind) }
+      Padrino::Generators.stubs(:mappings).returns(without_admin)
+      %w[admin admin_page].each do |kind|
+        out, = capture_io { assert_equal 1, assert_raises(SystemExit) { cli(kind) }.status }
+        assert_match(/padrino g #{kind} needs padrino-admin, which this project doesn't load/, out)
+        assert_match(/an --api project can't take an admin/, out)
+      end
+    end
+
     it 'should list the generators for help' do
       out, = capture_io { cli('help') }
       assert_match(/Please specify generator to use/, out)

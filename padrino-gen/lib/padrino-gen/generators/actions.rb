@@ -17,6 +17,16 @@ module Padrino
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
 
     ##
+    # The component types that serve views, which an --api project doesn't have.
+    #
+    VIEW_COMPONENTS = %i[renderer script stylesheet].freeze
+
+    ##
+    # What to do when a generator refuses a project it takes for an --api one.
+    #
+    NOT_API_HINT = "If this project isn't an --api project, set `:api: false` in its .components.".freeze
+
+    ##
     # Components that were removed from Padrino, by type, with what to use instead.
     #
     REMOVED_COMPONENTS = {
@@ -710,15 +720,37 @@ module Padrino
       end
 
       ##
-      # Returns true for an --api project: no sessions or CSRF protection. The Gemfile is the
-      # only record of that: padrino-core, without the padrino gem or the full set of its parts.
+      # Returns true for an --api project: no sessions, CSRF protection or views. New projects
+      # record the mode as `:api: true` in .components. A project without that key is detected
+      # from its Gemfile: padrino-core, without the padrino gem or the full set of its parts.
       #
       # @return [Boolean] true for an --api project.
       #
       def api_project?
         return true if options[:api]
 
+        components = destination_root('.components')
+        config = retrieve_component_config(components) if File.file?(components)
+        return config[:api] == true if config.is_a?(Hash) && config.key?(:api)
+
         gemfile_gems.include?('padrino-core') && !(padrino_gem?('padrino-helpers') && padrino_gem?('padrino-mailer'))
+      end
+
+      ##
+      # Raises a Thor::Error naming the renderer, script or stylesheet components chosen, other
+      # than none, for an --api project, which has no views for them.
+      #
+      # @param [Hash] choices
+      #   The component choices by type, as options give them.
+      # @param [String] hint
+      #   What to do instead, which ends the message.
+      #
+      def refuse_view_components(choices, hint)
+        given = VIEW_COMPONENTS.reject { |comp| ['', 'none'].include?(choices[comp].to_s) }
+        return if given.empty?
+
+        flags = given.map { |comp| "--#{comp}=#{choices[comp]}" }.join(' ')
+        raise Thor::Error, "An --api project has no views, so it takes no #{given.join(' or ')} component (#{flags}). #{hint}"
       end
 
       ##

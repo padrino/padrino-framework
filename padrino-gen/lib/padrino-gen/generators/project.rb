@@ -57,6 +57,7 @@ module Padrino
 
         @app_name = app.gsub(/\W/, '_').camelize
         # Settle every component choice before writing, so an invalid one leaves no partial project behind.
+        refuse_view_components(options, 'Leave out --api to generate a project with views.') if options.api?
         resolve_component_choices unless options[:template]
         self.destination_root = File.join(options[:root], name)
         if options[:template]
@@ -100,6 +101,7 @@ module Padrino
         store_component_config('.components', force: true)
         store_component_choice(:namespace, @project_name)
         store_component_choice(:migration_format, options[:migration_format])
+        store_component_choice(:api, true) if options.api?
         store_component_choice(:adapter, resolve_valid_adapter) if SQL_ADAPTER_ORMS.include?(@_components[:orm])
       end
 

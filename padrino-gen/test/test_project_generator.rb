@@ -176,6 +176,35 @@ describe 'ProjectGenerator' do
       assert_no_file_exists("#{@apptmp}/sample_project/app/mailers.rb")
     end
 
+    it 'should record an api project in .components, and leave the key out of other projects' do
+      capture_io { generate(:project, 'api_project', '--api', "--root=#{@apptmp}") }
+      capture_io { generate(:project, 'web_project', "--root=#{@apptmp}") }
+      assert_same true, YAML.load_file("#{@apptmp}/api_project/.components")[:api]
+      refute_includes YAML.load_file("#{@apptmp}/web_project/.components").keys, :api
+    end
+
+    { '--renderer=haml' => /no renderer component \(--renderer=haml\)/, '--script=jquery' => /no script component \(--script=jquery\)/,
+      '--stylesheet=sass' => /no stylesheet component \(--stylesheet=sass\)/ }.each do |flag, message|
+      it "should stop an api project with #{flag} before writing anything" do
+        stop = nil
+        _, err = capture_io { stop = assert_raises(SystemExit) { generate(:project, 'sample_project', '--api', flag, "--root=#{@apptmp}") } }
+        assert_equal 1, stop.status
+        assert_match(message, err)
+        assert_match(/Leave out --api/, err)
+        assert_no_dir_exists("#{@apptmp}/sample_project")
+      end
+    end
+
+    it 'should name every view component given to an api project' do
+      _, err = capture_io { assert_raises(SystemExit) { generate(:project, 'sample_project', '--api', '-e=erb', '-c=scss', "--root=#{@apptmp}") } }
+      assert_match(/no renderer or stylesheet component \(--renderer=erb --stylesheet=scss\)/, err)
+    end
+
+    it 'should take none for a view component in an api project' do
+      capture_io { generate(:project, 'sample_project', '--api', '--renderer=none', '--script=none', '--stylesheet=none', "--root=#{@apptmp}") }
+      assert_file_exists("#{@apptmp}/sample_project/app/app.rb")
+    end
+
     it 'should generate tiny skeleton' do
       capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}") }
       assert_dir_exists("#{@apptmp}/sample_project")
