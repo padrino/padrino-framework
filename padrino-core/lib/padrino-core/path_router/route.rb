@@ -4,7 +4,17 @@ module Padrino
       ##
       # The accessors are useful to access from PathRouter::Router
       #
-      attr_accessor :name, :capture, :order, :options, :index, :regexp
+      attr_accessor :capture, :order, :options, :index, :regexp
+
+      ##
+      # The route's name (url generation finds routes by it).
+      #
+      attr_reader :name
+
+      def name=(name)
+        @name = name
+        @router&.named_routes_changed!
+      end
 
       ##
       # A reader for compile option

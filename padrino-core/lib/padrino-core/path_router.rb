@@ -32,6 +32,7 @@ module Padrino
         route = Route.new(path, verb, options, &block)
         route.router = self
         @routes << route
+        @named_routes = nil
         route
       end
 
@@ -56,13 +57,17 @@ module Padrino
       #
       def path(name, *args)
         params = args.last.is_a?(Hash) ? args.pop : {}
-        candidates = @routes.select { |route| route.name == name }
-        raise InvalidRouteException if candidates.empty?
-        i = 0
-        route = candidates.sort_by! do |candidate|
+        candidates = named_routes[name]
+        raise InvalidRouteException unless candidates
+        route = candidates.first
+        # Candidates that all take the same params (a GET and its HEAD) rank in their order.
+        unless candidates.all? { |candidate| candidate.matcher.names == route.matcher.names }
+          keys = params.keys.map(&:to_s)
           # Tries to find the route that matches more, but with fewer names, in stable order
-          [(params.keys.map(&:to_s) - candidate.matcher.names).length, candidate.matcher.names.size, i += 1]
-        end.shift
+          route = candidates.each_with_index.min_by do |candidate, i|
+            [(keys - candidate.matcher.names).length, candidate.matcher.names.size, i]
+          end.first
+        end
         matcher = route.matcher
         params_for_expand = params.dup
         if !args.empty? && matcher.mustermann?
@@ -86,6 +91,7 @@ module Padrino
       # Resets all routes, current order and preparation.
       #
       def reset!
+        @named_routes = nil
         @routes = []
         @current_order = 0
         @prepared = nil
@@ -107,9 +113,25 @@ module Padrino
         @prepared = true
         return if @current_order.zero?
         @routes.sort_by!(&:order)
+        @named_routes = nil
+      end
+
+      ##
+      # Forgets the routes by name, after a route was added, sorted or renamed.
+      #
+      # @api private
+      def named_routes_changed!
+        @named_routes = nil
       end
 
       private
+
+      ##
+      # The routes by name, in the order of +routes+.
+      #
+      def named_routes
+        @named_routes ||= @routes.group_by(&:name)
+      end
 
       ##
       # Returns true if the router has been prepared.

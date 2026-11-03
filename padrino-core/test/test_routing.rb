@@ -3028,4 +3028,76 @@ describe 'Routing' do
       assert_equal 'GET /posts/:id', outer_env['sinatra.route']
     end
   end
+
+  describe 'url generation after routes change' do
+    it 'finds a renamed route by its new name' do
+      mock_app do
+        get(:old, map: '/page') { 'page' }
+      end
+      assert_equal '/page', @app.url(:old)
+      @app.routes.each { |route| route.name = :new if route.name == :old }
+      assert_equal '/page', @app.url(:new)
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:old) }
+    end
+
+    it 'uses the routes defined after reset_routes!' do
+      mock_app do
+        get(:page, map: '/old') { 'old' }
+      end
+      assert_equal '/old', @app.url(:page)
+      @app.reset_routes!
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:page) }
+      @app.get(:page, map: '/new') { 'new' }
+      assert_equal '/new', @app.url(:page)
+    end
+
+    it 'finds a route added to the router with a name' do
+      router = Padrino::PathRouter.new
+      router.add(:get, '/one', name: :one)
+      assert_equal '/one', router.path(:one)
+      router.add(:get, '/two', name: :two)
+      assert_equal '/two', router.path(:two)
+    end
+
+    it 'picks the first route of a name in the order requests try them' do
+      mock_app do
+        get(:page, map: '/low', priority: :low) { 'low' }
+        get(:page, map: '/normal') { 'normal' }
+      end
+      @app.url(:page)
+      get '/normal'
+      assert_equal '/normal', @app.url(:page)
+    end
+
+    it 'picks the route of a name that takes the params given' do
+      mock_app do
+        get(:show, map: '/show/:id') { 'id' }
+        get(:show, map: '/show/:id/:slug') { 'slug' }
+      end
+      2.times do
+        assert_equal '/show/1', @app.url(:show, id: 1)
+        assert_equal '/show/1/x', @app.url(:show, id: 1, slug: 'x')
+        assert_equal '/show/1?ref=a', @app.url(:show, id: 1, ref: 'a')
+      end
+    end
+
+    it 'expands the same url for each form of the params' do
+      mock_app do
+        get(:item, map: '/item/:id(.:format)?') { 'item' }
+        get(:opt, map: '/opt(/:a(/:b))?') { 'opt' }
+      end
+      2.times do
+        assert_equal '/item/7', @app.url(:item, id: 7)
+        assert_equal '/item/7', @app.url(:item, 'id' => 7)
+        assert_equal '/item/-7', @app.url(:item, id: -7)
+        assert_equal '/item/7.json', @app.url(:item, id: '7', format: :json)
+        assert_equal '/item/a%20b', @app.url(:item, id: 'a b')
+        assert_equal '/opt/1/2', @app.url(:opt, a: 1, b: 2)
+        assert_equal '/opt?b=2', @app.url(:opt, b: 2)
+        assert_equal '/opt?b=2', @app.url(:opt, a: nil, b: 2)
+        assert_equal '/opt/1/2', @app.routes.find { |route| route.name == :opt }.path(a: 1, b: 2)
+        assert_equal '/opt?b=2', @app.routes.find { |route| route.name == :opt }.path(a: nil, b: 2)
+      end
+    end
+  end
 end
