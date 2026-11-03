@@ -45,6 +45,19 @@ describe 'AdminAppGenerator' do
       assert_no_file_exists("#{@apptmp}/sample_project/models/account.rb")
     end
 
+    it 'should stop without writing anything when the project test component was removed' do
+      capture_io { generate(:project, 'sample_project', '-e=erb', "--root=#{@apptmp}", '-d=sequel', '-t=minitest') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: shoulda'))
+      apps = File.read("#{@apptmp}/sample_project/config/apps.rb")
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}/sample_project") }.status }
+      assert_equal 'The shoulda test component was removed from Padrino; use minitest or testunit instead.', out.strip
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin")
+      assert_no_dir_exists("#{@apptmp}/sample_project/public/admin")
+      assert_equal apps, File.read("#{@apptmp}/sample_project/config/apps.rb")
+      assert_nil YAML.load_file(components)[:admin_renderer]
+    end
+
     it 'should list the index step for mongoid only' do
       capture_io { generate(:project, 'mongoid_project', "--root=#{@apptmp}", '-d=mongoid', '-e=erb') }
       capture_io { generate(:project, 'sequel_project', "--root=#{@apptmp}", '-d=sequel', '-e=erb') }

@@ -38,6 +38,7 @@ module Padrino
           @project_name = fetch_project_name(app) if @project_name.empty?
           @app_name     = fetch_app_name(app)
 
+          exit_if_test_component_removed!
           self.behavior = :revoke if options[:destroy]
 
           create_helper_files(app, name)

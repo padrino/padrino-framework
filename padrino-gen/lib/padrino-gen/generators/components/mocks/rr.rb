@@ -12,7 +12,7 @@ def mock_setup_lines(test)
 end
 
 def setup_mock
-  say 'The rr mock component is deprecated and will be removed in Padrino 1.0. ' \
+  say 'The rr mock component is deprecated and will be removed in a future release. ' \
       "Use mocha (-m mocha) or your test framework's own mocks instead.", :yellow
   require_dependencies 'rr', require: false, group: 'test'
 

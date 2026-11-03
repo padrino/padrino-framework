@@ -352,7 +352,7 @@ describe 'ProjectGenerator' do
     end
 
     it 'should warn once that rr is deprecated, and not for other mocks' do
-      warning = "The rr mock component is deprecated and will be removed in Padrino 1.0. Use mocha (-m mocha) or your test framework's own mocks instead."
+      warning = "The rr mock component is deprecated and will be removed in a future release. Use mocha (-m mocha) or your test framework's own mocks instead."
       out, = capture_io { generate(:project, 'rr_project', "--root=#{@apptmp}", '--mock=rr', '--test=minitest', '--script=none') }
       assert_equal 1, out.scan(warning).size
       out, = capture_io { generate(:project, 'mocha_project', "--root=#{@apptmp}", '--mock=mocha', '--test=minitest', '--script=none') }

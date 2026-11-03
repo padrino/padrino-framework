@@ -418,6 +418,18 @@ module Padrino
       end
 
       ##
+      # Says what to use instead and exits with status 1 if the project's .components names a test component
+      # that was removed. Generators that apply the test component call it before writing anything.
+      #
+      def exit_if_test_component_removed!
+        removed = removed_component_message(:test, fetch_component_choice(:test))
+        return unless removed
+
+        say removed
+        exit 1
+      end
+
+      ##
       # Returns true if constant name already exists.
       #
       def already_exists?(name, project_name = nil)

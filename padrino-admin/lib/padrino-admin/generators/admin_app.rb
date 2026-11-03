@@ -63,6 +63,10 @@ module Padrino
           @model_singular = @model_name.underscore
           @model_plural   = @model_singular.pluralize
           model_path      = destination_root('models', "#{@model_singular}.rb")
+          # An existing model is reused: the model generator would refuse it and exit 1.
+          model_exists = already_exists?(@model_name, fetch_component_choice(:namespace)) || File.exist?(model_path)
+          # The model generator applies the project's test component.
+          exit_if_test_component_removed! if options[:destroy] || !model_exists
 
           # A plain app (g app admin) or a missing one: an admin app has access control once generated.
           first_install = !line_in_file?(destination_root(@admin_path, 'app.rb'), /Padrino::Admin::AccessControl/)
@@ -96,8 +100,6 @@ module Padrino
           params << '-s' if options[:skip_migration]
           params << '-d' if options[:destroy]
 
-          # An existing model is reused: the model generator would refuse it and exit 1.
-          model_exists = already_exists?(@model_name, fetch_component_choice(:namespace)) || File.exist?(model_path)
           Padrino::Generators::Model.start(params) if options[:destroy] || !model_exists
           column = Struct.new(:name, :type)
           columns = %i[id name surname email].map { |col| column.new(col) }

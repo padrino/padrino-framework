@@ -54,6 +54,8 @@ module Padrino
             accepted
           end
 
+          # A mock is set up for the project's test component.
+          exit_if_test_component_removed! if chosen.include?(:mock) && !chosen.include?(:test)
           @project_name = fetch_component_choice(:namespace)
           if chosen.include?(:test) && !already_exists?(@app_name, @project_name)
             say "#{@project_name}::#{@app_name} does not exist."

@@ -586,10 +586,23 @@ describe 'ComponentGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
       Readline.stubs(:readline).returns('yes')
       out, = capture_io { generate(:component, '--mock=rr', "-r=#{@apptmp}/sample_project") }
-      assert_equal 1, out.scan('The rr mock component is deprecated and will be removed in Padrino 1.0.').size
+      assert_equal 1, out.scan('The rr mock component is deprecated and will be removed in a future release.').size
       out, = capture_io { generate(:component, '--mock=mocha', "-r=#{@apptmp}/sample_project") }
       refute_match(/deprecated/, out)
       assert_equal 'mocha', YAML.load_file("#{@apptmp}/sample_project/.components")[:mock]
+    end
+
+    %w[mocha rr].each do |mock|
+      it "should stop without changing the project when --mock=#{mock} meets a removed test component" do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--script=none') }
+        components = "#{@apptmp}/sample_project/.components"
+        File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
+        snapshot = -> { Dir["#{@apptmp}/sample_project/**/*", components].to_h { |path| [path, File.file?(path) && File.read(path)] } }
+        before = snapshot.call
+        out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, "--mock=#{mock}", "-r=#{@apptmp}/sample_project") }.status }
+        assert_equal 'The bacon test component was removed from Padrino; use minitest or rspec instead.', out.strip
+        assert_equal before, snapshot.call
+      end
     end
 
     describe 'switching the mock component' do
