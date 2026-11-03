@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- REMOVE #NNNN Dojo, MooTools and Prototype script generator components, which installed 2012 copies of those libraries (Dojo 1.8.2, MooTools 1.4.5, Prototype 1.7.1). Use ujs (no dependencies), htmx or jquery instead. `padrino g project` and `padrino g component` with `--script=dojo`, `mootools` or `prototype` stop with a message naming these, as `--orm=minirecord`, `--orm=dynamoid` and `--stylesheet=less` now do too. Existing projects keep the files these components generated and keep working; to move one to another script, run `padrino g component --script=ujs` (or `htmx`, `jquery`) and update the script tags in your layout (@nesquena)
 - FIX #2506 `tag`, `content_tag` and the helpers built on them (`link_to`, form fields, ...) render faster; their output is unchanged (@nesquena)
 - FIX #2505 Helpers that take a block (`content_tag`, `form_tag`, `link_to`, ...) are faster: they check whether the block comes from a template without evaluating code, and `block_is_template?` now returns true or false for a block in a template instead of a string or nil (@nesquena)
 - FIX #2503 `number_to_currency`, `number_to_percentage`, `number_to_human_size` and `number_with_precision` are faster, and so is `number_with_delimiter` when given both `separator:` and `delimiter:`; their output is unchanged (@nesquena)

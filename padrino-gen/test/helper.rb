@@ -24,16 +24,9 @@ class Minitest::Spec
     # register fake URL to avoid downloading static files every time tests run
     fake_uri_base = 'https://raw.githubusercontent.com/padrino/padrino-static/master/'
     %w[
-      js/dojo.js
       js/jquery.js
-      js/lowpro.js
-      js/mootools.js
-      js/protopak.js
       js/right.js
-      ujs/dojo.js
       ujs/jquery.js
-      ujs/mootools.js
-      ujs/prototype.js
       ujs/right.js
     ].each do |suffix|
       WebMock::API.stub_request(:get, fake_uri_base + suffix)

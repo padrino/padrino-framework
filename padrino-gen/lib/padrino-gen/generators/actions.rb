@@ -17,6 +17,15 @@ module Padrino
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
 
     ##
+    # Components that were removed from Padrino, by type, with what to use instead.
+    #
+    REMOVED_COMPONENTS = {
+      orm: { 'dynamoid' => 'activerecord or sequel', 'minirecord' => 'activerecord or sequel' },
+      script: %w[dojo mootools prototype].to_h { |script| [script, 'ujs (no dependencies), htmx or jquery'] },
+      stylesheet: { 'less' => 'sass, scss or tailwind' }
+    }.freeze
+
+    ##
     # Common actions needed to support project and component generation.
     #
     module Actions
@@ -166,6 +175,7 @@ module Padrino
 
       ##
       # Prompts the user if necessary until a valid choice is returned for the component.
+      # A removed component stops the generator with a Thor::Error naming what to use instead.
       #
       # @param [Symbol] component
       #   The type of component module.
@@ -178,6 +188,9 @@ module Padrino
       def resolve_valid_choice(component)
         choices = self.class.available_choices_for(component).map(&:to_s)
         choice = options[component]
+        replacement = REMOVED_COMPONENTS.dig(component, choice.to_s)
+        raise Thor::Error, "The #{choice} #{component} component was removed from Padrino; use #{replacement} instead." if replacement
+
         until valid_choice?(component, choice)
           say("Option for --#{component} '#{choice}' is not available.", :red)
           choice = ask_valid_option(component, choices, "Please enter a valid option for #{component}:")

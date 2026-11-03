@@ -30,7 +30,7 @@
   renderer: liquid
   test: bacon
   mock: none
-  script: dojo
+  script: ujs
   stylesheet: tailwind
   server: thin
   add_component:
@@ -41,7 +41,7 @@
   renderer: slim
   test: cucumber
   mock: mocha
-  script: mootools
+  script: htmx
   stylesheet: none
   server: falcon
   add_component:
@@ -52,7 +52,7 @@
   renderer: erb
   test: shoulda
   mock: rr
-  script: prototype
+  script: jquery
   stylesheet: scss
   server: webrick
   add_component:
@@ -105,7 +105,7 @@
   renderer: slim
   test: bacon
   mock: none
-  script: dojo
+  script: htmx
   stylesheet: scss
   server: webrick
   add_component:
@@ -117,7 +117,7 @@
   renderer: erb
   test: cucumber
   mock: mocha
-  script: mootools
+  script: jquery
   stylesheet: sass
   server: puma
   add_component:
@@ -129,7 +129,7 @@
   renderer: haml
   test: shoulda
   mock: rr
-  script: prototype
+  script: ujs
   stylesheet: tailwind
   server: thin
   add_component:
@@ -179,7 +179,7 @@
   renderer: erb
   test: bacon
   mock: none
-  script: dojo
+  script: jquery
   stylesheet: tailwind
   server: thin
   add_component:
@@ -189,7 +189,7 @@
   renderer: haml
   test: cucumber
   mock: mocha
-  script: mootools
+  script: ujs
   stylesheet: none
   server: falcon
   add_component:
@@ -199,7 +199,7 @@
   renderer: liquid
   test: shoulda
   mock: rr
-  script: prototype
+  script: htmx
   stylesheet: scss
   server: webrick
   add_component:
@@ -239,7 +239,7 @@
   renderer: haml
   test: bacon
   mock: none
-  script: dojo
+  script: htmx
   stylesheet: scss
   server: webrick
   add_component:
