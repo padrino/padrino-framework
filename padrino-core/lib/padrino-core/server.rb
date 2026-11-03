@@ -1,11 +1,11 @@
 module Padrino
   ##
   # Runs the Padrino apps as a self-hosted server using the first available
-  # handler in Server::Handlers (thin, puma, falcon, ..., WEBrick).
+  # handler in Server::Handlers (thin, puma, falcon, WEBrick).
   #
   # @example
   #   Padrino.run! # with these defaults => host: '127.0.0.1', port: '3000', adapter: the first found
-  #   Padrino.run!('0.0.0.0', '4000', 'mongrel') # use => host: '0.0.0.0', port: '4000', adapter: 'mongrel'
+  #   Padrino.run!(host: '0.0.0.0', port: '4000', server: 'puma')
   #
   def self.run!(options = {})
     Padrino.load!
@@ -31,11 +31,16 @@ module Padrino
     DEFAULT_ADDRESS = { Host: '127.0.0.1', Port: 3000 }
 
     # Server Handlers
-    Handlers = %i[thin puma falcon spider-gazelle mongrel trinidad webrick]
+    Handlers = %i[thin puma falcon webrick]
+    # Servers Padrino no longer runs on: none of them supports Rack 3.
+    REMOVED_HANDLERS = %w[mongrel spider-gazelle trinidad].freeze
 
     # Starts the application on the available server with specified options.
     def self.start(app, options = {})
       options = Utils.symbolize_keys(options.to_hash)
+      if REMOVED_HANDLERS.include?(options[:server].to_s)
+        raise "The #{options[:server]} server was removed from Padrino; use one of #{Handlers.join(', ')} instead."
+      end
       options.update(parse_server_options(options.delete(:options)))
       options.update(detect_address(options))
       options[:pid] = prepare_pid(options[:pid]) if options[:daemonize]

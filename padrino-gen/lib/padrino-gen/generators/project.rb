@@ -19,6 +19,10 @@ module Padrino
 
       desc "Description:\n\n\tpadrino-gen project generates a new Padrino project"
 
+      SERVERS = %w[webrick thin puma falcon].freeze
+      # Servers projects can no longer use: none of them supports Rack 3.
+      REMOVED_SERVERS = %w[mongrel spider-gazelle trinidad].freeze
+
       argument :name, desc: 'The name of your padrino project'
 
       class_option :app,              desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
@@ -32,7 +36,7 @@ module Padrino
       class_option :gem,              desc: 'Generate project as a gem',                                        aliases: '-g', default: false,       type: :boolean
       class_option :migration_format, desc: 'Filename format for migrations (number, timestamp)',                              default: 'number',    type: :string
       class_option :adapter,          desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, trilogy, postgres)', aliases: '-a', default: 'sqlite', type: :string
-      class_option :server,           desc: 'HTTP server to use (webrick, thin, puma, falcon)', default: 'webrick', type: :string
+      class_option :server,           desc: "HTTP server to use (#{SERVERS.join(', ')})", default: 'webrick', type: :string
 
       # Definitions for the available customizable components.
       defines_component_options
@@ -46,8 +50,11 @@ module Padrino
       def setup_project
         valid_constant? name
         # In 0.16.0 and 0.16.1 -s meant --server; stop before prompting for a script named after a server.
-        if %w[webrick thin puma falcon trinidad mongrel spider-gazelle].include?(options[:script].to_s)
+        if (SERVERS + REMOVED_SERVERS).include?(options[:script].to_s)
           raise Thor::Error, "-s selects the javascript library (--script); use --server=#{options[:script]} to choose the HTTP server"
+        end
+        if REMOVED_SERVERS.include?(options[:server])
+          raise Thor::Error, "The #{options[:server]} server was removed from Padrino; use one of #{SERVERS.join(', ')} instead."
         end
         app = options[:app] || 'App'
 

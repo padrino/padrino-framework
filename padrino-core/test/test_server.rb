@@ -30,6 +30,23 @@ describe 'Padrino::Server' do
         assert_raises(RuntimeError) { Padrino::Server.detect_rack_handler }
       end
     end
+
+    it 'should not pick a removed server' do
+      with_available_handlers('mongrel', 'spider-gazelle', 'trinidad', 'webrick') do
+        assert_equal :webrick, Padrino::Server.detect_rack_handler
+      end
+    end
+  end
+
+  describe 'start' do
+    ['mongrel', 'spider-gazelle', 'trinidad', :mongrel].each do |server|
+      it "should stop naming the supported servers when asked for #{server.inspect}" do
+        Rackup::Handler.stub(:get, ->(name) { raise "looked up the #{name} handler" }) do
+          error = assert_raises(RuntimeError) { Padrino::Server.start(->(_env) { [200, {}, []] }, server: server) }
+          assert_equal "The #{server} server was removed from Padrino; use one of thin, puma, falcon, webrick instead.", error.message
+        end
+      end
+    end
   end
 
   describe 'signals' do

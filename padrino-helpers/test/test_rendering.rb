@@ -676,7 +676,7 @@ describe 'Rendering' do
       assert_equal 'this is a <span>span</span>', body
     end
 
-    it 'should render unescaped html on == token (Erubis and Erubi)' do
+    it 'should render unescaped html on == token (Erubi)' do
       skip if ENV['ERB_ENGINE'] == 'stdlib'
       mock_app do
         layout do
@@ -823,8 +823,9 @@ describe 'Rendering' do
   end
 
   describe 'when loading padrino-helpers' do
+    # Stands in for the erubis gem next to a Tilt that still has its Erubis template (2.4 and older).
     def erubis_stub
-      "module Erubis; class Eruby; end; end\n"
+      "require 'tilt'\nmodule Erubis; class Eruby; end; end\nclass Tilt::ErubisTemplate < Tilt::Template; end\n"
     end
 
     def hidden
@@ -832,9 +833,11 @@ describe 'Rendering' do
     end
 
     # Loads padrino-helpers in a subprocess with stub libraries on the load path (a stub that
-    # raises LoadError hides a gem the bundle has), renders ERB, runs check and returns the body.
-    def render_erb_with(stubs, check: '', core_first: true)
+    # raises LoadError hides a gem the bundle has) after running prelude, renders ERB, runs check
+    # and returns the body.
+    def render_erb_with(stubs, prelude: '', check: '', core_first: true)
       script = <<~RUBY
+        #{prelude}
         #{"require 'padrino-core'" if core_first}
         require 'padrino-helpers'
         require 'padrino-core'
@@ -854,23 +857,22 @@ describe 'Rendering' do
       end
     end
 
-    it 'should load and render erb when the erubis gem is installed and Tilt has no Erubis template' do
-      skip 'this Tilt still ships Erubis support' if defined?(Tilt::ErubisTemplate)
-      check = "abort 'erubis was not loaded' unless defined?(Erubis::Eruby)"
-      assert_equal '&lt;b&gt;<p>ok</p>', render_erb_with({ 'erubis' => erubis_stub }, check: check)
+    it 'should render erb with Erubi when the app loads the erubis gem' do
+      check = <<~'RUBY'
+        abort "erb is #{Tilt['erb']}" unless Tilt['erb'] == Padrino::Rendering::ErubiTemplate
+      RUBY
+      assert_equal '&lt;b&gt;<p>ok</p>', render_erb_with({ 'erubis' => erubis_stub }, prelude: "require 'erubis'", check: check)
     end
 
-    it "should render erb with Ruby's ERB when Tilt has no Erubis template and erubi is missing" do
-      skip 'this Tilt still ships Erubis support' if defined?(Tilt::ErubisTemplate)
+    it "should render erb with Ruby's ERB when the app loads the erubis gem and erubi is missing" do
       check = <<~'RUBY'
-        abort 'erubis was not loaded' unless defined?(Erubis::Eruby)
         abort "erb is #{Tilt['erb']}" unless Tilt['erb'] == Padrino::Rendering::ERBTemplate && !defined?(Erubi)
       RUBY
-      assert_equal '&lt;b&gt;<p>ok</p>', render_erb_with({ 'erubis' => erubis_stub, 'erubi' => hidden }, check: check)
+      assert_equal '&lt;b&gt;<p>ok</p>', render_erb_with({ 'erubis' => erubis_stub, 'erubi' => hidden }, prelude: "require 'erubis'", check: check)
     end
 
     it 'should load before padrino-core when nothing else loads Tilt' do
-      stubs = %w[erubis haml hamlit slim].to_h { |name| [name, hidden] }
+      stubs = %w[haml hamlit slim].to_h { |name| [name, hidden] }
       assert_equal '&lt;b&gt;<p>ok</p>', render_erb_with(stubs, core_first: false)
     end
   end

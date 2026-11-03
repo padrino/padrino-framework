@@ -44,11 +44,8 @@ group :development do
   case ENV['ERB_ENGINE']
   when 'stdlib'
     puts '=> Using stdlib ERB engine'
-  when 'erubis'
-    puts '=> Using Erubis ERB engine'
-    gem 'erubis',    '>= 2.7.0'
   else
-    gem 'erubi',     '>= 1.6.1'
+    gem 'erubi', '>= 1.6.1'
   end
 
   gem 'builder',          '>= 2.1.2'
