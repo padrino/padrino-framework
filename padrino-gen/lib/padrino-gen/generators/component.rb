@@ -55,7 +55,7 @@ module Padrino
             @_components[comp] = '' unless accepted
             accepted
           end
-          # Again when the test switch was declined: the mock is then set up for the stored test component.
+          # Again when the test switch was declined, since the project keeps its stored test component.
           exit_unless_test_component_available! if chosen.include?(:mock) && !chosen.include?(:test) && @_components[:mock].to_s != 'none'
 
           @project_name = fetch_component_choice(:namespace)
