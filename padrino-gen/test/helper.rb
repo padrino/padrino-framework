@@ -25,9 +25,7 @@ class Minitest::Spec
     fake_uri_base = 'https://raw.githubusercontent.com/padrino/padrino-static/master/'
     %w[
       js/jquery.js
-      js/right.js
       ujs/jquery.js
-      ujs/right.js
     ].each do |suffix|
       WebMock::API.stub_request(:get, fake_uri_base + suffix)
     end

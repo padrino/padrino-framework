@@ -54,13 +54,16 @@ describe 'ModelGenerator' do
       assert_match(/You need an ORM adapter/, out)
     end
 
-    %w[minirecord ohm].each do |removed_orm|
+    {
+      'minirecord' => /The minirecord orm component was removed from Padrino; use activerecord or sequel instead\./,
+      'ohm' => /The ohm orm component is no longer available in Padrino \(available: .*\bsequel\b/
+    }.each do |removed_orm, message|
       it "should fail with a message if the orm in .components is no longer available (#{removed_orm})" do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
         components = "#{@apptmp}/sample_project/.components"
         File.write(components, File.read(components).sub(':orm: sequel', ":orm: #{removed_orm}"))
         out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }.status }
-        assert_match(/The #{removed_orm} orm component is no longer available in Padrino \(available: .*\bsequel\b/, out)
+        assert_match(message, out)
         assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
       end
     end

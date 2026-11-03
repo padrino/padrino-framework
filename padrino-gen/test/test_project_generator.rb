@@ -649,19 +649,18 @@ describe 'ProjectGenerator' do
       end
     end
 
-    %w[dojo mootools prototype].each do |script|
-      it "should stop naming the replacements for the removed #{script} script without asking" do
-        err = generate_at_end_of_input("--script=#{script}")
-        assert_match(/The #{script} script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./, err)
+    {
+      '--script=dojo' => /The dojo script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./,
+      '--script=mootools' => /The mootools script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./,
+      '--script=prototype' => /The prototype script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./,
+      '--orm=minirecord' => /The minirecord orm component was removed from Padrino; use activerecord or sequel instead\./,
+      '--orm=dynamoid' => /The dynamoid orm component was removed from Padrino; use activerecord or sequel instead\./,
+      '--stylesheet=less' => /The less stylesheet component was removed from Padrino; use sass, scss or tailwind instead\./
+    }.each do |option, message|
+      it "should stop naming the replacement for the removed component in #{option} without asking" do
+        assert_match(message, generate_at_end_of_input(option))
         assert_no_dir_exists("#{@apptmp}/sample_project")
       end
-    end
-
-    it 'should stop naming the replacements for the removed orm and stylesheet components' do
-      assert_match(/The minirecord orm component was removed from Padrino; use activerecord or sequel instead\./, generate_at_end_of_input('--orm=minirecord'))
-      assert_match(/The dynamoid orm component was removed from Padrino; use activerecord or sequel instead\./, generate_at_end_of_input('--orm=dynamoid'))
-      assert_match(/The less stylesheet component was removed from Padrino; use sass, scss or tailwind instead\./, generate_at_end_of_input('--stylesheet=less'))
-      assert_no_dir_exists("#{@apptmp}/sample_project")
     end
 
     %w[sequel activerecord].each do |orm|
