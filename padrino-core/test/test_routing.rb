@@ -3063,5 +3063,35 @@ describe 'Routing' do
       get '/missing'
       assert_equal 404, status
     end
+
+    it 'matches routes whose pattern starts with an optional or variable part' do
+      mock_app do
+        get('/colou?r') { 'color' }
+        get('/xy?z') { 'optional' }
+        get('/one|/two') { 'union' }
+        get('/:lang/start') { 'capture' }
+        get('/*/files') { 'splat' }
+        get('/ab') { 'short' }
+        get(%r{/rx[0-9]+}) { 'regexp' }
+      end
+      { '/color' => 'color', '/colour' => 'color', '/xz' => 'optional', '/xyz' => 'optional', '/two' => 'union', '/de/start' => 'capture',
+        '/a/b/files' => 'splat', '/ab' => 'short', '/ab/' => 'short', '/rx12' => 'regexp' }.each do |path, expected|
+        get path
+        assert_equal expected, body, path
+      end
+    end
+
+    it 'tries routes in the order they were defined, whatever their pattern starts with' do
+      mock_app do
+        get('/abc/first') { 'literal' }
+        get('/:name/first') { 'capture' }
+        get('/:name/second') { 'capture' }
+        get('/abc/second') { 'literal' }
+      end
+      get '/abc/first'
+      assert_equal 'literal', body
+      get '/abc/second'
+      assert_equal 'capture', body
+    end
   end
 end

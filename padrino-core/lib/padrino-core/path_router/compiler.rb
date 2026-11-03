@@ -22,6 +22,7 @@ module Padrino
           route.index = index
           route.regexp = /(?<_#{index}>#{route.matcher.to_regexp})/
         end
+        index_by_prefix!
         @compiled = true
       end
 
@@ -78,12 +79,56 @@ module Padrino
 
         trimmed = path[0..-2] if path.end_with?('/')
         routes = @routes
+        if @by_prefix && path.length >= PREFIX_SIZE && (candidates = @by_prefix.fetch(path[0, PREFIX_SIZE], @unprefixed))
+          from = candidates.bsearch_index { |index| index >= offset }
+          return unless from
+
+          from.upto(candidates.size - 1) do |at|
+            route = routes[candidates[at]]
+            regexp = route.regexp
+            return route if regexp.match?(path) || (trimmed && regexp.match?(trimmed))
+          end
+          return
+        end
         while (route = routes[offset])
           regexp = route.regexp
           # A route added after compiling has no regexp and matches nothing.
           return route if regexp && (regexp.match?(path) || (trimmed && regexp.match?(trimmed)))
           offset += 1
         end
+      end
+
+      # How many leading characters of a path pick the routes to try (index_by_prefix!).
+      PREFIX_SIZE = 3
+      # The start of a Sinatra pattern that can only match itself: plain characters, up to the
+      # first one that may be special (':', '*', '(', '?', '{', '\\', '+' ...).
+      LITERAL_START = %r{\A[A-Za-z0-9_\-/.~]*}
+
+      ##
+      # Sorts the routes by the first PREFIX_SIZE characters a path they match must start with,
+      # so that match? only tries the routes that can match it. A route whose pattern doesn't
+      # fix that many (a Regexp, a capture or group early, an optional character, a '|') is tried
+      # for every path.
+      #
+      def index_by_prefix!
+        prefixed = Hash.new { |hash, key| hash[key] = [] }
+        unprefixed = []
+        @routes.each_with_index do |route, index|
+          (prefix = literal_prefix(route)) ? prefixed[prefix] << index : unprefixed << index
+        end
+        # Built whole before they're set: another thread compiling at once may be matching with them.
+        @unprefixed = unprefixed.freeze
+        @by_prefix = prefixed.transform_values { |indexes| (indexes + unprefixed).sort.freeze }
+      end
+
+      # The first PREFIX_SIZE characters every path the route matches starts with, or nil.
+      def literal_prefix(route)
+        path = route.original_path
+        return unless path.is_a?(String) && route.matcher.mustermann? && !path.include?('|')
+
+        literal = path[LITERAL_START]
+        literal = literal[0..-2] if path[literal.length] == '?'
+        literal[0, PREFIX_SIZE] if literal.length >= PREFIX_SIZE
       end
 
       ##
