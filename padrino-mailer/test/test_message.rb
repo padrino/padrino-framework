@@ -212,4 +212,33 @@ describe 'Message' do
       end
     end
   end
+
+  describe 'the shared template cache' do
+    before { @cache = Mail::Message::LockedTemplateCache.new }
+
+    it 'should give threads that compile a template at the same time the one it keeps' do
+      threads = Array.new(2) do
+        Thread.new do
+          @cache.fetch(:erb, :same) do
+            sleep 0.05
+            Object.new
+          end
+        end
+      end
+      kept = threads.map(&:value)
+      assert_same kept[0], kept[1]
+      assert_same(kept[0], @cache.fetch(:erb, :same) { flunk 'compiled a stored template again' })
+    end
+
+    it 'should serve other templates while one compiles' do
+      release = Queue.new
+      slow = Thread.new { @cache.fetch(:erb, :slow) { release.pop && :slow } }
+      Thread.pass while slow.status == 'run'
+      fast = Thread.new { @cache.fetch(:erb, :fast) { :fast } }
+      assert_equal :fast, fast.join(2) && fast.value
+    ensure
+      release << true
+      assert_equal :slow, slow.value
+    end
+  end
 end

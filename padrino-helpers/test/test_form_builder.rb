@@ -1221,7 +1221,7 @@ describe 'FormBuilder' do
   describe 'for #datetime_field method' do
     it 'should display correct datetime field html' do
       actual_html = standard_builder.datetime_field(:datetime)
-      assert_html_has_tag(actual_html, 'input[type=datetime]', id: 'user_datetime', name: 'user[datetime]')
+      assert_html_has_tag(actual_html, 'input[type=datetime-local]', id: 'user_datetime', name: 'user[datetime]')
     end
 
     it 'should format DateTime to correct value if min and max and value options exist' do
@@ -1231,26 +1231,49 @@ describe 'FormBuilder' do
       actual_html = standard_builder.datetime_field(:datetime, max: max, min: min, value: value)
       expected = {
         id: 'user_datetime',
-        max: '2000-04-01T12:00:00.000+0000',
-        min: '1993-02-24T12:30:45.000+0000',
-        value: '2000-04-01T12:00:00.000+0000'
+        max: '2000-04-01T12:00:00',
+        min: '1993-02-24T12:30:45',
+        value: '2000-04-01T12:00:00'
       }
-      assert_html_has_tag(actual_html, 'input[type=datetime]', expected)
+      assert_html_has_tag(actual_html, 'input[type=datetime-local]', expected)
+    end
+
+    it 'should format a Time taken from the object' do
+      @user.stubs(:starts_at).returns(Time.new(2000, 4, 1, 12, 0, 0, '+09:00'))
+      actual_html = standard_builder.datetime_field(:starts_at)
+      assert_html_has_tag(actual_html, 'input[type=datetime-local]', id: 'user_starts_at', name: 'user[starts_at]', value: '2000-04-01T12:00:00')
+    end
+
+    it 'should format a Time taken from the object in datetime_field_block' do
+      @user.stubs(:starts_at).returns(Time.new(2000, 4, 1, 12, 0, 0, '+09:00'))
+      actual_html = standard_builder.datetime_field_block(:starts_at)
+      assert_html_has_tag(actual_html, 'p label', for: 'user_starts_at')
+      assert_html_has_tag(actual_html, 'p input[type=datetime-local]', id: 'user_starts_at', value: '2000-04-01T12:00:00')
+    end
+
+    it 'should use an app override of datetime_field_tag' do
+      extend(Module.new do
+        def datetime_field_tag(name, options = {})
+          super(name, options.merge(class: 'app-datetime'))
+        end
+      end)
+      actual_html = standard_builder.datetime_field(:datetime)
+      assert_html_has_tag(actual_html, 'input[type=datetime-local]', name: 'user[datetime]', class: 'app-datetime')
     end
 
     it 'should display correct datetime field in haml' do
       get '/haml/form_for'
-      assert_response_has_tag '#demo input[type=datetime]', id: 'markup_user_datetime', max: '2000-04-01T12:00:00.000+0000'
+      assert_response_has_tag '#demo input[type=datetime-local]', id: 'markup_user_datetime', max: '2000-04-01T12:00:00'
     end
 
     it 'should display correct datetime field in erb' do
       get '/erb/form_for'
-      assert_response_has_tag '#demo input[type=datetime]', id: 'markup_user_datetime', max: '2000-04-01T12:00:00.000+0000'
+      assert_response_has_tag '#demo input[type=datetime-local]', id: 'markup_user_datetime', max: '2000-04-01T12:00:00'
     end
 
     it 'should display correct datetime field in slim' do
       get '/slim/form_for'
-      assert_response_has_tag '#demo input[type=datetime]', id: 'markup_user_datetime', max: '2000-04-01T12:00:00.000+0000'
+      assert_response_has_tag '#demo input[type=datetime-local]', id: 'markup_user_datetime', max: '2000-04-01T12:00:00'
     end
   end
 

@@ -623,29 +623,16 @@ module Padrino
       COLOR_CODE_REGEXP   = /\A#([0-9a-fA-F]{3}){1,2}\z/
 
       ##
-      # Constructs a datetime tag from the given options.
+      # Constructs a datetime-local tag from the given options, like +datetime_local_field_tag+.
       #
       # @example
-      #   datetime_field_tag('datetime_with_min_max', min: DateTime.new(1993, 2, 24, 12, 30, 45),
-      #                                               max: DateTime.new(2000, 4, 1, 12, 0, 0))
-      #   datetime_field_tag('datetime_with_value', value: DateTime.new(2000, 4, 1, 12, 0, 0))
+      #   datetime_field_tag('starts_at', value: Time.new(2000, 4, 1, 12, 0, 0))
+      #   # => <input type="datetime-local" name="starts_at" value="2000-04-01T12:00:00" />
       #
-      # @param [String] name
-      #   The name of the datetime field.
-      # @param [Hash] options
-      #   The html options for the datetime field.
-      # @option options [DateTime, String] :min
-      #  The min date time of the datetime field.
-      # @option options [DateTime, String] :max
-      #  The max date time of the datetime field.
-      # @option options [DateTime, String] :value
-      #  The value of the datetime field. See examples for details.
-      # @return [String] The html datetime field
+      # @return [String] The html datetime-local field
       #
       def datetime_field_tag(name, options = {})
-        options = { name: name }.update(options)
-        options = convert_attributes_into_datetime('%Y-%m-%dT%T.%L%z', options)
-        input_tag(:datetime, options)
+        datetime_local_field_tag(name, options)
       end
 
       ##
