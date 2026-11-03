@@ -27,6 +27,14 @@ module Padrino
       attr_writer :router
 
       ##
+      # Sets the route's router unless it has one (a route pushed onto Router#routes directly).
+      #
+      # @api private
+      def adopt(router)
+        @router ||= router
+      end
+
+      ##
       # The accessors will be used in other classes
       #
       attr_accessor :action, :cache, :cache_key, :cache_expires,

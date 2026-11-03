@@ -3060,6 +3060,18 @@ describe 'Routing' do
       assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:gone) }
     end
 
+    it 'finds a route pushed onto the routes by its new name after a rename' do
+      mock_app do
+        get(:index) { 'index' }
+      end
+      route = Padrino::PathRouter::Route.new('/page', :get, name: :old)
+      @app.router.routes << route
+      assert_equal '/page', @app.url(:old)
+      route.name = :new
+      assert_equal '/page', @app.url(:new)
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:old) }
+    end
+
     it 'finds a route added to the router with a name' do
       router = Padrino::PathRouter.new
       router.add(:get, '/one', name: :one)

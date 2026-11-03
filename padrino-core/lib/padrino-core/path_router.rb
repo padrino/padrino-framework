@@ -137,6 +137,9 @@ module Padrino
         memo = @named_routes
         return memo[1] if memo && memo[0] == size
 
+        # A route pushed onto +routes+ directly has no router; give it this one, so that
+        # renaming it clears this index.
+        @routes.each { |route| route.adopt(self) }
         by_name = @routes.group_by(&:name).freeze
         @named_routes = [size, by_name].freeze
         by_name
