@@ -2479,6 +2479,33 @@ describe 'Routing' do
       end
     end
 
+    it 'should accept a frozen parent list and a parent declared inside the controller' do
+      mock_app do
+        controller(:product, parent: [:shop].freeze) do
+          parent :category
+          get(:show) { 'product' }
+        end
+      end
+      get '/shop/1/category/2/product/show'
+      assert_equal 'product', body
+    end
+
+    it 'should leave the options given to a parent unchanged' do
+      opts = { map: 'store', optional: true }.freeze
+      first = Padrino::Routing::Parent.new(:a, opts)
+      second = Padrino::Routing::Parent.new(:b, opts)
+      assert_equal ['store', true], [first.map, first.optional]
+      assert_equal ['store', true], [second.map, second.optional]
+    end
+
+    it 'should keep the fragment of a params hash used for several urls' do
+      mock_app { get(:show, with: :id) { 'show' } }
+      params = { id: 1, fragment: 'top' }
+      assert_equal '/show/1#top', @app.url(:show, params)
+      assert_equal '/show/1#top', @app.url(:show, params)
+      assert_equal '/show/1', @app.url(:show, { id: 1 }.freeze)
+    end
+
     it 'should not add a parent declared in a controller to the parents it was given' do
       parents = [:shop]
       mock_app do

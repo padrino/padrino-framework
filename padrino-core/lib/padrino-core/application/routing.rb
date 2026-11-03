@@ -38,6 +38,7 @@ module Padrino
 
       def initialize(value, options = {})
         super(value.to_s)
+        options   = options.dup
         @map      = options.delete(:map)
         @optional = options.delete(:optional)
         @options  = options
@@ -464,7 +465,7 @@ module Padrino
       #   url(:index, fragment: 'comments')
       #
       def url(*args)
-        params = args.last.is_a?(Hash) ? args.pop : {}
+        params = args.last.is_a?(Hash) ? args.pop.dup : {}
         fragment = params.delete(:fragment) || params.delete(:anchor)
         path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? "#{path}##{fragment}" : path)
