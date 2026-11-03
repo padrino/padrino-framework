@@ -271,7 +271,7 @@ describe 'AccountModelGenerator' do
 
   # mongoid isn't bundled for these tests: a stand-in document gives the model Active Model's
   # validations and callbacks, keeps saved accounts in memory, finds them by exact or Regexp
-  # email, and records how email uniqueness is declared, which needs a database to check.
+  # email, and records how email uniqueness and indexes are declared, which need a database to check.
   MONGOID_STAND_IN = <<~RUBY
     require 'active_model'
     require 'active_support/core_ext/object/blank'
@@ -279,6 +279,7 @@ describe 'AccountModelGenerator' do
       module Document
         ACCOUNTS = []
         UNIQUENESS = []
+        INDEXES = []
 
         def self.included(base)
           base.include ActiveModel::Model
@@ -300,6 +301,10 @@ describe 'AccountModelGenerator' do
 
           def validates_uniqueness_of(*args)
             UNIQUENESS << args
+          end
+
+          def index(spec, options = {})
+            INDEXES << [spec, options]
           end
 
           def before_save(name, options = {})
@@ -451,6 +456,19 @@ describe 'AccountModelGenerator' do
       results = validation_results(setup)
       assert_validates results, unique_email: false
       assert_equal [['email', { 'case_sensitive' => false }]], results['uniqueness']
+    end
+
+    it 'should declare a unique index on email' do
+      skip 'activemodel is only bundled on MRI' if RUBY_ENGINE == 'jruby'
+      script = <<~RUBY
+        require 'json'
+        #{MONGOID_STAND_IN}
+        load 'models/account.rb'
+        puts "INDEXES \#{JSON.generate(Mongoid::Document::INDEXES)}"
+      RUBY
+      out, err, status = run_in_project(script)
+      assert status.success?, err
+      assert_equal [[{ 'email' => 1 }, { 'unique' => true }]], JSON.parse(out[/^INDEXES (.*)$/, 1])
     end
 
     it 'should seed from ADMIN_EMAIL and ADMIN_PASSWORD and exit non-zero on invalid input' do

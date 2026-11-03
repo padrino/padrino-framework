@@ -8,6 +8,7 @@ class <%= @model_name %>
   field :email,            type: String
   field :crypted_password, type: String
   field :role,             type: String
+  index({ email: 1 }, unique: true)
 
   # Validations
   validates_presence_of     :email, :role
