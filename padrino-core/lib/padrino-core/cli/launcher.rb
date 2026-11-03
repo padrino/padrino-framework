@@ -1,4 +1,5 @@
 require 'thor'
+require 'padrino-core/server_names'
 
 module Padrino
   module Cli
@@ -24,6 +25,9 @@ module Padrino
 
       def start(*args)
         prepare :start
+        removed = Padrino.removed_server_message(options[:server])
+        raise Thor::Error, removed if removed
+
         require File.expand_path('adapter', __dir__)
         require File.expand_path('config/boot.rb')
 

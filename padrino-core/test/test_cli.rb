@@ -140,6 +140,20 @@ describe 'Padrino::Cli' do
     refute_includes err, "Add gem 'padrino-gen'"
   end
 
+  [%w[start -a mongrel], %w[start -a SpiderGazelle], %w[start -a trinidad --server_options]].each do |args|
+    it "should stop before loading the app for padrino #{args.join(' ')}" do
+      out, err, status = run_in_project(<<~RUBY)
+        at_exit { puts 'BOOTED' if defined?(RunnerDemo) }
+        require 'padrino-core/cli/base'
+        Padrino::Cli::Base.start(#{args.inspect})
+      RUBY
+      assert_equal 1, status.exitstatus
+      refute_includes out, 'BOOTED'
+      assert_match(/^The #{args[2]} server was removed from Padrino; use one of .*\bwebrick\b/, err)
+      refute_match(/\.rb:\d+:in /, err)
+    end
+  end
+
   it 'should load the models in the rake environment task after a skeleton task' do
     out, err, status = run_in_project(<<~RUBY)
       require 'rake'

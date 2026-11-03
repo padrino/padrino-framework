@@ -41,8 +41,7 @@ group :development do
     gem 'haml', '>= 5'
   end
 
-  case ENV['ERB_ENGINE']
-  when 'stdlib'
+  if ENV['ERB_ENGINE'] == 'stdlib'
     puts '=> Using stdlib ERB engine'
   else
     gem 'erubi', '>= 1.6.1'

@@ -39,11 +39,11 @@ describe 'Padrino::Server' do
   end
 
   describe 'start' do
-    ['mongrel', 'spider-gazelle', 'trinidad', :mongrel].each do |server|
+    ['mongrel', 'spider-gazelle', 'trinidad', :mongrel, 'Mongrel', 'spider_gazelle', 'SpiderGazelle'].each do |server|
       it "should stop naming the supported servers when asked for #{server.inspect}" do
         Rackup::Handler.stub(:get, ->(name) { raise "looked up the #{name} handler" }) do
           error = assert_raises(RuntimeError) { Padrino::Server.start(->(_env) { [200, {}, []] }, server: server) }
-          assert_equal "The #{server} server was removed from Padrino; use one of thin, puma, falcon, webrick instead.", error.message
+          assert_match(/\AThe #{server} server was removed from Padrino; use one of .*\bwebrick\b/, error.message)
         end
       end
     end

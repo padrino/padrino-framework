@@ -470,12 +470,15 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/# Server requirements\ngem 'thin'\n/, "#{@apptmp}/sample_project/Gemfile")
     end
 
-    %w[mongrel spider-gazelle trinidad].each do |server|
-      it "should stop naming the supported servers for --server=#{server}" do
+    {
+      %w[--server=mongrel] => 'mongrel', %w[--server=spider-gazelle] => 'spider-gazelle', %w[--server=trinidad] => 'trinidad',
+      %w[--server=Mongrel] => 'Mongrel', %w[--server=spider_gazelle] => 'spider_gazelle', %w[-s mongrel] => 'mongrel'
+    }.each do |option, server|
+      it "should stop naming the supported servers for #{option.join(' ')}" do
         stop = nil
-        _, err = capture_io { stop = assert_raises(SystemExit) { generate(:project, 'sample_project', "--root=#{@apptmp}", "--server=#{server}") } }
+        _, err = capture_io { stop = assert_raises(SystemExit) { generate(:project, 'sample_project', "--root=#{@apptmp}", *option) } }
         assert_equal 1, stop.status
-        assert_equal "The #{server} server was removed from Padrino; use one of webrick, thin, puma, falcon instead.\n", err
+        assert_match(/\AThe #{server} server was removed from Padrino; use one of .*\bwebrick\b.*\n\z/, err)
         assert_no_dir_exists("#{@apptmp}/sample_project")
       end
     end

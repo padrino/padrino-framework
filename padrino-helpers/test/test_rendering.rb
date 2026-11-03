@@ -857,7 +857,7 @@ describe 'Rendering' do
       end
     end
 
-    it 'should render erb with Erubi when the app loads the erubis gem' do
+    it 'should still render erb with Erubi when the erubis gem is loaded' do
       check = <<~'RUBY'
         abort "erb is #{Tilt['erb']}" unless Tilt['erb'] == Padrino::Rendering::ErubiTemplate
       RUBY
