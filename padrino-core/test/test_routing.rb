@@ -2442,7 +2442,7 @@ describe 'Routing' do
     assert_equal 1, counter
   end
 
-  describe 'with one options hash for several controllers' do
+  describe 'with options hashes and lists reused or frozen' do
     def mock_app_needing_ok(&block)
       mock_app do
         set(:needs_ok) { |on| condition { halt 403, 'no ok' unless params[:ok] } if on }
