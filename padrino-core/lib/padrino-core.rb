@@ -72,6 +72,7 @@ module Padrino
       warn 'WARNING! No apps are mounted. Please, mount apps in `config/apps.rb`' if Padrino.mounted_apps.empty?
       router = Padrino::Router.new
       Padrino.mounted_apps.each { |app| app.map_onto(router) }
+      warn_about_session_secret_in_source
       middleware.empty? ? router : add_middleware(router)
     end
 
@@ -193,6 +194,73 @@ module Padrino
     # @returns [<Padrino::Module>]
     def modules
       @modules ||= []
+    end
+
+    private
+
+    ##
+    # Warns once per process (until Padrino.clear!) when a mounted app runs in
+    # production with sessions on and a session secret it uses appears as a
+    # quoted string in config/apps.rb or in the app's file, such as the fallback
+    # generated projects write.
+    #
+    # ceiling: checks only config/apps.rb and each app's file, for quoted string
+    # literals only, and only apps booted through Padrino.application; checking
+    # other committed config files would widen it. Only `sessions: { use: ... }`
+    # is recognised as a store that may take no secret, so an app that sets
+    # `set :session_store, Rack::Session::Pool` (or another store without a
+    # secret) still warns.
+    #
+    def warn_about_session_secret_in_source
+      return if @_session_secret_warned || env != :production
+
+      sources = Hash.new do |cache, path|
+        cache[path] = File.file?(path) ? File.binread(path) : ''
+      rescue SystemCallError
+        cache[path] = ''
+      end
+      path = mounted_apps.lazy.map { |app| session_secret_source(app.app_obj, sources) }.find(&:itself)
+      return unless path
+
+      @_session_secret_warned = true
+      warn <<~WARNING
+        WARNING! The session secret appears in #{path.delete_prefix("#{root}/")}.
+        Use a secret that isn't in the source: set the SESSION_SECRET environment variable to a new value (`padrino rake secret` prints one).
+        If that file doesn't read SESSION_SECRET yet, change the line to:
+
+            set :session_secret, ENV.fetch('SESSION_SECRET') { 'current value' }
+      WARNING
+    end
+
+    ##
+    # Returns the file in which one of the app's session secrets appears as a
+    # quoted string, or nil. +sources+ caches each file's contents.
+    #
+    def session_secret_source(app, sources)
+      literals = session_secrets(app).flat_map { |secret| ["'#{secret}'".b, %("#{secret}").b] }
+      return if literals.empty?
+
+      [root('config', 'apps.rb'), app.app_file].compact.uniq.find do |path|
+        literals.any? { |literal| sources[path].include?(literal) }
+      end
+    end
+
+    ##
+    # Returns the secrets the app's session store is given: :secret and :secrets
+    # from the store's config with `use:`, otherwise from the sessions options,
+    # where :secret defaults to the session_secret setting.
+    #
+    def session_secrets(app)
+      return [] unless app.respond_to?(:sessions?) && app.sessions?
+
+      options = app.sessions.is_a?(Hash) ? app.sessions : {}
+      if options[:use]
+        options = options[:config] || {}
+        secret = options[:secret]
+      else
+        secret = options.fetch(:secret) { app.session_secret }
+      end
+      [secret, *options[:secrets]].select { |value| value.is_a?(String) && !value.empty? }
     end
   end
 end

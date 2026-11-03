@@ -241,10 +241,7 @@ module Padrino
       #
       # @api public.
       def stylesheet_link_tag(*sources)
-        options = {
-          rel: 'stylesheet',
-          type: 'text/css'
-        }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
+        options = { rel: 'stylesheet' }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
         sources.flatten.inject(SafeBuffer.new) do |all, source|
           all << tag(:link, { href: asset_path(:css, source) }.update(options))
         end
@@ -263,11 +260,10 @@ module Padrino
       #
       # @example
       #   javascript_include_tag 'application', :extjs
+      #   javascript_include_tag 'application', type: 'module'
       #
       def javascript_include_tag(*sources)
-        options = {
-          type: 'text/javascript'
-        }.update(sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {})
+        options = sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {}
         sources.flatten.inject(SafeBuffer.new) do |all, source|
           all << content_tag(:script, nil, { src: asset_path(:js, source) }.update(options))
         end
