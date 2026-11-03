@@ -17,6 +17,19 @@ module Padrino
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
 
     ##
+    # Components that were removed from Padrino, by type, with what to use instead.
+    #
+    REMOVED_COMPONENTS = {
+      orm: { 'dynamoid' => 'activerecord or sequel', 'minirecord' => 'activerecord or sequel' },
+      script: {
+        'dojo' => 'ujs (no dependencies), htmx or jquery',
+        'mootools' => 'ujs (no dependencies), htmx or jquery',
+        'prototype' => 'ujs (no dependencies), htmx or jquery'
+      },
+      stylesheet: { 'less' => 'sass, scss or tailwind' }
+    }.freeze
+
+    ##
     # Common actions needed to support project and component generation.
     #
     module Actions
@@ -70,6 +83,8 @@ module Padrino
           available = Dir["#{__dir__}/components/#{component.to_s.pluralize}/*.rb"].map { |lib| File.basename(lib, '.rb') }.sort
           if choice.to_s.empty?
             say "The project's .components sets no #{component} component (available: #{available.join(', ')})."
+          elsif (removed = removed_component_message(component, choice))
+            say removed
           else
             say "The #{choice} #{component} component is no longer available in Padrino (available: #{available.join(', ')})."
           end
@@ -166,6 +181,8 @@ module Padrino
 
       ##
       # Prompts the user if necessary until a valid choice is returned for the component.
+      # A removed component passed as an option stops the generator with a Thor::Error naming what to use
+      # instead; one typed at the prompt gets that message and the prompt again.
       #
       # @param [Symbol] component
       #   The type of component module.
@@ -178,11 +195,25 @@ module Padrino
       def resolve_valid_choice(component)
         choices = self.class.available_choices_for(component).map(&:to_s)
         choice = options[component]
+        removed = removed_component_message(component, choice)
+        raise Thor::Error, removed if removed
+
         until valid_choice?(component, choice)
-          say("Option for --#{component} '#{choice}' is not available.", :red)
+          say(removed_component_message(component, choice) || "Option for --#{component} '#{choice}' is not available.", :red)
           choice = ask_valid_option(component, choices, "Please enter a valid option for #{component}:")
         end
         choice
+      end
+
+      ##
+      # Returns the message naming what to use instead of a removed component, or nil.
+      #
+      # @example
+      #   removed_component_message(:script, 'dojo')
+      #
+      def removed_component_message(component, choice)
+        replacement = REMOVED_COMPONENTS.dig(component.to_sym, choice.to_s)
+        "The #{choice} #{component} component was removed from Padrino; use #{replacement} instead." if replacement
       end
 
       ##
