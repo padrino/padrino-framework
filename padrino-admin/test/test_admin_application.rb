@@ -50,7 +50,7 @@ describe 'AdminApplication' do
     assert_equal 'unauthenticated', body
   end
 
-  it 'should require login for a protected path with an encoded letter' do
+  it 'should require login for a path a protect rule covers, with an encoded letter' do
     mock_app do
       register Padrino::Admin::AccessControl
       enable :sessions
@@ -96,7 +96,7 @@ describe 'AdminApplication' do
     refute @app.access_control.allowed?(nil, '/sessions%2F')
   end
 
-  it 'should deny a protected path whose encoded slash a splat route decodes' do
+  it 'should deny a path a protect rule covers, whose encoded slash a splat route decodes' do
     mock_app do
       register Padrino::Admin::AccessControl
       enable :sessions
@@ -124,7 +124,7 @@ describe 'AdminApplication' do
       "You don't have permission for this resource"
     end
 
-    def mock_guarded_app(&rules)
+    def mock_filtered_app(&rules)
       mock_app do
         register Padrino::Admin::AccessControl
         enable :sessions
@@ -145,7 +145,7 @@ describe 'AdminApplication' do
     end
 
     it 'should not serve a path that decodes to a newline with an allow Regexp' do
-      mock_guarded_app do |role|
+      mock_filtered_app do |role|
         role.protect '/'
         role.allow %r{\A/public$}
         role.allow %r{/lobby$}
@@ -159,8 +159,8 @@ describe 'AdminApplication' do
       assert_not_served '/public%0A/billing', '/lobby%0A/billing'
     end
 
-    it 'should not serve a path that decodes to a newline with an allow Regexp in a protected path' do
-      mock_guarded_app do |role|
+    it 'should not serve a path that decodes to a newline with an allow Regexp in a path a protect rule covers' do
+      mock_filtered_app do |role|
         role.protect %r{\A/billing/}
         role.allow %r{\A/billing/ok$}
       end
@@ -172,7 +172,7 @@ describe 'AdminApplication' do
     end
 
     it 'should not serve a path that decodes to a newline with a protect Regexp' do
-      mock_guarded_app do |role|
+      mock_filtered_app do |role|
         role.protect %r{\A/admin/.*\z}
         role.protect %r{^/staff/.+$}
         role.protect %r{\A/billing\z}
@@ -183,7 +183,7 @@ describe 'AdminApplication' do
     end
 
     it 'should deny the path with a trailing slash for a protect Regexp' do
-      mock_guarded_app do |role|
+      mock_filtered_app do |role|
         role.protect %r{\A/billing\z}
         role.protect %r{\A/files/[^/]+\z}
       end
@@ -199,7 +199,7 @@ describe 'AdminApplication' do
     end
 
     it 'should deny the path with a trailing slash for an app mounted under a sub-path' do
-      mock_guarded_app do |role|
+      mock_filtered_app do |role|
         role.protect %r{\A/billing\z}
         role.allow %r{\A/public$}
       end

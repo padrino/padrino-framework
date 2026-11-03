@@ -132,32 +132,32 @@ describe 'Filters' do
 
   it 'should filter by path and Regexp on the decoded path the router matches' do
     mock_app do
-      before('/private') { halt 403, 'filtered' }
-      before(%r{\A/secret}) { halt 403, 'filtered' }
+      before('/report') { halt 403, 'filtered' }
+      before(%r{\A/files}) { halt 403, 'filtered' }
       before("/caf\u00e9") { @test = 'cafe filter' }
-      get('/private') { 'private' }
-      get('/secret/:id') { 'secret' }
+      get('/report') { 'report' }
+      get('/files/:id') { 'files' }
       get("/caf\u00e9") { @test.to_s }
       get('/:page') { "page #{params[:page]}" }
     end
-    ['/private', '/%70rivate', '/priv%61te', '/secret/1', '/%73ecret/1', '/secret%ff'].each do |path|
+    ['/report', '/%72eport', '/rep%6Frt', '/files/1', '/%66iles/1', '/files%ff'].each do |path|
       get path
       assert_equal [403, 'filtered'], [status, body], path
     end
     get '/caf%C3%A9'
     assert_equal 'cafe filter', body
-    get '/private%2Fx'
-    assert_equal 'page private/x', body
+    get '/report%2Fx'
+    assert_equal 'page report/x', body
   end
 
   it 'should filter by path a request the router serves with a trailing slash' do
     mock_app do
-      before('/private') { halt 403, 'filtered' }
+      before('/report') { halt 403, 'filtered' }
       before(%r{\A/locked\z}) { halt 403, 'filtered' }
-      get('/private') { 'private' }
+      get('/report') { 'report' }
       get('/locked') { 'locked' }
     end
-    ['/private', '/private/', '/%70rivate/', '/locked', '/locked/', '/%6Cocked/'].each do |path|
+    ['/report', '/report/', '/%72eport/', '/locked', '/locked/', '/%6Cocked/'].each do |path|
       get path
       assert_equal [403, 'filtered'], [status, body], path
     end
@@ -282,7 +282,7 @@ describe 'Filters' do
     assert_equal [401, 'stopped'], [status, body]
   end
 
-  it 'should keep a guard filter for a path with a control character' do
+  it 'should keep a path filter for a path with a control character' do
     mock_app do
       before('/login') { @public = true }
       before(except: %r{\A/admin}) { @public = true }
@@ -599,8 +599,8 @@ describe 'Filters' do
       mock_app do
         before('/data') { halt 401, 'stopped' }
         before(%r{\A/report\z}) { halt 401, 'stopped' }
-        get('/data', provides: %i[html json]) { 'open' }
-        get('/report', provides: %i[html json]) { 'open' }
+        get('/data', provides: %i[html json]) { 'shown' }
+        get('/report', provides: %i[html json]) { 'shown' }
       end
     end
 
@@ -776,8 +776,8 @@ describe 'Filters' do
     it 'should cover every trailing slash of a route without a format' do
       mock_app do
         before('/data') { halt 401, 'stopped' }
-        get('/data/?') { 'open' }
-        get('/data//') { 'open' }
+        get('/data/?') { 'shown' }
+        get('/data//') { 'shown' }
       end
       %w[/data/ /data//].each do |path|
         get path
@@ -788,8 +788,8 @@ describe 'Filters' do
     it 'should keep the root path after every slash is stripped' do
       mock_app do
         before('/') { halt 401, 'stopped' }
-        get('/', provides: %i[html json]) { 'open' }
-        get('//') { 'open' }
+        get('/', provides: %i[html json]) { 'shown' }
+        get('//') { 'shown' }
       end
       %w[/ // /.json].each do |path|
         get path
@@ -855,16 +855,16 @@ describe 'Filters' do
     it 'should not strip a format from the middle of a route' do
       mock_app do
         before('/x') { halt 401, 'stopped' }
-        get('/x.:format/y') { 'open' }
+        get('/x.:format/y') { 'shown' }
       end
       get '/x.json/y'
-      assert_equal 'open', body
+      assert_equal 'shown', body
     end
 
     it 'should keep an except filter on a path with a newline' do
       mock_app do
         before(except: %r{^/public/}) { halt 401, 'stopped' }
-        get('/:tenant/public/:id') { 'open' }
+        get('/:tenant/public/:id') { 'shown' }
         get('/public/x') { 'public' }
       end
       get '/public/x'
@@ -876,7 +876,7 @@ describe 'Filters' do
     it 'should exempt only what an except filter with an encoded slash names' do
       mock_app do
         before(except: '/a%2Fb') { halt 401, 'stopped' }
-        get('/*rest') { 'open' }
+        get('/*rest') { 'shown' }
       end
       get '/a%2Fb'
       assert_equal 401, status
@@ -888,12 +888,12 @@ describe 'Filters' do
       ['/a/b/', '/a/*rest', {}, '/a/b//'],
       [%r{/a/b/\z}, '/a/*rest', {}, '/a/b//'],
       ['/data/', '/data/?', { provides: :json }, '/data/.json']
-    ].each do |guard, pattern, options, path|
-      describe "with a guard #{guard.inspect} that ends in a slash on #{pattern}" do
+    ].each do |filter, pattern, options, path|
+      describe "with a filter #{filter.inspect} that ends in a slash on #{pattern}" do
         it "should run a before filter for #{path}" do
           mock_app do
-            before(guard) { halt 401, 'stopped' }
-            get(pattern, options) { 'open' }
+            before(filter) { halt 401, 'stopped' }
+            get(pattern, options) { 'shown' }
           end
           get path
           assert_equal 401, status
@@ -902,19 +902,19 @@ describe 'Filters' do
         it "should run an after filter for #{path}" do
           seen = []
           mock_app do
-            after(guard) { seen << :after }
-            get(pattern, options) { 'open' }
+            after(filter) { seen << :after }
+            get(pattern, options) { 'shown' }
           end
           get path
-          assert_equal 'open', body
+          assert_equal 'shown', body
           assert_equal [:after], seen
         end
 
         it "should apply the path and path_info options for #{path}" do
           %i[path path_info].each do |name|
             mock_app do
-              before(name => guard) { halt 401, 'stopped' }
-              get(pattern, options) { 'open' }
+              before(name => filter) { halt 401, 'stopped' }
+              get(pattern, options) { 'shown' }
             end
             assert_equal 401, Rack::MockRequest.new(app).get(path).status, name
           end
@@ -922,13 +922,13 @@ describe 'Filters' do
       end
     end
 
-    it 'should keep a guard that ends in a slash off the path without one' do
+    it 'should keep a filter that ends in a slash off the path without one' do
       mock_app do
         before('/data/') { halt 401, 'stopped' }
-        get('/data', provides: :json) { 'open' }
+        get('/data', provides: :json) { 'shown' }
       end
       get '/data'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       get '/data/'
       assert_equal 401, status
     end
@@ -937,7 +937,7 @@ describe 'Filters' do
       it "should not raise for invalid UTF-8 in the #{name} option" do
         mock_app do
           before(name => '/data') { halt 401, 'stopped' }
-          get('/data') { 'open' }
+          get('/data') { 'shown' }
         end
         env = Rack::MockRequest.env_for('/')
         env['PATH_INFO'] = "/data\xFF".dup.force_encoding(Encoding::UTF_8)
@@ -966,11 +966,11 @@ describe 'Filters' do
     it 'should keep an except filter on a path with a format' do
       mock_app do
         before(except: '/data') { halt 401, 'stopped' }
-        get('/data', provides: %i[html json]) { 'open' }
+        get('/data', provides: %i[html json]) { 'shown' }
         get('/other', provides: %i[html json]) { 'other' }
       end
       get '/data'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       get '/data.json'
       assert_equal 401, status
       get '/other.json'
@@ -980,10 +980,10 @@ describe 'Filters' do
     it 'should stand aside for a path an except filter names with its format' do
       mock_app do
         before(except: /\.json$/) { halt 401, 'stopped' }
-        get('/feed', provides: %i[html json]) { 'open' }
+        get('/feed', provides: %i[html json]) { 'shown' }
       end
       get '/feed.json'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       get '/feed'
       assert_equal 401, status
     end
@@ -1005,8 +1005,8 @@ describe 'Filters' do
       mock_app do
         before(path_info: %r{\A/opt\z}) { halt 401, 'stopped' }
         before(path: %r{\A/way\z}) { halt 401, 'stopped' }
-        get('/opt') { 'open' }
-        get('/way') { 'open' }
+        get('/opt') { 'shown' }
+        get('/way') { 'shown' }
       end
       %w[/%6Fpt /opt/ /%77ay /way/].each do |path|
         get path
@@ -1017,7 +1017,7 @@ describe 'Filters' do
     it 'should keep matching a path option written with the encoded path' do
       mock_app do
         before(path_info: '/caf%C3%A9') { halt 401, 'stopped' }
-        get('/café') { 'open' }
+        get('/café') { 'shown' }
       end
       get '/caf%C3%A9'
       assert_equal 401, status
@@ -1026,7 +1026,7 @@ describe 'Filters' do
     it 'should cover the format of a mounted app on the path option' do
       mock_app do
         before(path: '/sub/foo') { halt 401, 'stopped' }
-        get('/foo', provides: %i[html json]) { 'open' }
+        get('/foo', provides: %i[html json]) { 'shown' }
       end
       get '/foo.json', {}, 'SCRIPT_NAME' => '/sub'
       assert_equal 401, status
@@ -1055,11 +1055,11 @@ describe 'Filters' do
       ['/data', '/data(_:format)?', '/data_json'],
       ['/data', '/data(~:format)?', '/data~json'],
       ['/data', '/data(--:format)?', '/data--json']
-    ].each do |guard, pattern, path|
-      describe "with a guard #{guard} on #{pattern}" do
+    ].each do |filter, pattern, path|
+      describe "with a filter #{filter} on #{pattern}" do
         it "should run a before filter for #{path}" do
           mock_app do
-            before(guard) { halt 401, 'stopped' }
+            before(filter) { halt 401, 'stopped' }
             get(pattern) { 'shown' }
           end
           get path
@@ -1068,7 +1068,7 @@ describe 'Filters' do
 
         it "should run a before filter for #{path} under a mounted sub-path" do
           mock_app do
-            before(guard) { halt 401, 'stopped' }
+            before(filter) { halt 401, 'stopped' }
             get(pattern) { 'shown' }
           end
           assert_equal 401, mounted_request.get("/blog#{path}").status
@@ -1077,7 +1077,7 @@ describe 'Filters' do
         it "should run an after filter for #{path}" do
           seen = []
           mock_app do
-            after(guard) { seen << :after }
+            after(filter) { seen << :after }
             get(pattern) { 'shown' }
           end
           get path
@@ -1088,8 +1088,8 @@ describe 'Filters' do
         it "should keep an except filter running for #{path}" do
           seen = []
           mock_app do
-            before(except: guard) { seen << :before }
-            after(except: guard) { seen << :after }
+            before(except: filter) { seen << :before }
+            after(except: filter) { seen << :after }
             get(pattern) { 'shown' }
           end
           get path
@@ -1099,11 +1099,11 @@ describe 'Filters' do
 
         it "should apply the path option for #{path} under a mounted sub-path" do
           mock_app do
-            before(path: "/blog#{guard}") { halt 401, 'stopped' }
+            before(path: "/blog#{filter}") { halt 401, 'stopped' }
             get(pattern) { 'shown' }
           end
           assert_equal 401, mounted_request.get("/blog#{path}").status
-          assert_equal 401, mounted_request.get("/blog#{guard}").status
+          assert_equal 401, mounted_request.get("/blog#{filter}").status
         end
       end
     end
@@ -1142,14 +1142,14 @@ describe 'Filters' do
       ['/api/users', proc { get('/api/users') { 'public' }; get('/api(.:format)?/users') { 'member' } }, %w[/api.admin/users]],
       ['/c', proc { get('/c') { 'public' }; get('/c++(.:format)?') { 'member' } }, %w[/c++.json]],
       ['/', proc { get('/') { 'public' }; get('/~(.:format)?') { 'member' } }, %w[/~.json]]
-    ].each do |guard, routes, paths|
-      it "should not apply a filter for #{guard} to #{paths.join(', ')}" do
+    ].each do |filter, routes, paths|
+      it "should not apply a filter for #{filter} to #{paths.join(', ')}" do
         mock_app do
-          before(guard) { @public = true }
+          before(filter) { @public = true }
           before { halt 401, 'login' unless @public }
           instance_eval(&routes)
         end
-        get guard
+        get filter
         assert_equal 'public', body
         paths.each do |path|
           get path
@@ -1214,15 +1214,15 @@ describe 'Filters' do
       ['/', '/:format', '/csv'],
       ['/data-', '/data--:format', '/data--json'],
       ['/data', '/data-:format?', '/data-json']
-    ].each do |guard, pattern, path|
-      it "should not run a filter for #{guard} on #{path} from #{pattern}" do
+    ].each do |filter, pattern, path|
+      it "should not run a filter for #{filter} on #{path} from #{pattern}" do
         mock_app do
-          before(guard) { @public = true }
+          before(filter) { @public = true }
           before { halt 401, 'login' unless @public }
           get(pattern) { 'member' }
-          get(guard) { 'public' }
+          get(filter) { 'public' }
         end
-        get guard
+        get filter
         assert_equal 'public', body
         get path
         assert_equal [401, 'login'], [status, body]
@@ -1235,10 +1235,10 @@ describe 'Filters' do
       ['/data-', '/data-:format?', '/data-json'],
       ['/doc/', '/doc/(-:format)?', '/doc/-json'],
       ['/doc/', '/doc/(-:format)?', '/doc/-json/']
-    ].each do |guard, pattern, path|
-      it "should run a filter for #{guard} on #{path} from #{pattern}, which serves #{guard}" do
+    ].each do |filter, pattern, path|
+      it "should run a filter for #{filter} on #{path} from #{pattern}, which serves #{filter}" do
         mock_app do
-          before(guard) { halt 403, 'stopped' }
+          before(filter) { halt 403, 'stopped' }
           get(pattern) { 'shown' }
         end
         get path
@@ -1408,7 +1408,7 @@ describe 'Filters' do
       mock_app do
         before(:priv) { halt 401, 'stopped' }
         get(:pub, map: '/doc') { pass }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
       end
       get '/doc'
       assert_equal 401, status
@@ -1419,7 +1419,7 @@ describe 'Filters' do
         set(:never) { |_value| condition { false } }
         before(:priv) { halt 401, 'stopped' }
         get(:pub, map: '/doc', never: true) { 'public' }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
       end
       get '/doc'
       assert_equal 401, status
@@ -1430,7 +1430,7 @@ describe 'Filters' do
       mock_app do
         before(except: :pub) { halt 401, 'stopped' }
         get(:pub, map: '/doc') { pass }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
       end
       get '/doc'
       assert_equal 401, status
@@ -1440,7 +1440,7 @@ describe 'Filters' do
       mock_app do
         before('/data') { halt 401, 'stopped' }
         get('/:page') { pass }
-        get('/data', provides: %i[html json]) { 'open' }
+        get('/data', provides: %i[html json]) { 'shown' }
       end
       get '/data.json'
       assert_equal 401, status
@@ -1454,11 +1454,11 @@ describe 'Filters' do
         before(:pub, :priv) { runs << :name }
         before(except: :other) { runs << :except }
         get(:pub, map: '/doc') { pass }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
         get(:other, map: '/other') { 'other' }
       end
       get '/doc'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       assert_equal %i[plain path name except], runs
     end
 
@@ -1466,11 +1466,11 @@ describe 'Filters' do
       runs = []
       mock_app do
         before(:priv) { runs << :priv }
-        get(:pub, map: '/doc') { 'open' }
+        get(:pub, map: '/doc') { 'shown' }
         get(:priv, map: '/doc') { 'never' }
       end
       get '/doc'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       assert_empty runs
     end
 
@@ -1494,18 +1494,18 @@ describe 'Filters' do
         controller :posts do
           after('/doc') { runs << :after }
           get(:pub, map: '/doc') { pass }
-          get(:priv, map: '/doc') { 'open' }
+          get(:priv, map: '/doc') { 'shown' }
         end
       end
       get '/doc'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       assert_equal %i[after after], runs
     end
 
     it 'should run filters for a request made from inside a route' do
       mock_app do
         before('/stopped') { halt 401, 'stopped' }
-        get('/stopped') { 'open' }
+        get('/stopped') { 'shown' }
         get('/inner') { call(env.merge('PATH_INFO' => '/stopped')) }
         get(:pub, map: '/doc') { pass }
         get(:priv, map: '/doc') { call(env.merge('PATH_INFO' => '/stopped')) }
@@ -1530,10 +1530,10 @@ describe 'Filters' do
         before { params[:seen] = 'yes' }
         before('/doc') { halt 401, 'stopped' unless params[:seen] }
         get(:pub, map: '/doc') { pass }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
       end
       get '/doc'
-      assert_equal 'open', body
+      assert_equal 'shown', body
     end
 
     it 'should not run a filter twice along three routes' do
@@ -1542,10 +1542,10 @@ describe 'Filters' do
         before(:one, :three) { runs << :named }
         get(:one, map: '/doc') { pass }
         get(:two, map: '/doc') { pass }
-        get(:three, map: '/doc') { 'open' }
+        get(:three, map: '/doc') { 'shown' }
       end
       get '/doc'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       assert_equal [:named], runs
     end
 
@@ -1584,7 +1584,7 @@ describe 'Filters' do
       mock_app do
         before(action: :priv) { halt 401, 'stopped' }
         get(:pub, map: '/doc') { pass }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
       end
       get '/doc'
       assert_equal 401, status
@@ -1596,7 +1596,7 @@ describe 'Filters' do
         before('/doc') { halt 401, 'stopped' }
         controller :posts do
           after { runs << :after }
-          get(:a, map: '/doc') { 'open' }
+          get(:a, map: '/doc') { 'shown' }
         end
       end
       get '/doc'
@@ -1611,14 +1611,14 @@ describe 'Filters' do
         before { runs << :plain }
         before(:one, :three) { runs << :named }
         get(:two, map: '/doc') { pass }
-        get(:three, map: '/doc') { 'open' }
+        get(:three, map: '/doc') { 'shown' }
       end
       @app = Class.new(parent) do
         set :protect_from_csrf, false
         get(:one, map: '/doc') { pass }
       end
       get '/doc'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       assert_includes runs, :named
     end
 
@@ -1685,11 +1685,11 @@ describe 'Filters' do
         controller :posts do
           before { runs << :controller }
           get(:pub, map: '/doc') { pass }
-          get(:priv, map: '/doc') { 'open' }
+          get(:priv, map: '/doc') { 'shown' }
         end
       end
       get '/doc'
-      assert_equal 'open', body
+      assert_equal 'shown', body
       assert_equal 2, runs.size
     end
 
@@ -1697,18 +1697,18 @@ describe 'Filters' do
       mock_app do
         add_filter :before, &Padrino::Filter.new(true, nil, {}, [:priv]) { halt 401, 'stopped' }
         get(:pub, map: '/doc') { pass }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
       end
       get '/doc'
       assert_equal 401, status
     end
 
     it 'should decide a filter wrapped in another block for the later route' do
-      guard = Padrino::Filter.new(true, nil, {}, [:priv]) { halt 401, 'stopped' }.to_proc
+      filter = Padrino::Filter.new(true, nil, {}, [:priv]) { halt 401, 'stopped' }.to_proc
       mock_app do
-        add_filter(:before) { instance_eval(&guard) }
+        add_filter(:before) { instance_eval(&filter) }
         get(:pub, map: '/doc') { pass }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
       end
       get '/doc'
       assert_equal 401, status
@@ -1719,7 +1719,7 @@ describe 'Filters' do
         before(:priv) { halt 401, 'stopped' }
         filters[:before].map!(&:dup)
         get(:pub, map: '/doc') { pass }
-        get(:priv, map: '/doc') { 'open' }
+        get(:priv, map: '/doc') { 'shown' }
       end
       get '/doc'
       assert_equal 401, status
@@ -1733,17 +1733,17 @@ describe 'Filters' do
       end
       mock_app do
         before { result.new }
-        get('/doc') { 'open' }
+        get('/doc') { 'shown' }
       end
       get '/doc'
-      assert_equal 'open', body
+      assert_equal 'shown', body
     end
 
     it 'should decide the controller option for the later route' do
       mock_app do
         before(controller: 'priv') { halt 401, 'stopped' }
         controller(:pub) { get(:doc, map: '/doc') { pass } }
-        controller(:priv) { get(:doc, map: '/doc') { 'open' } }
+        controller(:priv) { get(:doc, map: '/doc') { 'shown' } }
       end
       get '/doc'
       assert_equal 401, status

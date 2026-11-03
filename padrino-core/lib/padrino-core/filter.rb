@@ -6,7 +6,7 @@ module Padrino
     ROUTE_CUTS_KEY = 'padrino.route_cuts'.freeze
     NO_ROUTE_CUTS = [[].freeze, [].freeze].freeze
     NOT_FORMAT_DELIMITER = %r{[^./]}.freeze
-    MAX_FORMAT_DELIMITER = 3 # ceiling: a longer delimiter before an optional format is not cut; raise it if a route needs one
+    MAX_FORMAT_DELIMITER = 3 # ceiling: the longest delimiter format_cuts takes before a format; raise it for a route with a longer one
     # What a filter's proc returns when it doesn't apply to the route, so it is decided again.
     SKIPPED = Object.new.freeze
 

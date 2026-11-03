@@ -159,7 +159,7 @@ describe 'Routing' do
       assert_equal '/posts', Padrino::Routing.decode_path('/%70osts')
       assert_equal '/a/b', Padrino::Routing.decode_path('/a%2Fb')
       assert_equal '/a/b', Padrino::Routing.decode_path('/a%2fb')
-      assert_equal '/../secret', Padrino::Routing.decode_path('/%2e%2e/secret')
+      assert_equal '/../report', Padrino::Routing.decode_path('/%2e%2e/report')
       assert_equal '/a+b', Padrino::Routing.decode_path('/a+b')
       assert_equal '/a b', Padrino::Routing.decode_path('/a%20b')
       assert_equal '/a%zz', Padrino::Routing.decode_path('/a%zz')
