@@ -24,6 +24,9 @@ module Mail # @private
         @shared ||= @owner.shared_template_cache
         @shared.fetch(engine, data, *rest, &block)
       end
+
+      # Message#to_yaml dumps every instance variable; keep the class's templates and lock out of it.
+      def encode_with(coder); end
     end
 
     # The cache a class's messages share. Messages are often delivered from several threads, and
