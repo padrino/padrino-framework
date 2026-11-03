@@ -9,12 +9,14 @@ class <%= @model_name %> < Sequel::Model
     validates_presence     :role
     validates_presence     :password if password_required
     validates_presence     :password_confirmation if password_required
-    validates_length_range 4..40, :password unless password.blank?
+    validates_min_length   8, :password unless password.blank?
+    # bcrypt uses only the first 72 bytes of a password.
+    errors.add(:password, 'is too long (maximum is 72 bytes)') if !password.blank? && password.bytesize > 72
     errors.add(:password_confirmation, 'must confirm password') if !password.blank? && password != password_confirmation
     validates_length_range 3..100, :email unless email.blank?
-    validates_unique       :email unless email.blank?
-    validates_format       /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :email unless email.blank?
-    validates_format       /[A-Za-z]/, :role unless role.blank?
+    validates_unique       :email, where: ->(ds, obj, _) { ds.where(Sequel.function(:lower, :email) => Sequel.function(:lower, obj.email)) } unless email.blank?
+    validates_format       /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, :email unless email.blank?
+    validates_format       /\A[A-Za-z][\w-]*\z/, :role unless role.blank?
   end
 
   # Callbacks

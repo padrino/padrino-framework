@@ -52,7 +52,7 @@ module Padrino
         # it will create one and assign it to the session's `csrf` key.
         #
         def csrf_token
-          session[:csrf] ||= SecureRandom.hex(32) if defined?(session)
+          session[:csrf] ||= SecureRandom.urlsafe_base64(32) if defined?(session)
         end
 
         ##

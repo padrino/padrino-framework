@@ -5,12 +5,13 @@ class <%= @model_name %> < ActiveRecord::Base
   validates_presence_of     :email, :role
   validates_presence_of     :password,                if: :password_required
   validates_presence_of     :password_confirmation,   if: :password_required
-  validates_length_of       :password, within: 4..40, if: :password_required
+  validates_length_of       :password, minimum: 8,    if: :password_required
+  validate                  :password_within_72_bytes, if: :password_required
   validates_confirmation_of :password,                if: :password_required
   validates_length_of       :email,    within: 3..100
   validates_uniqueness_of   :email,    case_sensitive: false
-  validates_format_of       :email,    with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
-  validates_format_of       :role,     with: /[A-Za-z]/
+  validates_format_of       :email,    with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
+  validates_format_of       :role,     with: /\A[A-Za-z][\w-]*\z/
 
   # Callbacks
   before_save :encrypt_password, if: :password_required
@@ -35,6 +36,11 @@ class <%= @model_name %> < ActiveRecord::Base
   end
 
   private
+
+  # bcrypt uses only the first 72 bytes of a password.
+  def password_within_72_bytes
+    errors.add(:password, 'is too long (maximum is 72 bytes)') if password.to_s.bytesize > 72
+  end
 
   def encrypt_password
     value = ::BCrypt::Password.create(password)

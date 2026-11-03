@@ -253,24 +253,24 @@ describe 'ProjectGenerator' do
     end
 
     it 'should create components file containing options chosen' do
-      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=sass']
+      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=jquery', '--renderer=erb', '--stylesheet=sass']
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *component_options) }
       components_chosen = YAML.load_file("#{@apptmp}/sample_project/.components")
       assert_equal 'sequel', components_chosen[:orm]
       assert_equal 'rspec',      components_chosen[:test]
       assert_equal 'mocha',      components_chosen[:mock]
-      assert_equal 'prototype',  components_chosen[:script]
+      assert_equal 'jquery',     components_chosen[:script]
       assert_equal 'erb',        components_chosen[:renderer]
       assert_equal 'sass',       components_chosen[:stylesheet]
     end
 
     it 'should output to log components being applied' do
-      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=prototype', '--renderer=erb', '--stylesheet=sass']
+      component_options = ['--orm=sequel', '--test=rspec', '--mock=mocha', '--script=jquery', '--renderer=erb', '--stylesheet=sass']
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", *component_options) }
       assert_match(/applying.*?sequel.*?orm/, out)
       assert_match(/applying.*?rspec.*?test/, out)
       assert_match(/applying.*?mocha.*?mock/, out)
-      assert_match(/applying.*?prototype.*?script/, out)
+      assert_match(/applying.*?jquery.*?script/, out)
       assert_match(/applying.*?erb.*?renderer/, out)
       assert_match(/applying.*?sass.*?stylesheet/, out)
     end
@@ -649,6 +649,27 @@ describe 'ProjectGenerator' do
       end
     end
 
+    {
+      '--script=dojo' => /The dojo script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./,
+      '--script=mootools' => /The mootools script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./,
+      '--script=prototype' => /The prototype script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./,
+      '--orm=minirecord' => /The minirecord orm component was removed from Padrino; use activerecord or sequel instead\./,
+      '--orm=dynamoid' => /The dynamoid orm component was removed from Padrino; use activerecord or sequel instead\./,
+      '--stylesheet=less' => /The less stylesheet component was removed from Padrino; use sass, scss or tailwind instead\./
+    }.each do |option, message|
+      it "should stop naming the replacement for the removed component in #{option} without asking" do
+        assert_match(message, generate_at_end_of_input(option))
+        assert_no_dir_exists("#{@apptmp}/sample_project")
+      end
+    end
+
+    it 'should name the replacement for a removed component typed at the prompt and ask again' do
+      Thor::LineEditor.stubs(:readline).returns('dojo').then.returns('jquery')
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=foo') }
+      assert_match(/The dojo script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./, out)
+      assert_equal 'jquery', YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+    end
+
     %w[sequel activerecord].each do |orm|
       it "should stop with the valid #{orm} adapters at the end of input" do
         err = generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus')
@@ -770,31 +791,6 @@ describe 'ProjectGenerator' do
       assert_equal 1, stop.status
       assert_match(/Constant `Kernel` already exists/, err)
       assert_no_dir_exists("#{@apptmp}/kernel")
-    end
-
-    it 'should properly generate for mootools' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=mootools') }
-      assert_match(/applying.*?mootools.*?script/, out)
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/mootools-ujs.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
-    end
-
-    it 'should properly generate for prototype' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=prototype') }
-      assert_match(/applying.*?prototype.*?script/, out)
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/protopak.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/lowpro.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/prototype-ujs.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
-    end
-
-    it 'should properly generate for dojo' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=dojo') }
-      assert_match(/applying.*?dojo.*?script/, out)
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/dojo.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/dojo-ujs.js")
-      assert_file_exists("#{@apptmp}/sample_project/public/javascripts/application.js")
     end
 
     it 'should properly generate for ujs without fetching anything' do
