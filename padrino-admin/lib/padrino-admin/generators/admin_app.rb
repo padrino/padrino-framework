@@ -90,7 +90,7 @@ module Padrino
           end
 
           params = [
-            @model_singular, 'name:string', 'surname:string', 'email:string', 'crypted_password:string', 'role:string',
+            @model_singular, 'name:string', 'surname:string', 'email:string:uniq', 'crypted_password:string', 'role:string',
             "-r=#{options[:root]}"
           ]
           params << '-s' if options[:skip_migration]
@@ -169,6 +169,7 @@ module Padrino
             instructions << "Run 'bundle exec rake db:create' if you have not created a database yet"
             instructions << "Run 'bundle exec rake db:migrate'"
           end
+          instructions << "Run 'bundle exec rake mi:create_indexes'" if orm == :mongoid
           instructions << "Run 'bundle exec rake db:seed'"
           instructions << "Visit the admin panel in the browser at '/#{@admin_path}'"
           instructions.map! { |i| "  #{instructions.index(i) + 1}) #{i}" }

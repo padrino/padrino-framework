@@ -45,6 +45,15 @@ describe 'AdminAppGenerator' do
       assert_no_file_exists("#{@apptmp}/sample_project/models/account.rb")
     end
 
+    it 'should list the index step for mongoid only' do
+      capture_io { generate(:project, 'mongoid_project', "--root=#{@apptmp}", '-d=mongoid', '-e=erb') }
+      capture_io { generate(:project, 'sequel_project', "--root=#{@apptmp}", '-d=sequel', '-e=erb') }
+      mongoid_out, = capture_io { generate(:admin_app, "--root=#{@apptmp}/mongoid_project") }
+      sequel_out, = capture_io { generate(:admin_app, "--root=#{@apptmp}/sequel_project") }
+      assert_match(/2\) Run 'bundle exec rake mi:create_indexes'.*3\) Run 'bundle exec rake db:seed'/m, mongoid_out)
+      refute_match(/mi:create_indexes/, sequel_out)
+    end
+
     it 'should fail with an unsupported renderer' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=haml') }
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}/sample_project", '-e=liquid') }.status }
@@ -78,6 +87,7 @@ describe 'AdminAppGenerator' do
       capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
       script = <<~RUBY
         require 'thor'
+        require 'sequel'
         # Thor's line editor can echo or buffer piped input, so without a terminal the
         # seeds must not ask through it.
         class NoAskShell < Thor::Base.shell
@@ -90,6 +100,10 @@ describe 'AdminAppGenerator' do
           @shell ||= NoAskShell.new
         end
         class Account
+          def self.where(_conditions)
+            []
+          end
+
           def initialize(attributes)
             @attributes = attributes
           end
@@ -100,6 +114,7 @@ describe 'AdminAppGenerator' do
 
           def save
             puts "SAVED \#{@attributes[:email]} \#{@attributes[:password] == 'secret123'}"
+            true
           end
         end
         load 'db/seeds.rb'
