@@ -825,7 +825,8 @@ describe 'Rendering' do
   describe 'when loading padrino-helpers' do
     # Stands in for the erubis gem next to a Tilt that still has its Erubis template (2.4 and older).
     def erubis_stub
-      "require 'tilt'\nmodule Erubis; class Eruby; end; end\nclass Tilt::ErubisTemplate < Tilt::Template; end\n"
+      "require 'tilt'\nmodule Erubis; class Eruby; end; end\n" \
+        "class Tilt::ErubisTemplate < Tilt::Template; end unless defined?(Tilt::ErubisTemplate)\n"
     end
 
     def hidden
@@ -858,6 +859,7 @@ describe 'Rendering' do
     end
 
     it 'should still render erb with Erubi when the erubis gem is loaded' do
+      skip 'erubi is not bundled' if ENV['ERB_ENGINE'] == 'stdlib'
       check = <<~'RUBY'
         abort "erb is #{Tilt['erb']}" unless Tilt['erb'] == Padrino::Rendering::ErubiTemplate
       RUBY

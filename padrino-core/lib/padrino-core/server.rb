@@ -33,14 +33,14 @@ module Padrino
     DEFAULT_ADDRESS = { Host: '127.0.0.1', Port: 3000 }
 
     # Server Handlers
-    Handlers = SERVERS.map(&:to_sym).freeze
+    Handlers = SERVERS.map(&:to_sym)
 
     # Starts the application on the available server with specified options.
     def self.start(app, options = {})
       options = Utils.symbolize_keys(options.to_hash)
+      options.update(parse_server_options(options.delete(:options)))
       removed = Padrino.removed_server_message(options[:server])
       raise removed if removed
-      options.update(parse_server_options(options.delete(:options)))
       options.update(detect_address(options))
       options[:pid] = prepare_pid(options[:pid]) if options[:daemonize]
       options[:server] ||= detect_rack_handler

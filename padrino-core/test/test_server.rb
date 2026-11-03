@@ -47,6 +47,13 @@ describe 'Padrino::Server' do
         end
       end
     end
+
+    it 'should stop for a removed server given as a server option' do
+      Rackup::Handler.stub(:get, ->(name) { raise "looked up the #{name} handler" }) do
+        error = assert_raises(RuntimeError) { Padrino::Server.start(->(_env) { [200, {}, []] }, options: ['server=mongrel']) }
+        assert_match(/\AThe mongrel server was removed from Padrino/, error.message)
+      end
+    end
   end
 
   describe 'signals' do
