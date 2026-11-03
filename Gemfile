@@ -12,8 +12,10 @@ group :db do
   gem 'sequel'
   if RUBY_VERSION < '3.1'
     gem 'sqlite3', '~> 1.7', platforms: [:mri]
-  else
+  elsif RUBY_VERSION < '3.2'
     gem 'sqlite3', platforms: [:mri]
+  else
+    gem 'sqlite3', '>= 2.9.6', platforms: [:mri]
   end
 end
 
