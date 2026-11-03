@@ -53,7 +53,7 @@ module Padrino
           @block_opts_string = block_opts.join(', ') unless block_opts.empty?
 
           # Before writing anything, so a test component Padrino no longer has stops the generator first.
-          include_component_module_for(:test) if test?
+          include_component_module_for(:test)
           self.behavior = :revoke if options[:destroy]
           template 'templates/controller.rb.tt', destination_root(app, 'controllers', "#{name.to_s.underscore}.rb")
           empty_directory destination_root(app, "/views/#{name.to_s.underscore}")

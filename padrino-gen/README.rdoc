@@ -41,7 +41,7 @@ The available components and their default options are listed below:
 test::       none  (default), cucumber, rspec, minitest, testunit
 renderer::   none  (default), slim, erb, liquid, haml
 stylesheet:: none  (default), tailwind, sass, scss
-mock::       none  (default), mocha, rr
+mock::       none  (default), mocha, rr (deprecated)
 script::     none  (default), jquery, vite, htmx, ujs
 orm::        none  (default), mongoid, activerecord, sequel
 

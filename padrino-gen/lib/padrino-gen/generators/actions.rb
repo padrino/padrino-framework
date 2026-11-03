@@ -221,7 +221,8 @@ module Padrino
 
       ##
       # Prompts the user if necessary until options[:adapter] or the answer is a valid SQL adapter, and keeps it.
-      # A removed adapter stops the generator with a Thor::Error naming what to use instead.
+      # A removed adapter passed as an option or stored in .components stops the generator with a Thor::Error
+      # naming what to use instead; one typed at the prompt gets that message and the prompt again.
       #
       # @return [String] Name of the SQL adapter.
       #
@@ -231,15 +232,23 @@ module Padrino
       def resolve_valid_adapter
         @_adapter ||= begin
           adapter = options[:adapter] || stored_adapter || 'sqlite'
-          replacement = REMOVED_SQL_ADAPTERS[adapter]
-          raise Thor::Error, "The #{adapter} adapter was removed from Padrino; use #{replacement} instead." if replacement
+          removed = removed_adapter_message(adapter)
+          raise Thor::Error, removed if removed
 
           until SQL_ADAPTERS.include?(adapter)
-            say("Option for --adapter '#{adapter}' is not available.", :red)
+            say(removed_adapter_message(adapter) || "Option for --adapter '#{adapter}' is not available.", :red)
             adapter = ask_valid_option(:adapter, SQL_ADAPTERS, 'Please enter a valid option for adapter:')
           end
           adapter
         end
+      end
+
+      ##
+      # Returns the message naming what to use instead of a removed SQL adapter, or nil.
+      #
+      def removed_adapter_message(adapter)
+        replacement = REMOVED_SQL_ADAPTERS[adapter]
+        "The #{adapter} adapter was removed from Padrino; use #{replacement} instead." if replacement
       end
 
       ##

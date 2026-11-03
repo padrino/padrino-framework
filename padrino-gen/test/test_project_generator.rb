@@ -351,13 +351,11 @@ describe 'ProjectGenerator' do
       assert_no_match_in_file(/RR::Adapters/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
-    it 'should warn once that rr is deprecated' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=minitest', '--script=none') }
-      assert_equal 1, out.scan("The rr mock component is deprecated and will be removed in Padrino 1.0. Use mocha (-m mocha) or your test framework's own mocks instead.").size
-    end
-
-    it 'should not warn about rr for other mocks' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=mocha', '--test=minitest', '--script=none') }
+    it 'should warn once that rr is deprecated, and not for other mocks' do
+      warning = "The rr mock component is deprecated and will be removed in Padrino 1.0. Use mocha (-m mocha) or your test framework's own mocks instead."
+      out, = capture_io { generate(:project, 'rr_project', "--root=#{@apptmp}", '--mock=rr', '--test=minitest', '--script=none') }
+      assert_equal 1, out.scan(warning).size
+      out, = capture_io { generate(:project, 'mocha_project', "--root=#{@apptmp}", '--mock=mocha', '--test=minitest', '--script=none') }
       refute_match(/deprecated/, out)
     end
 
@@ -668,6 +666,13 @@ describe 'ProjectGenerator' do
         assert_equal message, err.strip
         assert_no_dir_exists("#{@apptmp}/sample_project")
       end
+    end
+
+    it 'should name the replacement for a removed adapter typed at the prompt and ask again' do
+      Thor::LineEditor.stubs(:readline).returns('mysql-gem').then.returns('sqlite')
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=foo', '--script=none') }
+      assert_match(/The mysql-gem adapter was removed from Padrino; use mysql2 or trilogy instead\./, out)
+      assert_equal 'sqlite', YAML.load_file("#{@apptmp}/sample_project/.components")[:adapter]
     end
 
     it 'should name the replacement for a removed test component typed at the prompt and ask again' do
