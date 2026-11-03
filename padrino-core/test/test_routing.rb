@@ -3081,6 +3081,19 @@ describe 'Routing' do
       end
     end
 
+    it 'picks the routes to try by the decoded path' do
+      mock_app do
+        get('/abc/first') { 'first' }
+        get('/a/') { 'slash' }
+      end
+      get '/%61bc/first'
+      assert_equal 200, status
+      assert_equal 'first', body
+      get '/a/'
+      assert_equal 200, status
+      assert_equal 'slash', body
+    end
+
     it 'tries routes in the order they were defined, whatever their pattern starts with' do
       mock_app do
         get('/abc/first') { 'literal' }

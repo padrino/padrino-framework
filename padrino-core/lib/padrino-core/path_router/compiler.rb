@@ -79,7 +79,9 @@ module Padrino
 
         trimmed = path[0..-2] if path.end_with?('/')
         routes = @routes
-        if @by_prefix && path.length >= PREFIX_SIZE && (candidates = @by_prefix.fetch(path[0, PREFIX_SIZE], @unprefixed))
+        if (prefix_index = @prefix_index) && path.length >= PREFIX_SIZE
+          by_prefix, unprefixed = prefix_index
+          candidates = by_prefix.fetch(path[0, PREFIX_SIZE], unprefixed)
           from = candidates.bsearch_index { |index| index >= offset }
           return unless from
 
@@ -116,9 +118,10 @@ module Padrino
         @routes.each_with_index do |route, index|
           (prefix = literal_prefix(route)) ? prefixed[prefix] << index : unprefixed << index
         end
-        # Built whole before they're set: another thread compiling at once may be matching with them.
-        @unprefixed = unprefixed.freeze
-        @by_prefix = prefixed.transform_values { |indexes| (indexes + unprefixed).sort.freeze }
+        by_prefix = prefixed.transform_values { |indexes| (indexes + unprefixed).sort.freeze }.freeze
+        # One frozen pair, set in one assignment: match? reads it once, so a thread matching while
+        # another compiles the same engine sees both lists from the same compile.
+        @prefix_index = [by_prefix, unprefixed.freeze].freeze
       end
 
       # The first PREFIX_SIZE characters every path the route matches starts with, or nil.
