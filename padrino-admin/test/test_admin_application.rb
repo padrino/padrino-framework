@@ -50,6 +50,238 @@ describe 'AdminApplication' do
     assert_equal 'unauthenticated', body
   end
 
+  it 'should require login for a path a protect rule covers, with an encoded letter' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/foo'
+      end
+
+      get('/foo') { 'foo' }
+      get('/bar') { 'bar' }
+    end
+
+    ['/%66oo', '/f%6Fo', '/%66oo/'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+    end
+
+    get '/%62ar'
+    assert_equal 'bar', body
+  end
+
+  it 'should keep an encoded slash inside the path segment it is in' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/'
+        role.allow '/sessions'
+      end
+
+      get('/sessions/:id') { 'session' }
+      get('/:page') { "page #{params[:page]}" }
+    end
+
+    get '/sessions/new'
+    assert_equal 'session', body
+    ['/sessions%2Fnew', '/sessions%2fnew', '/%73essions%2Fnew'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+    end
+    assert @app.access_control.allowed?(nil, '/sessions/a%2Fb')
+    refute @app.access_control.allowed?(nil, '/sessions%2F')
+  end
+
+  it 'should deny a path a protect rule covers, whose encoded slash a splat route decodes' do
+    mock_app do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+
+      access_control.roles_for :any do |role|
+        role.protect '/files/report'
+      end
+
+      get('/files/:name') { "name #{params[:name]}" }
+      get('/*path') { "file #{params[:path]}" }
+    end
+
+    ['/files/report', '/files%2Freport', '/files%2freport', '/%66iles%2Freport/1',
+     '/files%252Freport', '/files/%2572eport', '/%2566iles/report', '/files/rep%256Frt'].each do |path|
+      get path
+      assert_equal "You don't have permission for this resource", body, path
+      refute @app.access_control.allowed?(nil, path), path
+    end
+    get '/files/public'
+    assert_equal 'name public', body
+  end
+
+  describe 'with Regexp rules' do
+    def denied
+      "You don't have permission for this resource"
+    end
+
+    def mock_filtered_app(&rules)
+      mock_app do
+        register Padrino::Admin::AccessControl
+        enable :sessions
+        access_control.roles_for(:any, &rules)
+        get('/billing/:a/:b') { 'billing page' }
+        get('/admin/:id') { 'admin page' }
+        get('/:x/:y') { 'two' }
+        get('/:x') { 'one' }
+      end
+    end
+
+    def assert_not_served(*paths)
+      paths.each do |path|
+        get path
+        assert_includes [401, 404], status, path
+        refute_includes ['one', 'two', 'billing page', 'admin page'], body, path
+      end
+    end
+
+    it 'should not serve a path that decodes to a newline with an allow Regexp' do
+      mock_filtered_app do |role|
+        role.protect '/'
+        role.allow %r{\A/public$}
+        role.allow %r{/lobby$}
+      end
+      get '/public'
+      assert_equal 'one', body
+      get '/lobby'
+      assert_equal 'one', body
+      get '/public/billing'
+      assert_equal [401, denied], [status, body]
+      assert_not_served '/public%0A/billing', '/lobby%0A/billing'
+    end
+
+    it 'should not serve a path that decodes to a newline with an allow Regexp in a path a protect rule covers' do
+      mock_filtered_app do |role|
+        role.protect %r{\A/billing/}
+        role.allow %r{\A/billing/ok$}
+      end
+      get '/billing/ok'
+      assert_equal 'two', body
+      get '/billing/ok/x'
+      assert_equal [401, denied], [status, body]
+      assert_not_served '/billing/ok%0A/x'
+    end
+
+    it 'should not serve a path that decodes to a newline with a protect Regexp' do
+      mock_filtered_app do |role|
+        role.protect %r{\A/admin/.*\z}
+        role.protect %r{^/staff/.+$}
+        role.protect %r{\A/billing\z}
+      end
+      get '/other/x'
+      assert_equal 'two', body
+      assert_not_served '/admin/1', '/admin/a%0Ab', '/staff/x', '/staff/%0Ab', '/billing', '/billing%0A'
+    end
+
+    it 'should deny the path with a trailing slash for a protect Regexp' do
+      mock_filtered_app do |role|
+        role.protect %r{\A/billing\z}
+        role.protect %r{\A/files/[^/]+\z}
+      end
+      ['/billings', '/billing/x', '/filesx'].each do |path|
+        get path
+        assert_equal 200, status, path
+      end
+      ['/billing', '/billing/', '/billing//', '/%62illing/', '/files/a/', '/files/a//'].each do |path|
+        get path
+        assert_equal [401, denied], [status, body], path
+        refute @app.access_control.allowed?(nil, path), path
+      end
+    end
+
+    it 'should deny the path with a trailing slash for an app mounted under a sub-path' do
+      mock_filtered_app do |role|
+        role.protect %r{\A/billing\z}
+        role.allow %r{\A/public$}
+      end
+      request = Rack::MockRequest.new(Padrino::Router.new({ path: '/blog', to: @app }, { path: '/', to: @app }))
+      assert_equal 'one', request.get('/blog/public').body
+      assert_equal 401, request.get('/blog/billing/').status
+      ['/blog/public%0A/billing', '/blog/billing%0A'].each do |path|
+        assert_equal 401, request.get(path).status, path
+      end
+    end
+
+    it 'should deny the path with a format for a protect Regexp' do
+      mock_app do
+        register Padrino::Admin::AccessControl
+        enable :sessions
+        access_control.roles_for :any do |role|
+          role.protect %r{\A/billing\z}
+          role.protect %r{\A/stock\z}
+        end
+        get(:billing, map: '/billing', provides: %i[html json]) { 'billing' }
+        get('/stock(.:format)?') { 'stock' }
+        get('/:x') { 'one' }
+      end
+      ['/billings', '/stocks', '/billing-day', '/billing-json', '/billing_x'].each do |path|
+        get path
+        assert_equal 'one', body, path
+        assert @app.access_control.allowed?(nil, path), path
+      end
+      ['/billing', '/billing/', '/billing.json', '/billing.json/', '/%62illing.json', '/stock', '/stock.json', '/stock.a.b'].each do |path|
+        get path
+        assert_equal [401, denied], [status, body], path
+        refute @app.access_control.allowed?(nil, path), path
+      end
+    end
+
+    it 'should deny a path with too many forms to check when a protect Regexp exists' do
+      mock_app do
+        register Padrino::Admin::AccessControl
+        enable :sessions
+        access_control.roles_for(:any) { |role| role.protect %r{\A/reports/x\z} }
+        get('/:name') { 'page' }
+      end
+      get "/other#{'.a' * 10}"
+      assert_equal 'page', body
+      get "/other#{'.a' * 70}"
+      assert_equal [401, denied], [status, body]
+    end
+
+    it 'should answer allowed? for a path with a newline from its deny rules only' do
+      mock_app do
+        register Padrino::Admin::AccessControl
+        access_control.roles_for(:any) do |role|
+          role.protect '/admin'
+          role.allow %r{\A/public$}
+          role.allow '/lobby'
+        end
+      end
+      ["/public\n/admin", '/public%0A/admin', '/lobby%0A', '/lobby/a%250A', '/other%0A'].each do |path|
+        refute @app.access_control.allowed?(nil, path), path
+      end
+      assert @app.access_control.allowed?(nil, '/public')
+      mock_app do
+        register Padrino::Admin::AccessControl
+        access_control.roles_for(:any) { |role| role.allow %r{\A/public$} }
+      end
+      assert @app.access_control.allowed?(nil, '/public%0A/admin')
+    end
+
+    it 'should keep the allow rules of a role for a path with a control character' do
+      mock_app do
+        register Padrino::Admin::AccessControl
+        access_control.roles_for(:any) { |role| role.protect '/' }
+        access_control.roles_for(:editor) { |role| role.allow '/posts' }
+        access_control.roles_for(:admin) { |role| role.allow '/accounts' }
+      end
+      editor = Struct.new(:role).new('editor')
+      assert @app.access_control.allowed?(editor, '/posts/a%09b')
+      assert @app.access_control.allowed?(editor, '/posts/a%0Db')
+      refute @app.access_control.allowed?(editor, '/accounts/a%09b')
+    end
+  end
+
   it 'should set basic roles with store location and login page' do
     mock_app do
       set    :app_name, :basic_app

@@ -36,6 +36,10 @@ module Padrino
       # This base access control class where roles are defined as are authorizations.
       #
       class Base
+        # How many forms of a request path deny Regexps are checked against at most; a path with more
+        # is denied (deny_forms).
+        MAX_DENY_FORMS = 64
+
         def initialize
           @roles, @authorizations, @project_modules = [], [], []
         end
@@ -104,8 +108,9 @@ module Padrino
         #
         def allowed?(account = nil, path = nil)
           path = '/' if path.nil? || path.empty?
-          # Compare the decoded path; scrub invalid UTF-8 ('/%ff') so Regexp rules can match it.
-          path = Rack::Utils.unescape_path(path.b).force_encoding(Encoding::UTF_8).scrub
+          # Allow rules see the decoded path the router matches ('%2F' stays inside its segment); deny
+          # rules see every form the router may serve it as (deny_forms).
+          paths = Padrino::Routing.path_forms(path)
           role = account.role.to_sym rescue nil
           authorizations = @authorizations.find_all { |auth| auth.roles.include?(:any) }
           allowed_paths  = authorizations.map(&:allowed).flatten.uniq
@@ -120,12 +125,29 @@ module Padrino
             denied_paths  += authorizations.map(&:allowed).flatten.uniq # remove paths explicitly allowed for other roles
             denied_paths  += authorizations.map(&:denied).flatten.uniq # remove paths explicitly denied to other roles
           end
-          return true  if allowed_paths.any? { |p| path_within?(path, p) }
-          return false if denied_paths.any?  { |p| path.start_with?(p) } # loose on purpose: fails closed
+          # A path with a newline satisfies no allow rule.
+          return denied_paths.empty? if paths.any? { |form| form.include?("\n") }
+          return true  if allowed_paths.any? { |p| path_within?(paths.first, p) }
+          return true  if denied_paths.empty?
+
+          forms = denied_paths.any?(Regexp) ? deny_forms(paths) : paths
+          return false unless forms
+          return false if denied_paths.any? { |p| forms.any? { |form| form.start_with?(p) } } # loose on purpose: fails closed
           true
         end
 
         private
+
+        # The forms of the path (Routing.path_forms), without its trailing slashes, and without a
+        # format after a dot of its last segment, as a route may serve any of those ('/billing.json'
+        # and '/billing/' from '/billing'). Other delimiters start a different page ('/billing-day').
+        # A String rule needs none of them: each is a prefix of a decoded form, which start_with?
+        # already covers. Returns nil for a path with more than MAX_DENY_FORMS forms, so that it is
+        # denied rather than checked in part.
+        def deny_forms(paths)
+          forms = Padrino::Routing.served_forms(paths).first(MAX_DENY_FORMS + 1)
+          forms unless forms.size > MAX_DENY_FORMS
+        end
 
         # An allowed path covers itself, its sub-paths and its formats ('/posts' allows '/posts',
         # '/posts/1' and '/posts.json'), but not unrelated paths that merely start with it ('/posts_admin').
