@@ -126,7 +126,7 @@ describe 'ControllerGenerator' do
       components = "#{@apptmp}/sample_project/.components"
       File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:controller, 'DemoItems', "-r=#{@apptmp}/sample_project") }.status }
-      assert_match(/The bacon test component is no longer available in Padrino \(available: cucumber, minitest, rspec, testunit\)\. Use minitest or rspec instead\./, out)
+      assert_equal 'The bacon test component was removed from Padrino; use minitest or rspec instead.', out.strip
       assert_no_file_exists(@controller_path)
       assert_no_dir_exists("#{@apptmp}/sample_project/app/views/demo_items")
       assert_no_file_exists(@helper_path)

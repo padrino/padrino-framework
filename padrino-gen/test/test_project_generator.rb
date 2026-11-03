@@ -670,6 +670,13 @@ describe 'ProjectGenerator' do
       end
     end
 
+    it 'should name the replacement for a removed test component typed at the prompt and ask again' do
+      Thor::LineEditor.stubs(:readline).returns('bacon').then.returns('minitest')
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=foo') }
+      assert_match(/The bacon test component was removed from Padrino; use minitest or rspec instead\./, out)
+      assert_equal 'minitest', YAML.load_file("#{@apptmp}/sample_project/.components")[:test]
+    end
+
     it 'should re-ask after an invalid adapter and name the answer given' do
       Thor::LineEditor.stubs(:readline).returns('nope').then.returns('sqlite')
       out, = capture_io { Timeout.timeout(30) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=bogus') } }

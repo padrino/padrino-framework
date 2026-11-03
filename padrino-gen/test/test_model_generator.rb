@@ -343,7 +343,7 @@ describe 'ModelGenerator' do
       components = "#{@apptmp}/sample_project/.components"
       File.write(components, File.read(components).sub(':test: minitest', ':test: shoulda'))
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }.status }
-      assert_match(/The shoulda test component is no longer available in Padrino \(available: cucumber, minitest, rspec, testunit\)\. Use minitest or testunit instead\./, out)
+      assert_match(/^The shoulda test component was removed from Padrino; use minitest or testunit instead\.$/, out)
       assert_no_file_exists("#{@apptmp}/sample_project/models/some_user.rb")
       assert_empty Dir["#{@apptmp}/sample_project/db/migrate/*"]
     end
