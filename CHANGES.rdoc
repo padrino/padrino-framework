@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2506 `tag`, `content_tag` and the helpers built on them (`link_to`, form fields, ...) render faster; their output is unchanged (@nesquena)
 - FIX #2505 Helpers that take a block (`content_tag`, `form_tag`, `link_to`, ...) are faster: they check whether the block comes from a template without evaluating code, and `block_is_template?` now returns true or false for a block in a template instead of a string or nil (@nesquena)
 - FIX #2503 `number_to_currency`, `number_to_percentage`, `number_to_human_size` and `number_with_precision` are faster, and so is `number_with_delimiter` when given both `separator:` and `delimiter:`; their output is unchanged (@nesquena)
 - FIX #2501 With `reload_templates` off, mailer templates rendered by name are compiled once and reused across deliveries instead of for every message (@nesquena)

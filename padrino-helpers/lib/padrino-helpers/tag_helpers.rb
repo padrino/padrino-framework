@@ -41,6 +41,9 @@ module Padrino
         novalidate
       ].freeze
 
+      BOOLEAN_ATTRIBUTE_LOOKUP = BOOLEAN_ATTRIBUTES.to_h { |attribute| [attribute, true] }.freeze
+      private_constant :BOOLEAN_ATTRIBUTE_LOOKUP
+
       ##
       # Custom data attributes,
       # feel free to update with yours:
@@ -278,19 +281,21 @@ module Padrino
       def tag_attributes(options)
         return '' unless options
 
-        options.inject(+'') do |all, (key, value)|
-          next all unless value
+        all = +''
+        options.each do |key, value|
+          next unless value
 
           all << ' ' if all.empty?
           all <<
             if value.is_a?(Hash)
               nested_values(key, value)
-            elsif BOOLEAN_ATTRIBUTES.include?(key)
+            elsif BOOLEAN_ATTRIBUTE_LOOKUP.key?(key)
               %(#{key}="#{key}" )
             else
               %(#{key}="#{escape_value(value)}" )
             end
-        end.chomp!(' ')
+        end
+        all.chomp!(' ')
       end
 
       ##
@@ -298,7 +303,8 @@ module Padrino
       #
       def escape_value(string)
         string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
-        string.to_s.gsub(ESCAPE_REGEXP, ESCAPE_VALUES)
+        string = string.to_s
+        string.match?(ESCAPE_REGEXP) ? string.gsub(ESCAPE_REGEXP, ESCAPE_VALUES) : string
       end
 
       ##
@@ -321,6 +327,8 @@ module Padrino
       #
       def parse_data_options(tag, options)
         return unless options
+        return options unless DATA_ATTRIBUTES.any? { |key| options.key?(key) }
+
         parsed_options = options.dup
         options.each_key do |key|
           next if !DATA_ATTRIBUTES.include?(key) || (tag.to_s == 'form' && key == :method)
