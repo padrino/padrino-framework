@@ -66,6 +66,21 @@ describe 'TagHelpers' do
       2.times { assert_equal '<a class="btn" data-method="delete" rel="nofollow" />', tag(:a, options) }
       assert_equal({ class: 'btn', method: :delete }, options)
     end
+
+    it 'should escape the values that need it and leave the others as they are' do
+      assert_equal '<input name="user[name]" value="Tom &amp; &lt;Jerry&gt; &quot;TJ&quot;" class="input" />',
+                   tag(:input, name: 'user[name]', value: 'Tom & <Jerry> "TJ"', class: 'input')
+    end
+
+    it 'should write Array, Symbol and Integer values' do
+      assert_equal '<td class="a &amp; b c" id="cell" colspan="2" />', tag(:td, class: ['a & b', :c], id: :cell, colspan: 2)
+    end
+
+    it 'should write data attributes only for the options that ask for them' do
+      assert_equal '<a href="/x" class="link" />', tag(:a, href: '/x', class: 'link')
+      assert_equal '<a href="/x" data-method="post" rel="nofollow" data-remote="true" data-confirm="Sure &amp; certain?" />',
+                   tag(:a, href: '/x', method: :post, remote: true, confirm: 'Sure & certain?')
+    end
   end
 
   describe 'for #content_tag method' do
