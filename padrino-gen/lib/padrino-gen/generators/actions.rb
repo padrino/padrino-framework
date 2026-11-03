@@ -181,7 +181,8 @@ module Padrino
 
       ##
       # Prompts the user if necessary until a valid choice is returned for the component.
-      # A removed component stops the generator with a Thor::Error naming what to use instead.
+      # A removed component passed as an option stops the generator with a Thor::Error naming what to use
+      # instead; one typed at the prompt gets that message and the prompt again.
       #
       # @param [Symbol] component
       #   The type of component module.
@@ -198,7 +199,7 @@ module Padrino
         raise Thor::Error, removed if removed
 
         until valid_choice?(component, choice)
-          say("Option for --#{component} '#{choice}' is not available.", :red)
+          say(removed_component_message(component, choice) || "Option for --#{component} '#{choice}' is not available.", :red)
           choice = ask_valid_option(component, choices, "Please enter a valid option for #{component}:")
         end
         choice

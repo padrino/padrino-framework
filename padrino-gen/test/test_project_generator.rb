@@ -663,6 +663,13 @@ describe 'ProjectGenerator' do
       end
     end
 
+    it 'should name the replacement for a removed component typed at the prompt and ask again' do
+      Thor::LineEditor.stubs(:readline).returns('dojo').then.returns('jquery')
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=foo') }
+      assert_match(/The dojo script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./, out)
+      assert_equal 'jquery', YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+    end
+
     %w[sequel activerecord].each do |orm|
       it "should stop with the valid #{orm} adapters at the end of input" do
         err = generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus')

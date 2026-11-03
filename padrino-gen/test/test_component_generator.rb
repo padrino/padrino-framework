@@ -937,7 +937,7 @@ describe 'ComponentGenerator' do
     end
   end
 
-  describe 'a project whose script component was removed' do
+  describe 'a project generated with a script component that was later removed' do
     def components_file
       "#{@apptmp}/sample_project/.components"
     end
@@ -948,7 +948,7 @@ describe 'ComponentGenerator' do
       File.write(components_file, File.read(components_file).sub(':script: jquery', ':script: prototype'))
     end
 
-    it 'should stop naming the replacements without asking or changing the project' do
+    it 'should stop on --script=<removed> naming the replacements without asking or changing the project' do
       components = File.read(components_file)
       Thor::LineEditor.stubs(:readline).raises(RuntimeError, 'prompted for a script')
       stop = nil
