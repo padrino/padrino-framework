@@ -62,13 +62,14 @@ describe 'AccountModelGenerator' do
       _, status = Process.wait2(pid, Process::WNOHANG)
       sleep 0.1 unless status
     end
-    unless status
+    [status, File.read(output.path)]
+  ensure
+    if pid && status.nil?
       Process.kill('KILL', pid)
       Process.wait(pid)
     end
-    [status, File.read(output.path)]
-  ensure
-    writer&.close
+    reader.close if reader && !reader.closed?
+    writer.close if writer && !writer.closed?
     output&.close!
   end
 
@@ -216,15 +217,22 @@ describe 'AccountModelGenerator' do
       assert_equal expected, accounts, [seed_env, stdin].inspect
     end
 
-    # Only the lines for values the environment doesn't set are read, so a stdin that stays
-    # open without sending them doesn't hold the seeds up: with both set, nothing is read, and
-    # with only the password set, only the first line (once for each of the two runs).
-    { [env, ''] => created, [{ 'ADMIN_PASSWORD' => 'envpassword' }, "env@example.com\nENV@example.com\n"] => created }.each do |(seed_env, stdin), expected|
-      status, out = run_with_open_stdin(seed_script(setup, rerun_env: {}), { 'ADMIN_EMAIL' => nil }.merge(seed_env), stdin)
-      refute_nil status, "the seeds waited for input with #{seed_env.inspect}"
+    # Only the lines whose values are used are read, and none past them, so a stdin that stays
+    # open without sending more doesn't hold the seeds up. Each case seeds, then seeds again with
+    # its changes to the environment, which finds the account and needs no password.
+    [
+      [env, '', {}],
+      [{ 'ADMIN_PASSWORD' => 'envpassword' }, "env@example.com\nENV@example.com\n", {}],
+      [{ 'ADMIN_EMAIL' => 'env@example.com' }, "ignored@example.com\nenvpassword\n", {}],
+      [env, '', { 'ADMIN_PASSWORD' => '' }],
+      [env, "env@example.com\n", { 'ADMIN_EMAIL' => '', 'ADMIN_PASSWORD' => '' }]
+    ].each do |seed_env, stdin, rerun_env|
+      seed_env = { 'ADMIN_EMAIL' => nil, 'ADMIN_PASSWORD' => nil }.merge(seed_env)
+      status, out = run_with_open_stdin(seed_script(setup, rerun_env: rerun_env), seed_env, stdin)
+      refute_nil status, "the seeds waited for input with #{[seed_env, stdin, rerun_env].inspect}"
       assert status.success?, out
       assert_match(/successfully created.*already exists; nothing to do/m, out)
-      assert_equal expected, out[/^ACCOUNTS (.*)$/, 1]
+      assert_equal created, out[/^ACCOUNTS (.*)$/, 1]
     end
 
     # Seeding again with the same email, in any case, keeps the account and its password.

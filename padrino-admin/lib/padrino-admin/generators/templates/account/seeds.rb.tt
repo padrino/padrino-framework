@@ -8,16 +8,18 @@
 # The admin account's email and password come from ADMIN_EMAIL and ADMIN_PASSWORD when they are set
 # and not blank. Otherwise they are asked for in a terminal, or read from piped input (CI, Docker):
 # the email on the first line and the password on the second, where a variable that is set takes
-# the place of its line. Only the lines needed are read.
+# the place of its line. A line is read only when its value is used, and the password only when
+# the account is created.
 email    = ENV['ADMIN_EMAIL'].to_s.strip
 password = ENV['ADMIN_PASSWORD'].to_s.strip
-if $stdin.tty?
-  email = shell.ask("Which email do you want use for logging into admin?").to_s.strip if email.empty?
-elsif email.empty? || password.empty?
-  piped_email    = $stdin.gets.to_s.strip
-  piped_password = password.empty? ? $stdin.gets.to_s.strip : ''
-  email    = piped_email    if email.empty?
-  password = piped_password if password.empty?
+# Piped input, read up to the line asked for and no further.
+piped_lines = []
+piped_line = lambda do |number|
+  piped_lines << $stdin.gets.to_s.strip while piped_lines.size < number
+  piped_lines[number - 1]
+end
+if email.empty?
+  email = $stdin.tty? ? shell.ask("Which email do you want use for logging into admin?").to_s.strip : piped_line.call(1)
 end
 
 # Seeding again leaves an account with this email, in any case, as it is.
@@ -32,7 +34,9 @@ if existing
   shell.say ""
   shell.say "<%= @model_name %> #{email} already exists; nothing to do."
 else
-  password = shell.ask("Tell me the password to use:", echo: false).to_s.strip if password.empty? && $stdin.tty?
+  if password.empty?
+    password = $stdin.tty? ? shell.ask("Tell me the password to use:", echo: false).to_s.strip : piped_line.call(2)
+  end
   shell.say ""
 
   account = <%= @model_name %>.new(email: email, name: "Foo", surname: "Bar", password: password, password_confirmation: password, role: "admin")
