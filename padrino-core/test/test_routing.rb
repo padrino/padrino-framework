@@ -3084,14 +3084,42 @@ describe 'Routing' do
     it 'picks the routes to try by the decoded path' do
       mock_app do
         get('/abc/first') { 'first' }
+        get('/ABC/x') { 'upper' }
         get('/a/') { 'slash' }
       end
       get '/%61bc/first'
       assert_equal 200, status
       assert_equal 'first', body
+      get '/ABC/x'
+      assert_equal 200, status
+      assert_equal 'upper', body
       get '/a/'
       assert_equal 200, status
       assert_equal 'slash', body
+    end
+
+    it 'lets a StopIteration raised in a route reach the error handlers' do
+      mock_app do
+        set :raise_errors, false
+        set :show_exceptions, false
+        get('/boom') { [].each.next }
+        error(StopIteration) { 'handled' }
+      end
+      get '/boom'
+      assert_equal 500, status
+      assert_equal 'handled', body
+    end
+
+    it 'serves a route when an earlier route for another verb matches the path' do
+      mock_app do
+        set :raise_errors, false
+        set :show_exceptions, false
+        post('(/:lang)?') { 'post' }
+        get('/') { 'root' }
+      end
+      get '/'
+      assert_equal 200, status
+      assert_equal 'root', body
     end
 
     it 'tries routes in the order they were defined, whatever their pattern starts with' do

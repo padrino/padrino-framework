@@ -127,7 +127,7 @@ module Padrino
       # The first PREFIX_SIZE characters every path the route matches starts with, or nil.
       def literal_prefix(route)
         path = route.original_path
-        return unless path.is_a?(String) && route.matcher.mustermann? && !path.include?('|')
+        return unless path.is_a?(String) && !path.include?('|')
 
         literal = path[LITERAL_START]
         literal = literal[0..-2] if path[literal.length] == '?'
