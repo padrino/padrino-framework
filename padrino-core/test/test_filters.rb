@@ -645,7 +645,7 @@ describe 'Filters' do
       ['controller provides:', proc { controller(:list, provides: %i[html json]) { get(:index) { 'list' } } }],
       ['provides', proc { provides :json; get('/list') { 'list' } }]
     ].each do |label, routes|
-      it "should not run a filter for a format the route does not provide (#{label})" do
+      it "should run a filter for the path with a slash only for a format the route provides (#{label})" do
         mock_app do
           before('/list/') { @public = true }
           before { halt 401, 'login' unless @public }
@@ -661,6 +661,29 @@ describe 'Filters' do
           assert_equal [401, 'login'], [status, body], path
         end
       end
+    end
+
+    it 'should run a filter for the path without the format of a route that requires one' do
+      mock_app do
+        before('/list') { halt 401, 'stopped' }
+        get('/list.:format') { 'member' }
+      end
+      get '/list.xml'
+      assert_equal [401, 'stopped'], [status, body]
+    end
+
+    it 'should not run a filter for a path the route does not serve (/data_:format)' do
+      seen = []
+      mock_app do
+        before('/data') { halt 401, 'stopped' }
+        before(path: '/data') { halt 401, 'stopped' }
+        before(path_info: '/data') { halt 401, 'stopped' }
+        after('/data') { seen << :after }
+        get('/data_:format') { 'shown' }
+      end
+      get '/data_json'
+      assert_equal 'shown', body
+      assert_empty seen
     end
 
     it 'should run a filter for a format the route provides' do
@@ -694,7 +717,7 @@ describe 'Filters' do
       end
     end
 
-    it 'should not run a filter for an encoded format the route does not provide' do
+    it 'should not run a filter for the path with a slash for an encoded format the route does not provide' do
       mock_app do
         before('/list/') { @public = true }
         before { halt 401, 'login' unless @public }
@@ -746,7 +769,7 @@ describe 'Filters' do
       end
       %w[/data/ /data// /data/.json /data.json/ /report// /report/.json].each do |path|
         get path
-        refute_equal 'shown', body, path
+        assert_equal [401, 'stopped'], [status, body], path
       end
     end
 
@@ -893,8 +916,7 @@ describe 'Filters' do
               before(name => guard) { halt 401, 'stopped' }
               get(pattern, options) { 'open' }
             end
-            get path
-            assert_equal 401, status, name
+            assert_equal 401, Rack::MockRequest.new(app).get(path).status, name
           end
         end
       end
@@ -1273,10 +1295,12 @@ describe 'Filters' do
       mock_app do
         before('/v') { halt 403, 'stopped' }
         before('/m/x') { halt 403, 'stopped' }
+        before('/d') { halt 403, 'stopped' }
         get('/v(.:v)?') { 'v' }
         get('/m(.:format)?/x') { 'm' }
+        get('/d(.:v)?.:format') { 'd' }
       end
-      { '/v.1' => 'v', '/m.json/x' => 'm' }.each do |path, served|
+      { '/v.1' => 'v', '/m.json/x' => 'm', '/d.v1.json' => 'd' }.each do |path, served|
         get path
         assert_equal served, body, path
       end
@@ -1342,8 +1366,23 @@ describe 'Filters' do
             get(pattern) { 'shown' }
           end
           paths.each do |path|
-            get path
-            assert_equal [401, 'stopped'], [status, body], "#{filter.inspect} #{path}"
+            response = Rack::MockRequest.new(app).get(path)
+            assert_equal [401, 'stopped'], [response.status, response.body], "#{filter.inspect} #{path}"
+          end
+        end
+      end
+
+      it "should run an after filter for #{filters.map(&:inspect).join(' and ')} on #{paths.join(' and ')} from #{pattern}" do
+        filters.each do |filter|
+          seen = []
+          mock_app do
+            after(filter) { seen << :after }
+            get(pattern) { 'shown' }
+          end
+          paths.each do |path|
+            seen.clear
+            assert_equal 'shown', Rack::MockRequest.new(app).get(path).body, "#{filter.inspect} #{path}"
+            assert_equal [:after], seen, "#{filter.inspect} #{path}"
           end
         end
       end
