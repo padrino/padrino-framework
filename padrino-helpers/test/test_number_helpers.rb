@@ -93,7 +93,7 @@ describe 'NumberHelpers' do
     end
 
     it 'should not look up the locale when every format option is given' do
-      I18n.expects(:translate).never
+      I18n.backend.expects(:translate).never
       assert_equal '1.234.567,89',  number_with_precision(1_234_567.891, precision: 2, separator: ',', delimiter: '.')
       assert_equal '1.234.567,891', number_with_delimiter(1_234_567.891, separator: ',', delimiter: '.')
     end
@@ -104,6 +104,7 @@ describe 'NumberHelpers' do
       assert_equal '1 234 567,89',  number_with_precision(1_234_567.891, separator: ',', delimiter: ' ', locale: :de)
       assert_equal '1.234.567,891', number_with_delimiter(1_234_567.891, delimiter: '.', locale: :de)
       assert_equal '1 234 567,891', number_with_delimiter(1_234_567.891, delimiter: ' ', locale: :de)
+      assert_equal '1.234.567;891', number_with_delimiter(1_234_567.891, separator: ';', locale: :de)
     end
 
     it 'should display number_to_human_size' do
