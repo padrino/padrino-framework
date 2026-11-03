@@ -77,7 +77,7 @@ module Padrino
       end
 
       ##
-      # Returns all the classes in the object space.
+      # Returns the classes in the object space (without singleton classes when it walks the class tree).
       #
       def object_classes(&block)
         klasses = all_classes
