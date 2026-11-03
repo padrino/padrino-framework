@@ -3051,12 +3051,33 @@ describe 'Routing' do
       assert_equal '/new', @app.url(:page)
     end
 
+    it 'finds no route deleted from the routes' do
+      mock_app do
+        get(:gone, map: '/gone') { 'gone' }
+      end
+      assert_equal '/gone', @app.url(:gone)
+      @app.router.routes.reject! { |route| route.name == :gone }
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:gone) }
+    end
+
     it 'finds a route added to the router with a name' do
       router = Padrino::PathRouter.new
       router.add(:get, '/one', name: :one)
       assert_equal '/one', router.path(:one)
       router.add(:get, '/two', name: :two)
       assert_equal '/two', router.path(:two)
+      router.routes.pop
+      router.add(:get, '/three', name: :three)
+      assert_equal '/three', router.path(:three)
+    end
+
+    it 'finds the routes added to the router after reset!' do
+      router = Padrino::PathRouter.new
+      router.add(:get, '/old', name: :page)
+      assert_equal '/old', router.path(:page)
+      router.reset!
+      router.routes << Padrino::PathRouter::Route.new('/new', :get, name: :page)
+      assert_equal '/new', router.path(:page)
     end
 
     it 'picks the first route of a name in the order requests try them' do
@@ -3097,6 +3118,22 @@ describe 'Routing' do
         assert_equal '/opt?b=2', @app.url(:opt, a: nil, b: 2)
         assert_equal '/opt/1/2', @app.routes.find { |route| route.name == :opt }.path(a: 1, b: 2)
         assert_equal '/opt?b=2', @app.routes.find { |route| route.name == :opt }.path(a: nil, b: 2)
+      end
+    end
+
+    it 'expands values other than Strings, Symbols and Integers as before' do
+      list = Class.new(Array)
+      value = Class.new { def to_s; 'v1'; end }.new
+      mock_app do
+        get(:files, map: '/files/*') { 'files' }
+        get(:opt, map: '/opt(/:a(/:b))?') { 'opt' }
+      end
+      2.times do
+        assert_equal '/files/x', @app.url(:files, splat: 'x')
+        assert_equal '/files/x', @app.url(:files, splat: list['x'])
+        assert_equal '/opt/1/2', @app.url(:opt, a: 1, b: 2)
+        assert_equal '/opt/v1/2', @app.url(:opt, a: value, b: 2)
+        assert_equal '/opt/false/2', @app.url(:opt, a: false, b: 2)
       end
     end
   end

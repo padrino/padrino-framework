@@ -127,11 +127,12 @@ module Padrino
       # Mustermann's expand(:append, params). When the params fill one of the
       # pattern's forms exactly, :append has nothing to append, and expand(:raise)
       # gives the same path faster. Whether they do depends only on the keys,
-      # so it is found out once per list of keys, for params with no nil or
-      # Array value (those change which keys Mustermann expands).
+      # so it is found out once per list of keys, for params whose values are
+      # all Strings or Symbols (Integers arrive as Strings). Any other value
+      # (nil, an Array, an object) goes through :append and leaves the memo alone.
       #
       def expand_path(params)
-        return handler.expand(:append, params) if params.any? { |_, value| value.nil? || value.instance_of?(Array) }
+        return handler.expand(:append, params) unless params.all? { |_, value| value.instance_of?(String) || value.instance_of?(Symbol) }
 
         keys = params.keys
         exact = (@exact_keys ||= {}.freeze)[keys]

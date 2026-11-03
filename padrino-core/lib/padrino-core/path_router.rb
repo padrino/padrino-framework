@@ -127,10 +127,19 @@ module Padrino
       private
 
       ##
-      # The routes by name, in the order of +routes+.
+      # The routes by name, in the order of +routes+, rebuilt when +routes+ changes size so
+      # that a route added to or deleted from +routes+ directly is seen.
+      # ceiling: a direct edit that keeps the size (one route swapped for another) isn't seen;
+      # rebuild on every call if that has to work.
       #
       def named_routes
-        @named_routes ||= @routes.group_by(&:name)
+        size = @routes.size
+        memo = @named_routes
+        return memo[1] if memo && memo[0] == size
+
+        by_name = @routes.group_by(&:name).freeze
+        @named_routes = [size, by_name].freeze
+        by_name
       end
 
       ##
