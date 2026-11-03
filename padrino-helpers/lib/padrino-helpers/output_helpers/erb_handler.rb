@@ -9,7 +9,7 @@ module Padrino
         # Outputs the given text to the templates buffer directly.
         #
         def concat_to_template(text = '', context = nil)
-          return text if context&.eval('@__in_ruby_literal')
+          return text if context&.receiver&.instance_variable_get(:@__in_ruby_literal)
           output_buffer << text
           nil
         end
@@ -18,7 +18,7 @@ module Padrino
         # Returns true if the block is Erb.
         #
         def engine_matches?(block)
-          block.binding.eval('defined? __in_erb_template')
+          block.binding.local_variable_defined?(:__in_erb_template)
         end
       end
       OutputHelpers.register(:erb, ErbHandler)
