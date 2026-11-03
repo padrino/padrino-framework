@@ -259,6 +259,47 @@ describe 'Email' do
       assert_equal 'B[beta hello]', @app.deliver(:beta, :boxed).body.to_s.strip
     end
 
+    it 'should compile a mailer template once for all its deliveries' do
+      mailer_app(mailer_views('site'))
+      @app.set :reload_templates, false
+      compiled = 0
+      engine = Tilt[:erb]
+      new_template = engine.method(:new)
+      engine.stub(:new, lambda { |*args, &block|
+        compiled += 1
+        new_template.call(*args, &block)
+      }) do
+        2.times { assert_equal 'alpha hello', @app.deliver(:alpha, :hello).body.to_s }
+      end
+      assert_equal 1, compiled
+    end
+
+    it 'should read an edited mailer template when templates reload' do
+      views = mailer_views('site')
+      mailer_app(views)
+      @app.set :reload_templates, false
+      assert_equal 'alpha hello', @app.deliver(:alpha, :hello).body.to_s
+      File.write(File.join(views, 'mailers', 'alpha', 'hello.erb'), 'alpha edited')
+      @app.set :reload_templates, true
+      assert_equal 'alpha edited', @app.deliver(:alpha, :hello).body.to_s
+    end
+
+    it 'should keep the shared templates when a message of another app reloads them' do
+      views = mailer_views('site')
+      cached = mailer_app(views)
+      cached.set :reload_templates, false
+      reloading = mailer_app(views)
+      reloading.set :reload_templates, true
+      assert_equal 'alpha hello', cached.deliver(:alpha, :hello).body.to_s
+      File.write(File.join(views, 'mailers', 'alpha', 'hello.erb'), 'alpha edited')
+      @app = cached
+      waiting = build_message(:alpha)
+      @app = reloading
+      assert_equal 'alpha edited', build_message(:alpha).send(:render, :hello)
+      assert_equal 'alpha hello', waiting.send(:render, :hello)
+      assert_equal 'alpha hello', cached.deliver(:alpha, :hello).body.to_s
+    end
+
     MailerFormUser = Struct.new(:name) unless defined?(MailerFormUser)
 
     it 'should build forms with form_for in a mailer template' do
