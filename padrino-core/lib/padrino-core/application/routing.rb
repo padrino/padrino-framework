@@ -17,6 +17,8 @@ module Padrino
     CONTENT_TYPE_ALIASES = { htm: :html } unless defined?(CONTENT_TYPE_ALIASES)
     # Defines the available route priorities supporting route deferrals.
     ROUTE_PRIORITY = { high: 0, normal: 1, low: 2 } unless defined?(ROUTE_PRIORITY)
+    # What without_extra_slashes gives for a path that doesn't end in a slash.
+    NO_EXTRA_SLASHES = [].freeze unless defined?(NO_EXTRA_SLASHES)
 
     # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
@@ -97,6 +99,8 @@ module Padrino
       #
       # @api private
       def path_forms(path, route_path = decode_route_path(path))
+        return [route_path.scrub] unless path.include?('%')
+
         [route_path, decode_path(path), decode_path(route_path)].map(&:scrub).uniq
       end
 
@@ -132,9 +136,11 @@ module Padrino
       #
       # @api private
       def without_extra_slashes(path)
+        return NO_EXTRA_SLASHES unless path.end_with?('/')
+
         index = path.rindex(%r{[^/]})
         stripped = index ? path[0..index] : ''
-        stripped == path ? [] : [stripped, "#{stripped}/"]
+        [stripped, "#{stripped}/"]
       end
 
       ##

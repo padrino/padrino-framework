@@ -55,30 +55,41 @@ module Padrino
     end
 
     # +paths+ holds every decoded form of the path (all_paths), and for the path and path_info
-    # options the path as given too. A filter runs if one of them, or one of the forms path_match?
+    # options the path as given too. A filter runs if one of them, or one of the forms route_forms
     # gives for it, matches. An :except filter is skipped only if every one of them matches
     # exactly, and none has a newline. +info+ is the path_entry of path_info, when the caller has it.
     def match_path?(argument, request, settings, paths, info = nil)
       return paths.all? { |path| !path.include?("\n") && argument === path } unless @mode
-      return true if paths.any? { |path| argument === path }
 
-      suffixes, cuts = route_cuts(request, settings, info || path_entry(request))
-      paths.any? { |path| path_match?(argument, path, suffixes, cuts) }
+      filter_paths(request, settings, paths, info || path_entry(request)).any? { |form| argument === form }
+    end
+
+    # +paths+ and the forms route_forms gives for each, once per request for each route run and
+    # each list of paths (with no route, kept on +entry+).
+    def filter_paths(request, settings, paths, entry)
+      suffixes, cuts, cache = route_cuts(request, settings, entry)
+      cache ||= (entry[:filter_paths] ||= {})
+      cache[paths] ||= paths.flat_map { |path| route_forms(path, suffixes, cuts) }.uniq.freeze
     end
 
     # The router also serves '/posts/' from a '/posts' route (PathRouter::Compiler#match?), and
     # '/posts.json' from a route that captures a format: +path+ also counts without each format
     # suffix of the route, each of those without its trailing slashes and with one, and with each
     # cut applied (a suffix of the path and what replaces it) when it ends with that suffix.
-    def path_match?(argument, path, suffixes, cuts)
-      forms = [path, *suffixes.map { |suffix| path.delete_suffix(suffix) }]
-      forms += forms.flat_map { |form| Routing.without_extra_slashes(form) }
-      forms += cuts.filter_map { |suffix, rest| "#{path.delete_suffix(suffix)}#{rest}" if path.end_with?(suffix) }
-      forms.any? { |form| argument === form }
+    def route_forms(path, suffixes, cuts)
+      forms = [path]
+      suffixes.each { |suffix| forms << path.delete_suffix(suffix) }
+      forms.concat(forms.flat_map { |form| Routing.without_extra_slashes(form) })
+      cuts.each { |suffix, rest| forms << "#{path.delete_suffix(suffix)}#{rest}" if path.end_with?(suffix) }
+      forms
     end
 
-    # The format suffixes (format_suffixes) and cuts (format_cuts) of the route being run, once per
-    # route, path and Routing.treat_format_as_accept? setting for the request. None without a route.
+    # The format suffixes (format_suffixes) and cuts (format_cuts) of the route being run, and a
+    # cache for filter_paths, once per route, path and Routing.treat_format_as_accept? setting for
+    # the request. No suffixes or cuts, and no cache, without a route. Positive filters use both, as
+    # each gives forms the other doesn't: a suffix drops the format from every decoded form for any
+    # route that captures one, and a cut, for a route whose only capture is its format, also drops
+    # the delimiter before it ('/data' for '/data-json' from '/data(-:format)?').
     def route_cuts(request, settings, entry)
       route = request.route_obj
       return NO_ROUTE_CUTS unless route
@@ -86,7 +97,7 @@ module Padrino
       accept = Routing.treat_format_as_accept?(settings)
       store = ((request.env[ROUTE_CUTS_KEY] ||= {})[accept] ||= {}.compare_by_identity)
       memo(store, route, entry[:path]) do
-        [format_suffixes(route, all_paths(entry)), format_cuts(route, route_path(entry), accept)]
+        [format_suffixes(route, all_paths(entry)), format_cuts(route, route_path(entry), accept), {}]
       end
     end
 
@@ -105,7 +116,7 @@ module Padrino
       return suffix_after(form, form) unless offset
 
       before = form[0...offset]
-      return if before.end_with?('/') || !form[match.end('format')..].delete('/').empty?
+      return if before.end_with?('/') || form.index(%r{[^/]}, match.end('format'))
 
       suffix_after(form, before)
     end
