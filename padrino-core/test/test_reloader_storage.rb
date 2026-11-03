@@ -35,8 +35,8 @@ describe 'Padrino::Reloader::Storage' do
     end
 
     it 'should walk to every class the heap holds' do
-      skip 'this Ruby scans the heap' unless Padrino::Reloader::Storage.const_get(:SUBCLASSES)
       gc_was_disabled = true
+      skip 'this Ruby scans the heap' unless Padrino::Reloader::Storage.const_get(:SUBCLASSES)
       gc_was_disabled = GC.disable
       heap = Set.new(ObjectSpace.each_object(Class).reject(&:singleton_class?))
       # The walk may also reach internal classes the heap scan hides (RubyVM::FrozenCore on Ruby 4.0).
