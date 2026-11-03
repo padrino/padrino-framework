@@ -23,8 +23,8 @@ module Padrino
         reset_concerns(name)
         @old_entries ||= {}
         @old_entries[name] = {
-          constants: object_classes,
-          features: old_features = Set.new($LOADED_FEATURES.dup)
+          constants: all_classes,
+          features: old_features = $LOADED_FEATURES.dup
         }
         features = file && file[:features] || []
         features.each { |feature| Reloader.safe_load(feature, force: true) }
@@ -34,7 +34,7 @@ module Padrino
       def commit(name)
         entry = {
           constants: new_classes(@old_entries[name][:constants]),
-          features: Set.new($LOADED_FEATURES) - @old_entries[name][:features] - [name]
+          features: Set.new($LOADED_FEATURES - @old_entries[name][:features] - [name])
         }
         files[name] = entry
         @old_entries.delete(name)
@@ -77,31 +77,64 @@ module Padrino
       end
 
       ##
-      # Returns all the classes in the object space.
+      # Returns the classes in the object space (without singleton classes when it walks the class tree).
       #
-      def object_classes
-        klasses = Set.new
+      def object_classes(&block)
+        klasses = all_classes
+        klasses = klasses.filter_map(&block) if block
+        Set.new(klasses)
+      end
 
-        ObjectSpace.each_object(::Class).each do |klass|
-          if block_given?
-            if (filtered_class = yield(klass))
-              klasses << filtered_class
-            end
-          else
-            klasses << klass
+      ##
+      # Follows a method past the versions that a library prepended or wrote in Ruby, to the
+      # one Class defines natively, or nil when there is none.
+      #
+      def native_class_method(method)
+        method = method.super_method while method && (method.owner != ::Class || method.source_location)
+        method
+      end
+
+      # Ruby's own Class#subclasses (Ruby 3.1+), so a version that ActiveSupport prepends to hide
+      # reloaded classes is bypassed. CRuby only: other engines keep the heap scan until their
+      # subclass lists are known to be complete.
+      SUBCLASSES = if RUBY_ENGINE == 'ruby' && ::Class.method_defined?(:subclasses)
+                     native_class_method(::Class.instance_method(:subclasses))
+                   end
+      private_constant :SUBCLASSES
+
+      ##
+      # Scans the heap for classes, where the class tree walk isn't used.
+      #
+      def heap_classes
+        ObjectSpace.each_object(::Class).to_a
+      end
+
+      if SUBCLASSES
+        ##
+        # Walks the class tree down from BasicObject, which is several times faster than
+        # scanning the heap. It leaves out singleton classes, which have no constant to remove.
+        #
+        def all_classes
+          classes = [::BasicObject]
+          index = 0
+          while (klass = classes[index])
+            classes.concat(SUBCLASSES.bind_call(klass))
+            index += 1
           end
+          classes
         end
-
-        klasses
+      else
+        alias all_classes heap_classes
       end
 
       ##
       # Returns a list of object space classes that are not included in "snapshot".
       #
       def new_classes(snapshot)
-        object_classes do |klass|
-          snapshot.include?(klass) ? nil : klass
-        end
+        classes = all_classes
+        # The snapshot keeps its classes alive, so the same count means no class is new.
+        return Set.new if classes.size == snapshot.size
+        Set.new(classes - snapshot.to_a)
       end
     end
   end
