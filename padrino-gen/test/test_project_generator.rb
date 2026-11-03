@@ -351,6 +351,16 @@ describe 'ProjectGenerator' do
       assert_no_match_in_file(/RR::Adapters/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
+    it 'should warn once that rr is deprecated' do
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=rr', '--test=minitest', '--script=none') }
+      assert_equal 1, out.scan("The rr mock component is deprecated and will be removed in Padrino 1.0. Use mocha (-m mocha) or your test framework's own mocks instead.").size
+    end
+
+    it 'should not warn about rr for other mocks' do
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--mock=mocha', '--test=minitest', '--script=none') }
+      refute_match(/deprecated/, out)
+    end
+
     it 'should use the rspec rr adapter for rr and rspec' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
       assert_match(/applying.*?rr.*?mock/, out)
@@ -365,20 +375,12 @@ describe 'ProjectGenerator' do
       assert_no_match_in_file(/RR::Adapters/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
-    it 'should load test-unit-rr after test/unit for rr and shoulda' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=shoulda', '--mock=rr', '--script=none') }
-      assert_match_in_file(/gem 'test-unit-rr', require: false, group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(%r{^require "test/unit"\nrequire 'test/unit/rr'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_no_match_in_file(/RR::Adapters/, "#{@apptmp}/sample_project/test/test_config.rb")
-    end
-
     it 'should explain how to set up rr for test components without an rr integration' do
-      %w[bacon cucumber none].each do |test|
+      %w[cucumber none].each do |test|
         out, = capture_io { generate(:project, "project_#{test}", "--root=#{@apptmp}", "--test=#{test}", '--mock=rr', '--script=none') }
         assert_match(/RR is in the Gemfile but not set up for the '#{test}' test component/, out)
         assert_match_in_file(/gem 'rr'/, "#{@apptmp}/project_#{test}/Gemfile")
       end
-      assert_no_match_in_file(/RR/, "#{@apptmp}/project_bacon/test/test_config.rb")
       assert_no_match_in_file(/RR/, "#{@apptmp}/project_cucumber/spec/spec_helper.rb")
     end
 
@@ -403,19 +405,13 @@ describe 'ProjectGenerator' do
       assert_no_match_in_file(/Mocha::API/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
 
-    it 'should load the mocha test-unit integration after test/unit for shoulda' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=shoulda', '--mock=mocha', '--script=none') }
-      assert_match_in_file(%r{^require "test/unit"\nrequire 'mocha/test_unit'\n}, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_no_match_in_file(/Mocha::API/, "#{@apptmp}/sample_project/test/test_config.rb")
-    end
-
     it 'should explain how to set up mocha for test components without a mocha integration' do
-      %w[bacon cucumber none].each do |test|
+      %w[cucumber none].each do |test|
         out, = capture_io { generate(:project, "project_#{test}", "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
         assert_match(/Mocha is in the Gemfile but not set up for the '#{test}' test component/, out)
         assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/project_#{test}/Gemfile")
       end
-      assert_no_match_in_file(/mocha|Mocha/, "#{@apptmp}/project_bacon/test/test_config.rb")
+      assert_no_match_in_file(/mocha|Mocha/, "#{@apptmp}/project_cucumber/spec/spec_helper.rb")
     end
   end
 
@@ -521,13 +517,6 @@ describe 'ProjectGenerator' do
         assert_equal 'trilogy', YAML.load_file("#{@apptmp}/sample_project/.components")[:adapter]
       end
 
-      it 'should properly generate mysql-gem' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=mysql-gem') }
-        assert_match_in_file(/gem 'mysql'/, "#{@apptmp}/sample_project/Gemfile")
-        assert_match_in_file(%r{"mysql://}, "#{@apptmp}/sample_project/config/database.rb")
-        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
-      end
-
       it 'should properly generate sqlite3' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', '--adapter=sqlite') }
         assert_match_in_file(/gem 'sqlite3'/, "#{@apptmp}/sample_project/Gemfile")
@@ -592,13 +581,6 @@ describe 'ProjectGenerator' do
         assert_match_in_file(/^ *host:      '127.0.0.1'$/, "#{@apptmp}/sample_project/config/database.rb")
         assert_no_match_in_file(/^ *socket:/, "#{@apptmp}/sample_project/config/database.rb")
         assert_equal 'trilogy', YAML.load_file("#{@apptmp}/sample_project/.components")[:adapter]
-      end
-
-      it 'should properly generate mysql-gem' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--adapter=mysql-gem') }
-        assert_match_in_file(/gem 'mysql', '~> 2.8.1'/, "#{@apptmp}/sample_project/Gemfile")
-        assert_match_in_file(/sample_project_development/, "#{@apptmp}/sample_project/config/database.rb")
-        assert_match_in_file(/adapter:   'mysql'/, "#{@apptmp}/sample_project/config/database.rb")
       end
 
       it 'should properly generate sqlite3' do
@@ -673,7 +655,18 @@ describe 'ProjectGenerator' do
     %w[sequel activerecord].each do |orm|
       it "should stop with the valid #{orm} adapters at the end of input" do
         err = generate_at_end_of_input("--orm=#{orm}", '--adapter=bogus')
-        assert_match(/No input left to choose a valid --adapter; pass one of: mysql, mysql2, mysql-gem, trilogy, postgres, sqlite/, err)
+        assert_match(/No input left to choose a valid --adapter; pass one of: mysql, mysql2, trilogy, postgres, sqlite/, err)
+      end
+    end
+
+    { '--test=bacon' => 'The bacon test component was removed from Padrino; use minitest or rspec instead.',
+      '--test=shoulda' => 'The shoulda test component was removed from Padrino; use minitest or testunit instead.',
+      '--adapter=mysql-gem' => 'The mysql-gem adapter was removed from Padrino; use mysql2 or trilogy instead.' }.each do |option, message|
+      it "should stop without asking or writing anything for the removed #{option}" do
+        Thor::LineEditor.stubs(:readline).raises(RuntimeError, 'prompted for a removed choice')
+        _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel', option) }.status }
+        assert_equal message, err.strip
+        assert_no_dir_exists("#{@apptmp}/sample_project")
       end
     end
 
@@ -854,22 +847,6 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the generator for test component' do
-    it 'should properly generate for bacon' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=bacon', '--script=none') }
-      assert_match(/applying.*?bacon.*?test/, out)
-      assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(%r{require: 'rack/test'}, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'bacon'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/Bacon::Context/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(/^Bacon\.summary_on_exit$/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(%r{mounted_apps\.each .*require_dependencies\(File\.join\(app\.app_root, '\{helpers\.rb,helpers/\*\*/\*\.rb\}'\)\)}, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/Rake::TestTask.new\("test:\#/, "#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/task 'test' => test_tasks/, "#{@apptmp}/sample_project/test/test.rake")
-    end
-
     it 'should properly generate for rspec' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--script=none') }
       assert_match(/applying.*?rspec.*?test/, out)
@@ -883,21 +860,6 @@ describe 'ProjectGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/spec/spec.rake")
       assert_match_in_file(/RSpec::Core::RakeTask\.new\("spec:\#/, "#{@apptmp}/sample_project/spec/spec.rake")
       assert_match_in_file(/task 'spec' => spec_tasks/, "#{@apptmp}/sample_project/spec/spec.rake")
-    end
-
-    it 'should properly generate for shoulda' do
-      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=shoulda', '--script=none') }
-      assert_match(/applying.*?shoulda.*?test/, out)
-      assert_match_in_file(/gem 'rack-test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(%r{require: 'rack/test'}, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/group: 'test'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/gem 'shoulda'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/RACK_ENV = 'test' unless defined\?\(RACK_ENV\)/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(/Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(%r{mounted_apps\.each .*require_dependencies\(File\.join\(app\.app_root, '\{helpers\.rb,helpers/\*\*/\*\.rb\}'\)\)}, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/Rake::TestTask\.new\("test:\#/, "#{@apptmp}/sample_project/test/test.rake")
-      assert_match_in_file(/task 'test' => test_tasks/, "#{@apptmp}/sample_project/test/test.rake")
     end
 
     it 'should properly generate for minitest' do
@@ -995,7 +957,7 @@ describe 'ProjectGenerator' do
   end
 
   describe 'tiny app skeleton generator for test component' do
-    { 'minitest' => /skip "add some examples/, 'testunit' => /pend "add some examples/, 'shoulda' => /pend "add some examples/ }.each do |test, pending|
+    { 'minitest' => /skip "add some examples/, 'testunit' => /pend "add some examples/ }.each do |test, pending|
       it "should mark the tiny skeleton's #{test} placeholders pending, so a new project passes its own tests" do
         capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", "--test=#{test}") }
         %w[controllers/controllers_test.rb helpers/helpers_test.rb].each do |file|
@@ -1004,14 +966,7 @@ describe 'ProjectGenerator' do
       end
     end
 
-    it "should leave the tiny skeleton's bacon placeholders without requirements, which bacon reports as missing" do
-      capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", '--test=bacon') }
-      %w[controllers/controllers_test.rb helpers/helpers_test.rb].each do |file|
-        assert_no_match_in_file(/^\s*[^#\s].*\.should/, "#{@apptmp}/sample_project/test/app/#{file}")
-      end
-    end
-
-    %w[bacon minitest rspec shoulda testunit].each do |test|
+    %w[minitest rspec testunit].each do |test|
       it "should substitute every marker in the tiny skeleton's #{test} tests" do
         capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", "--test=#{test}") }
         dir = test == 'rspec' ? 'spec' : 'test'
@@ -1040,16 +995,6 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/describe "SampleProject::App::Helper" do/, "#{@apptmp}/sample_project/spec/app/helpers/helpers_spec.rb")
     end
 
-    it 'should properly generate for bacon' do
-      capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", '--test=bacon') }
-      assert_dir_exists("#{@apptmp}/sample_project/test/")
-      assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
-      assert_match_in_file(%r{mounted_apps\.each .*require_dependencies\(File\.join\(app\.app_root, '\{helpers\.rb,helpers/\*\*/\*\.rb\}'\)\)}, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
-      assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
-    end
-
     it 'should properly generate for minitest' do
       capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", '--test=minitest') }
       assert_dir_exists("#{@apptmp}/sample_project/test/")
@@ -1058,16 +1003,6 @@ describe 'ProjectGenerator' do
       assert_match_in_file(%r{mounted_apps\.each .*require_dependencies\(File\.join\(app\.app_root, '\{helpers\.rb,helpers/\*\*/\*\.rb\}'\)\)}, "#{@apptmp}/sample_project/test/test_config.rb")
       assert_match_in_file(/describe "Controller" do/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
       assert_match_in_file(/describe "SampleProject::App::Helper"/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
-    end
-
-    it 'should properly generate for shoulda' do
-      capture_io { generate(:project, 'sample_project', '--tiny', "--root=#{@apptmp}", '--test=shoulda') }
-      assert_dir_exists("#{@apptmp}/sample_project/test/")
-      assert_file_exists("#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
-      assert_file_exists("#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
-      assert_match_in_file(%r{mounted_apps\.each .*require_dependencies\(File\.join\(app\.app_root, '\{helpers\.rb,helpers/\*\*/\*\.rb\}'\)\)}, "#{@apptmp}/sample_project/test/test_config.rb")
-      assert_match_in_file(/class ControllerTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/controllers/controllers_test.rb")
-      assert_match_in_file(/class SampleProject::App::HelperTest < Test::Unit::TestCase/, "#{@apptmp}/sample_project/test/app/helpers/helpers_test.rb")
     end
 
     it 'should properly generate for testunit' do

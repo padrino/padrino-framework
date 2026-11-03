@@ -64,7 +64,7 @@ class Minitest::Spec
     Padrino.expects(:bin_gen).with(generator, *params.split(' ')).returns(true)
   end
 
-  # expects_generated_project test: :shoulda, orm: :activerecord, dev: true
+  # expects_generated_project test: :minitest, orm: :activerecord, dev: true
   def expects_generated_project(options = {})
     options = options.dup
     project_root = options.delete(:root)

@@ -7,17 +7,18 @@ def mock_setup_lines(test)
   {
     'rspec' => { path: 'spec/spec_helper.rb', after: "RSpec.configure do |conf|\n", text: rspec },
     'minitest' => { path: 'test/test_config.rb', after: "require_relative '../config/boot'\n", text: "require 'rr'\n" },
-    'testunit' => { path: 'test/test_config.rb', after: "require_relative '../config/boot'\n", text: "require 'test/unit/rr'\n" },
-    'shoulda' => { path: 'test/test_config.rb', after: "require \"test/unit\"\n", text: "require 'test/unit/rr'\n" }
+    'testunit' => { path: 'test/test_config.rb', after: "require_relative '../config/boot'\n", text: "require 'test/unit/rr'\n" }
   }[test.to_s]
 end
 
 def setup_mock
+  say 'The rr mock component is deprecated and will be removed in Padrino 1.0. ' \
+      "Use mocha (-m mocha) or your test framework's own mocks instead.", :yellow
   require_dependencies 'rr', require: false, group: 'test'
 
   test = options[:test].to_s
   test = fetch_component_choice(:test).to_s if test.empty?
-  require_dependencies 'test-unit-rr', require: false, group: 'test' if %w[testunit shoulda].include?(test)
+  require_dependencies 'test-unit-rr', require: false, group: 'test' if test == 'testunit'
   if (setup = mock_setup_lines(test))
     inject_into_file setup[:path], setup[:text], after: setup[:after]
     # After the insert, so a helper Thor fails to read keeps the previous mock.

@@ -196,11 +196,12 @@ module Padrino
         end
 
         def create_helper_files(app, name)
+          # Before writing the helper, so a test component Padrino no longer has stops the generator first.
+          include_component_module_for(:test) if test?
           @helper_name = "#{name.to_s.underscore.camelize}Helper"
           template 'templates/helper.rb.tt', destination_root(app, 'helpers', "#{name.to_s.underscore}_helper.rb")
           return unless test?
 
-          include_component_module_for(:test)
           generate_helper_test(@helper_name, @project_name, @app_name)
         end
       end

@@ -4,8 +4,7 @@ def mock_setup_lines(test)
   {
     'rspec' => { path: 'spec/spec_helper.rb', after: "RSpec.configure do |conf|\n", text: "  conf.mock_with :mocha\n" },
     'minitest' => { path: 'test/test_config.rb', after: "require_relative '../config/boot'\n", text: "require 'mocha/minitest'\n" },
-    'testunit' => { path: 'test/test_config.rb', after: "require_relative '../config/boot'\n", text: "require 'mocha/test_unit'\n" },
-    'shoulda' => { path: 'test/test_config.rb', after: "require \"test/unit\"\n", text: "require 'mocha/test_unit'\n" }
+    'testunit' => { path: 'test/test_config.rb', after: "require_relative '../config/boot'\n", text: "require 'mocha/test_unit'\n" }
   }[test.to_s]
 end
 

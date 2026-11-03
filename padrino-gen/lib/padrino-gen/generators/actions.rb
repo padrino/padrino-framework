@@ -13,8 +13,10 @@ module Padrino
     ##
     # The SQL adapters for --adapter, and the ORM components that set up their database with one.
     #
-    SQL_ADAPTERS = %w[mysql mysql2 mysql-gem trilogy postgres sqlite].freeze
+    SQL_ADAPTERS = %w[mysql mysql2 trilogy postgres sqlite].freeze
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
+    # SQL adapters that were removed from Padrino, with what to use instead.
+    REMOVED_SQL_ADAPTERS = { 'mysql-gem' => 'mysql2 or trilogy' }.freeze
 
     ##
     # Components that were removed from Padrino, by type, with what to use instead.
@@ -26,7 +28,8 @@ module Padrino
         'mootools' => 'ujs (no dependencies), htmx or jquery',
         'prototype' => 'ujs (no dependencies), htmx or jquery'
       },
-      stylesheet: { 'less' => 'sass, scss or tailwind' }
+      stylesheet: { 'less' => 'sass, scss or tailwind' },
+      test: { 'bacon' => 'minitest or rspec', 'shoulda' => 'minitest or testunit' }
     }.freeze
 
     ##
@@ -218,6 +221,7 @@ module Padrino
 
       ##
       # Prompts the user if necessary until options[:adapter] or the answer is a valid SQL adapter, and keeps it.
+      # A removed adapter stops the generator with a Thor::Error naming what to use instead.
       #
       # @return [String] Name of the SQL adapter.
       #
@@ -227,6 +231,9 @@ module Padrino
       def resolve_valid_adapter
         @_adapter ||= begin
           adapter = options[:adapter] || stored_adapter || 'sqlite'
+          replacement = REMOVED_SQL_ADAPTERS[adapter]
+          raise Thor::Error, "The #{adapter} adapter was removed from Padrino; use #{replacement} instead." if replacement
+
           until SQL_ADAPTERS.include?(adapter)
             say("Option for --adapter '#{adapter}' is not available.", :red)
             adapter = ask_valid_option(:adapter, SQL_ADAPTERS, 'Please enter a valid option for adapter:')
@@ -497,7 +504,7 @@ module Padrino
       #
       # @example
       #   require_dependencies('active_record')
-      #   require_dependencies('mocha', 'bacon', group: 'test')
+      #   require_dependencies('mocha', 'minitest', group: 'test')
       #   require_dependencies('json', version: ">=1.2.3")
       #
       def require_dependencies(*gem_names)
@@ -852,7 +859,7 @@ module Padrino
         #   Additional parameters for component choice.
         #
         # @example
-        #   component_option :test, 'Testing framework', aliases: '-t', choices: [:bacon, :shoulda]
+        #   component_option :test, 'Testing framework', aliases: '-t', choices: [:minitest, :rspec]
         #
         def component_option(name, caption, options = {})
           (@component_types   ||= []) << name # TODO: use ordered hash and combine with choices below
@@ -916,7 +923,7 @@ module Padrino
         #
         # @example
         #   available_choices_for :test
-        #   => [:shoulda, :bacon, :minitest]
+        #   => [:cucumber, :minitest, :rspec, :testunit, :none]
         #
         def available_choices_for(component)
           @available_choices[component] + [:none]
