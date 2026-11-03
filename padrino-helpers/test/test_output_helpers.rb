@@ -93,19 +93,19 @@ describe 'OutputHelpers' do
     it 'should work for erb templates' do
       get '/erb/capture_concat'
       assert_response_has_tag 'p', content: 'The erb block passed in is a template', class: 'is_template', count: 1
-      assert_response_has_no_tag 'p', content: 'The ruby block passed in is a template', class: 'is_template', count: 1
+      assert_response_has_no_tag 'p', content: 'The ruby block passed in is a template', class: 'is_template'
     end
 
     it 'should work for haml templates' do
       get '/haml/capture_concat'
       assert_response_has_tag 'p', content: 'The haml block passed in is a template', class: 'is_template', count: 1
-      assert_response_has_no_tag 'p', content: 'The ruby block passed in is a template', class: 'is_template', count: 1
+      assert_response_has_no_tag 'p', content: 'The ruby block passed in is a template', class: 'is_template'
     end
 
     it 'should work for slim templates' do
       get '/slim/capture_concat'
       assert_response_has_tag 'p', content: 'The slim block passed in is a template', class: 'is_template', count: 1
-      assert_response_has_no_tag 'p', content: 'The ruby block passed in is a template', class: 'is_template', count: 1
+      assert_response_has_no_tag 'p', content: 'The ruby block passed in is a template', class: 'is_template'
     end
   end
 
