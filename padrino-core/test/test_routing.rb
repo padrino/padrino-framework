@@ -2442,6 +2442,62 @@ describe 'Routing' do
     assert_equal 1, counter
   end
 
+  describe 'with one options hash for several controllers' do
+    def mock_app_needing_ok(&block)
+      mock_app do
+        set(:needs_ok) { |on| condition { halt 403, 'no ok' unless params[:ok] } if on }
+        instance_eval(&block)
+      end
+    end
+
+    it 'should apply the options to each controller and leave the hash unchanged' do
+      opts = { conditions: { needs_ok: true }, map: '/area' }
+      mock_app_needing_ok do
+        controller(:a, opts) { get(:one) { 'one' } }
+        controllers(:b, opts) { get(:two) { 'two' } }
+      end
+      %w[one two].each do |name|
+        get "/area/#{name}"
+        assert_equal 'no ok', body
+        get "/area/#{name}", ok: 1
+        assert_equal name, body
+      end
+      assert_equal({ conditions: { needs_ok: true }, map: '/area' }, opts)
+    end
+
+    it 'should accept a frozen options hash' do
+      opts = { conditions: { needs_ok: true } }.freeze
+      mock_app_needing_ok do
+        controller(:a, opts) { get(:index) { 'a' } }
+        controller(:b, opts) { get(:index) { 'b' } }
+      end
+      %w[a b].each do |name|
+        get "/#{name}"
+        assert_equal 'no ok', body
+        get "/#{name}", ok: 1
+        assert_equal name, body
+      end
+    end
+
+    it 'should not add a parent declared in a controller to the parents it was given' do
+      parents = [:shop]
+      mock_app do
+        controller(:product, parent: parents) do
+          parent :category
+          get(:show) { 'product' }
+        end
+        controller(:item, parent: parents) { get(:show) { 'item' } }
+      end
+      get '/shop/1/category/2/product/show'
+      assert_equal 'product', body
+      get '/shop/1/item/show'
+      assert_equal 'item', body
+      get '/shop/1/category/2/item/show'
+      assert_equal 404, status
+      assert_equal [:shop], parents
+    end
+  end
+
   describe 'nested controller conditions' do
     def mock_protected_app(&block)
       mock_app do

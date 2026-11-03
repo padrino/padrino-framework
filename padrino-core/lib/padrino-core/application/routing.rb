@@ -342,10 +342,10 @@ module Padrino
       # @see http://padrinorb.com/guides/controllers/route-filters/
       #
       def construct_filter(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+        options = args.last.is_a?(Hash) ? args.pop.dup : {}
         if (except = options.delete(:except))
           raise 'You cannot use :except with other options specified' unless args.empty? && options.empty?
-          except = Array(except)
+          except = Array(except).dup
           options = except.last.is_a?(Hash) ? except.pop : {}
         end
         Filter.new(!except, @_controller, options, Array(except || args), &block)
@@ -379,8 +379,7 @@ module Padrino
         return super() unless name
         defaults = { optional: false, map: name.to_s }
         options = defaults.merge(options)
-        @_parent = Array(@_parent) unless @_parent.is_a?(Array)
-        @_parent << Parent.new(name, options)
+        @_parent = Array(@_parent) + [Parent.new(name, options)]
       end
 
       ##
@@ -545,7 +544,7 @@ module Padrino
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)
         original = {}
-        options = args.last.is_a?(Hash) ? args.pop : {}
+        options = args.last.is_a?(Hash) ? args.pop.dup : {}
         options[:conditions] = @_conditions.merge(options[:conditions] || {}) if @_conditions
 
         CONTROLLER_OPTIONS.each { |key| replace_instance_variable(original, "@_#{key}", options.delete(key)) }
