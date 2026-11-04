@@ -17,9 +17,10 @@ module Padrino
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
 
     ##
-    # The component types that serve views, which an --api project doesn't have.
+    # The component types that render or compile views, which an --api project doesn't have. A script
+    # component only adds files to public/, so an --api project can take one.
     #
-    VIEW_COMPONENTS = %i[renderer script stylesheet].freeze
+    VIEW_COMPONENTS = %i[renderer stylesheet].freeze
 
     ##
     # What to do when a generator refuses a project it takes for an --api one.
@@ -737,7 +738,7 @@ module Padrino
       end
 
       ##
-      # Raises a Thor::Error naming the renderer, script or stylesheet components chosen, other
+      # Raises a Thor::Error naming the renderer or stylesheet components chosen, other
       # than none, for an --api project, which has no views for them.
       #
       # @param [Hash] choices

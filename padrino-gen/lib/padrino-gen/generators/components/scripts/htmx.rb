@@ -14,7 +14,7 @@ def setup_script
   # A file of its own: a project switching from another script keeps the application.js it has.
   create_file(destination_root('/public/javascripts/htmx-csrf.js'), HTMX_CSRF, skip: true)
   create_file(destination_root('/public/javascripts/application.js'), '// Put your application scripts here', skip: true)
-  # Without padrino-helpers the layout has no helpers and the app no CSRF protection.
+  # Without padrino-helpers, as in an --api project, the layout has no helpers and the app no CSRF protection.
   unless padrino_gem?('padrino-helpers')
     say 'Add to the <head> of your layout:', :yellow
     say '  <script src="/javascripts/htmx.js"></script>', :yellow

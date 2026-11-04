@@ -183,7 +183,7 @@ describe 'ProjectGenerator' do
       refute_includes YAML.load_file("#{@apptmp}/web_project/.components").keys, :api
     end
 
-    { '--renderer=haml' => /no renderer component \(--renderer=haml\)/, '--script=jquery' => /no script component \(--script=jquery\)/,
+    { '--renderer=haml' => /no renderer component \(--renderer=haml\)/,
       '--stylesheet=sass' => /no stylesheet component \(--stylesheet=sass\)/ }.each do |flag, message|
       it "should stop an api project with #{flag} before writing anything" do
         stop = nil
@@ -198,6 +198,13 @@ describe 'ProjectGenerator' do
     it 'should name every view component given to an api project' do
       _, err = capture_io { assert_raises(SystemExit) { generate(:project, 'sample_project', '--api', '-e=erb', '-c=scss', "--root=#{@apptmp}") } }
       assert_match(/no renderer or stylesheet component \(--renderer=erb --stylesheet=scss\)/, err)
+    end
+
+    %w[htmx ujs jquery vite].each do |script|
+      it "should take the #{script} script component in an api project" do
+        capture_io { generate(:project, 'sample_project', '--api', "--script=#{script}", "--root=#{@apptmp}") }
+        assert_equal script, YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+      end
     end
 
     it 'should take none for a view component in an api project' do
