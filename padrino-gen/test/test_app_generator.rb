@@ -147,6 +147,17 @@ describe 'AppGenerator' do
       assert_no_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/demo/app.rb")
     end
 
+    # Only a YAML true or false is a record; anything else leaves the Gemfile to decide.
+    [':api:', ':api: ~', ":api: 'true'", 'api: true'].each do |line|
+      it "should detect an api project from its Gemfile when .components has #{line.inspect}" do
+        capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+        components = "#{@apptmp}/sample_project/.components"
+        File.write(components, File.read(components).sub(':api: true', line))
+        capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+        assert_no_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/demo/app.rb")
+      end
+    end
+
     it 'should write the default app in an api project whose .components is marked :api: false' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
       components = "#{@apptmp}/sample_project/.components"
@@ -237,6 +248,7 @@ describe 'AppGenerator' do
       end
 
       it 'should accept a POST to a new app in an older project, which turns CSRF on for every app' do
+        unmark_api_project(@project)
         edit("#{@project}/config/apps.rb", /^.*set :protect_from_csrf.*$/, '  set :protect_from_csrf, Padrino.env != :test')
         generate_app_with_route
         assert_match(/status=200$/, boot_project(@project, path: '/demo/ping'))
@@ -248,6 +260,7 @@ describe 'AppGenerator' do
         super
         @project = "#{@apptmp}/sample_project"
         capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+        unmark_api_project(@project)
       end
 
       def assert_api_app

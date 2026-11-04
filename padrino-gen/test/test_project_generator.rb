@@ -183,27 +183,20 @@ describe 'ProjectGenerator' do
       refute_includes YAML.load_file("#{@apptmp}/web_project/.components").keys, :api
     end
 
-    { '--renderer=haml' => /no renderer component \(--renderer=haml\)/,
-      '--stylesheet=sass' => /no stylesheet component \(--stylesheet=sass\)/ }.each do |flag, message|
-      it "should stop an api project with #{flag} before writing anything" do
-        stop = nil
-        _, err = capture_io { stop = assert_raises(SystemExit) { generate(:project, 'sample_project', '--api', flag, "--root=#{@apptmp}") } }
-        assert_equal 1, stop.status
-        assert_match(message, err)
-        assert_match(/Leave out --api/, err)
-        assert_no_dir_exists("#{@apptmp}/sample_project")
-      end
+    it 'should stop an api project with a renderer before writing anything' do
+      stop = nil
+      _, err = capture_io { stop = assert_raises(SystemExit) { generate(:project, 'sample_project', '--api', '-e=haml', '-c=scss', "--root=#{@apptmp}") } }
+      assert_equal 1, stop.status
+      assert_match(/An --api project has no views, so it takes no renderer component \(--renderer=haml\)\. Leave out --api/, err)
+      assert_no_dir_exists("#{@apptmp}/sample_project")
     end
 
-    it 'should name every view component given to an api project' do
-      _, err = capture_io { assert_raises(SystemExit) { generate(:project, 'sample_project', '--api', '-e=erb', '-c=scss', "--root=#{@apptmp}") } }
-      assert_match(/no renderer or stylesheet component \(--renderer=erb --stylesheet=scss\)/, err)
-    end
-
-    %w[htmx ujs jquery vite].each do |script|
-      it "should take the #{script} script component in an api project" do
-        capture_io { generate(:project, 'sample_project', '--api', "--script=#{script}", "--root=#{@apptmp}") }
-        assert_equal script, YAML.load_file("#{@apptmp}/sample_project/.components")[:script]
+    { script: %w[htmx ujs jquery vite], stylesheet: %w[sass scss tailwind] }.each do |type, choices|
+      choices.each do |choice|
+        it "should take the #{choice} #{type} component in an api project" do
+          capture_io { generate(:project, 'sample_project', '--api', "--#{type}=#{choice}", "--root=#{@apptmp}") }
+          assert_equal choice, YAML.load_file("#{@apptmp}/sample_project/.components")[type]
+        end
       end
     end
 

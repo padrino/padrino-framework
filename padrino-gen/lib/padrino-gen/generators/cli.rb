@@ -20,7 +20,7 @@ module Padrino
         Padrino::Generators.boot_error = nil
         saved_env = { 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'], 'PADRINO_LOG_LEVEL' => ENV['PADRINO_LOG_LEVEL'] }
         ENV['PADRINO_LOG_LEVEL'] ||= 'test'
-        root = File.expand_path(options[:root] || '.')
+        root = project_root
         ENV['BUNDLE_GEMFILE'] = File.join(root, 'Gemfile') if options[:root]
         boot = File.join(root, 'config/boot.rb')
         if File.exist?(boot)
@@ -56,14 +56,28 @@ module Padrino
             exit 1
           end
           generator_class.start(ARGV)
-        elsif %i[admin admin_page].include?(generator_kind) && !Padrino::Generators.boot_error
-          puts "<= padrino g #{generator_kind} needs padrino-admin, which this project doesn't load. Add gem 'padrino-admin' " \
-               "to its Gemfile; an --api project can't take an admin, which needs sessions and views."
+        elsif %i[admin admin_page].include?(generator_kind) && !Padrino::Generators.boot_error && File.exist?(File.join(project_root, 'config/boot.rb'))
+          message = "<= padrino g #{generator_kind} needs padrino-admin: add gem 'padrino-admin' to the Gemfile."
+          # A generator at the project root answers api_project? as the generators themselves do.
+          if Padrino::Generators::Component.new([], {}, destination_root: project_root).api_project?
+            message += " An --api project can't take an admin, which needs sessions and views; generate it in a project " \
+                       "made without --api. #{NOT_API_HINT}"
+          end
+          puts message
           exit 1
         else
           puts "Please specify generator to use (#{Padrino::Generators.mappings.keys.join(', ')})"
           exit 1 unless generator_kind == :help
         end
+      end
+
+      private
+
+      ##
+      # Returns the project root the generators run in: --root, or the current directory.
+      #
+      def project_root
+        File.expand_path(options[:root] || '.')
       end
     end
   end

@@ -17,10 +17,10 @@ module Padrino
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
 
     ##
-    # The component types that render or compile views, which an --api project doesn't have. A script
-    # component only adds files to public/, so an --api project can take one.
+    # The component types an --api project doesn't take: a renderer renders views, which it doesn't have.
+    # Script and stylesheet components only add assets and middleware, so it can take those.
     #
-    VIEW_COMPONENTS = %i[renderer stylesheet].freeze
+    REFUSED_API_COMPONENTS = %i[renderer].freeze
 
     ##
     # What to do when a generator refuses a project it takes for an --api one.
@@ -722,8 +722,8 @@ module Padrino
 
       ##
       # Returns true for an --api project: no sessions, CSRF protection or views. New projects
-      # record the mode as `:api: true` in .components. A project without that key is detected
-      # from its Gemfile: padrino-core, without the padrino gem or the full set of its parts.
+      # record the mode as `:api: true` in .components. A project without a true or false there
+      # is detected from its Gemfile: padrino-core, without the padrino gem or the full set of its parts.
       #
       # @return [Boolean] true for an --api project.
       #
@@ -732,22 +732,32 @@ module Padrino
 
         components = destination_root('.components')
         config = retrieve_component_config(components) if File.file?(components)
-        return config[:api] == true if config.is_a?(Hash) && config.key?(:api)
+        recorded = config[:api] if config.is_a?(Hash)
+        return recorded if [true, false].include?(recorded)
 
-        gemfile_gems.include?('padrino-core') && !(padrino_gem?('padrino-helpers') && padrino_gem?('padrino-mailer'))
+        gemfile_gems.include?('padrino-core') && !padrino_mailer_and_helpers?
       end
 
       ##
-      # Raises a Thor::Error naming the renderer or stylesheet components chosen, other
-      # than none, for an --api project, which has no views for them.
+      # Returns true when the project loads both padrino-mailer and padrino-helpers.
+      #
+      def padrino_mailer_and_helpers?
+        padrino_gem?('padrino-mailer') && padrino_gem?('padrino-helpers')
+      end
+
+      ##
+      # Raises a Thor::Error naming the components chosen that an --api project doesn't take: any
+      # renderer but none, other than the one the project already has.
       #
       # @param [Hash] choices
       #   The component choices by type, as options give them.
       # @param [String] hint
       #   What to do instead, which ends the message.
+      # @param [Hash] stored
+      #   The project's current choices by type, which can be applied again.
       #
-      def refuse_view_components(choices, hint)
-        given = VIEW_COMPONENTS.reject { |comp| ['', 'none'].include?(choices[comp].to_s) }
+      def refuse_api_components(choices, hint, stored = {})
+        given = REFUSED_API_COMPONENTS.reject { |comp| ['', 'none', stored[comp].to_s].include?(choices[comp].to_s) }
         return if given.empty?
 
         flags = given.map { |comp| "--#{comp}=#{choices[comp]}" }.join(' ')

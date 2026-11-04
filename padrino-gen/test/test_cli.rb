@@ -13,10 +13,10 @@ describe 'Cli' do
   end
 
   # Cli#setup reads the generator and its arguments from ARGV.
-  def cli(*argv)
+  def cli(*argv, root: @apptmp)
     saved = ARGV.dup
     ARGV.replace(argv)
-    generate(:cli, "--root=#{@apptmp}")
+    generate(:cli, "--root=#{root}")
   ensure
     ARGV.replace(saved)
   end
@@ -32,13 +32,39 @@ describe 'Cli' do
       assert_match(/Please specify generator to use/, out)
     end
 
-    it 'should name padrino-admin for the admin generators when the project does not load it' do
-      without_admin = Padrino::Generators.mappings.reject { |kind, _| %i[admin admin_page].include?(kind) }
-      Padrino::Generators.stubs(:mappings).returns(without_admin)
-      %w[admin admin_page].each do |kind|
-        out, = capture_io { assert_equal 1, assert_raises(SystemExit) { cli(kind) }.status }
-        assert_match(/padrino g #{kind} needs padrino-admin, which this project doesn't load/, out)
-        assert_match(/an --api project can't take an admin/, out)
+    describe 'the admin generators in a project that does not load padrino-admin' do
+      def setup
+        super
+        without_admin = Padrino::Generators.mappings.reject { |kind, _| %i[admin admin_page].include?(kind) }
+        Padrino::Generators.stubs(:mappings).returns(without_admin)
+        # The generated project isn't bundled; the generators only need its files.
+        Padrino::Generators::Cli.any_instance.stubs(:load_boot)
+      end
+
+      def admin_output(project_flags)
+        capture_io { generate(:project, 'sample_project', *project_flags, "--root=#{@apptmp}") } if project_flags
+        %w[admin admin_page].map do |kind|
+          out, = capture_io { assert_equal 1, assert_raises(SystemExit) { cli(kind, root: "#{@apptmp}/sample_project") }.status }
+          out
+        end
+      end
+
+      it 'should say to add padrino-admin in a project' do
+        admin_output([]).zip(%w[admin admin_page]).each do |out, kind|
+          assert_match(/padrino g #{kind} needs padrino-admin: add gem 'padrino-admin' to the Gemfile\./, out)
+          refute_match(/--api/, out)
+        end
+      end
+
+      it 'should say an --api project takes no admin' do
+        admin_output(%w[--api]).each do |out|
+          assert_match(/needs padrino-admin: add gem 'padrino-admin' to the Gemfile\. An --api project can't take an admin/, out)
+        end
+      end
+
+      it 'should list the generators outside a project' do
+        FileUtils.mkdir_p("#{@apptmp}/sample_project")
+        admin_output(nil).each { |out| assert_match(/Please specify generator to use/, out) }
       end
     end
 

@@ -57,7 +57,7 @@ module Padrino
 
         @app_name = app.gsub(/\W/, '_').camelize
         # Settle every component choice before writing, so an invalid one leaves no partial project behind.
-        refuse_view_components(options, 'Leave out --api to generate a project with views.') if options.api?
+        refuse_api_components(options, 'Leave out --api to generate a project with views.') if options.api?
         resolve_component_choices unless options[:template]
         self.destination_root = File.join(options[:root], name)
         if options[:template]

@@ -33,6 +33,13 @@ describe 'Smoke::Combination' do
     assert_empty Smoke::Combination.coverage_gaps(combos)
   end
 
+  it 'pairs no renderer for api rows only' do
+    rows = combos + [combo('name' => 'extra', 'orm' => 'mongoid', 'adapter' => nil, 'renderer' => 'none')]
+    gaps = Smoke::Combination.coverage_gaps(rows)
+    assert_includes gaps, 'orm x renderer: activerecord x none'
+    refute_includes gaps, 'orm x renderer: sequel x none'
+  end
+
   it 'reports a missing pair' do
     dropped = combos.find { |c| c.orm == 'sequel' && c.renderer == 'liquid' }
     refute_nil dropped

@@ -981,42 +981,56 @@ describe 'ComponentGenerator' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
     end
 
-    { '--renderer=haml' => 'renderer', '--stylesheet=sass' => 'stylesheet' }.each do |flag, type|
-      it "should stop on #{flag} without changing the project" do
-        before = project_snapshot
-        stop = nil
-        _, err = capture_io { stop = assert_raises(SystemExit) { generate(:component, flag, '--orm=sequel', "-r=#{project_file('')}") } }
-        assert_equal 1, stop.status
-        assert_match(/An --api project has no views, so it takes no #{type} component \(#{flag}\)\./, err)
-        assert_match(/set `:api: false` in its \.components/, err)
-        assert_equal before, project_snapshot
-      end
+    def edit_components(pattern, replacement)
+      File.write(project_file('.components'), File.read(project_file('.components')).sub(pattern, replacement))
+    end
+
+    it 'should stop on a renderer without changing the project' do
+      before = project_snapshot
+      stop = nil
+      _, err = capture_io { stop = assert_raises(SystemExit) { generate(:component, '--renderer=haml', '--stylesheet=sass', '--orm=sequel', "-r=#{project_file('')}") } }
+      assert_equal 1, stop.status
+      assert_match(/An --api project has no views, so it takes no renderer component \(--renderer=haml\)\. If this project isn't an --api project, set `:api: false` in its \.components\./, err)
+      assert_equal before, project_snapshot
     end
 
     it 'should stop in an older api project, which .components does not mark' do
-      File.write(project_file('.components'), File.read(project_file('.components')).sub(":api: true\n", ''))
+      edit_components(":api: true\n", '')
       before = project_snapshot
       _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=haml', "-r=#{project_file('')}") } }
       assert_match(/no renderer component/, err)
       assert_equal before, project_snapshot
     end
 
-    it 'should apply a view component once .components says the project is not an api project' do
-      File.write(project_file('.components'), File.read(project_file('.components')).sub(':api: true', ':api: false'))
+    it 'should apply a renderer once .components says the project is not an api project' do
+      edit_components(':api: true', ':api: false')
       capture_io { generate(:component, '--renderer=haml', "-r=#{project_file('')}") }
       assert_equal 'haml', YAML.load_file(project_file('.components'))[:renderer]
     end
 
-    it 'should name only the refused components' do
-      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=erb', '--stylesheet=scss', '--script=htmx', "-r=#{project_file('')}") } }
-      assert_match(/takes no renderer or stylesheet component \(--renderer=erb --stylesheet=scss\)\./, err)
+    # Older api projects could be generated with a renderer.
+    [':api: true', ''].each do |record|
+      it "should apply the renderer the project already has again#{' in an older api project' if record.empty?}" do
+        edit_components(":api: true\n", record.empty? ? '' : "#{record}\n")
+        edit_components(':renderer: none', ':renderer: erb')
+        out, = capture_io { generate(:component, '--renderer=erb', "-r=#{project_file('')}") }
+        assert_match(/applying.*?erb.*?renderer/, out)
+        assert_match_in_file(/gem 'erubi'/, project_file('Gemfile'))
+      end
     end
 
-    it 'should apply other components, a script and none for a view component' do
-      capture_io { generate(:component, '--orm=sequel', '--script=jquery', '--renderer=none', "-r=#{project_file('')}") }
+    it 'should stop on a switch to another renderer' do
+      edit_components(':renderer: none', ':renderer: erb')
+      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=haml', "-r=#{project_file('')}") } }
+      assert_match(/no renderer component \(--renderer=haml\)/, err)
+      assert_equal 'erb', YAML.load_file(project_file('.components'))[:renderer]
+    end
+
+    it 'should apply other components, a script, a stylesheet and none for the renderer' do
+      capture_io { generate(:component, '--orm=sequel', '--script=jquery', '--stylesheet=sass', '--renderer=none', "-r=#{project_file('')}") }
       assert_file_exists(project_file('public/javascripts/jquery.js'))
       components = YAML.load_file(project_file('.components'))
-      assert_equal 'sequel', components[:orm]
+      assert_equal %w[sequel jquery sass], components.values_at(:orm, :script, :stylesheet)
       assert_same true, components[:api]
     end
   end
