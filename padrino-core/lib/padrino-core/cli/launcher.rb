@@ -25,9 +25,7 @@ module Padrino
 
       def start(*args)
         prepare :start
-        # The server Padrino::Server.start would use: a server= in --options wins over -a.
-        override = Array(options[:options]).reverse.find { |option| option.start_with?('server=') }
-        removed = Padrino.removed_server_message(override ? override.split('=', 2).last : options[:server])
+        removed = Padrino.removed_server_message(effective_server(options))
         raise Thor::Error, removed if removed
 
         require File.expand_path('adapter', __dir__)
@@ -51,10 +49,18 @@ module Padrino
 
       private
 
+      # The server Padrino::Server.start would use: a server= in --options wins over -a.
+      def effective_server(options)
+        Padrino.parse_server_options(options[:options])[:server] || options[:server]
+      rescue ArgumentError # malformed --options; Padrino::Server.start reports it
+        options[:server]
+      end
+
       # https://github.com/rack/rack/blob/master/lib/rack/server.rb\#L100
       def server_options(options)
         info = []
-        server = Rackup::Handler.get(options[:server]) || Rackup::Handler.default
+        name = effective_server(options)
+        server = Rackup::Handler.get(name) || Rackup::Handler.default
         if server.respond_to?(:valid_options)
           info << ''
           info << "Server-specific options for #{server.name}:"
@@ -69,7 +75,7 @@ module Padrino
         end
         info.join("\n")
       rescue NameError, LoadError
-        "Warning: Could not find handler specified (#{options[:server] || 'default'}) to determine handler-specific options"
+        "Warning: Could not find handler specified (#{name || 'default'}) to determine handler-specific options"
       end
 
       protected

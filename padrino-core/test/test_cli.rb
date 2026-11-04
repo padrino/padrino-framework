@@ -166,6 +166,28 @@ describe 'Padrino::Cli' do
     refute_match(/\.rb:\d+:in /, err)
   end
 
+  [%w[start -a mongrel -O server=puma], %w[start -O server=mongrel server=puma]].each do |args|
+    it "should start the server --options picks for padrino #{args.join(' ')}" do
+      out, err, status = run_in_project(<<~RUBY)
+        require 'padrino-core/cli/base'
+        require 'padrino-core/cli/adapter'
+        Padrino::Cli::Adapter.define_singleton_method(:start) { |options| puts "START \#{options[:options].inspect}" }
+        Padrino::Cli::Base.start(#{args.inspect})
+      RUBY
+      assert status.success?, err
+      assert_includes out, 'START'
+    end
+  end
+
+  it 'should take the last server= in --options, as the server does' do
+    _, err, status = run_in_project(<<~RUBY)
+      require 'padrino-core/cli/base'
+      Padrino::Cli::Base.start(%w[start -O server=puma server=mongrel])
+    RUBY
+    assert_equal 1, status.exitstatus
+    assert_match(/^The mongrel server was removed from Padrino/, err)
+  end
+
   it 'should load the models in the rake environment task after a skeleton task' do
     out, err, status = run_in_project(<<~RUBY)
       require 'rake'

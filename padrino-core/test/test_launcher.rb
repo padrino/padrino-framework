@@ -28,6 +28,13 @@ describe 'Padrino::Cli::Launcher' do
       refute_match(/Host=HOST/, out)
     end
 
+    it 'should list the options of the server --options picks over -a' do
+      handler = fake_handler
+      get = ->(name) { handler if name == 'fake' }
+      out = Rackup::Handler.stub(:get, get) { server_options(server: 'other', options: %w[Threads=0:2 server=fake]) }
+      assert_match(/Server-specific options for FakeHandler/, out)
+    end
+
     it 'should fall back to the default rackup handler' do
       handler = fake_handler
       out = Rackup::Handler.stub(:get, nil) do

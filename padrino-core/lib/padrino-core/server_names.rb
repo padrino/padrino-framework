@@ -14,4 +14,11 @@ module Padrino
 
     "The #{name} server was removed from Padrino; use one of #{SERVERS.join(', ')} instead."
   end
+
+  ##
+  # Parses --options NAME=VALUE pairs into a Hash with Symbol keys, as Padrino::Server.start reads them.
+  #
+  def self.parse_server_options(options)
+    Hash[*Array(options).flat_map { |option| option.split('=', 2) }].transform_keys(&:to_sym)
+  end
 end

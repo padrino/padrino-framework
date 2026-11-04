@@ -97,8 +97,7 @@ module Padrino
     # Parses an array of server options.
     #
     def self.parse_server_options(options)
-      parsed_server_options = Array(options).flat_map { |option| option.split('=', 2) }
-      Utils.symbolize_keys(Hash[*parsed_server_options])
+      Padrino.parse_server_options(options)
     end
 
     # Detects Host and Port for Rack server.
