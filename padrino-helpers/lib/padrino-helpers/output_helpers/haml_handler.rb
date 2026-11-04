@@ -10,7 +10,7 @@ module Padrino
           # Returns true if the block is for Hamlit.
           #
           def engine_matches?(block)
-            block.binding.eval('defined? __in_hamlit_template')
+            block.binding.local_variable_defined?(:__in_hamlit_template)
           end
         end
         OutputHelpers.register(:haml, HamlitHandler)
@@ -43,7 +43,7 @@ module Padrino
           # Returns true if the block is for Hamlit.
           #
           def engine_matches?(block)
-            block.binding.eval('defined? __in_hamlit_template')
+            block.binding.local_variable_defined?(:__in_hamlit_template)
           end
         end
         OutputHelpers.register(:haml, HamlitHandler)
