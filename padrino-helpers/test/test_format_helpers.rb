@@ -150,6 +150,11 @@ describe 'FormatHelpers' do
       assert_equal '<strong class="highlight">word</strong> ' * 20_000, actual_text
     end
 
+    it 'should highlight html safe text' do
+      actual_text = highlight('<p>Lorem</p><p>ipsum dolor</p>'.html_safe, %w[lorem dolor])
+      assert_equal '<p><strong class="highlight">Lorem</strong></p><p>ipsum <strong class="highlight">dolor</strong></p>', actual_text
+    end
+
     it 'should highlight several words across tags' do
       actual_text = highlight('<p>Lorem</p><p>ipsum lorem</p>', %w[lorem ipsum])
       assert_equal '<p><strong class="highlight">Lorem</strong></p><p><strong class="highlight">ipsum</strong> <strong class="highlight">lorem</strong></p>', actual_text
