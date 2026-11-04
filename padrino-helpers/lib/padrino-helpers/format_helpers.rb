@@ -219,7 +219,7 @@ module Padrino
           text
         else
           pattern = /(#{Array(words).map { |p| Regexp.escape(p) }.join('|')})/i
-          text.to_str.gsub(%r{(<[a-z/!?](?:=\s*+"[^"]*+"|=\s*+'[^']*+'|[^<>])*+>?)|(?:[^<]|<(?![a-z/!?]))++}i) do |part|
+          text.to_str.gsub(%r{(<[A-Za-z/!?](?:=\s*+"[^"]*+"|=\s*+'[^']*+'|[^<>])*+>?)|(?:[^<]|<(?![A-Za-z/!?]))++}) do |part|
             Regexp.last_match(1) || part.gsub(pattern, options[:highlighter])
           end
         end

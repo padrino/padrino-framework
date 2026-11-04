@@ -132,6 +132,7 @@ describe 'FormatHelpers' do
     it 'should highlight text around a < that does not start a tag' do
       assert_equal 'if a < b then <strong class="highlight">y</strong>', highlight('if a < b then y', 'y')
       assert_equal 'if <strong class="highlight">a < b</strong> then y', highlight('if a < b then y', 'a < b')
+      assert_equal "<\u212A <strong class=\"highlight\">b</strong>", highlight("<\u212A b", 'b')
     end
 
     it 'should read a quote in a tag as a value only after =' do
