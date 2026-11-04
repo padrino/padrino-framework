@@ -178,7 +178,7 @@ module Padrino
 
         hook = self.class.respond_to?(:current_account_hook) && self.class.current_account_hook
         account = (hook ? instance_exec(&hook) : login_from_session) || nil
-        if account && !account.respond_to?(:role)
+        if hook && account && !account.respond_to?(:role)
           raise Padrino::Auth::Error, "current_account_from must return an account (responding to role) or nil, got #{account.class}"
         end
 

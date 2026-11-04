@@ -97,6 +97,31 @@ describe 'register Padrino::Auth' do
     assert_equal 'home', last_response.body
   end
 
+  it 'accepts an admin_model without role, as before' do
+    Object.const_set(:RolelessAdmin, Class.new do
+      def self.find_by_id(id)
+        new if id
+      end
+
+      def id
+        1
+      end
+    end)
+    @app = Sinatra.new(Padrino::Application) do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+      set :admin_model, 'RolelessAdmin'
+      access_control.roles_for(:any) { |a| a.protect '/'; a.allow '/login' }
+      get('/login') { set_current_account(RolelessAdmin.new); 'in' }
+      get('/') { 'home' }
+    end
+    get '/login'
+    get '/'
+    assert_equal 200, last_response.status
+  ensure
+    Object.send(:remove_const, :RolelessAdmin) if defined?(RolelessAdmin)
+  end
+
   it 'stores a mounted location' do
     auth_app do
       set :uri_root, '/api'
