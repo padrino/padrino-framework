@@ -1,7 +1,32 @@
 require 'padrino-core'
 
 module Padrino
+  ##
+  # Role based access control for any Padrino app, without the admin.
+  #
+  # @example
+  #     require 'padrino-admin/auth'
+  #
+  #     class App < Padrino::Application
+  #       register Padrino::Auth
+  #       enable :sessions
+  #
+  #       access_control.roles_for :any do |role|
+  #         role.protect '/'
+  #         role.allow '/login'
+  #       end
+  #
+  #       # Optional: find the account another way than the session.
+  #       current_account_from { Account.find_by_token(env['HTTP_X_TOKEN']) }
+  #     end
+  #
+  # The padrino-admin AccessControl extension is the admin flavour: register it instead of this
+  # one to also get project modules and the admin helpers.
+  #
   module Auth
+    ##
+    # Raised for a misconfigured access control (bad roles, missing account model, bad hook result).
+    #
     class Error < StandardError
     end
 
