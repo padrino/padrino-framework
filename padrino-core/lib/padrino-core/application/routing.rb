@@ -17,6 +17,8 @@ module Padrino
     CONTENT_TYPE_ALIASES = { htm: :html } unless defined?(CONTENT_TYPE_ALIASES)
     # Defines the available route priorities supporting route deferrals.
     ROUTE_PRIORITY = { high: 0, normal: 1, low: 2 } unless defined?(ROUTE_PRIORITY)
+    # What without_extra_slashes gives for a path that doesn't end in a slash.
+    NO_EXTRA_SLASHES = [].freeze unless defined?(NO_EXTRA_SLASHES)
 
     # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
@@ -51,6 +53,126 @@ module Padrino
         app.extend(ClassMethods)
       end
       alias included registered
+
+      ##
+      # Decodes the %XX escapes in a request path, %2F included; a '+' stays a
+      # plus, as it does for the router and Sinatra. Returns a new UTF-8 string
+      # and leaves +path+ untouched.
+      #
+      # Invalid UTF-8 (such as '/%ff') is kept byte for byte, so the result's
+      # +valid_encoding?+ is false: replacing it would name a different file.
+      # The router matches no route for such a path; callers that compare the
+      # result with Regexps scrub it first.
+      #
+      # @example
+      #   Padrino::Routing.decode_path('/caf%C3%A9/a+b') # => "/café/a+b"
+      #
+      # @api private
+      def decode_path(path)
+        Rack::Utils.unescape_path(path.b).force_encoding(Encoding::UTF_8)
+      end
+
+      ##
+      # Decodes a request path into the form routes are matched against: like
+      # decode_path, but an encoded slash stays '%2F' (from '%2F' or '%2f'), so
+      # it can't split a path segment. Invalid UTF-8 and malformed escapes are
+      # kept as they are; the router matches no route for such a path.
+      #
+      # @example
+      #   Padrino::Routing.decode_route_path('/%70osts%2F1') # => "/posts%2F1"
+      #
+      # @api private
+      def decode_route_path(path)
+        path.b.split(/%2F/i, -1).map { |segment| decode_path(segment) }.join('%2F').force_encoding(Encoding::UTF_8)
+      end
+
+      ##
+      # The forms a request path is compared in, router form first: as the
+      # router matches it (decode_route_path), fully decoded (decode_path), and
+      # as route params receive it (the router form decoded again, as a splat
+      # or param value is). Invalid UTF-8 is scrubbed so Regexps can match it;
+      # duplicates are dropped. +route_path+ is decode_route_path(path), for a
+      # caller that has it already.
+      #
+      # @example
+      #   Padrino::Routing.path_forms('/files%252Freport') # => ["/files%2Freport", "/files/report"]
+      #
+      # @api private
+      def path_forms(path, route_path = decode_route_path(path))
+        return [route_path.scrub] unless path.include?('%')
+
+        [route_path, decode_path(path), decode_path(route_path)].map(&:scrub).uniq
+      end
+
+      ##
+      # Whether a provides condition for +types+ accepts +format+, a Symbol
+      # decoded as route params receive it.
+      #
+      # @example
+      #   Padrino::Routing.provided_format?(%i[html json], :json) # => true
+      #
+      # @api private
+      def provided_format?(types, format)
+        !([:any, format] & types).empty?
+      end
+
+      ##
+      # Whether an app with +settings+ answers a format its provides
+      # conditions don't accept with 406 itself (treat_format_as_accept),
+      # instead of handing the request on.
+      #
+      # @api private
+      def treat_format_as_accept?(settings)
+        settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept ? true : false
+      end
+
+      ##
+      # A path with trailing slashes also counts with none and with one, as the
+      # router serves '/posts/' from a '/posts' route. A path that doesn't end
+      # in a slash gives [], and a path of slashes only gives ['', '/'].
+      #
+      # @example
+      #   Padrino::Routing.without_extra_slashes('/posts//') # => ["/posts", "/posts/"]
+      #
+      # @api private
+      def without_extra_slashes(path)
+        return NO_EXTRA_SLASHES unless path.end_with?('/')
+
+        index = path.rindex(%r{[^/]})
+        stripped = index ? path[0..index] : ''
+        [stripped, "#{stripped}/"]
+      end
+
+      ##
+      # Yields the forms the router may serve a request path as, without
+      # knowing the route: each of +forms+ (path_forms) and, for each form
+      # found, the form without its trailing slashes and with one
+      # (without_extra_slashes), and the form up to the last dot of its last
+      # segment, as a route can capture what follows as a format. Walking
+      # those in turn gives the form up to each such dot. Each form is yielded
+      # once, as it is found, so a caller can stop early. Returns an
+      # Enumerator without a block.
+      #
+      # @example
+      #   Padrino::Routing.served_forms(['/feed.json//']).to_a # => ["/feed.json//", "/feed.json", "/feed.json/", "/feed"]
+      #
+      # @api private
+      def served_forms(forms)
+        return enum_for(__method__, forms) unless block_given?
+
+        seen = {}
+        queue = forms.dup
+        while (form = queue.shift)
+          next if seen.key?(form)
+
+          seen[form] = true
+          yield form
+          queue.concat(without_extra_slashes(form).reject(&:empty?))
+          slash = form.rindex('/').to_i
+          last = form.rindex('.')
+          queue << form[0, last] if last && last > slash
+        end
+      end
     end
 
     # Class methods responsible for enhanced routing for controllers.
@@ -294,6 +416,8 @@ module Padrino
 
       def reset_router!
         @deferred_routes = nil
+        # Keep only the provides formats of conditions no route has taken yet (provides_format).
+        @_provided_formats&.keep_if { |cond, _| @conditions.any? { |pending| pending.equal?(cond) } }
         router.reset!
       end
 
@@ -584,6 +708,7 @@ module Padrino
 
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
+        route.provided_formats = conditions.filter_map { |cond| @_provided_formats[cond] } if @_provided_formats
 
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
@@ -745,6 +870,7 @@ module Padrino
         provides_format(*types)
       end
 
+      # Each route records the formats of its provides conditions (PathRouter::Route#provided_formats).
       def provides_format(*types)
         mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
@@ -769,6 +895,8 @@ module Padrino
             catch_all ? true : halt(406)
           end
         end
+        (@_provided_formats ||= {}.compare_by_identity)[@conditions.last] = types
+        @conditions
       end
 
       ##
@@ -891,8 +1019,7 @@ module Padrino
       #
       def static_file?(path_info)
         return unless (public_dir = settings.public_folder)
-        # Decode the path the way Sinatra's static! and the router do: %XX only, so '+' stays a plus.
-        file = Rack::Utils.unescape_path(path_info.b).force_encoding(Encoding::UTF_8)
+        file = Routing.decode_path(path_info)
         [File.expand_path(public_dir), settings.shared_public_folder].compact.each do |dir|
           path = "#{dir}#{file}"
           next unless Rack::Utils.valid_path?(path)
@@ -945,14 +1072,12 @@ module Padrino
       end
 
       def provides_format?(types, format)
-        if ([:any, format] & types).empty?
-          # Per rfc2616-sec14:
-          # Answer with 406 if accept is given but types to not match any provided type.
-          halt 406 if settings.respond_to?(:treat_format_as_accept) && settings.treat_format_as_accept
-          false
-        else
-          content_type(format || :html)
-        end
+        return content_type(format || :html) if Routing.provided_format?(types, format)
+
+        # Per rfc2616-sec14:
+        # Answer with 406 if accept is given but types to not match any provided type.
+        halt 406 if Routing.treat_format_as_accept?(settings)
+        false
       end
 
       def mime_symbol(media_type)
@@ -964,7 +1089,20 @@ module Padrino
         base.filters[type].each { |block| instance_eval(&block) }
       end
 
+      # Runs the app's before filters for the route being tried. Each runs to its end at most once
+      # for a level of routes, so one with no match on a route, or that passed on it, gets another
+      # chance on the next, and a request that ends up elsewhere doesn't run them again.
+      def before_filter!(base = settings)
+        before_filter!(base.superclass) if base.superclass.respond_to?(:filters)
+        base.filters[:before].each do |block|
+          next if @_ran_filters[block]
+
+          @_ran_filters[block] = true unless Filter::SKIPPED.equal?(instance_eval(&block))
+        end
+      end
+
       def dispatch!
+        @_ran_filters = {}.compare_by_identity
         @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
         force_encoding(@params)
         invoke do
@@ -972,7 +1110,7 @@ module Padrino
           route!
         end
       rescue ::Exception => e
-        filter! :before if e.is_a? ::Sinatra::NotFound
+        catch(:pass) { before_filter! } if e.is_a? ::Sinatra::NotFound
         invoke { @boom_handled = handle_exception!(e) }
       ensure
         @boom_handled || begin
@@ -1028,7 +1166,12 @@ module Padrino
         @params[:format] = params[:format] if params[:format]
         @params[:captures] = captured_params if !captured_params.empty? && route.path.is_a?(Regexp)
 
-        filter! :before if first_time
+        @_ran_filters.clear if first_time
+        passed = catch(:pass) do
+          before_filter!
+          :filtered
+        end
+        return passed unless passed == :filtered
 
         catch(:pass) do
           (route.before_filters - settings.filters[:before]).each { |block| instance_eval(&block) }

@@ -1082,10 +1082,11 @@ describe 'FormHelpers' do
   describe 'for #datetime_field_tag' do
     before do
       @expected = {
+        type: 'datetime-local',
         name: 'datetime',
-        max: '2000-04-01T12:00:00.000+0000',
-        min: '1993-02-24T12:30:45.000+0000',
-        value: '2000-04-01T12:00:00.000+0000'
+        max: '2000-04-01T12:00:00',
+        min: '1993-02-24T12:30:45',
+        value: '2000-04-01T12:00:00'
       }
     end
 
@@ -1097,14 +1098,24 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, 'input', @expected)
     end
 
-    it 'should create an input tag with datetime' do
+    it 'should create an input tag with datetime-local' do
       actual_html = datetime_field_tag('datetime')
-      assert_html_has_tag(actual_html, 'input[type=datetime]')
+      assert_html_has_tag(actual_html, 'input[type="datetime-local"]')
     end
 
     it 'should create an input tag when the format string passed as datetime option value' do
       actual_html = datetime_field_tag('datetime', value: '1993-02-24T12:30:45+00:00')
-      assert_html_has_tag(actual_html, 'input[type=datetime]', value: '1993-02-24T12:30:45.000+0000')
+      assert_html_has_tag(actual_html, 'input[type="datetime-local"]', value: '1993-02-24T12:30:45')
+    end
+
+    it 'should use an app override of datetime_local_field_tag' do
+      extend(Module.new do
+        def datetime_local_field_tag(name, options = {})
+          super(name, options.merge(class: 'app-datetime'))
+        end
+      end)
+      actual_html = datetime_field_tag('datetime')
+      assert_html_has_tag(actual_html, 'input[type="datetime-local"]', name: 'datetime', class: 'app-datetime')
     end
 
     it 'should display correct datetime_field_tag in erb' do
@@ -1149,6 +1160,19 @@ describe 'FormHelpers' do
     it 'should create an input tag when the format string passed as datetime-local option value' do
       actual_html = datetime_local_field_tag('datetime_local', value: '1993-02-24T12:30:45')
       assert_html_has_tag(actual_html, 'input[type="datetime-local"]', value: '1993-02-24T12:30:45')
+    end
+
+    it 'should format Time values in their own zone, without an offset' do
+      max = Time.new(2000, 4, 1, 12, 0, 0, '+09:00')
+      min = Time.new(1993, 2, 24, 12, 30, 45, '-05:00')
+      value = Time.new(2000, 4, 1, 12, 0, 0, '+09:00')
+      actual_html = datetime_local_field_tag('datetime_local', max: max, min: min, value: value)
+      assert_html_has_tag(actual_html, 'input[type="datetime-local"]', @expected)
+    end
+
+    it 'should format String value, min and max' do
+      actual_html = datetime_local_field_tag('datetime_local', max: '2000-04-01T12:00:00Z', min: '1993-02-24 12:30:45', value: '2000-04-01T12:00')
+      assert_html_has_tag(actual_html, 'input[type="datetime-local"]', @expected)
     end
 
     it 'should display correct datetime_local_field_tag in erb' do

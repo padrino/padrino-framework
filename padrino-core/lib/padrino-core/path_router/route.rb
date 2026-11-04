@@ -38,7 +38,8 @@ module Padrino
       # The accessors will be used in other classes
       #
       attr_accessor :action, :cache, :cache_key, :cache_expires,
-                    :parent, :use_layout, :controller, :user_agent, :path_for_generation, :default_values
+                    :parent, :use_layout, :controller, :user_agent, :path_for_generation, :default_values,
+                    :provided_formats
 
       ##
       # Constructs an instance of PathRouter::Route.

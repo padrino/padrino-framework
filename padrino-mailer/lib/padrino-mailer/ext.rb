@@ -9,16 +9,57 @@ module Mail # @private
     attr_reader :template_cache
     attr_accessor :mailer_name, :message_name
 
+    # The template cache of a message whose app doesn't reload templates. Templates given by name
+    # (a file or a named template) are compiled once for the class and shared by its messages;
+    # templates given as a string stay with the message, so they don't pile up.
+    class SharedTemplateCache < Sinatra::TemplateCache # @private
+      def initialize(owner)
+        super()
+        @owner = owner
+      end
+
+      def fetch(engine, data, *rest, &block)
+        return super unless data.is_a?(Symbol)
+
+        @shared ||= @owner.shared_template_cache
+        @shared.fetch(engine, data, *rest, &block)
+      end
+
+      # Message#to_yaml dumps every instance variable; keep the class's templates and lock out of it.
+      def encode_with(coder); end
+    end
+
+    # The cache a class's messages share. Messages are often delivered from several threads, and
+    # on JRuby writing to a Hash from two threads at once can raise, so it takes a lock. It compiles
+    # outside the lock, so two threads may compile one template; the first one stored is kept.
+    class LockedTemplateCache # @private
+      def initialize
+        @cache = {}
+        @lock = Mutex.new
+      end
+
+      def fetch(*key)
+        @lock.synchronize { return @cache[key] if @cache.key?(key) }
+        template = yield
+        @lock.synchronize { @cache.fetch(key) { @cache[key] = template } }
+      end
+    end
+
+    SHARED_TEMPLATE_CACHE_LOCK = Mutex.new # @private
+
+    def self.shared_template_cache # @private
+      SHARED_TEMPLATE_CACHE_LOCK.synchronize { @_shared_template_cache ||= LockedTemplateCache.new }
+    end
+
     def initialize_with_app(*args, &block)
-      @template_cache = Sinatra::TemplateCache.new
       # Check if we have an app passed into initialize
       if args[0].respond_to?(:views) && args[0].respond_to?(:reload_templates?)
         app                       = args.shift
         @_views                   = File.join(app.views, 'mailers')
-        settings.reload_templates = app.reload_templates?
+        settings.reload_templates = self.reload_templates = app.reload_templates?
       else
         @_views = File.expand_path('./mailers')
-        settings.reload_templates = true
+        settings.reload_templates = self.reload_templates = true
       end
 
       initialize_template_settings!
@@ -109,7 +150,7 @@ module Mail # @private
       part_block = params.delete(:part_block)
       new_part = Mail::Part.new(params)
       new_part.views(@_views)
-      new_part.settings.reload_templates = settings.reload_templates?
+      new_part.settings.reload_templates = new_part.reload_templates = reload_templates?
       new_part.instance_eval(&part_block) if part_block
       yield new_part if block_given?
       add_part(new_part)
@@ -149,6 +190,23 @@ module Mail # @private
     def views(value)
       @_views = value
       @_mailer_views = false
+    end
+
+    ##
+    # Returns true if this message reads its templates again on every render, as its app's
+    # reload_templates setting said when the message was built.
+    #
+    def reload_templates?
+      @_reload_templates
+    end
+
+    ##
+    # Sets whether this message reads its templates again on every render. A message that does
+    # keeps every template to itself; one that doesn't shares the templates it renders by name.
+    #
+    def reload_templates=(value)
+      @_reload_templates = value
+      @template_cache = value ? Sinatra::TemplateCache.new : SharedTemplateCache.new(self.class)
     end
 
     ##
@@ -276,7 +334,7 @@ module Mail # @private
     #
     def render(engine = nil, data = nil, options = {}, locals = {}, &block)
       locals = @_locals || {} if !options[:locals] && locals.empty?
-      @template_cache.clear if settings.reload_templates?
+      @template_cache.clear if reload_templates?
 
       # render(nil, 'template', ...) as RenderHelpers#partial calls it: shift the arguments
       # the way Padrino::Rendering#render does, before defaulting to the message name.
