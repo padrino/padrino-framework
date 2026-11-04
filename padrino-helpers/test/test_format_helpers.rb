@@ -113,6 +113,16 @@ describe 'FormatHelpers' do
       actual_text = highlight('Lorem ipsum dolor sit amet', 'dolor', highlighter: '<span class="custom">\1</span>')
       assert_equal 'Lorem ipsum <span class="custom">dolor</span> sit amet', actual_text
     end
+
+    it 'should leave words inside html tags alone' do
+      actual_text = highlight('<b class="b">bold</b> <a href="/b">b</a>', 'b')
+      assert_equal '<b class="b"><strong class="highlight">b</strong>old</b> <a href="/b"><strong class="highlight">b</strong></a>', actual_text
+    end
+
+    it 'should highlight several words across tags' do
+      actual_text = highlight('<p>Lorem</p><p>ipsum lorem</p>', %w[lorem ipsum])
+      assert_equal '<p><strong class="highlight">Lorem</strong></p><p><strong class="highlight">ipsum</strong> <strong class="highlight">lorem</strong></p>', actual_text
+    end
   end
 
   describe 'for #truncate method' do

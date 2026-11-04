@@ -62,6 +62,8 @@ describe 'NumberHelpers' do
       assert_equal '0.78901',           number_with_delimiter(0.78901)
       assert_equal '123,456.78',        number_with_delimiter('123456.78')
       assert_equal 'x',                 number_with_delimiter('x')
+      assert_equal '-1,234,567,890,123', number_with_delimiter('-1234567890123')
+      assert_equal '1,234x5,678', number_with_delimiter('1234x5678')
 
       assert_nil number_with_delimiter(nil)
     end
