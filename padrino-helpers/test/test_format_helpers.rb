@@ -124,9 +124,19 @@ describe 'FormatHelpers' do
       assert_equal '<a title="x > y"><strong class="highlight">y</strong></a>', actual_text
     end
 
-    it 'should highlight text after a < that does not start a tag' do
-      actual_text = highlight('if a < b then y', 'y')
-      assert_equal 'if a < b then <strong class="highlight">y</strong>', actual_text
+    it 'should leave a quoted attribute alone when it holds a <' do
+      actual_text = highlight(%(<a title="x < y" data-y='y < x'>y</a>), 'y')
+      assert_equal %(<a title="x < y" data-y='y < x'><strong class="highlight">y</strong></a>), actual_text
+    end
+
+    it 'should highlight text around a < that does not start a tag' do
+      assert_equal 'if a < b then <strong class="highlight">y</strong>', highlight('if a < b then y', 'y')
+      assert_equal 'if <strong class="highlight">a < b</strong> then y', highlight('if a < b then y', 'a < b')
+    end
+
+    it 'should read a quote in a tag as a value only after =' do
+      actual_text = highlight("<img alt=it's> Ruby isn't", 'ruby')
+      assert_equal %(<img alt=it's> <strong class="highlight">Ruby</strong> isn't), actual_text
     end
 
     it 'should not split a tag at its closing >' do
