@@ -40,7 +40,7 @@ module Padrino
       def create_admin
         self.destination_root = options[:root]
         if in_app_root?
-          if !options[:destroy] && api_project?
+          if !options[:destroy] && recorded_api_project?
             say "<= The admin needs sessions, views and padrino-helpers, which an --api project doesn't have. " \
                 "Generate the admin in a project made without --api. #{NOT_API_HINT}", :yellow
             exit 1

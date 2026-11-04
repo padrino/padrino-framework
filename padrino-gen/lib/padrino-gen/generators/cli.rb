@@ -56,13 +56,7 @@ module Padrino
             exit 1
           end
           generator_class.start(ARGV)
-        elsif %i[admin admin_page].include?(generator_kind) && !Padrino::Generators.boot_error && File.exist?(File.join(project_root, 'config/boot.rb'))
-          message = "<= padrino g #{generator_kind} needs padrino-admin: add gem 'padrino-admin' to the Gemfile."
-          # A generator at the project root answers api_project? as the generators themselves do.
-          if Padrino::Generators::Component.new([], {}, destination_root: project_root).api_project?
-            message += " An --api project can't take an admin, which needs sessions and views; generate it in a project " \
-                       "made without --api. #{NOT_API_HINT}"
-          end
+        elsif (message = missing_admin_message(generator_kind))
           puts message
           exit 1
         else
@@ -72,6 +66,24 @@ module Padrino
       end
 
       private
+
+      ##
+      # Returns what to say when the admin generators are asked for in a project that doesn't load
+      # padrino-admin, or nil outside a project, after a failed boot or with an unreadable .components.
+      #
+      def missing_admin_message(kind)
+        return unless %i[admin admin_page].include?(kind) && !Padrino::Generators.boot_error
+        return unless File.exist?(File.join(project_root, 'config/boot.rb'))
+
+        # A generator at the project root reads .components as the generators themselves do.
+        if Padrino::Generators::Component.new([], {}, destination_root: project_root).recorded_api_project?
+          "<= An --api project can't take an admin, which needs sessions and views; generate it in a project made without --api. #{NOT_API_HINT}"
+        else
+          "<= padrino g #{kind} needs padrino-admin: add gem 'padrino-admin' to the Gemfile."
+        end
+      rescue Psych::Exception
+        nil
+      end
 
       ##
       # Returns the project root the generators run in: --root, or the current directory.

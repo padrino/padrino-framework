@@ -730,12 +730,31 @@ module Padrino
       def api_project?
         return true if options[:api]
 
+        recorded = recorded_api_mode
+        return recorded unless recorded.nil?
+
+        gemfile_gems.include?('padrino-core') && !padrino_mailer_and_helpers?
+      end
+
+      ##
+      # Returns true when --api is given or .components records `:api: true`. Generators refuse
+      # what an api project can't take only then, so a project without the record, whatever its
+      # Gemfile lists, generates as it did before .components kept one.
+      #
+      # @return [Boolean] true for an --api project on record.
+      #
+      def recorded_api_project?
+        options[:api] == true || recorded_api_mode == true
+      end
+
+      ##
+      # Returns the `:api:` value in .components when it is true or false, otherwise nil.
+      #
+      def recorded_api_mode
         components = destination_root('.components')
         config = retrieve_component_config(components) if File.file?(components)
         recorded = config[:api] if config.is_a?(Hash)
-        return recorded if [true, false].include?(recorded)
-
-        gemfile_gems.include?('padrino-core') && !padrino_mailer_and_helpers?
+        recorded if [true, false].include?(recorded)
       end
 
       ##

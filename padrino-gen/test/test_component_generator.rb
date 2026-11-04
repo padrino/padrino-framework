@@ -994,12 +994,11 @@ describe 'ComponentGenerator' do
       assert_equal before, project_snapshot
     end
 
-    it 'should stop in an older api project, which .components does not mark' do
+    it 'should apply a renderer in an older api project, which .components does not mark' do
       edit_components(":api: true\n", '')
-      before = project_snapshot
-      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=haml', "-r=#{project_file('')}") } }
-      assert_match(/no renderer component/, err)
-      assert_equal before, project_snapshot
+      capture_io { generate(:component, '--renderer=haml', "-r=#{project_file('')}") }
+      assert_equal 'haml', YAML.load_file(project_file('.components'))[:renderer]
+      assert_match_in_file(/gem 'haml'/, project_file('Gemfile'))
     end
 
     it 'should apply a renderer once .components says the project is not an api project' do
@@ -1032,6 +1031,20 @@ describe 'ComponentGenerator' do
       components = YAML.load_file(project_file('.components'))
       assert_equal %w[sequel jquery sass], components.values_at(:orm, :script, :stylesheet)
       assert_same true, components[:api]
+    end
+  end
+
+  # A full project whose Gemfile names padrino's parts one by one, without all of them.
+  describe 'a project with a trimmed Gemfile' do
+    { 'padrino-helpers without padrino-mailer' => %w[padrino-core padrino-helpers padrino-admin],
+      'neither padrino-helpers nor padrino-mailer' => %w[padrino-core padrino-admin] }.each do |shape, gems|
+      it "should apply a renderer with #{shape}" do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        gemfile = "#{@apptmp}/sample_project/Gemfile"
+        File.write(gemfile, File.read(gemfile).sub(/^gem 'padrino',.*$/, gems.map { |gem| "gem '#{gem}'" }.join("\n")))
+        capture_io { generate(:component, '--renderer=slim', "-r=#{@apptmp}/sample_project") }
+        assert_equal 'slim', YAML.load_file("#{@apptmp}/sample_project/.components")[:renderer]
+      end
     end
   end
 

@@ -34,6 +34,14 @@ describe 'MailerGenerator' do
       end
     end
 
+    it 'should generate a mailer in an api project that .components does not mark' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(":api: true\n", ''))
+      capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project") }
+      assert_file_exists("#{@apptmp}/sample_project/app/mailers/demo.rb")
+    end
+
     it 'should generate a mailer in an api project whose Gemfile has padrino-mailer and padrino-helpers' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/Gemfile", "gem 'padrino-mailer'\ngem 'padrino-helpers'\n", mode: 'a')
