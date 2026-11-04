@@ -71,14 +71,14 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v7
       if: matrix.vite
       with:
         node-version: '22'
     # One bundle cache per row per day: a run_id key would save 24 caches every run and evict ci.yml's.
     - id: date
       run: echo "date=$(date -u +%F)" >> "$GITHUB_OUTPUT"
-    - uses: actions/cache@v4
+    - uses: actions/cache@v6
       with:
         path: vendor/smoke-bundle
         key: smoke-${{ matrix.name }}-${{ matrix.ruby }}-${{ steps.date.outputs.date }}

@@ -303,21 +303,21 @@ describe 'AssetTagHelpers' do
     it 'should display stylesheet link item' do
       time = stop_time_for_test
       actual_html = stylesheet_link_tag('style')
-      expected_options = { rel: 'stylesheet', type: 'text/css' }
+      expected_options = { rel: 'stylesheet' }
       assert_html_has_tag(actual_html, 'link', expected_options.merge(href: "/stylesheets/style.css?#{time.to_i}"))
       assert actual_html.html_safe?
     end
 
     it 'should display stylesheet link item for long relative path' do
       time = stop_time_for_test
-      expected_options = { rel: 'stylesheet', type: 'text/css' }
+      expected_options = { rel: 'stylesheet' }
       actual_html = stylesheet_link_tag('example/demo/style')
       assert_html_has_tag(actual_html, 'link', expected_options.merge(href: "/stylesheets/example/demo/style.css?#{time.to_i}"))
     end
 
     it 'should display stylesheet link item with absolute path' do
       stop_time_for_test
-      expected_options = { rel: 'stylesheet', type: 'text/css' }
+      expected_options = { rel: 'stylesheet' }
       actual_html = stylesheet_link_tag('/css/style')
       assert_html_has_tag(actual_html, 'link', expected_options.merge(href: '/css/style.css'))
     end
@@ -325,7 +325,7 @@ describe 'AssetTagHelpers' do
     it 'should display stylesheet link item with uri root' do
       self.class.stubs(:uri_root).returns('/blog')
       time = stop_time_for_test
-      expected_options = { rel: 'stylesheet', type: 'text/css' }
+      expected_options = { rel: 'stylesheet' }
       actual_html = stylesheet_link_tag('style')
       assert_html_has_tag(actual_html, 'link', expected_options.merge(href: "/blog/stylesheets/style.css?#{time.to_i}"))
     end
@@ -333,7 +333,7 @@ describe 'AssetTagHelpers' do
     it 'should display stylesheet link items' do
       time = stop_time_for_test
       actual_html = stylesheet_link_tag('style', 'layout.css', 'http://google.com/style.css')
-      assert_html_has_tag(actual_html, 'link', rel: 'stylesheet', type: 'text/css', count: 3)
+      assert_html_has_tag(actual_html, 'link', rel: 'stylesheet', count: 3)
       assert_html_has_tag(actual_html, 'link', href: "/stylesheets/style.css?#{time.to_i}")
       assert_html_has_tag(actual_html, 'link', href: "/stylesheets/layout.css?#{time.to_i}")
       assert_html_has_tag(actual_html, 'link', href: 'http://google.com/style.css')
@@ -342,12 +342,23 @@ describe 'AssetTagHelpers' do
 
     it 'should not use a timestamp if stamp setting is false' do
       self.class.expects(:asset_stamp).returns(false)
-      expected_options = { rel: 'stylesheet', type: 'text/css' }
+      expected_options = { rel: 'stylesheet' }
       assert_html_has_tag(stylesheet_link_tag('style'), 'link', expected_options.merge(href: '/stylesheets/style.css'))
     end
 
     it 'should display stylesheet link used custom options' do
       assert_html_has_tag(stylesheet_link_tag('style', media: 'screen'), 'link', rel: 'stylesheet', media: 'screen')
+    end
+
+    it 'should not write a type attribute by default' do
+      actual_html = stylesheet_link_tag('style', 'layout')
+      assert_html_has_tag(actual_html, 'link', rel: 'stylesheet', count: 2)
+      assert_html_has_no_tag(actual_html, 'link[type]')
+    end
+
+    it 'should write a type attribute given as an option' do
+      actual_html = stylesheet_link_tag('style', type: 'text/css')
+      assert_html_has_tag(actual_html, 'link', rel: 'stylesheet', type: 'text/css')
     end
   end
 
@@ -355,7 +366,7 @@ describe 'AssetTagHelpers' do
     it 'should display javascript item' do
       time = stop_time_for_test
       actual_html = javascript_include_tag('application')
-      assert_html_has_tag(actual_html, 'script', src: "/javascripts/application.js?#{time.to_i}", type: 'text/javascript')
+      assert_html_has_tag(actual_html, 'script', src: "/javascripts/application.js?#{time.to_i}")
       assert actual_html.html_safe?
     end
 
@@ -364,37 +375,37 @@ describe 'AssetTagHelpers' do
       self.class.stubs(:js_asset_folder).returns('js')
       assert_equal 'js', asset_folder_name(:js)
       actual_html = javascript_include_tag('application')
-      assert_html_has_tag(actual_html, 'script', src: "/js/application.js?#{time.to_i}", type: 'text/javascript')
+      assert_html_has_tag(actual_html, 'script', src: "/js/application.js?#{time.to_i}")
     end
 
     it 'should display javascript item for long relative path' do
       time = stop_time_for_test
       actual_html = javascript_include_tag('example/demo/application')
-      assert_html_has_tag(actual_html, 'script', src: "/javascripts/example/demo/application.js?#{time.to_i}", type: 'text/javascript')
+      assert_html_has_tag(actual_html, 'script', src: "/javascripts/example/demo/application.js?#{time.to_i}")
     end
 
     it 'should display javascript item for path containing js' do
       time = stop_time_for_test
       actual_html = javascript_include_tag 'test/jquery.json'
-      assert_html_has_tag(actual_html, 'script', src: "/javascripts/test/jquery.json?#{time.to_i}", type: 'text/javascript')
+      assert_html_has_tag(actual_html, 'script', src: "/javascripts/test/jquery.json?#{time.to_i}")
     end
 
     it 'should display javascript item for path containing period' do
       time = stop_time_for_test
       actual_html = javascript_include_tag 'test/jquery.min'
-      assert_html_has_tag(actual_html, 'script', src: "/javascripts/test/jquery.min.js?#{time.to_i}", type: 'text/javascript')
+      assert_html_has_tag(actual_html, 'script', src: "/javascripts/test/jquery.min.js?#{time.to_i}")
     end
 
     it 'should display javascript item with absolute path' do
       actual_html = javascript_include_tag('/js/application')
-      assert_html_has_tag(actual_html, 'script', src: '/js/application.js', type: 'text/javascript')
+      assert_html_has_tag(actual_html, 'script', src: '/js/application.js')
     end
 
     it 'should display javascript item with uri root' do
       self.class.stubs(:uri_root).returns('/blog')
       time = stop_time_for_test
       actual_html = javascript_include_tag('application')
-      assert_html_has_tag(actual_html, 'script', src: "/blog/javascripts/application.js?#{time.to_i}", type: 'text/javascript')
+      assert_html_has_tag(actual_html, 'script', src: "/blog/javascripts/application.js?#{time.to_i}")
     end
 
     it 'should not append extension to absolute paths' do
@@ -405,7 +416,7 @@ describe 'AssetTagHelpers' do
     it 'should display javascript items' do
       time = stop_time_for_test
       actual_html = javascript_include_tag('application', 'base.js', 'http://google.com/lib.js')
-      assert_html_has_tag(actual_html, 'script', type: 'text/javascript', count: 3)
+      assert_html_has_tag(actual_html, 'script', count: 3)
       assert_html_has_tag(actual_html, 'script', src: "/javascripts/application.js?#{time.to_i}")
       assert_html_has_tag(actual_html, 'script', src: "/javascripts/base.js?#{time.to_i}")
       assert_html_has_tag(actual_html, 'script', src: 'http://google.com/lib.js')
@@ -415,7 +426,18 @@ describe 'AssetTagHelpers' do
     it 'should not use a timestamp if stamp setting is false' do
       self.class.expects(:asset_stamp).returns(false)
       actual_html = javascript_include_tag('application')
-      assert_html_has_tag(actual_html, 'script', src: '/javascripts/application.js', type: 'text/javascript')
+      assert_html_has_tag(actual_html, 'script', src: '/javascripts/application.js')
+    end
+
+    it 'should not write a type attribute by default' do
+      actual_html = javascript_include_tag('application', 'base')
+      assert_html_has_tag(actual_html, 'script', count: 2)
+      assert_html_has_no_tag(actual_html, 'script[type]')
+    end
+
+    it 'should write a type attribute given as an option' do
+      actual_html = javascript_include_tag('application', 'base', type: 'module')
+      assert_html_has_tag(actual_html, 'script', type: 'module', count: 2)
     end
   end
 

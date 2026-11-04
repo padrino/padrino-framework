@@ -135,6 +135,121 @@ describe 'Routing' do
     end
   end
 
+  it 'should decode static file paths without replacing invalid UTF-8' do
+    Dir.mktmpdir do |dir|
+      FileUtils.mkdir_p("#{dir}/public")
+      File.write("#{dir}/public/visible.txt", 'visible')
+      File.write("#{dir}/public/\u{FFFD}.txt", 'replacement')
+      mock_app do
+        set :public_folder, "#{dir}/public"
+        get('/*') { 'not found' }
+      end
+      get '/%76isible.txt'
+      assert_equal 'visible', body
+      get '/%EF%BF%BD.txt'
+      assert_equal 'replacement', body
+      get '/%ff.txt'
+      assert_equal 404, status
+    end
+  end
+
+  describe 'decode_path' do
+    it 'decodes %XX escapes and keeps a plus sign' do
+      assert_equal '/posts/1', Padrino::Routing.decode_path('/posts/1')
+      assert_equal '/posts', Padrino::Routing.decode_path('/%70osts')
+      assert_equal '/a/b', Padrino::Routing.decode_path('/a%2Fb')
+      assert_equal '/a/b', Padrino::Routing.decode_path('/a%2fb')
+      assert_equal '/../report', Padrino::Routing.decode_path('/%2e%2e/report')
+      assert_equal '/a+b', Padrino::Routing.decode_path('/a+b')
+      assert_equal '/a b', Padrino::Routing.decode_path('/a%20b')
+      assert_equal '/a%zz', Padrino::Routing.decode_path('/a%zz')
+    end
+
+    it 'returns UTF-8 for encoded non-ASCII characters, whatever the input encoding' do
+      ['/caf%C3%A9', '/caf%C3%A9'.b].each do |path|
+        decoded = Padrino::Routing.decode_path(path)
+        assert_equal '/café', decoded
+        assert_equal Encoding::UTF_8, decoded.encoding
+        assert decoded.valid_encoding?
+      end
+    end
+
+    it 'keeps invalid UTF-8 byte for byte' do
+      decoded = Padrino::Routing.decode_path('/%ff')
+      assert_equal Encoding::UTF_8, decoded.encoding
+      refute decoded.valid_encoding?
+      assert_equal "/\xFF".b, decoded.b
+    end
+
+    it 'decodes an empty path to an empty UTF-8 string' do
+      decoded = Padrino::Routing.decode_path('')
+      assert_equal '', decoded
+      assert_equal Encoding::UTF_8, decoded.encoding
+    end
+
+    it 'returns a new string and leaves its argument untouched' do
+      frozen = '/%70osts'.freeze
+      assert_equal '/posts', Padrino::Routing.decode_path(frozen)
+
+      path = '/caf%C3%A9'.b
+      decoded = Padrino::Routing.decode_path(path)
+      refute_same path, decoded
+      assert_equal '/caf%C3%A9', path
+      assert_equal Encoding::ASCII_8BIT, path.encoding
+
+      plain = +'/posts'
+      refute_same plain, Padrino::Routing.decode_path(plain)
+    end
+  end
+
+  describe 'decode_route_path' do
+    it 'decodes like decode_path but keeps an encoded slash inside its segment' do
+      assert_equal '/posts/1', Padrino::Routing.decode_route_path('/%70osts/1')
+      assert_equal '/posts%2F1', Padrino::Routing.decode_route_path('/posts%2F1')
+      assert_equal '/posts%2F1', Padrino::Routing.decode_route_path('/posts%2f1')
+      assert_equal '%2F%2F', Padrino::Routing.decode_route_path('%2f%2F')
+      assert_equal '/a+b/c d', Padrino::Routing.decode_route_path('/a+b/c%20d')
+      assert_equal '/../x', Padrino::Routing.decode_route_path('/%2e%2e/x')
+      assert_equal '/%2F', Padrino::Routing.decode_route_path('/%252F')
+      assert_equal '/a%zz', Padrino::Routing.decode_route_path('/a%zz')
+    end
+
+    it 'returns UTF-8, keeps invalid UTF-8 byte for byte and leaves its argument untouched' do
+      decoded = Padrino::Routing.decode_route_path('/caf%C3%A9%2F%ff'.b.freeze)
+      assert_equal Encoding::UTF_8, decoded.encoding
+      refute decoded.valid_encoding?
+      assert_equal "/caf\xC3\xA9%2F\xFF".b, decoded.b
+      assert_equal "/caf\u00e9", Padrino::Routing.decode_route_path('/caf%C3%A9')
+
+      path = "/caf\u00e9/%70".b
+      Padrino::Routing.decode_route_path(path)
+      assert_equal "/caf\u00e9/%70".b, path
+      assert_equal Encoding::ASCII_8BIT, path.encoding
+      assert_equal Encoding::UTF_8, Padrino::Routing.decode_route_path('').encoding
+    end
+
+    it 'is the form the router matches' do
+      mock_app do
+        get('/posts/:id') { "post #{params[:id]}" }
+        get('/:page') { "page #{params[:page]}" }
+      end
+      { '/posts/1' => 'post 1', '/%70osts/1' => 'post 1', '/posts%2F1' => 'page posts/1', '/posts%2f1' => 'page posts/1' }.each do |path, expected|
+        get path
+        assert_equal expected, body, path
+      end
+    end
+  end
+
+  describe 'path_forms' do
+    it 'lists the router form, the full decode and the form route params receive' do
+      assert_equal ['/posts'], Padrino::Routing.path_forms('/%70osts')
+      assert_equal ['/a%2Fb', '/a/b'], Padrino::Routing.path_forms('/a%2fb')
+      assert_equal ['/files%2Freport', '/files/report'], Padrino::Routing.path_forms('/files%252Freport')
+      assert_equal ['/x%41', '/xA'], Padrino::Routing.path_forms('/x%2541')
+      assert_equal ["/\u{FFFD}"], Padrino::Routing.path_forms('/%ff')
+    end
+  end
+
   it 'should ignore trailing delimiters for basic route' do
     mock_app do
       get('/foo') { 'okey' }
@@ -297,6 +412,67 @@ describe 'Routing' do
     assert_equal 'a+b', body
     get('/tags/c%2B%2B')
     assert_equal 'cpp', body
+  end
+
+  it 'should give 404 for a path that decodes to a newline' do
+    mock_app do
+      get('/files/*path') { "file #{params[:path].inspect}" }
+      get(%r{/rx/(.+)}) { "rx #{params[:captures].first.inspect}" }
+      get('/names/:name') { "name #{params[:name].inspect}" }
+      post('/names/:name') { "posted #{params[:name].inspect}" }
+    end
+    request = Rack::MockRequest.new(Padrino::Router.new({ path: '/blog', to: @app }, { path: '/', to: @app }))
+    ['', '/blog'].each do |mount|
+      ['/files/a%0Ab', '/files/a%250Ab', '/rx/a%0Ab', '/rx/a%250Ab', '/names/a%0A', '/names/a%0a', '/names/a%250A', '/names/%0A/'].each do |path|
+        assert_equal 404, request.get("#{mount}#{path}").status, "#{mount}#{path}"
+      end
+      assert_equal 404, request.post("#{mount}/names/a%0A").status, mount
+      { '/files/a%09b' => 'file "a\tb"', '/rx/a%0Db' => 'rx "a\rb"', '/names/a%00' => 'name "a\u0000"',
+        '/names/a%7F' => 'name "a\u007F"', '/names/a%250D' => 'name "a\r"' }.each do |path, served|
+        assert_equal served, request.get("#{mount}#{path}").body, "#{mount}#{path}"
+      end
+    end
+  end
+
+  it 'should cascade a path with a control character to the next app at the same mount' do
+    first = mock_app do
+      before('/admin') { halt 401, 'first' }
+      get('/admin') { 'admin' }
+    end
+    second = mock_app do
+      get('/files/:name') { "file #{params[:name].inspect}" }
+    end
+    request = Rack::MockRequest.new(Padrino::Router.new({ path: '/', to: first }, { path: '/', to: second }))
+    assert_equal 'file "a\tb"', request.get('/files/a%09b').body
+    assert_equal 404, request.get('/files/a%0Ab').status
+    assert_equal 401, request.get('/admin').status
+  end
+
+  it 'should match the whole path, not up to a trailing newline' do
+    mock_app do
+      before('/staff') { halt 403, 'filtered' }
+      get('/staff') { 'staff' }
+      get('/files/*path') { "file #{params[:path]}" }
+      get('/names/:name') { "name #{params[:name].inspect}" }
+      get(:lazy_id, map: '/u/:id', id: %r{[^/]+?}) { "u #{params[:id].inspect}" }
+      get(%r{/lazy/([^/]+?)(?:\.(json))?}) { "lazy #{params[:captures].first.inspect}" }
+      get(%r{/rx}) { 'rx' }
+    end
+    ['/staff%0A', '/staff%0A/', '/files/a%0A', '/x%0A/rx', '/rx%0A', '/names/a%0A', '/names/a%250A',
+     '/u/a%0A', '/lazy/a%0A', '/lazy/a%0a'].each do |path|
+      get path
+      assert_equal 404, status, path
+    end
+    get '/staff'
+    assert_equal [403, 'filtered'], [status, body]
+    get '/files/a/b'
+    assert_equal 'file a/b', body
+    get '/rx'
+    assert_equal 'rx', body
+    get '/names/a%09'
+    assert_equal 'name "a\t"', body
+    get '/lazy/a.json'
+    assert_equal 'lazy "a"', body
   end
 
   it 'should not find a route for a path that does not decode to valid UTF-8' do
@@ -669,6 +845,16 @@ describe 'Routing' do
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
     assert_equal 'js', body
+  end
+
+  it 'should return the conditions from provides' do
+    returned = conditions = nil
+    mock_app do
+      returned = provides(:json)
+      conditions = @conditions
+      get('/a') { 'a' }
+    end
+    assert_same conditions, returned
   end
 
   it 'should return the first content type in provides if accept header is empty' do

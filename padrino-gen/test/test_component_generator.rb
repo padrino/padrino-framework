@@ -418,7 +418,7 @@ describe 'ComponentGenerator' do
       end
 
       it 'should keep an edited application.js for every script component' do
-        %w[dojo htmx jquery mootools prototype ujs].each do |script|
+        %w[htmx jquery ujs].each do |script|
           `rm -rf #{@apptmp}/sample_project`
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--script=#{script}") }
           File.write(project_file('public/javascripts/application.js'), "// edited\n")
@@ -934,6 +934,36 @@ describe 'ComponentGenerator' do
         out, = capture_io { generate(:project, 'sample_project', '--script=htmx', "--renderer=#{renderer}", "--root=#{@apptmp}") }
         expected.each { |pattern| assert_match(pattern, out) }
       end
+    end
+  end
+
+  describe 'a project generated with a script component that was later removed' do
+    def components_file
+      "#{@apptmp}/sample_project/.components"
+    end
+
+    def setup
+      super
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=jquery') }
+      File.write(components_file, File.read(components_file).sub(':script: jquery', ':script: prototype'))
+    end
+
+    it 'should stop on --script=<removed> naming the replacements without asking or changing the project' do
+      components = File.read(components_file)
+      Thor::LineEditor.stubs(:readline).raises(RuntimeError, 'prompted for a script')
+      stop = nil
+      _, err = capture_io { stop = assert_raises(SystemExit) { generate(:component, '--script=prototype', '--renderer=haml', "-r=#{@apptmp}/sample_project") } }
+      assert_equal 1, stop.status
+      assert_match(/The prototype script component was removed from Padrino; use ujs \(no dependencies\), htmx or jquery instead\./, err)
+      assert_equal components, File.read(components_file)
+      assert_no_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should switch to another script' do
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--script=ujs', "-r=#{@apptmp}/sample_project") }
+      assert_match(/applying.*?ujs.*?script/, out)
+      assert_equal 'ujs', YAML.load_file(components_file)[:script]
     end
   end
 

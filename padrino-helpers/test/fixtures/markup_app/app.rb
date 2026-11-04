@@ -42,6 +42,14 @@ class MarkupDemo < Sinatra::Base
       end
     end
 
+    def block_is_template_value(&block)
+      block_is_template?(block).inspect
+    end
+
+    def ruby_block_is_template_value
+      block_is_template_value { 'This not a template block' }
+    end
+
     def content_tag_with_block
       one = content_tag(:p) do
         'one'

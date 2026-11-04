@@ -12,7 +12,7 @@ describe 'RenderHelpers' do
       assert_response_has_tag 'h1', content: 'User name is John'
     end
     it 'should have no counter index for single item' do
-      assert_response_has_no_tag 'p', content: 'My counter is 1', count: 1
+      assert_response_has_no_tag 'p', content: 'My counter is 1'
     end
     it 'should include extra locals information' do
       assert_response_has_tag 'p', content: 'Extra is bar'
@@ -47,7 +47,7 @@ describe 'RenderHelpers' do
       assert_response_has_tag 'h1', content: 'User name is John'
     end
     it 'should have no counter index for single item' do
-      assert_response_has_no_tag 'p', content: 'My counter is 1', count: 1
+      assert_response_has_no_tag 'p', content: 'My counter is 1'
     end
     it 'should include extra locals information' do
       assert_response_has_tag 'p', content: 'Extra is bar'

@@ -135,10 +135,14 @@ module Padrino
       def number_with_delimiter(number, *args)
         options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
-        defaults = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
+        delimiter = options[:delimiter]
+        separator = options[:separator]
+        unless delimiter && separator
+          defaults = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
 
-        delimiter ||= options[:delimiter] || defaults[:delimiter]
-        separator ||= options[:separator] || defaults[:separator]
+          delimiter ||= defaults[:delimiter]
+          separator ||= defaults[:separator]
+        end
 
         begin
           parts = number.to_s.split('.')
@@ -178,14 +182,19 @@ module Padrino
       def number_with_precision(number, *args)
         options = args.last.is_a?(Hash) ? Utils.symbolize_keys(args.pop) : {}
 
-        defaults           = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
-        precision_defaults = I18n.translate(:'number.precision.format', locale: options[:locale],
-                                                                        raise: true) rescue {}
-        defaults           = defaults.merge(precision_defaults)
+        precision = options[:precision]
+        separator = options[:separator]
+        delimiter = options[:delimiter]
+        unless precision && separator && delimiter
+          defaults           = I18n.translate(:'number.format', locale: options[:locale], raise: true) rescue {}
+          precision_defaults = I18n.translate(:'number.precision.format', locale: options[:locale],
+                                                                          raise: true) rescue {}
+          defaults           = defaults.merge(precision_defaults)
 
-        precision ||= options[:precision] || defaults[:precision]
-        separator ||= options[:separator] || defaults[:separator]
-        delimiter ||= options[:delimiter] || defaults[:delimiter]
+          precision ||= defaults[:precision]
+          separator ||= defaults[:separator]
+          delimiter ||= defaults[:delimiter]
+        end
 
         begin
           rounded_number = (Float(number) * (10**precision)).round.to_f / 10**precision
