@@ -14,21 +14,10 @@ module Padrino
         #
         def registered(app)
           app.register Padrino::Admin unless app.extensions.include?(Padrino::Admin)
-          app.set :session_id, "_padrino_#{Padrino.env}_#{app.app_name}" unless app.respond_to?(:session_id)
           app.set :admin_model, 'Account' unless app.respond_to?(:admin_model)
+          Padrino::Auth.setup(app, Padrino::Admin::AccessControl::Base.new)
           app.helpers Padrino::Admin::Helpers::AuthenticationHelpers
           app.helpers Padrino::Admin::Helpers::ViewHelpers
-          app.before { login_required }
-          app.class_eval do
-            class << self
-              attr_accessor :access_control
-            end
-            def access_control
-              self.class.access_control
-            end
-          end
-
-          app.send(:access_control=, Padrino::Admin::AccessControl::Base.new)
         end
         alias included registered
       end

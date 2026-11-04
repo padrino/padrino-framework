@@ -30,3 +30,85 @@ describe 'Padrino::Auth' do
     assert_equal "[nil, nil, nil]\n", output
   end
 end
+
+describe 'register Padrino::Auth' do
+  before { load_fixture 'sequel' }
+
+  def auth_app(&block)
+    @app = Sinatra.new(Padrino::Application) do
+      register Padrino::Auth
+      enable :sessions
+      instance_eval(&block)
+    end
+  end
+
+  it 'returns 401 on a protected path and 200 after login' do
+    auth_app do
+      access_control.roles_for(:any) { |a| a.protect '/'; a.allow '/login' }
+      access_control.roles_for(:admin) { |a| a.allow '/' }
+      get('/login') { set_current_account(Account.first); 'in' }
+      get('/') { 'home' }
+    end
+    get '/'
+    assert_equal 401, last_response.status
+    assert_equal "You don't have permission for this resource", last_response.body
+    get '/login'
+    get '/'
+    assert_equal 200, last_response.status
+    assert_equal 'home', last_response.body
+  end
+
+  it 'does not add admin view helpers' do
+    auth_app { get('/') { 'x' } }
+    instance = @app.new!
+    refute_respond_to instance, :tag_icon
+    refute_respond_to instance, :pat
+  end
+
+  it 'uses admin_model over account_model' do
+    auth_app do
+      set :admin_model, 'Nope'
+      set :account_model, 'Account'
+      access_control.roles_for(:any) { |a| a.protect '/' }
+      get('/') { 'home' }
+    end
+    error = assert_raises(Padrino::Auth::Error) { get '/' }
+    assert_match(/Nope/, error.message)
+  end
+
+  it 'keeps an admin_model_obj override' do
+    @app = Sinatra.new(Padrino::Application) do
+      register Padrino::Admin::AccessControl
+      enable :sessions
+      set :admin_model, 'Nope'
+      helpers do
+        def admin_model_obj
+          Account
+        end
+      end
+      access_control.roles_for(:any) { |a| a.protect '/'; a.allow '/login' }
+      access_control.roles_for(:admin) { |a| a.allow '/' }
+      get('/login') { set_current_account(Account.first); 'in' }
+      get('/') { 'home' }
+    end
+    get '/login'
+    get '/'
+    assert_equal 200, last_response.status
+    assert_equal 'home', last_response.body
+  end
+
+  it 'stores a mounted location' do
+    auth_app do
+      set :uri_root, '/api'
+      enable :store_location
+      set :login_page, '/login'
+      access_control.roles_for(:any) { |a| a.protect '/posts' }
+      get('/login') { set_current_account(Account.first); redirect_back_or_default('/default') }
+      get('/posts') { 'posts' }
+    end
+    get '/posts?page=2', {}, 'SCRIPT_NAME' => '/api'
+    assert_equal 302, last_response.status
+    get '/login'
+    assert_equal 'http://example.org/api/posts?page=2', last_response.location
+  end
+end
