@@ -25,7 +25,9 @@ module Padrino
 
       def start(*args)
         prepare :start
-        removed = Padrino.removed_server_message(options[:server])
+        # The server Padrino::Server.start would use: a server= in --options wins over -a.
+        override = Array(options[:options]).reverse.find { |option| option.start_with?('server=') }
+        removed = Padrino.removed_server_message(override ? override.split('=', 2).last : options[:server])
         raise Thor::Error, removed if removed
 
         require File.expand_path('adapter', __dir__)

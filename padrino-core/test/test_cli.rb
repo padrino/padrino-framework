@@ -154,6 +154,18 @@ describe 'Padrino::Cli' do
     end
   end
 
+  it 'should stop before loading the app for a removed server given with --options' do
+    out, err, status = run_in_project(<<~RUBY)
+      at_exit { puts 'BOOTED' if defined?(RunnerDemo) }
+      require 'padrino-core/cli/base'
+      Padrino::Cli::Base.start(%w[start -a puma -O Threads=0:2 server=mongrel])
+    RUBY
+    assert_equal 1, status.exitstatus
+    refute_includes out, 'BOOTED'
+    assert_match(/^The mongrel server was removed from Padrino; use one of .*\bwebrick\b/, err)
+    refute_match(/\.rb:\d+:in /, err)
+  end
+
   it 'should load the models in the rake environment task after a skeleton task' do
     out, err, status = run_in_project(<<~RUBY)
       require 'rake'
