@@ -1018,6 +1018,21 @@ describe 'ComponentGenerator' do
       end
     end
 
+    it 'should stop on an invalid renderer before prompting' do
+      Padrino::Generators::Component.any_instance.expects(:ask_valid_option).never
+      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=bogus', "-r=#{project_file('')}") } }
+      assert_match(/no renderer component \(--renderer=bogus\)/, err)
+    end
+
+    it 'should stop on a renderer chosen at the prompt' do
+      edit_components(':renderer: none', ':renderer: bogus')
+      Padrino::Generators::Component.any_instance.stubs(:ask_valid_option).returns('haml')
+      before = project_snapshot
+      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=bogus', "-r=#{project_file('')}") } }
+      assert_match(/no renderer component \(--renderer=haml\)/, err)
+      assert_equal before, project_snapshot
+    end
+
     it 'should stop on a switch to another renderer' do
       edit_components(':renderer: none', ':renderer: erb')
       _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=haml', "-r=#{project_file('')}") } }

@@ -17,6 +17,8 @@ module Padrino
       include Padrino::Generators::Runner
       include Padrino::Generators::Components::Actions
 
+      API_HINT = 'Leave out --api to generate a project with views.'.freeze
+
       desc "Description:\n\n\tpadrino-gen project generates a new Padrino project"
 
       argument :name, desc: 'The name of your padrino project'
@@ -57,7 +59,7 @@ module Padrino
 
         @app_name = app.gsub(/\W/, '_').camelize
         # Settle every component choice before writing, so an invalid one leaves no partial project behind.
-        refuse_api_components(options, 'Leave out --api to generate a project with views.') if options.api?
+        refuse_api_components(options, API_HINT) if options.api?
         resolve_component_choices unless options[:template]
         self.destination_root = File.join(options[:root], name)
         if options[:template]
@@ -177,6 +179,8 @@ module Padrino
         self.class.component_types.each do |comp|
           @_components[comp] = resolve_valid_choice(comp)
         end
+        # Check again, as a renderer typed at the prompt skips the check on the options.
+        refuse_api_components(@_components, API_HINT) if options.api?
         resolve_valid_adapter if SQL_ADAPTER_ORMS.include?(@_components[:orm])
       end
     end

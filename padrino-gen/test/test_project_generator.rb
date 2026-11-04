@@ -191,6 +191,22 @@ describe 'ProjectGenerator' do
       assert_no_dir_exists("#{@apptmp}/sample_project")
     end
 
+    it 'should stop an api project with an invalid renderer before prompting' do
+      Padrino::Generators::Project.any_instance.expects(:ask_valid_option).never
+      _, err = capture_io { assert_raises(SystemExit) { generate(:project, 'sample_project', '--api', '--renderer=bogus', "--root=#{@apptmp}") } }
+      assert_match(/no renderer component \(--renderer=bogus\)/, err)
+      assert_no_dir_exists("#{@apptmp}/sample_project")
+    end
+
+    it 'should stop an api project when a renderer is chosen at the prompt' do
+      Padrino::Generators::Project.any_instance.stubs(:ask_valid_option).returns('haml')
+      stop = nil
+      _, err = capture_io { stop = assert_raises(SystemExit) { generate(:project, 'sample_project', '--api', '--renderer=', "--root=#{@apptmp}") } }
+      assert_equal 1, stop.status
+      assert_match(/An --api project has no views, so it takes no renderer component \(--renderer=haml\)\. Leave out --api/, err)
+      assert_no_dir_exists("#{@apptmp}/sample_project")
+    end
+
     { script: %w[htmx ujs jquery vite], stylesheet: %w[sass scss tailwind] }.each do |type, choices|
       choices.each do |choice|
         it "should take the #{choice} #{type} component in an api project" do
