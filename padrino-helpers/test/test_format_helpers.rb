@@ -119,6 +119,27 @@ describe 'FormatHelpers' do
       assert_equal '<b class="b"><strong class="highlight">b</strong>old</b> <a href="/b"><strong class="highlight">b</strong></a>', actual_text
     end
 
+    it 'should leave a quoted attribute alone when it holds a >' do
+      actual_text = highlight('<a title="x > y">y</a>', 'y')
+      assert_equal '<a title="x > y"><strong class="highlight">y</strong></a>', actual_text
+    end
+
+    it 'should highlight text after a < that does not start a tag' do
+      actual_text = highlight('if a < b then y', 'y')
+      assert_equal 'if a < b then <strong class="highlight">y</strong>', actual_text
+    end
+
+    it 'should not split a tag at its closing >' do
+      assert_equal '<b>x</b>', highlight('<b>x</b>', '>x')
+    end
+
+    it 'should highlight long text in linear time' do
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      actual_text = highlight('word ' * 20_000, 'word')
+      assert_operator Process.clock_gettime(Process::CLOCK_MONOTONIC) - started, :<, 2
+      assert_equal '<strong class="highlight">word</strong> ' * 20_000, actual_text
+    end
+
     it 'should highlight several words across tags' do
       actual_text = highlight('<p>Lorem</p><p>ipsum lorem</p>', %w[lorem ipsum])
       assert_equal '<p><strong class="highlight">Lorem</strong></p><p><strong class="highlight">ipsum</strong> <strong class="highlight">lorem</strong></p>', actual_text

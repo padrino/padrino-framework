@@ -219,7 +219,9 @@ module Padrino
           text
         else
           pattern = /(#{Array(words).map { |p| Regexp.escape(p) }.join('|')})/i
-          text.scan(/<[^>]*|[^<]+/).map { |part| part.start_with?('<') ? part : part.gsub(pattern, options[:highlighter]) }.join
+          text.scan(%r{<[a-z/!?](?:"[^"<]*+"|'[^'<]*+'|[^<>])*+>?|[^<]+|<}i).map do |part|
+            part.match?(%r{\A<[a-z/!?]}i) ? part : part.gsub(pattern, options[:highlighter])
+          end.join
         end
       end
 
