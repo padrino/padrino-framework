@@ -1,6 +1,6 @@
 = CHANGES
 
-== 0.18.4 (2026-11-05)
+== 0.18.4 (2026-11-04)
 
 - SEC #2517 `highlight` and `number_with_delimiter` take time in proportion to their input on long text. `highlight` no longer adds highlight markup inside HTML tags (such as a tag name, a closing tag or a quoted attribute). It reads a `<` followed by an ASCII letter, `/`, `!` or `?` as the start of a tag, as a browser does, so text after an unescaped `x<y` is no longer highlighted up to the next `>`. `number_with_delimiter` inserts the delimiter as given, without reading a backslash in it as a back-reference (@nesquena, reported by @NotAFlightRisk)
 - FIX #2506 `tag`, `content_tag` and the helpers built on them (`link_to`, form fields, ...) render faster; their output is unchanged (@nesquena)
