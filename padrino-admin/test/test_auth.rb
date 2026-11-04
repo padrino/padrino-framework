@@ -170,3 +170,41 @@ describe 'Padrino::Auth current_account_from' do
     assert_equal [200, 401], statuses
   end
 end
+
+describe 'Padrino::Auth without a session' do
+  before { load_fixture 'sequel' }
+
+  def rules_app(&block)
+    @app = Sinatra.new(Padrino::Application) do
+      register Padrino::Auth
+      access_control.roles_for(:any) { |a| a.protect '/'; a.allow '/login' }
+      access_control.roles_for(:admin) { |a| a.allow '/' }
+      instance_eval(&block) if block
+    end
+  end
+
+  it 'warns once and returns 401 without a session' do
+    rules_app { get('/') { 'home' } }
+    _, err = capture_io do
+      get '/'
+      assert_equal 401, last_response.status
+      get '/'
+      assert_equal 401, last_response.status
+    end
+    assert_equal 1, err.scan('Padrino::Auth looks up').size
+  end
+
+  it 'uses session middleware when sessions? is false' do
+    rules_app do
+      use Rack::Session::Cookie, secret: 'x' * 64
+      get('/login') { set_current_account(Account.first); 'in' }
+      get('/') { 'home' }
+    end
+    _, err = capture_io do
+      get '/login'
+      get '/'
+      assert_equal 200, last_response.status
+    end
+    refute_match(/Padrino::Auth looks up/, err)
+  end
+end

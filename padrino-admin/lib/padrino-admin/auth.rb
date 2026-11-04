@@ -295,7 +295,26 @@ module Padrino
       end
 
       def login_from_session
-        account_model_obj&.find_by_id(session[settings.session_id])
+        model = account_model_obj
+        unless env.key?('rack.session')
+          warn_missing_session
+          return nil
+        end
+
+        model&.find_by_id(session[settings.session_id])
+      end
+
+      def warn_missing_session
+        return if settings.instance_variable_get(:@_auth_session_warned)
+
+        settings.instance_variable_set(:@_auth_session_warned, true)
+        warn(<<~ERROR)
+          Padrino::Auth looks up the current account in the session, but this app has no session. Use:
+
+              enable :sessions
+
+          or set current_account_from { ... } to find the account another way.
+        ERROR
       end
 
       def account_model_obj
