@@ -434,6 +434,17 @@ describe 'Routing' do
     end
   end
 
+  it 'should give 404 for a path with a raw newline' do
+    mock_app do
+      get('/names/:name') { 'name' }
+    end
+    ["/names/a\nb", "/names/a\n"].each do |path|
+      env = Rack::MockRequest.env_for('/')
+      env['PATH_INFO'] = path
+      assert_equal 404, @app.call(env)[0], path.inspect
+    end
+  end
+
   it 'should cascade a path with a control character to the next app at the same mount' do
     first = mock_app do
       before('/admin') { halt 401, 'first' }
