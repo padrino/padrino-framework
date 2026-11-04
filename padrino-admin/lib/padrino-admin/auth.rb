@@ -169,10 +169,20 @@ module Padrino
       end
 
       ##
-      # Returns the current_account, it's an instance of Account model.
+      # Returns the current_account, it's an instance of Account model, or nil. It is looked up
+      # once per request: with the block given to +current_account_from+ if the app has one,
+      # else from the session.
       #
       def current_account
-        @current_account ||= login_from_session
+        return @current_account if defined?(@current_account)
+
+        hook = self.class.respond_to?(:current_account_hook) && self.class.current_account_hook
+        account = (hook ? instance_exec(&hook) : login_from_session) || nil
+        if account && !account.respond_to?(:role)
+          raise Padrino::Auth::Error, "current_account_from must return an account (responding to role) or nil, got #{account.class}"
+        end
+
+        @current_account = account
       end
 
       ##
@@ -301,6 +311,32 @@ module Padrino
       end
     end
 
+    ##
+    # Class methods added to an app by +setup+.
+    #
+    module ClassMethods
+      ##
+      # Chooses how the app finds the current account. The block runs in the request (it can call
+      # +env+, +request+, +params+) once per request and returns an account that responds to
+      # +role+, or nil. Without a block the account comes from the session.
+      #
+      # @example Find the account from a token header.
+      #     current_account_from { Account.find_by_token(env['HTTP_AUTHORIZATION'].to_s[/\ABearer (.+)/, 1]) }
+      #
+      def current_account_from(&block)
+        raise Padrino::Auth::Error, 'current_account_from needs a block' unless block
+
+        @current_account_from = block
+      end
+
+      ##
+      # The block given to +current_account_from+ on this app, or nil.
+      #
+      def current_account_hook
+        @current_account_from
+      end
+    end
+
     class << self
       ##
       # Method used by Padrino::Application when we register the extension.
@@ -319,6 +355,7 @@ module Padrino
         app.set :session_id, "_padrino_#{Padrino.env}_#{app.app_name}" unless app.respond_to?(:session_id)
         app.set :account_model, 'Account' unless app.respond_to?(:account_model)
         app.helpers Padrino::Auth::Helpers
+        app.extend Padrino::Auth::ClassMethods
         app.before { login_required }
         app.class_eval do
           class << self

@@ -112,3 +112,61 @@ describe 'register Padrino::Auth' do
     assert_equal 'http://example.org/api/posts?page=2', last_response.location
   end
 end
+
+describe 'Padrino::Auth current_account_from' do
+  before { load_fixture 'sequel' }
+
+  def hook_app(hook = nil)
+    Sinatra.new(Padrino::Application) do
+      register Padrino::Auth
+      set :raise_errors, true
+      set :show_exceptions, false
+      current_account_from(&hook) if hook
+      access_control.roles_for(:any) { |a| a.protect '/'; a.allow '/login' }
+      access_control.roles_for(:admin) { |a| a.allow '/' }
+      get('/') { 'home' }
+    end
+  end
+
+  it 'reads the account from a header token without sessions' do
+    @app = hook_app(proc { Account.first if env['HTTP_AUTHORIZATION'] == 'Bearer t' })
+    get '/'
+    assert_equal 401, last_response.status
+    get '/', {}, 'HTTP_AUTHORIZATION' => 'Bearer t'
+    assert_equal 200, last_response.status
+  end
+
+  it 'never grants access for nil or false' do
+    [proc { nil }, proc { false }].each do |hook|
+      @app = hook_app(hook)
+      get '/'
+      assert_equal 401, last_response.status
+    end
+  end
+
+  it 'raises for a result that is not an account' do
+    @app = hook_app(proc { 'token' })
+    error = assert_raises(Padrino::Auth::Error) { get '/' }
+    assert_match(/current_account_from must return an account/, error.message)
+  end
+
+  it 'propagates hook errors' do
+    @app = hook_app(proc { raise ArgumentError, 'boom' })
+    assert_raises(ArgumentError) { get '/' }
+  end
+
+  it 'runs the hook once per request' do
+    calls = 0
+    @app = hook_app(proc { calls += 1; nil })
+    get '/'
+    assert_equal 401, last_response.status
+    assert_equal 1, calls
+  end
+
+  it 'keeps hooks per app' do
+    statuses = [proc { Account.first }, proc { nil }].map do |hook|
+      Rack::MockRequest.new(hook_app(hook)).get('/').status
+    end
+    assert_equal [200, 401], statuses
+  end
+end
