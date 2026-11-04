@@ -203,6 +203,7 @@ module Padrino
       #     The html pattern for wrapping the highlighted words.
       #
       # @return [String] The text with the words specified wrapped with highlighted spans.
+      #   Words inside HTML tags (tag names and attributes) are left as they are.
       #
       # @example
       #   highlight('Lorem ipsum dolor sit amet', 'dolor')
@@ -217,8 +218,10 @@ module Padrino
         if text.empty? || words.empty?
           text
         else
-          match = Array(words).map { |p| Regexp.escape(p) }.join('|')
-          text.gsub(/(#{match})(?!(?:[^<]*?)(?:["'])[^<>]*>)/i, options[:highlighter])
+          pattern = /(#{Array(words).map { |p| Regexp.escape(p) }.join('|')})/i
+          text.to_str.gsub(%r{(<[A-Za-z/!?](?:=\s*+"[^"]*+"|=\s*+'[^']*+'|[^<>])*+>?)|(?:[^<]|<(?![A-Za-z/!?]))++}) do |part|
+            Regexp.last_match(1) || part.gsub(pattern, options[:highlighter])
+          end
         end
       end
 
