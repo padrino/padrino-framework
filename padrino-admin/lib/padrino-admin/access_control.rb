@@ -13,6 +13,8 @@ module Padrino
         # Method used by Padrino::Application when we register the extension.
         #
         def registered(app)
+          raise Padrino::Auth::Error, 'Register Padrino::Admin::AccessControl instead of Padrino::Auth, not both' if app.extensions.include?(Padrino::Auth)
+
           app.register Padrino::Admin unless app.extensions.include?(Padrino::Admin)
           app.set :admin_model, 'Account' unless app.respond_to?(:admin_model)
           Padrino::Auth.setup(app, Padrino::Admin::AccessControl::Base.new)
@@ -20,6 +22,13 @@ module Padrino
           app.helpers Padrino::Admin::Helpers::ViewHelpers
         end
         alias included registered
+
+        ##
+        # AccessControl sets up Padrino::Auth itself, so registering Auth after it is a no-op.
+        #
+        def includes_auth?
+          true
+        end
       end
 
       ##

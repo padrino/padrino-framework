@@ -360,7 +360,14 @@ module Padrino
       ##
       # Method used by Padrino::Application when we register the extension.
       #
+      # A no-op when an extension that includes Auth (+includes_auth?+) is registered, or when the
+      # app already registered Auth. Both checks read the extension list, which +reset!+ clears,
+      # so a reloaded app sets up its rules and +before+ filter again.
+      #
       def registered(app)
+        return if app.extensions.any? { |e| e.respond_to?(:includes_auth?) && e.includes_auth? }
+        return if app.instance_variable_get(:@extensions).count(Padrino::Auth) > 1
+
         setup(app, Padrino::Auth::Rules.new)
       end
       alias included registered

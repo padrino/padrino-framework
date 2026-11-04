@@ -208,3 +208,68 @@ describe 'Padrino::Auth without a session' do
     refute_match(/Padrino::Auth looks up/, err)
   end
 end
+
+describe 'registering Padrino::Auth and AccessControl' do
+  before { load_fixture 'sequel' }
+
+  def any_authorizations(app)
+    app.access_control.instance_variable_get(:@authorizations).count { |auth| auth.roles.include?(:any) }
+  end
+
+  it 'refuses AccessControl after Auth' do
+    error = assert_raises(Padrino::Auth::Error) do
+      Sinatra.new(Padrino::Application) do
+        register Padrino::Auth
+        register Padrino::Admin::AccessControl
+      end
+    end
+    assert_equal 'Register Padrino::Admin::AccessControl instead of Padrino::Auth, not both', error.message
+  end
+
+  it 'keeps admin rules when Auth follows AccessControl' do
+    counts = []
+    @app = Sinatra.new(Padrino::Application) do
+      register Padrino::Admin::AccessControl
+      access_control.roles_for(:any) { |a| a.project_module :foo, '/foo' }
+      counts << filters[:before].size
+      register Padrino::Auth
+      counts << filters[:before].size
+    end
+    assert_equal '/foo', @app.access_control.project_modules(:any).first.path
+    assert_equal counts.first, counts.last
+    assert_equal 1, @app.filters[:before].size
+  end
+
+  it 'is a no-op registered twice' do
+    @app = Sinatra.new(Padrino::Application) do
+      register Padrino::Auth
+      enable :sessions
+      access_control.roles_for(:any) { |a| a.protect '/' }
+      register Padrino::Auth
+      get('/') { 'home' }
+    end
+    get '/'
+    assert_equal 401, last_response.status
+    assert_equal 1, @app.filters[:before].size
+  end
+
+  [Padrino::Auth, Padrino::Admin::AccessControl].each do |extension|
+    it "protects again after a reload with #{extension}" do
+      file = proc do
+        register extension
+        enable :sessions
+        access_control.roles_for(:any) { |a| a.protect '/' }
+        get('/') { 'home' }
+      end
+      @app = Sinatra.new(Padrino::Application) { instance_eval(&file) }
+      # What Padrino::Application#reload! does before it loads the app file again.
+      @app.reset!
+      @app.reset_router!
+      @app.instance_eval(&file)
+      get '/'
+      assert_equal 401, last_response.status
+      assert_equal 1, @app.filters[:before].size
+      assert_equal 1, any_authorizations(@app)
+    end
+  end
+end
