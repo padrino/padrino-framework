@@ -162,7 +162,6 @@ describe 'AppGenerator' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
       components = "#{@apptmp}/sample_project/.components"
       File.write(components, File.read(components).sub(':api: true', ':api: false'))
-      File.write("#{@apptmp}/sample_project/Gemfile", "gem 'padrino'\n", mode: 'a')
       capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
       assert_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/demo/app.rb")
     end
