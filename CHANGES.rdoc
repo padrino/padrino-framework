@@ -1,5 +1,9 @@
 = CHANGES
 
+== Unreleased
+
+- FIX #2517 `highlight` and `number_with_delimiter` take time in proportion to their input on long text. `highlight` no longer adds highlight markup inside HTML tags (such as a tag name, a closing tag or a quoted attribute). It reads a `<` followed by an ASCII letter, `/`, `!` or `?` as the start of a tag, as a browser does, so text after an unescaped `x<y` is no longer highlighted up to the next `>`. `number_with_delimiter` inserts the delimiter as given, without reading a backslash in it as a back-reference (@nesquena)
+
 == 0.18.3 (2026-11-03)
 
 - SEC #2492 A `before` or `after` filter with a path, a Regexp, or the `path` or `path_info` option compares each decoded form of the request path (as the router matches it, fully decoded, and as route params receive it), and also runs for that path without the format the route captures, without its trailing slashes and with one. The `path` and `path_info` options also compare the path as given. An app's `before` filters are decided for each route tried, not only the first, and they don't run a second time at a 404 that follows those routes (@achiurizo, @nesquena)
