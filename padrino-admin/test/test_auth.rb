@@ -188,6 +188,30 @@ describe 'Padrino::Auth current_account_from' do
     assert_equal 1, calls
   end
 
+  it 'drops a removed hook after a reload' do
+    @app = Sinatra.new(Padrino::Application) do
+      register Padrino::Auth
+      current_account_from { Account.first }
+    end
+    # What Padrino::Application#reload! does before it loads the app file again, now without the hook.
+    @app.reset!
+    @app.reset_router!
+    @app.instance_eval do
+      register Padrino::Auth
+      enable :sessions
+      access_control.roles_for(:any) { |a| a.protect '/'; a.allow '/login' }
+      access_control.roles_for(:admin) { |a| a.allow '/' }
+      get('/login') { set_current_account(Account.first); 'in' }
+      get('/') { 'home' }
+    end
+    assert_nil @app.current_account_hook
+    get '/'
+    assert_equal 401, last_response.status
+    get '/login'
+    get '/'
+    assert_equal 200, last_response.status
+  end
+
   it 'keeps hooks per app' do
     statuses = [proc { Account.first }, proc { nil }].map do |hook|
       Rack::MockRequest.new(hook_app(hook)).get('/').status

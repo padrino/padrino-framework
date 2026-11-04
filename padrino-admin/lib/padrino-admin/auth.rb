@@ -375,9 +375,11 @@ module Padrino
       ##
       # Shared setup for +register Padrino::Auth+ and the extensions built on it: session key,
       # account model, helpers, the one +before+ filter and the +access_control+ accessors. +rules+
-      # becomes the app's +access_control+.
+      # becomes the app's +access_control+. Clears the +current_account_from+ hook, so a reloaded
+      # app file without one finds the account in the session again.
       #
       def setup(app, rules)
+        app.instance_variable_set(:@current_account_from, nil)
         app.set :session_id, "_padrino_#{Padrino.env}_#{app.app_name}" unless app.respond_to?(:session_id)
         app.set :account_model, 'Account' unless app.respond_to?(:account_model)
         app.helpers Padrino::Auth::Helpers
