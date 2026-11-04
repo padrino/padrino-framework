@@ -27,7 +27,8 @@ describe 'Padrino::Auth' do
     code = "require 'padrino-core'; require 'padrino-admin/auth'; p [defined?(Padrino::Admin), defined?(Padrino::Helpers), defined?(I18n)]"
     output, status = Open3.capture2e(RbConfig.ruby, *libs, '-e', code)
     assert status.success?, output
-    assert_equal "[nil, nil, nil]\n", output
+    # The bundle may print notes (such as the Haml version) before the script runs.
+    assert_equal '[nil, nil, nil]', output.lines.last.to_s.chomp, output
   end
 end
 
