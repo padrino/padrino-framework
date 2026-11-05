@@ -967,6 +967,102 @@ describe 'ComponentGenerator' do
     end
   end
 
+  describe 'an api project' do
+    def project_file(path)
+      "#{@apptmp}/sample_project/#{path}"
+    end
+
+    def project_snapshot
+      Dir[project_file('**/*'), project_file('.components')].to_h { |path| [path, File.file?(path) && File.read(path)] }
+    end
+
+    def setup
+      super
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+    end
+
+    def edit_components(pattern, replacement)
+      File.write(project_file('.components'), File.read(project_file('.components')).sub(pattern, replacement))
+    end
+
+    it 'should stop on a renderer without changing the project' do
+      before = project_snapshot
+      stop = nil
+      _, err = capture_io { stop = assert_raises(SystemExit) { generate(:component, '--renderer=haml', '--stylesheet=sass', '--orm=sequel', "-r=#{project_file('')}") } }
+      assert_equal 1, stop.status
+      assert_match(/An --api project has no views, so it takes no renderer component \(--renderer=haml\)\. If this project isn't an --api project, set `:api: false` in its \.components\./, err)
+      assert_equal before, project_snapshot
+    end
+
+    it 'should apply a renderer in an older api project, which .components does not mark' do
+      edit_components(":api: true\n", '')
+      capture_io { generate(:component, '--renderer=haml', "-r=#{project_file('')}") }
+      assert_equal 'haml', YAML.load_file(project_file('.components'))[:renderer]
+      assert_match_in_file(/gem 'haml'/, project_file('Gemfile'))
+    end
+
+    it 'should apply a renderer once .components says the project is not an api project' do
+      edit_components(':api: true', ':api: false')
+      capture_io { generate(:component, '--renderer=haml', "-r=#{project_file('')}") }
+      assert_equal 'haml', YAML.load_file(project_file('.components'))[:renderer]
+    end
+
+    # Older api projects could be generated with a renderer.
+    [':api: true', ''].each do |record|
+      it "should apply the renderer the project already has again#{' in an older api project' if record.empty?}" do
+        edit_components(":api: true\n", record.empty? ? '' : "#{record}\n")
+        edit_components(':renderer: none', ':renderer: erb')
+        out, = capture_io { generate(:component, '--renderer=erb', "-r=#{project_file('')}") }
+        assert_match(/applying.*?erb.*?renderer/, out)
+        assert_match_in_file(/gem 'erubi'/, project_file('Gemfile'))
+      end
+    end
+
+    it 'should stop on an invalid renderer before prompting' do
+      Padrino::Generators::Component.any_instance.expects(:ask_valid_option).never
+      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=bogus', "-r=#{project_file('')}") } }
+      assert_match(/no renderer component \(--renderer=bogus\)/, err)
+    end
+
+    it 'should stop on a renderer chosen at the prompt' do
+      edit_components(':renderer: none', ':renderer: bogus')
+      Padrino::Generators::Component.any_instance.stubs(:ask_valid_option).returns('haml')
+      before = project_snapshot
+      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=bogus', "-r=#{project_file('')}") } }
+      assert_match(/no renderer component \(--renderer=haml\)/, err)
+      assert_equal before, project_snapshot
+    end
+
+    it 'should stop on a switch to another renderer' do
+      edit_components(':renderer: none', ':renderer: erb')
+      _, err = capture_io { assert_raises(SystemExit) { generate(:component, '--renderer=haml', "-r=#{project_file('')}") } }
+      assert_match(/no renderer component \(--renderer=haml\)/, err)
+      assert_equal 'erb', YAML.load_file(project_file('.components'))[:renderer]
+    end
+
+    it 'should apply other components, a script, a stylesheet and none for the renderer' do
+      capture_io { generate(:component, '--orm=sequel', '--script=jquery', '--stylesheet=sass', '--renderer=none', "-r=#{project_file('')}") }
+      assert_file_exists(project_file('public/javascripts/jquery.js'))
+      components = YAML.load_file(project_file('.components'))
+      assert_equal %w[sequel jquery sass], components.values_at(:orm, :script, :stylesheet)
+      assert_same true, components[:api]
+    end
+  end
+
+  # A full project whose Gemfile names padrino's parts one by one, without all of them.
+  describe 'a project with a trimmed Gemfile' do
+    { 'padrino-helpers without padrino-mailer' => %w[padrino-core padrino-helpers padrino-admin],
+      'neither padrino-helpers nor padrino-mailer' => %w[padrino-core padrino-admin] }.each do |shape, gems|
+      it "should apply a renderer with #{shape}" do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        gemfile = "#{@apptmp}/sample_project/Gemfile"
+        File.write(gemfile, File.read(gemfile).sub(/^gem 'padrino',.*$/, gems.map { |gem| "gem '#{gem}'" }.join("\n")))
+        capture_io { generate(:component, '--renderer=slim', "-r=#{@apptmp}/sample_project") }
+        assert_equal 'slim', YAML.load_file("#{@apptmp}/sample_project/.components")[:renderer]
+      end
+    end
+  end
+
   describe 'specified of same the component' do
     it 'should does not change' do
       capture_io { generate(:project, 'sample_project', '--script=jquery', "--root=#{@apptmp}") }

@@ -23,6 +23,30 @@ describe 'AdminAppGenerator' do
       refute_path_exists "#{@apptmp}/sample_project/admin"
     end
 
+    it 'should stop without writing anything in an api project' do
+      capture_io { generate(:project, 'sample_project', '--api', '-d=sequel', "--root=#{@apptmp}") }
+      apps = File.read("#{@apptmp}/sample_project/config/apps.rb")
+      components = File.read("#{@apptmp}/sample_project/.components")
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, '-e=erb', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/The admin needs sessions, views and padrino-helpers, which an --api project doesn't have/, out)
+      assert_no_dir_exists("#{@apptmp}/sample_project/admin")
+      assert_no_file_exists("#{@apptmp}/sample_project/models/account.rb")
+      assert_equal apps, File.read("#{@apptmp}/sample_project/config/apps.rb")
+      assert_equal components, File.read("#{@apptmp}/sample_project/.components")
+    end
+
+    { 'padrino-helpers without padrino-mailer' => %w[padrino-core padrino-helpers padrino-admin],
+      'neither padrino-helpers nor padrino-mailer' => %w[padrino-core padrino-admin] }.each do |shape, gems|
+      it "should generate the admin in a project whose Gemfile lists #{shape}" do
+        capture_io { generate(:project, 'sample_project', '-d=sequel', '-e=erb', "--root=#{@apptmp}") }
+        gemfile = "#{@apptmp}/sample_project/Gemfile"
+        File.write(gemfile, File.read(gemfile).sub(/^gem 'padrino',.*$/, gems.map { |gem| "gem '#{gem}'" }.join("\n")))
+        capture_io { generate(:admin_app, "-r=#{@apptmp}/sample_project") }
+        assert_file_exists("#{@apptmp}/sample_project/admin/app.rb")
+        assert_match_in_file(/Padrino.mount\('SampleProject::Admin'/, "#{@apptmp}/sample_project/config/apps.rb")
+      end
+    end
+
     it 'should fail outside app root' do
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:admin_app, "-r=#{@apptmp}") }.status }
       assert_match(/not at the root/, out)

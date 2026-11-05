@@ -290,9 +290,8 @@
   renderer: erb
   test: minitest
   shape: lean
-- name: sequel-sqlite-erb-minitest-api
+- name: sequel-sqlite-minitest-api
   orm: sequel
   adapter: sqlite
-  renderer: erb
   test: minitest
   shape: api

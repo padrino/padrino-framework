@@ -17,6 +17,17 @@ module Padrino
     SQL_ADAPTER_ORMS = %w[activerecord sequel].freeze
 
     ##
+    # The component types an --api project doesn't take: a renderer renders views, which it doesn't have.
+    # Script and stylesheet components only add assets and middleware, so it can take those.
+    #
+    REFUSED_API_COMPONENTS = %i[renderer].freeze
+
+    ##
+    # What to do when a generator refuses a project it takes for an --api one.
+    #
+    NOT_API_HINT = "If this project isn't an --api project, set `:api: false` in its .components.".freeze
+
+    ##
     # Components that were removed from Padrino, by type, with what to use instead.
     #
     REMOVED_COMPONENTS = {
@@ -710,15 +721,66 @@ module Padrino
       end
 
       ##
-      # Returns true for an --api project: no sessions or CSRF protection. The Gemfile is the
-      # only record of that: padrino-core, without the padrino gem or the full set of its parts.
+      # Returns true for an --api project: no sessions, CSRF protection or views. New projects
+      # record the mode as `:api: true` in .components. A project without a true or false there
+      # is detected from its Gemfile: padrino-core, without the padrino gem or the full set of its parts.
       #
       # @return [Boolean] true for an --api project.
       #
       def api_project?
         return true if options[:api]
 
-        gemfile_gems.include?('padrino-core') && !(padrino_gem?('padrino-helpers') && padrino_gem?('padrino-mailer'))
+        recorded = recorded_api_mode
+        return recorded unless recorded.nil?
+
+        gemfile_gems.include?('padrino-core') && !padrino_mailer_and_helpers?
+      end
+
+      ##
+      # Returns true when --api is given or .components records `:api: true`. Generators refuse
+      # what an api project can't take only then, so a project without the record, whatever its
+      # Gemfile lists, generates as it did before .components kept one.
+      #
+      # @return [Boolean] true for an --api project on record.
+      #
+      def recorded_api_project?
+        options[:api] == true || recorded_api_mode == true
+      end
+
+      ##
+      # Returns the `:api:` value in .components when it is true or false, otherwise nil.
+      #
+      def recorded_api_mode
+        components = destination_root('.components')
+        config = retrieve_component_config(components) if File.file?(components)
+        recorded = config[:api] if config.is_a?(Hash)
+        recorded if [true, false].include?(recorded)
+      end
+
+      ##
+      # Returns true when the project loads both padrino-mailer and padrino-helpers.
+      #
+      def padrino_mailer_and_helpers?
+        padrino_gem?('padrino-mailer') && padrino_gem?('padrino-helpers')
+      end
+
+      ##
+      # Raises a Thor::Error naming the components chosen that an --api project doesn't take: any
+      # renderer but none, other than the one the project already has.
+      #
+      # @param [Hash] choices
+      #   The component choices by type, as options give them.
+      # @param [String] hint
+      #   What to do instead, which ends the message.
+      # @param [Hash] stored
+      #   The project's current choices by type, which can be applied again.
+      #
+      def refuse_api_components(choices, hint, stored = {})
+        given = REFUSED_API_COMPONENTS.reject { |comp| ['', 'none', stored[comp].to_s].include?(choices[comp].to_s) }
+        return if given.empty?
+
+        flags = given.map { |comp| "--#{comp}=#{choices[comp]}" }.join(' ')
+        raise Thor::Error, "An --api project has no views, so it takes no #{given.join(' or ')} component (#{flags}). #{hint}"
       end
 
       ##
