@@ -38,6 +38,7 @@ module Padrino
 
       def initialize(value, options = {})
         super(value.to_s)
+        options   = options.dup
         @map      = options.delete(:map)
         @optional = options.delete(:optional)
         @options  = options
@@ -339,10 +340,10 @@ module Padrino
       # @see http://padrinorb.com/guides/controllers/route-filters/
       #
       def construct_filter(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+        options = args.last.is_a?(Hash) ? args.pop.dup : {}
         if (except = options.delete(:except))
           raise 'You cannot use :except with other options specified' unless args.empty? && options.empty?
-          except = Array(except)
+          except = Array(except).dup
           options = except.last.is_a?(Hash) ? except.pop : {}
         end
         Filter.new(!except, @_controller, options, Array(except || args), &block)
@@ -376,8 +377,7 @@ module Padrino
         return super() unless name
         defaults = { optional: false, map: name.to_s }
         options = defaults.merge(options)
-        @_parent = Array(@_parent) unless @_parent.is_a?(Array)
-        @_parent << Parent.new(name, options)
+        @_parent = Array(@_parent) + [Parent.new(name, options)]
       end
 
       ##
@@ -462,7 +462,7 @@ module Padrino
       #   url(:index, fragment: 'comments')
       #
       def url(*args)
-        params = args.last.is_a?(Hash) ? args.pop : {}
+        params = args.last.is_a?(Hash) ? args.pop.dup : {}
         fragment = params.delete(:fragment) || params.delete(:anchor)
         path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? "#{path}##{fragment}" : path)
@@ -542,7 +542,7 @@ module Padrino
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)
         original = {}
-        options = args.last.is_a?(Hash) ? args.pop : {}
+        options = args.last.is_a?(Hash) ? args.pop.dup : {}
 
         CONTROLLER_OPTIONS.each { |key| replace_instance_variable(original, "@_#{key}", options.delete(key)) }
         replace_instance_variable(original, :@_controller, args)

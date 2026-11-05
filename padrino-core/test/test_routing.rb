@@ -2451,6 +2451,89 @@ describe 'Routing' do
     assert_equal 1, counter
   end
 
+  describe 'with options hashes and lists reused or frozen' do
+    def mock_app_needing_ok(&block)
+      mock_app do
+        set(:needs_ok) { |on| condition { halt 403, 'no ok' unless params[:ok] } if on }
+        instance_eval(&block)
+      end
+    end
+
+    it 'should apply the options to each controller and leave the hash unchanged' do
+      opts = { conditions: { needs_ok: true }, map: '/area' }
+      mock_app_needing_ok do
+        controller(:a, opts) { get(:one) { 'one' } }
+        controllers(:b, opts) { get(:two) { 'two' } }
+      end
+      %w[one two].each do |name|
+        get "/area/#{name}"
+        assert_equal 'no ok', body
+        get "/area/#{name}", ok: 1
+        assert_equal name, body
+      end
+      assert_equal({ conditions: { needs_ok: true }, map: '/area' }, opts)
+    end
+
+    it 'should accept a frozen options hash' do
+      opts = { conditions: { needs_ok: true } }.freeze
+      mock_app_needing_ok do
+        controller(:a, opts) { get(:index) { 'a' } }
+        controller(:b, opts) { get(:index) { 'b' } }
+      end
+      %w[a b].each do |name|
+        get "/#{name}"
+        assert_equal 'no ok', body
+        get "/#{name}", ok: 1
+        assert_equal name, body
+      end
+    end
+
+    it 'should accept a frozen parent list and a parent declared inside the controller' do
+      mock_app do
+        controller(:product, parent: [:shop].freeze) do
+          parent :category
+          get(:show) { 'product' }
+        end
+      end
+      get '/shop/1/category/2/product/show'
+      assert_equal 'product', body
+    end
+
+    it 'should leave the options given to a parent unchanged' do
+      opts = { map: 'store', optional: true }.freeze
+      first = Padrino::Routing::Parent.new(:a, opts)
+      second = Padrino::Routing::Parent.new(:b, opts)
+      assert_equal ['store', true], [first.map, first.optional]
+      assert_equal ['store', true], [second.map, second.optional]
+    end
+
+    it 'should keep the fragment of a params hash used for several urls' do
+      mock_app { get(:show, with: :id) { 'show' } }
+      params = { id: 1, fragment: 'top' }
+      assert_equal '/show/1#top', @app.url(:show, params)
+      assert_equal '/show/1#top', @app.url(:show, params)
+      assert_equal '/show/1', @app.url(:show, { id: 1 }.freeze)
+    end
+
+    it 'should not add a parent declared in a controller to the parents it was given' do
+      parents = [:shop]
+      mock_app do
+        controller(:product, parent: parents) do
+          parent :category
+          get(:show) { 'product' }
+        end
+        controller(:item, parent: parents) { get(:show) { 'item' } }
+      end
+      get '/shop/1/category/2/product/show'
+      assert_equal 'product', body
+      get '/shop/1/item/show'
+      assert_equal 'item', body
+      get '/shop/1/category/2/item/show'
+      assert_equal 404, status
+      assert_equal [:shop], parents
+    end
+  end
+
   it 'should parse params with class level provides' do
     mock_app do
       controllers :posts, provides: %i[html js] do

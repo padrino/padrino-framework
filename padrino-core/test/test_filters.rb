@@ -416,6 +416,49 @@ describe 'Filters' do
     assert_equal 'before', body
   end
 
+  it 'should apply one except options hash to each filter it is passed to' do
+    opts = { except: :index }
+    mock_app do
+      before(opts) { @first = 'first' }
+      before(opts) { @second = 'second' }
+      get(:index) { "#{@first}#{@second}" }
+      get(:main) { "#{@first}#{@second}" }
+    end
+    get '/'
+    assert_equal '', body
+    get '/main'
+    assert_equal 'firstsecond', body
+    assert_equal({ except: :index }, opts)
+  end
+
+  it 'should apply one except list with options to each filter it is passed to' do
+    except = [:index, { agent: /IE/ }]
+    mock_app do
+      before(except: except) { @first = 'first' }
+      before(except: except) { @second = 'second' }
+      get(:index) { "#{@first}#{@second}" }
+      get(:main) { "#{@first}#{@second}" }
+    end
+    get '/main', {}, { 'HTTP_USER_AGENT' => 'IE' }
+    assert_equal '', body
+    get '/main'
+    assert_equal 'firstsecond', body
+    assert_equal [:index, { agent: /IE/ }], except
+  end
+
+  it 'should accept frozen except options' do
+    mock_app do
+      before({ except: :index }.freeze) { @first = 'first' }
+      before(except: [:index, { agent: /IE/ }.freeze].freeze) { @second = 'second' }
+      get(:index) { "#{@first}#{@second}" }
+      get(:main) { "#{@first}#{@second}" }
+    end
+    get '/'
+    assert_equal '', body
+    get '/main'
+    assert_equal 'firstsecond', body
+  end
+
   it 'should be able to filter excluding based on a symbol when specify the multiple routes and use nested controller' do
     mock_app do
       controller :test, :nested do
