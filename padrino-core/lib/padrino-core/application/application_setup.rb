@@ -72,6 +72,7 @@ module Padrino
         set :protection, except: :path_traversal
         set :sessions, false
         set :protect_from_csrf, false
+        @_default_protect_from_csrf = method(:protect_from_csrf)
         set :report_csrf_failure, false
         set :allow_disabled_csrf, false
       end
@@ -179,6 +180,7 @@ module Padrino
       # sets up csrf protection for the app
       def setup_csrf_protection(builder)
         check_csrf_protection_dependency
+        check_csrf_protection_default
         return unless protect_from_csrf?
 
         options = options_for_csrf_protection_setup
@@ -217,6 +219,28 @@ module Padrino
               # in boot.rb:
               Padrino::IGNORE_CSRF_SETUP_WARNING = true
         ERROR
+      end
+
+      # warn once if sessions are on but the app never set protect_from_csrf: setting
+      # it, even to false, replaces the method default_security defined
+      def check_csrf_protection_default
+        return if @_csrf_default_warned || method(:protect_from_csrf) != @_default_protect_from_csrf || !sessions? || protect_from_csrf?
+
+        @_csrf_default_warned = true
+        warn(<<~WARNING)
+          WARNING! #{self} has `sessions` on but `protect_from_csrf` off. From Padrino 1.0,
+          CSRF protection will be on whenever sessions are. To turn it on now, use:
+
+              enable :protect_from_csrf
+
+          and send the token with every POST, PUT, PATCH and DELETE request (Padrino's form
+          helpers add it to forms; the `csrf_token` helper returns it for other requests). To
+          keep it off and silence this warning, use:
+
+              disable :protect_from_csrf
+
+          (in the app, or in `Padrino.configure_apps` to keep it off for every app).
+        WARNING
       end
     end
   end

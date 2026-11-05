@@ -472,5 +472,86 @@ describe 'Application' do
         assert_equal 'please, do not hack', body
       end
     end
+
+    describe 'with sessions on and protect_from_csrf never set' do
+      after { Padrino.clear! }
+
+      def setup_warnings
+        _, err = capture_io do
+          2.times { get '/' }
+          @app.reset!
+          get '/'
+        end
+        err.scan('`protect_from_csrf` off').size
+      end
+
+      it 'should warn once per app, also when the middleware is built again' do
+        mock_app do
+          enable :sessions
+          get('/') { 'HI' }
+        end
+        assert_equal 1, setup_warnings
+        assert_equal 200, status
+      end
+
+      it 'should warn when sessions come from Padrino.configure_apps' do
+        Padrino.configure_apps { enable :sessions }
+        mock_app { get('/') { 'HI' } }
+        assert_equal 1, setup_warnings
+      end
+
+      it 'should warn for a subclass that turns sessions on, since a subclass starts from the defaults' do
+        parent = mock_app do
+          enable :sessions
+          disable :protect_from_csrf
+        end
+        mock_app(parent) do
+          enable :sessions
+          get('/') { 'HI' }
+        end
+        assert_equal 1, setup_warnings
+      end
+
+      {
+        'disables it' => proc { disable :protect_from_csrf },
+        'sets it to false' => proc { set :protect_from_csrf, false },
+        'sets it to a proc' => proc { set :protect_from_csrf, proc { sessions? && Padrino.env != :test } },
+        'enables it' => proc { enable :protect_from_csrf }
+      }.each do |name, csrf|
+        it "should not warn when the app #{name}" do
+          mock_app do
+            enable :sessions
+            class_eval(&csrf)
+            get('/') { 'HI' }
+          end
+          assert_equal 0, setup_warnings
+        end
+      end
+
+      it 'should not warn when protect_from_csrf? is overridden to be on' do
+        mock_app do
+          enable :sessions
+          def self.protect_from_csrf?
+            true
+          end
+          get('/') { 'HI' }
+        end
+        assert_equal 0, setup_warnings
+      end
+
+      it 'should not warn when Padrino.configure_apps sets protect_from_csrf' do
+        Padrino.configure_apps do
+          enable :sessions
+          set :protect_from_csrf, Padrino.env != :test
+        end
+        mock_app { get('/') { 'HI' } }
+        assert_equal 0, setup_warnings
+      end
+
+      it 'should not warn when sessions are off' do
+        mock_app { get('/') { 'HI' } }
+        assert_equal 0, setup_warnings
+      end
+    end
   end
 end
