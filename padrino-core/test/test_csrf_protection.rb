@@ -512,13 +512,13 @@ describe 'Application' do
         assert_equal 1, setup_warnings
       end
 
-      it 'should not warn when the app sets protect_from_csrf, even to false' do
-        [
-          proc { disable :protect_from_csrf },
-          proc { set :protect_from_csrf, false },
-          proc { set :protect_from_csrf, proc { sessions? && Padrino.env != :test } },
-          proc { enable :protect_from_csrf }
-        ].each do |csrf|
+      {
+        'disables it' => proc { disable :protect_from_csrf },
+        'sets it to false' => proc { set :protect_from_csrf, false },
+        'sets it to a proc' => proc { set :protect_from_csrf, proc { sessions? && Padrino.env != :test } },
+        'enables it' => proc { enable :protect_from_csrf }
+      }.each do |name, csrf|
+        it "should not warn when the app #{name}" do
           mock_app do
             enable :sessions
             class_eval(&csrf)
