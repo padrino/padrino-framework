@@ -151,6 +151,23 @@ describe 'ComponentGenerator' do
       assert_equal ".sass-cache-old/\n.sass-cache/*\n", File.read(gitignore)
     end
 
+    it 'should add the Sass cache line to a .gitignore that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.binwrite(gitignore, "caf\xE9/\n".b)
+      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
+      assert_equal "caf\xE9/\n.sass-cache/*\n".b, File.binread(gitignore)
+      assert_match(/gem 'sass'/, File.read("#{@apptmp}/sample_project/Gemfile"))
+    end
+
+    it 'should not repeat the Sass cache line when the file ends in it without a newline' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, "log/**/*\n.sass-cache/*")
+      capture_io { generate(:component, '--stylesheet=scss', "-r=#{@apptmp}/sample_project") }
+      assert_equal "log/**/*\n.sass-cache/*", File.read(gitignore)
+    end
+
     it 'should start the tailwind lines on a new line' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"
