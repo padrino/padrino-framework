@@ -124,6 +124,25 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{@apptmp}/sample_project/.gitignore").scan(%r{^public/stylesheets/application\.css$}).size
     end
 
+    it 'should ignore the Sass cache once when adding sass or scss' do
+      %w[sass scss].each do |stylesheet|
+        `rm -rf #{@apptmp}/sample_project`
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        gitignore = "#{@apptmp}/sample_project/.gitignore"
+        File.write(gitignore, '.env')
+        2.times { capture_io { generate(:component, "--stylesheet=#{stylesheet}", "-r=#{@apptmp}/sample_project") } }
+        assert_equal ".env\n.sass-cache/*\n", File.read(gitignore), stylesheet
+      end
+    end
+
+    it 'should keep a Sass cache line a project already has' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, "log/**/*\n/.sass-cache\n")
+      capture_io { generate(:component, '--stylesheet=scss', "-r=#{@apptmp}/sample_project") }
+      assert_equal "log/**/*\n/.sass-cache\n", File.read(gitignore)
+    end
+
     it 'should start the tailwind lines on a new line' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"

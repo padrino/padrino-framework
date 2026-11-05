@@ -25,12 +25,6 @@ TAILWIND_RAKE = <<~RAKE unless defined?(TAILWIND_RAKE)
 RAKE
 
 def setup_stylesheet
-  # Start on a new line so a file without a trailing newline keeps its last line intact.
-  append_line = lambda do |path, text|
-    content = File.read(path)
-    append_file path, content.empty? || content.end_with?("\n") ? text : "\n#{text}"
-  end
-
   require_dependencies 'tailwindcss-ruby', version: '~> 4.0'
   previous = fetch_component_choice(:stylesheet).to_s
   preprocessed = %w[sass scss less].include?(previous)
@@ -56,13 +50,13 @@ def setup_stylesheet
 
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
-    append_line.call(procfile, "css: bundle exec rake tailwind:watch\n") unless File.read(procfile).match?(/^css:/)
+    append_line(procfile, "css: bundle exec rake tailwind:watch\n") unless File.read(procfile).match?(/^css:/)
   else
     create_file procfile, "web: bundle exec padrino start\ncss: bundle exec rake tailwind:watch\n"
   end
 
   gitignore = destination_root('.gitignore')
-  append_line.call(gitignore, "public/stylesheets/application.css\n") if File.exist?(gitignore)
+  append_line(gitignore, "public/stylesheets/application.css\n") if File.exist?(gitignore)
 
   if preprocessed
     say "Switching from #{previous}: its gems and initializer remain and also write public/stylesheets/application.css, " \

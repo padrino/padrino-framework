@@ -506,6 +506,20 @@ module Padrino
       end
 
       ##
+      # Appends text to a file, starting it on a new line so a file without a
+      # trailing newline keeps its last line intact.
+      #
+      # @param [String] path
+      #   Path of the file to append to.
+      # @param [String] text
+      #   Text to append, ending in a newline.
+      #
+      def append_line(path, text)
+        content = File.read(path)
+        append_file path, content.empty? || content.end_with?("\n") ? text : "\n#{text}"
+      end
+
+      ##
       # Returns true if the project runs on Falcon, which serves each request in
       # a fiber. Uses the --server option when generating a project, and the
       # project's Gemfile when adding a component later.
