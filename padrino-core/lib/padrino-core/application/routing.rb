@@ -38,6 +38,7 @@ module Padrino
 
       def initialize(value, options = {})
         super(value.to_s)
+        options   = options.dup
         @map      = options.delete(:map)
         @optional = options.delete(:optional)
         @options  = options
@@ -339,10 +340,10 @@ module Padrino
       # @see http://padrinorb.com/guides/controllers/route-filters/
       #
       def construct_filter(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+        options = args.last.is_a?(Hash) ? args.pop.dup : {}
         if (except = options.delete(:except))
           raise 'You cannot use :except with other options specified' unless args.empty? && options.empty?
-          except = Array(except)
+          except = Array(except).dup
           options = except.last.is_a?(Hash) ? except.pop : {}
         end
         Filter.new(!except, @_controller, options, Array(except || args), &block)
@@ -376,8 +377,7 @@ module Padrino
         return super() unless name
         defaults = { optional: false, map: name.to_s }
         options = defaults.merge(options)
-        @_parent = Array(@_parent) unless @_parent.is_a?(Array)
-        @_parent << Parent.new(name, options)
+        @_parent = Array(@_parent) + [Parent.new(name, options)]
       end
 
       ##
@@ -462,7 +462,7 @@ module Padrino
       #   url(:index, fragment: 'comments')
       #
       def url(*args)
-        params = args.last.is_a?(Hash) ? args.pop : {}
+        params = args.last.is_a?(Hash) ? args.pop.dup : {}
         fragment = params.delete(:fragment) || params.delete(:anchor)
         path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? "#{path}##{fragment}" : path)
@@ -497,8 +497,8 @@ module Padrino
       def rebase_url(url)
         if url.start_with?('/')
           new_url = String.new
-          new_url << conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
-          new_url << conform_uri(uri_root) if defined?(uri_root)
+          new_url << conformed_uri(:@_conformed_base_uri, ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
+          new_url << conformed_uri(:@_conformed_uri_root, uri_root) if defined?(uri_root)
           new_url << url
         else
           url.empty? ? '/' : url
@@ -542,7 +542,7 @@ module Padrino
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)
         original = {}
-        options = args.last.is_a?(Hash) ? args.pop : {}
+        options = args.last.is_a?(Hash) ? args.pop.dup : {}
 
         CONTROLLER_OPTIONS.each { |key| replace_instance_variable(original, "@_#{key}", options.delete(key)) }
         replace_instance_variable(original, :@_controller, args)
@@ -592,6 +592,17 @@ module Padrino
       # Add prefix slash if its not present and remove trailing slashes.
       def conform_uri(uri_string)
         uri_string.gsub(%r{^(?!/)(.*)}, '/\1').gsub(%r{/+$}, '')
+      end
+
+      # conform_uri, remembered in +ivar+ for the last value it was given (the base URI and
+      # uri_root rarely change). The memo is a frozen [value, result] pair, replaced whole.
+      def conformed_uri(ivar, uri_string)
+        memo = instance_variable_get(ivar)
+        return memo[1] if memo && memo[0] == uri_string
+
+        memo = [uri_string.dup.freeze, conform_uri(uri_string).freeze].freeze
+        instance_variable_set(ivar, memo)
+        memo[1]
       end
 
       ##
