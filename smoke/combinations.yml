@@ -24,11 +24,11 @@
   add_component:
     stylesheet: tailwind
   no_db_clients: true
-- name: sequel-mysql2-liquid-bacon
+- name: sequel-mysql2-liquid-minitest
   orm: sequel
   adapter: mysql2
   renderer: liquid
-  test: bacon
+  test: minitest
   mock: none
   script: ujs
   stylesheet: tailwind
@@ -46,11 +46,11 @@
   server: falcon
   add_component:
     mock: rr
-- name: sequel-postgres-erb-shoulda
+- name: sequel-postgres-erb-testunit
   orm: sequel
   adapter: postgres
   renderer: erb
-  test: shoulda
+  test: testunit
   mock: rr
   script: jquery
   stylesheet: scss
@@ -99,11 +99,11 @@
   server: falcon
   add_component:
     stylesheet: tailwind
-- name: activerecord-mysql2-slim-bacon
+- name: activerecord-mysql2-slim-minitest
   orm: activerecord
   adapter: mysql2
   renderer: slim
-  test: bacon
+  test: minitest
   mock: none
   script: htmx
   stylesheet: scss
@@ -123,11 +123,11 @@
   add_component:
     mock: rr
   ruby: '3.0'
-- name: activerecord-postgres-haml-shoulda
+- name: activerecord-postgres-haml-testunit
   orm: activerecord
   adapter: postgres
   renderer: haml
-  test: shoulda
+  test: testunit
   mock: rr
   script: ujs
   stylesheet: tailwind
@@ -174,10 +174,10 @@
   server: puma
   add_component:
     stylesheet: tailwind
-- name: mongoid-erb-bacon
+- name: mongoid-erb-minitest
   orm: mongoid
   renderer: erb
-  test: bacon
+  test: minitest
   mock: none
   script: jquery
   stylesheet: tailwind
@@ -194,10 +194,10 @@
   server: falcon
   add_component:
     mock: rr
-- name: mongoid-liquid-shoulda
+- name: mongoid-liquid-testunit
   orm: mongoid
   renderer: liquid
-  test: shoulda
+  test: testunit
   mock: rr
   script: htmx
   stylesheet: scss
@@ -234,10 +234,10 @@
   server: falcon
   add_component:
     stylesheet: tailwind
-- name: none-haml-bacon
+- name: none-haml-minitest
   orm: none
   renderer: haml
-  test: bacon
+  test: minitest
   mock: none
   script: htmx
   stylesheet: scss
@@ -254,10 +254,10 @@
   server: puma
   add_component:
     mock: rr
-- name: none-slim-shoulda
+- name: none-slim-testunit
   orm: none
   renderer: slim
-  test: shoulda
+  test: testunit
   mock: rr
   script: htmx
   stylesheet: tailwind

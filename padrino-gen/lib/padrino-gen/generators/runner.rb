@@ -15,7 +15,7 @@ module Padrino
       #   Options to use to generate the project.
       #
       # @example
-      #   project test: :shoulda, orm: :activerecord, renderer: "haml"
+      #   project test: :minitest, orm: :activerecord, renderer: "haml"
       #
       def project(options = {})
         options = { dev: true }.merge(options) if self.options[:dev]

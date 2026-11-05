@@ -23,20 +23,20 @@ describe 'ModelGenerator' do
     end
 
     it 'should fail with a message if the model name is not a valid constant' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
       _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, '2bad', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/2bad is not a valid constant name/, err)
       assert_no_file_exists("#{@apptmp}/sample_project/models/2bad.rb")
     end
 
     it 'should generate filename properly' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
       capture_io { generate(:model, 'DemoItem', 'name:string', 'age', 'email:string', "-r=#{@apptmp}/sample_project") }
       assert_file_exists("#{@apptmp}/sample_project/models/demo_item.rb")
     end
 
     it 'should fail if field name is not acceptable' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
       fields = ['re@l$ly:string', 'display-name:string', 'age&year:datetime', 'email_two:string']
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'DemoItem', *fields, "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/Invalid field name:/, out)
@@ -49,7 +49,7 @@ describe 'ModelGenerator' do
     end
 
     it 'should fail if we do not use an adapter' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/You need an ORM adapter/, out)
     end
@@ -59,7 +59,7 @@ describe 'ModelGenerator' do
       'ohm' => /The ohm orm component is no longer available in Padrino \(available: .*\bsequel\b/
     }.each do |removed_orm, message|
       it "should fail with a message if the orm in .components is no longer available (#{removed_orm})" do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
         components = "#{@apptmp}/sample_project/.components"
         File.write(components, File.read(components).sub(':orm: sequel', ":orm: #{removed_orm}"))
         out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }.status }
@@ -76,14 +76,14 @@ describe 'ModelGenerator' do
     end
 
     it 'should generate model in specified app' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', '--script=none', '-t=bacon') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', '--script=none', '-t=minitest') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'Post', 'body:string', '-a=/subby', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class Post < Sequel::Model/m, "#{@apptmp}/sample_project/subby/models/post.rb")
     end
 
     it 'should generate migration file versions properly' do
-      capture_io { generate(:project, 'sample_project', '--migration_format=number', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', '--migration_format=number', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'account', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'bank', "-r=#{@apptmp}/sample_project") }
@@ -93,7 +93,7 @@ describe 'ModelGenerator' do
     end
 
     it 'should generate migration file versions properly when timestamped' do
-      capture_io { generate(:project, 'sample_project', '--migration_format=timestamp', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', '--migration_format=timestamp', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
 
       time = stop_time_for_test.utc.strftime('%Y%m%d%H%M%S')
 
@@ -103,7 +103,7 @@ describe 'ModelGenerator' do
 
     it 'should generate a default type value for fields' do
       stop_time_for_test
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'friend', 'name', 'age:integer', 'email', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_friends.rb"
       assert_match_in_file(/class CreateFriends < ActiveRecord::Migration/m, migration_file_path)
@@ -149,13 +149,13 @@ describe 'ModelGenerator' do
     end
 
     it 'should generate model file' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class User < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/user.rb")
     end
 
     it 'should generate model file with camelized name' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class ChunkyBacon < ActiveRecord::Base/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
       assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
@@ -163,7 +163,7 @@ describe 'ModelGenerator' do
 
     it 'should generate migration file with no fields' do
       stop_time_for_test
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'user', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_users.rb"
       assert_match_in_file(/class CreateUsers < ActiveRecord::Migration/m, migration_file_path)
@@ -173,7 +173,7 @@ describe 'ModelGenerator' do
 
     it 'should generate migration file with given fields' do
       stop_time_for_test
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'friend', 'name:string', 'age:integer', 'email:string', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_friends.rb"
       assert_match_in_file(/class CreateFriends < ActiveRecord::Migration/m, migration_file_path)
@@ -186,7 +186,7 @@ describe 'ModelGenerator' do
 
     it 'should generate migration file with references and indexed fields' do
       stop_time_for_test
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'order', 'user:belongs_to', 'code:string:uniq', 'state:string:index', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_orders.rb"
       fields = /create_table :orders do \|t\|\s+t\.belongs_to :user\s+t\.string :code\s+t\.index :code, unique: true\s+t\.string :state\s+t\.index :state\s+t\.timestamps/m
@@ -194,7 +194,7 @@ describe 'ModelGenerator' do
     end
 
     it 'should generate migration file with a polymorphic reference' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'comment', 'body:text', 'commentable:references:polymorphic', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_comments.rb"
       fields = /create_table :comments do \|t\|\s+t\.text :body\s+t\.references :commentable, polymorphic: true\s+t\.timestamps/m
@@ -203,7 +203,7 @@ describe 'ModelGenerator' do
 
     it 'should generate migration file with a uniquely indexed polymorphic reference' do
       stop_time_for_test
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'comment', 'commentable:references:uniq:polymorphic', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_create_comments.rb"
       fields = /create_table :comments do \|t\|\s+t\.references :commentable, polymorphic: true, index: \{ unique: true \}\s+t\.timestamps/m
@@ -220,7 +220,7 @@ describe 'ModelGenerator' do
     end
 
     it 'should generate model file with camelized name' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
       capture_io { generate(:model, 'ChunkyBacon', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/class ChunkyBacon < Sequel::Model/m, "#{@apptmp}/sample_project/models/chunky_bacon.rb")
       assert_match_in_file(/ChunkyBacon Model/, "#{@apptmp}/sample_project/test/models/chunky_bacon_test.rb")
@@ -338,25 +338,14 @@ describe 'ModelGenerator' do
   end
 
   describe 'model generator testing files' do
-    # BACON
-    it 'should generate test file for bacon' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
-      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){1}/test}m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
-    end
-
-    it 'should generate test file for bacon in specified app' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
-      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'SomeUser', '-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/@some_user = SomeUser.new/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(/@some_user\.should\.not\.be\.nil/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
-      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){2}/test}m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+    it 'should stop without writing when .components names a removed test component' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: shoulda'))
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/^The shoulda test component was removed from Padrino; use minitest or testunit instead\.$/, out)
+      assert_no_file_exists("#{@apptmp}/sample_project/models/some_user.rb")
+      assert_empty Dir["#{@apptmp}/sample_project/db/migrate/*"]
     end
 
     # MINITEST
@@ -366,6 +355,7 @@ describe 'ModelGenerator' do
       capture_io { generate(:model, 'SomeUser', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
       assert_match_in_file(/refute_nil @some_user/m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
+      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){1}/test}m, "#{@apptmp}/sample_project/test/models/some_user_test.rb")
     end
 
     it 'should generate test file for minitest in specified app' do
@@ -374,6 +364,7 @@ describe 'ModelGenerator' do
       capture_io { generate(:model, 'SomeUser', '-a=/subby', "-r=#{@apptmp}/sample_project") }
       assert_match_in_file(/describe "SomeUser Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
       assert_match_in_file(/refute_nil @some_user/m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
+      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){2}/test}m, "#{@apptmp}/sample_project/test/subby/models/some_user_test.rb")
     end
 
     # RSPEC
@@ -394,29 +385,6 @@ describe 'ModelGenerator' do
       # assert_match_in_file(/let\(:some_user\) \{ SomeUser.new \}/m, "#{@apptmp}/sample_project/spec/subby/models/some_user_spec.rb")
       # assert_match_in_file(/some_user\.should_not be_nil/m, "#{@apptmp}/sample_project/spec/subby/models/some_user_spec.rb")
     end
-
-    # SHOULDA
-    it 'should generate test file for shoulda' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda', '-d=activerecord') }
-      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'SomePerson', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class SomePersonTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){1}/test}m, "#{@apptmp}/sample_project/test/models/some_person_test.rb")
-    end
-
-    it 'should generate test file for shoulda in specified app' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=shoulda', '-d=activerecord') }
-      capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
-      capture_io { generate(:model, 'SomePerson', '-a=/subby', "-r=#{@apptmp}/sample_project") }
-      assert_match_in_file(/class SomePersonTest < Test::Unit::TestCase/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
-      assert_match_in_file(/context "SomePerson Model"/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
-      assert_match_in_file(/@some_person = SomePerson.new/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
-      assert_match_in_file(/assert_not_nil @some_person/m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
-      assert_match_in_file(%r{"\#\{__dir__\}(/\.\.){2}/test}m, "#{@apptmp}/sample_project/test/subby/models/some_person_test.rb")
-    end
   end
 
   describe 'the model destroy option' do
@@ -425,7 +393,7 @@ describe 'ModelGenerator' do
     end
 
     it 'should destroy the model file' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:model, 'User', "-r=#{@apptmp}/sample_project") }
       capture_io { generate_with_parts(:model, 'User', "-r=#{@apptmp}/sample_project", '-d') }
       assert_no_file_exists("#{@apptmp}/sample_project/models/user.rb")
@@ -441,7 +409,7 @@ describe 'ModelGenerator' do
     end
 
     it 'should destroy the model test file in a sub app' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:app, 'subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate(:model, 'User', '-a=/subby', "-r=#{@apptmp}/sample_project") }
       capture_io { generate_with_parts(:model, 'User', '-a=/subby', "-r=#{@apptmp}/sample_project", '-d', apps: 'subby') }

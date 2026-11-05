@@ -17,7 +17,7 @@ module Padrino
 
       class_option :app,     desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
       class_option :root,    desc: 'The root destination',                                             aliases: '-r', default: '.',         type: :string
-      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, trilogy, postgres)', aliases: '-a', default: nil, type: :string
+      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, trilogy, postgres)', aliases: '-a', default: nil, type: :string
 
       defines_component_options default: false
 
@@ -45,6 +45,8 @@ module Padrino
           # Settle every choice, switch and check before applying any, so a failure leaves the project unchanged.
           chosen = self.class.component_types.reject { |comp| @_components[comp].empty? }
           chosen.each { |comp| @_components[comp] = resolve_valid_choice(comp) }
+          # A mock is set up for the project's test component.
+          exit_unless_test_component_available! if chosen.include?(:mock) && !chosen.include?(:test) && @_components[:mock].to_s != 'none'
           chosen.select! do |comp|
             choice = @_components[comp]
             existing = fetch_component_choice(comp)
@@ -53,6 +55,8 @@ module Padrino
             @_components[comp] = '' unless accepted
             accepted
           end
+          # Again when the test switch was declined, since the project keeps its stored test component.
+          exit_unless_test_component_available! if chosen.include?(:mock) && !chosen.include?(:test) && @_components[:mock].to_s != 'none'
 
           @project_name = fetch_component_choice(:namespace)
           if chosen.include?(:test) && !already_exists?(@app_name, @project_name)

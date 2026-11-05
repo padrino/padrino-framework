@@ -364,7 +364,7 @@ describe 'ComponentGenerator' do
       end
 
       it 'should keep edited test setup files for every test component' do
-        { 'bacon' => 'test/test.rake', 'minitest' => 'test/test.rake', 'rspec' => 'spec/spec.rake', 'shoulda' => 'test/test.rake',
+        { 'minitest' => 'test/test.rake', 'rspec' => 'spec/spec.rake',
           'testunit' => 'test/test.rake', 'cucumber' => 'cucumber.yml' }.each do |test, rake|
           `rm -rf #{@apptmp}/sample_project`
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--test=#{test}") }
@@ -508,6 +508,25 @@ describe 'ComponentGenerator' do
       assert_match(/No input left to choose a valid --orm; pass one of: .*\bsequel\b/, err)
     end
 
+    it 'should name the replacement for a removed test component' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Thor::LineEditor.stubs(:readline).raises(RuntimeError, 'prompted for a removed choice')
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--test=bacon', "-r=#{@apptmp}/sample_project") }.status }
+      assert_equal 'The bacon test component was removed from Padrino; use minitest or rspec instead.', err.strip
+      assert_equal 'none', YAML.load_file("#{@apptmp}/sample_project/.components")[:test]
+    end
+
+    it 'should name the replacement for a removed adapter the project has' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=sequel') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':adapter: sqlite', ':adapter: mysql-gem'))
+      Thor::LineEditor.stubs(:readline).raises(RuntimeError, 'prompted for a removed choice')
+      before = File.read("#{@apptmp}/sample_project/config/database.rb")
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--orm=sequel', "-r=#{@apptmp}/sample_project") }.status }
+      assert_equal 'The mysql-gem adapter was removed from Padrino; use mysql2 or trilogy instead.', err.strip
+      assert_equal before, File.read("#{@apptmp}/sample_project/config/database.rb")
+    end
+
     %w[--renderer=bogus --adapter=bogus].each do |option|
       it "should change nothing when #{option} has no valid answer at the end of input" do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
@@ -551,8 +570,7 @@ describe 'ComponentGenerator' do
     it 'should load rr for the project test component, once when run again' do
       { 'minitest' => ['test/test_config.rb', "require 'rr'\n"],
         'rspec' => ['spec/spec_helper.rb', "  conf.mock_with :rr\n"],
-        'testunit' => ['test/test_config.rb', "require 'test/unit/rr'\n"],
-        'shoulda' => ['test/test_config.rb', "require 'test/unit/rr'\n"] }.each do |test, (path, setup)|
+        'testunit' => ['test/test_config.rb', "require 'test/unit/rr'\n"] }.each do |test, (path, setup)|
         project = "#{@apptmp}/project_#{test}"
         capture_io { generate(:project, "project_#{test}", "--root=#{@apptmp}", "--test=#{test}", '--script=none') }
         2.times { capture_io { generate(:component, '--mock=rr', "-r=#{project}") } }
@@ -561,9 +579,60 @@ describe 'ComponentGenerator' do
         assert_equal 1, File.read("#{project}/Gemfile").scan(/^gem 'rr'/).size, test
       end
       assert_equal 1, File.read("#{@apptmp}/project_rspec/spec/spec_helper.rb").scan('RSpec::Core::ExampleGroup.include RR::DSL').size
-      %w[testunit shoulda].each do |test|
-        assert_equal 1, File.read("#{@apptmp}/project_#{test}/Gemfile").scan(/^gem 'test-unit-rr'/).size, test
+      assert_equal 1, File.read("#{@apptmp}/project_testunit/Gemfile").scan(/^gem 'test-unit-rr'/).size
+    end
+
+    it 'should warn once that rr is deprecated, and not when switching away from it' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      Readline.stubs(:readline).returns('yes')
+      out, = capture_io { generate(:component, '--mock=rr', "-r=#{@apptmp}/sample_project") }
+      assert_equal 1, out.scan('The rr mock component is deprecated and will be removed in a future release.').size
+      out, = capture_io { generate(:component, '--mock=mocha', "-r=#{@apptmp}/sample_project") }
+      refute_match(/deprecated/, out)
+      assert_equal 'mocha', YAML.load_file("#{@apptmp}/sample_project/.components")[:mock]
+    end
+
+    %w[mocha rr].each do |mock|
+      it "should stop without changing the project when --mock=#{mock} meets a removed test component" do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--script=none') }
+        components = "#{@apptmp}/sample_project/.components"
+        File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
+        snapshot = -> { Dir["#{@apptmp}/sample_project/**/*", components].to_h { |path| [path, File.file?(path) && File.read(path)] } }
+        before = snapshot.call
+        out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, "--mock=#{mock}", "-r=#{@apptmp}/sample_project") }.status }
+        assert_equal 'The bacon test component was removed from Padrino; use minitest or rspec instead.', out.strip
+        assert_equal before, snapshot.call
       end
+    end
+
+    it 'should stop before asking to switch the mock in a project whose test component was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
+      Thor::LineEditor.stubs(:readline).raises(RuntimeError, 'asked to switch the mock')
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--mock=rr', "-r=#{@apptmp}/sample_project") }.status }
+      assert_equal 'The bacon test component was removed from Padrino; use minitest or rspec instead.', out.strip
+    end
+
+    it 'should stop before setting up the mock when the test switch is declined in a project whose test component was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
+      snapshot = -> { Dir["#{@apptmp}/sample_project/**/*", components].to_h { |path| [path, File.file?(path) && File.read(path)] } }
+      before = snapshot.call
+      Readline.stubs(:readline).returns('no').once
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--test=minitest', '--mock=rr', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/The bacon test component was removed from Padrino; use minitest or rspec instead\./, out)
+      assert_equal before, snapshot.call
+    end
+
+    it 'should still switch the mock to none in a project whose test component was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: bacon'))
+      Readline.stubs(:readline).returns('yes').once
+      capture_io { generate(:component, '--mock=none', "-r=#{@apptmp}/sample_project") }
+      assert_equal 'none', YAML.load_file(components)[:mock]
     end
 
     describe 'switching the mock component' do
@@ -572,9 +641,9 @@ describe 'ComponentGenerator' do
         rr_rspec = ['  conf.mock_with :rr', "  # On ExampleGroup, not conf.include, so RSpec's own matchers (satisfy) stay ahead of rr's DSL.",
                     '  RSpec::Core::ExampleGroup.include RR::DSL']
         { 'mocha' => { 'rspec' => ['  conf.mock_with :mocha'], 'minitest' => ["require 'mocha/minitest'"],
-                       'testunit' => ["require 'mocha/test_unit'"], 'shoulda' => ["require 'mocha/test_unit'"] },
+                       'testunit' => ["require 'mocha/test_unit'"] },
           'rr' => { 'rspec' => rr_rspec, 'minitest' => ["require 'rr'"],
-                    'testunit' => ["require 'test/unit/rr'"], 'shoulda' => ["require 'test/unit/rr'"] } }
+                    'testunit' => ["require 'test/unit/rr'"] } }
       end
 
       def switch_mock(project, mock, *args)
@@ -592,7 +661,7 @@ describe 'ComponentGenerator' do
       end
 
       it 'should replace the setup of the previous mock in the test helper for every test component' do
-        %w[rspec minitest testunit shoulda].product([[], :test]).each do |test, with_test|
+        %w[rspec minitest testunit].product([[], :test]).each do |test, with_test|
           args = with_test == :test ? ["--test=#{test}"] : []
           project = "#{@apptmp}/project_#{test}_#{args.size}"
           capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
@@ -651,7 +720,7 @@ describe 'ComponentGenerator' do
       end
 
       it 'should switch the mock of a project whose test component has no mock setup' do
-        %w[bacon cucumber none].each do |test|
+        %w[cucumber none].each do |test|
           project = "#{@apptmp}/project_#{test}"
           capture_io { generate(:project, "project_#{test}", "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
           before = Dir["#{project}/{test,spec,features}/**/*"].select { |path| File.file?(path) }.to_h { |path| [path, File.read(path)] }

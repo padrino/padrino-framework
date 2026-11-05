@@ -28,18 +28,6 @@ module Smoke
           end
         end
       RUBY
-      'shoulda' => ['test/app/smoke_failing_test.rb', <<~RUBY],
-        require File.expand_path("\#{__dir__}/../test_config.rb")
-        class SmokeFailingTest < Test::Unit::TestCase
-          should('fail on purpose') { assert_equal 1, 2 }
-        end
-      RUBY
-      'bacon' => ['test/app/smoke_failing_test.rb', <<~RUBY],
-        require File.expand_path("\#{__dir__}/../test_config.rb")
-        describe 'smoke' do
-          it('fails on purpose') { 1.should == 2 }
-        end
-      RUBY
       'rspec' => ['spec/app/smoke_failing_spec.rb', <<~RUBY],
         require 'spec_helper'
         RSpec.describe 'smoke' do

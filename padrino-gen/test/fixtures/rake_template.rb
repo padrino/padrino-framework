@@ -1,4 +1,4 @@
-project test: :shoulda, orm: :activerecord
+project test: :minitest, orm: :activerecord
 # create_file 'lib/tasks/test.rake', <<-RAKE
 # task :custom do
 #   File.open('#{destination_root("/tmp/custom.txt")}', 'w') do |f|
