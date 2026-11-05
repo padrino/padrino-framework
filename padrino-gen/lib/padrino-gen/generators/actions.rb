@@ -506,10 +506,10 @@ module Padrino
       end
 
       ##
-      # Appends text to a file unless the file already contains it, starting it
-      # on a new line so a file without a trailing newline keeps its last line
-      # intact. Works on the file's bytes, so content that isn't valid in the
-      # default encoding doesn't stop it.
+      # Appends text to a file unless the file already has it as whole lines,
+      # starting it on a new line so a file without a trailing newline keeps its
+      # last line intact. Works on the file's bytes, so content that isn't valid
+      # in the default encoding doesn't stop it.
       #
       # @param [String] path
       #   Path of the file to append to.
@@ -519,7 +519,8 @@ module Padrino
       def append_line(path, text)
         content = File.binread(path)
         addition = text.b
-        if content.include?(addition) || content.end_with?(addition.chomp)
+        lines = "\n#{content}".b
+        if lines.include?("\n#{addition}".b) || lines.end_with?("\n#{addition.chomp}".b)
           say_status :unchanged, relative_to_original_destination_root(path), :blue
           return
         end

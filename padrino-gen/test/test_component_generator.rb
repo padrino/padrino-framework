@@ -168,6 +168,22 @@ describe 'ComponentGenerator' do
       assert_equal "log/**/*\n.sass-cache/*", File.read(gitignore)
     end
 
+    it 'should add the Sass cache line after a longer line that ends like it' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, "log/**/*\napp/.sass-cache/*")
+      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
+      assert_equal "log/**/*\napp/.sass-cache/*\n.sass-cache/*\n", File.read(gitignore)
+    end
+
+    it 'should add the tailwind watcher to a Procfile.dev that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.binwrite(procfile, "web: caf\xE9\n".b)
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: caf\xE9\ncss: bundle exec rake tailwind:watch\n".b, File.binread(procfile)
+    end
+
     it 'should start the tailwind lines on a new line' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"

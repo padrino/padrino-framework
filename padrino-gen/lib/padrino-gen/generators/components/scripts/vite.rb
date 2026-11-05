@@ -70,7 +70,7 @@ def setup_script
   create_file destination_root('app/frontend/entrypoints/application.js'), VITE_ENTRYPOINT, skip: true
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
-    append_line(procfile, "vite: bundle exec vite dev\n") unless File.read(procfile).match?(/^vite:/)
+    append_line(procfile, "vite: bundle exec vite dev\n") unless File.binread(procfile).match?(/^vite:/n)
   else
     create_file procfile, "web: bundle exec padrino start\nvite: bundle exec vite dev\n"
   end
