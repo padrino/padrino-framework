@@ -234,12 +234,12 @@ module Padrino
               enable :protect_from_csrf
 
           and send the token with every POST, PUT, PATCH and DELETE request (Padrino's form
-          helpers add it to forms; `csrf_token` returns it for other requests). To keep it off
-          and silence this warning, use:
+          helpers add it to forms; the `csrf_token` helper returns it for other requests). To
+          keep it off and silence this warning, use:
 
               disable :protect_from_csrf
 
-          Either line can go in the app or, for every app, in `Padrino.configure_apps`.
+          (in the app, or in `Padrino.configure_apps` to keep it off for every app).
         WARNING
       end
     end
