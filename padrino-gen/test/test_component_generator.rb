@@ -184,6 +184,14 @@ describe 'ComponentGenerator' do
       assert_equal "web: caf\xE9\ncss: bundle exec rake tailwind:watch\n".b, File.binread(procfile)
     end
 
+    it 'should add the vite dev server to a Procfile.dev that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.binwrite(procfile, "web: caf\xE9\n".b)
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: caf\xE9\nvite: bundle exec vite dev\n".b, File.binread(procfile)
+    end
+
     it 'should start the tailwind lines on a new line' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"
