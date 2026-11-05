@@ -62,8 +62,18 @@ describe 'NumberHelpers' do
       assert_equal '0.78901',           number_with_delimiter(0.78901)
       assert_equal '123,456.78',        number_with_delimiter('123456.78')
       assert_equal 'x',                 number_with_delimiter('x')
+      assert_equal '-1,234,567,890,123', number_with_delimiter('-1234567890123')
+      assert_equal '1,234x5,678', number_with_delimiter('1234x5678')
+      assert_equal '1\\1234\\1567', number_with_delimiter(1_234_567, delimiter: '\\1')
 
       assert_nil number_with_delimiter(nil)
+    end
+
+    it 'should display number_with_delimiter in linear time' do
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      actual = number_with_delimiter('1' * 100_000)
+      assert_operator Process.clock_gettime(Process::CLOCK_MONOTONIC) - started, :<, 2
+      assert_equal "1#{',111' * 33_333}", actual
     end
 
     it 'should display number_with_delimiter with options' do

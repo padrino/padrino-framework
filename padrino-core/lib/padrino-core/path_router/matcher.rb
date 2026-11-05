@@ -5,6 +5,8 @@ module Padrino
     class Matcher
       # To count group of regexp
       GROUP_REGEXP = /\((?!\?:|\?!|\?<=|\?<!|\?=).+?\)/
+      # Most key lists a matcher remembers for expand_path.
+      MAX_EXACT_KEYS = 32
 
       ##
       # Constructs an instance of PathRouter::Matcher.
@@ -45,9 +47,14 @@ module Padrino
       def expand(params)
         params = @default_values.merge(params) if @default_values.is_a?(Hash)
         params, query = params.each_with_object([{}, {}]) do |(key, val), parts|
-          parts[handler.names.include?(key.to_s) ? 0 : 1][key] = val
+          if names.include?(key.to_s)
+            # Mustermann escapes an Integer through a slow path; its digits need no escaping.
+            parts[0][key] = val.instance_of?(Integer) ? val.to_s : val
+          else
+            parts[1][key] = val
+          end
         end
-        expanded_path = handler.expand(:append, params)
+        expanded_path = expand_path(params)
         expanded_path += "?#{Padrino::Utils.build_uri_query(query)}" unless query.empty?
         expanded_path
       end
@@ -106,7 +113,7 @@ module Padrino
       # @see Regexp#names
       #
       def names
-        handler.names
+        @names ||= handler.names.dup.freeze
       end
 
       ##
@@ -121,6 +128,33 @@ module Padrino
       end
 
       private
+
+      ##
+      # Mustermann's expand(:append, params). When the params fill one of the
+      # pattern's forms exactly, :append has nothing to append, and expand(:raise)
+      # gives the same path faster. Whether they do depends only on the keys,
+      # so it is found out once per list of keys, for params whose values are
+      # all Strings or Symbols (Integers arrive as Strings). Any other value
+      # (nil, an Array, an object) goes through :append and leaves the memo alone.
+      #
+      def expand_path(params)
+        return handler.expand(:append, params) unless params.all? { |_, value| value.instance_of?(String) || value.instance_of?(Symbol) }
+
+        keys = params.keys
+        exact = (@exact_keys ||= {}.freeze)[keys]
+        return handler.expand(:raise, params) if exact
+
+        path = handler.expand(:append, params)
+        if exact.nil? && @exact_keys.size < MAX_EXACT_KEYS
+          exact = begin
+            handler.expand(:raise, params) == path
+          rescue Mustermann::ExpandError, ArgumentError
+            false
+          end
+          @exact_keys = @exact_keys.merge(keys.freeze => exact).freeze
+        end
+        path
+      end
 
       ##
       # Creates a hash with indifferent access.

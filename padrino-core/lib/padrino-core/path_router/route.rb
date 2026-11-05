@@ -4,7 +4,17 @@ module Padrino
       ##
       # The accessors are useful to access from PathRouter::Router
       #
-      attr_accessor :name, :capture, :order, :options, :index, :regexp
+      attr_accessor :capture, :order, :options, :index, :regexp
+
+      ##
+      # The route's name (url generation finds routes by it).
+      #
+      attr_reader :name
+
+      def name=(name)
+        @name = name
+        @router&.named_routes_changed!
+      end
 
       ##
       # A reader for compile option
@@ -15,6 +25,14 @@ module Padrino
       # The router will be treated in this class
       #
       attr_writer :router
+
+      ##
+      # Sets the route's router unless it has one (a route pushed onto Router#routes directly).
+      #
+      # @api private
+      def adopt(router)
+        @router ||= router
+      end
 
       ##
       # The accessors will be used in other classes
