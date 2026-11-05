@@ -224,7 +224,7 @@ module Padrino
       # warn once if sessions are on but the app never set protect_from_csrf: setting
       # it, even to false, replaces the method default_security defined
       def check_csrf_protection_default
-        return if @_csrf_default_warned || method(:protect_from_csrf) != @_default_protect_from_csrf || !sessions?
+        return if @_csrf_default_warned || method(:protect_from_csrf) != @_default_protect_from_csrf || !sessions? || protect_from_csrf?
 
         @_csrf_default_warned = true
         warn(<<~WARNING)

@@ -528,6 +528,17 @@ describe 'Application' do
         end
       end
 
+      it 'should not warn when protect_from_csrf? is overridden to be on' do
+        mock_app do
+          enable :sessions
+          def self.protect_from_csrf?
+            true
+          end
+          get('/') { 'HI' }
+        end
+        assert_equal 0, setup_warnings
+      end
+
       it 'should not warn when Padrino.configure_apps sets protect_from_csrf' do
         Padrino.configure_apps do
           enable :sessions
