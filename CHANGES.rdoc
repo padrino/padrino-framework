@@ -2,6 +2,7 @@
 
 == Unreleased
 
+- FIX #2504 Routing is faster, most of all in apps with many routes: a request skips routes whose path can't match its first characters. A StopIteration raised while a route runs (its block, filters or conditions) now reaches error handlers, instead of ending in a 404 or escaping the app, and an earlier route for another verb that matches the path no longer fails the request (@nesquena)
 - FIX #2502 url() is faster: it looks routes up by name and expands each path once (@nesquena)
 
 == 0.18.4 (2026-11-04)

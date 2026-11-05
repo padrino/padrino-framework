@@ -22,6 +22,7 @@ module Padrino
           route.index = index
           route.regexp = /\A(?<_#{index}>#{route.matcher.to_regexp})\z/
         end
+        index_by_prefix!
         @compiled = true
       end
 
@@ -46,11 +47,15 @@ module Padrino
       # Calls routes by using request.
       #
       def call_by_request(request)
+        path_info = pattern = nil
         rotation do |offset|
-          pattern = decode_pattern(request.path_info)
+          # A route's filters may change the path before passing; decode it again only then.
+          unless path_info && path_info == request.path_info
+            path_info = request.path_info.dup
+            pattern = decode_pattern(path_info)
+          end
           if (route = match?(offset, pattern))
-            params = route.params_for(pattern, request.params)
-            yield(route, params) if route.verb == request.request_method
+            yield(route, route.params_for(pattern, request.params)) if route.verb == request.request_method
             route
           end
         end
@@ -72,9 +77,64 @@ module Padrino
       def match?(offset, path)
         return unless path
 
-        @routes[offset..].find do |route|
-          route.regexp === path || (path.end_with?('/') && route.regexp === path[0..-2])
+        trimmed = path[0..-2] if path.end_with?('/')
+        routes = @routes
+        # The index holds positions in routes as they were compiled, so it is used only while
+        # routes still holds the same routes in the same order. After any other edit to routes,
+        # match? looks through them one by one.
+        if (prefix_index = @prefix_index) && path.length >= PREFIX_SIZE && routes == prefix_index[2]
+          by_prefix, unprefixed, = prefix_index
+          candidates = by_prefix.fetch(path[0, PREFIX_SIZE], unprefixed)
+          from = candidates.bsearch_index { |index| index >= offset }
+          return unless from
+
+          from.upto(candidates.size - 1) do |at|
+            route = routes[candidates[at]]
+            regexp = route.regexp
+            return route if regexp.match?(path) || (trimmed && regexp.match?(trimmed))
+          end
+          return
         end
+        while (route = routes[offset])
+          regexp = route.regexp
+          # A route added after compiling has no regexp and matches nothing.
+          return route if regexp && (regexp.match?(path) || (trimmed && regexp.match?(trimmed)))
+          offset += 1
+        end
+      end
+
+      # How many leading characters of a path pick the routes to try (index_by_prefix!).
+      PREFIX_SIZE = 3
+      # The start of a Sinatra pattern that can only match itself: plain characters, up to the
+      # first one that may be special (':', '*', '(', '?', '{', '\\', '+' ...).
+      LITERAL_START = %r{\A[A-Za-z0-9_\-/.~]*}
+
+      ##
+      # Sorts the routes by the first PREFIX_SIZE characters a path they match must start with,
+      # so that match? only tries the routes that can match it. A route whose pattern doesn't
+      # fix that many (a Regexp, a capture or group early, an optional character, a '|') is tried
+      # for every path.
+      #
+      def index_by_prefix!
+        prefixed = Hash.new { |hash, key| hash[key] = [] }
+        unprefixed = []
+        @routes.each_with_index do |route, index|
+          (prefix = literal_prefix(route)) ? prefixed[prefix] << index : unprefixed << index
+        end
+        by_prefix = prefixed.transform_values { |indexes| (indexes + unprefixed).sort.freeze }.freeze
+        # One frozen value, set in one assignment: match? reads it once, so a thread matching while
+        # another compiles the same engine sees the lists and routes from the same compile.
+        @prefix_index = [by_prefix, unprefixed.freeze, @routes.dup.freeze].freeze
+      end
+
+      # The first PREFIX_SIZE characters every path the route matches starts with, or nil.
+      def literal_prefix(route)
+        path = route.original_path
+        return unless path.is_a?(String) && !path.include?('|')
+
+        literal = path[LITERAL_START]
+        literal = literal[0..-2] if path[literal.length] == '?'
+        literal[0, PREFIX_SIZE] if literal.length >= PREFIX_SIZE
       end
 
       ##
@@ -82,11 +142,12 @@ module Padrino
       #
       def rotation(offset = 0)
         compile! unless compiled?
-        loop.with_object([]) do |_, candidacies|
-          return candidacies unless (route = yield(offset))
+        candidacies = []
+        while (route = yield(offset))
           candidacies << route
           offset = route.index.next
         end
+        candidacies
       end
 
       ##
@@ -97,6 +158,11 @@ module Padrino
       # (a '%0A' left by '%250A'), matches no route either.
       #
       def decode_pattern(pattern)
+        # Without an escape, decoding an ASCII path only changes its encoding.
+        if pattern.ascii_only? && !pattern.include?('%') && Encoding.default_external.ascii_compatible?
+          return pattern.include?("\n") ? nil : pattern.dup.force_encoding(Encoding::UTF_8)
+        end
+
         pattern = pattern.encode(Encoding.default_external)
         return if pattern.match?(/%(?!\h\h)/)
 
