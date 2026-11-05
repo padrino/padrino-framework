@@ -434,6 +434,17 @@ describe 'Routing' do
     end
   end
 
+  it 'should give 404 for a path with a raw newline' do
+    mock_app do
+      get('/names/:name') { 'name' }
+    end
+    ["/names/a\nb", "/names/a\n"].each do |path|
+      env = Rack::MockRequest.env_for('/')
+      env['PATH_INFO'] = path
+      assert_equal 404, @app.call(env)[0], path.inspect
+    end
+  end
+
   it 'should cascade a path with a control character to the next app at the same mount' do
     first = mock_app do
       before('/admin') { halt 401, 'first' }
@@ -3295,6 +3306,282 @@ describe 'Routing' do
       assert_equal 'GET /posts/:id', Rack::MockRequest.new(outer).get('/posts/1').body
       assert_equal 'GET /posts/:id', Rack::MockRequest.new(outer).get('/blog/posts/1').body
       assert_equal 'GET /posts/:id', outer_env['sinatra.route']
+    end
+  end
+
+  describe 'route matching' do
+    it 'matches the path a route rewrote before passing' do
+      mock_app do
+        get(:rewrite, map: '/rewrite/:id') do
+          request.path_info = '/target'
+          pass
+        end
+        get(:in_place, map: '/in_place/:id') do
+          request.path_info.replace('/target')
+          pass
+        end
+        get(:target, map: '/target') { 'target' }
+      end
+      get '/rewrite/1'
+      assert_equal 200, status
+      assert_equal 'target', body
+      get '/in_place/1'
+      assert_equal 200, status
+      assert_equal 'target', body
+    end
+
+    it 'keeps serving its routes when a route is added after a request' do
+      mock_app do
+        get('/first') { 'first' }
+      end
+      get '/first'
+      @app.get('/second') { 'second' }
+      get '/first'
+      assert_equal 'first', body
+      get '/m'
+      assert_equal 404, status
+      get '/missing'
+      assert_equal 404, status
+    end
+
+    it 'keeps serving its routes when routes are removed or inserted after a request' do
+      mock_app do
+        get(:gone, map: '/gone') { 'gone' }
+        get(:abc, map: '/abc') { 'abc' }
+        get(:cap, map: '/:x') { 'cap' }
+      end
+      get '/abc'
+      @app.router.routes.reject! { |route| route.name == :gone }
+      get '/abc'
+      assert_equal 'abc', body
+      get '/zz'
+      assert_equal 'cap', body
+      @app.router.routes.unshift(Padrino::PathRouter::Route.new('/new', :get))
+      get '/abc'
+      assert_equal 'abc', body
+      get '/gone'
+      assert_equal 'cap', body
+    end
+
+    it 'keeps serving its routes when routes are reordered after a request' do
+      mock_app do
+        get('/abc') { 'abc' }
+        get('/abd') { 'abd' }
+        get('/zzz') { 'zzz' }
+      end
+      get '/abc'
+      routes = @app.router.routes
+      first = routes.index { |route| route.original_path == '/abc' && route.verb == 'GET' }
+      last = routes.rindex { |route| route.original_path == '/zzz' && route.verb == 'GET' }
+      routes[first], routes[last] = routes[last], routes[first]
+      get '/abc'
+      assert_equal 200, status
+      assert_equal 'abc', body
+      get '/zzz'
+      assert_equal 'zzz', body
+    end
+
+    it 'matches routes whose pattern starts with an optional or variable part' do
+      mock_app do
+        get('/colou?r') { 'color' }
+        get('/xy?z') { 'optional' }
+        get('/one|/two') { 'union' }
+        get('/:lang/start') { 'capture' }
+        get('/*/files') { 'splat' }
+        get('/ab') { 'short' }
+        get(%r{/rx[0-9]+}) { 'regexp' }
+      end
+      { '/color' => 'color', '/colour' => 'color', '/xz' => 'optional', '/xyz' => 'optional', '/two' => 'union', '/de/start' => 'capture',
+        '/a/b/files' => 'splat', '/ab' => 'short', '/ab/' => 'short', '/rx12' => 'regexp' }.each do |path, expected|
+        get path
+        assert_equal expected, body, path
+      end
+    end
+
+    it 'picks the routes to try by the decoded path' do
+      mock_app do
+        get('/abc/first') { 'first' }
+        get('/ABC/x') { 'upper' }
+        get('/a/') { 'slash' }
+      end
+      get '/%61bc/first'
+      assert_equal 200, status
+      assert_equal 'first', body
+      get '/ABC/x'
+      assert_equal 200, status
+      assert_equal 'upper', body
+      get '/a/'
+      assert_equal 200, status
+      assert_equal 'slash', body
+    end
+
+    it 'lets a StopIteration raised in a route reach the error handlers' do
+      mock_app do
+        set :raise_errors, false
+        set :show_exceptions, false
+        get('/boom') { [].each.next }
+        error(StopIteration) { 'handled' }
+      end
+      get '/boom'
+      assert_equal 500, status
+      assert_equal 'handled', body
+    end
+
+    it 'serves a route when an earlier route for another verb matches the path' do
+      mock_app do
+        set :raise_errors, false
+        set :show_exceptions, false
+        post('(/:lang)?') { 'post' }
+        get('/') { 'root' }
+      end
+      get '/'
+      assert_equal 200, status
+      assert_equal 'root', body
+    end
+
+    it 'tries routes in the order they were defined, whatever their pattern starts with' do
+      mock_app do
+        get('/abc/first') { 'literal' }
+        get('/:name/first') { 'capture' }
+        get('/:name/second') { 'capture' }
+        get('/abc/second') { 'literal' }
+      end
+      get '/abc/first'
+      assert_equal 'literal', body
+      get '/abc/second'
+      assert_equal 'capture', body
+    end
+  end
+
+  describe 'url generation after routes change' do
+    it 'finds a renamed route by its new name' do
+      mock_app do
+        get(:old, map: '/page') { 'page' }
+      end
+      assert_equal '/page', @app.url(:old)
+      @app.routes.each { |route| route.name = :new if route.name == :old }
+      assert_equal '/page', @app.url(:new)
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:old) }
+    end
+
+    it 'uses the routes defined after reset_routes!' do
+      mock_app do
+        get(:page, map: '/old') { 'old' }
+      end
+      assert_equal '/old', @app.url(:page)
+      @app.reset_routes!
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:page) }
+      @app.get(:page, map: '/new') { 'new' }
+      assert_equal '/new', @app.url(:page)
+    end
+
+    it 'finds no route deleted from the routes' do
+      mock_app do
+        get(:gone, map: '/gone') { 'gone' }
+      end
+      assert_equal '/gone', @app.url(:gone)
+      @app.router.routes.reject! { |route| route.name == :gone }
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:gone) }
+    end
+
+    it 'finds a route pushed onto the routes by its new name after a rename' do
+      mock_app do
+        get(:index) { 'index' }
+      end
+      route = Padrino::PathRouter::Route.new('/page', :get, name: :old)
+      @app.router.routes << route
+      assert_equal '/page', @app.url(:old)
+      route.name = :new
+      assert_equal '/page', @app.url(:new)
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:old) }
+    end
+
+    it 'keeps the router a route was added to when another router indexes it' do
+      owner = Padrino::PathRouter.new
+      route = owner.add(:get, '/shared', name: :old)
+      owner.path(:old)
+      other = Padrino::PathRouter.new
+      other.routes << route
+      other.path(:old)
+      route.name = :new
+      assert_equal '/shared', owner.path(:new)
+    end
+
+    it 'finds a route added to the router with a name' do
+      router = Padrino::PathRouter.new
+      router.add(:get, '/one', name: :one)
+      assert_equal '/one', router.path(:one)
+      router.add(:get, '/two', name: :two)
+      assert_equal '/two', router.path(:two)
+      router.routes.pop
+      router.add(:get, '/three', name: :three)
+      assert_equal '/three', router.path(:three)
+    end
+
+    it 'finds the routes added to the router after reset!' do
+      router = Padrino::PathRouter.new
+      router.add(:get, '/old', name: :page)
+      assert_equal '/old', router.path(:page)
+      router.reset!
+      router.routes << Padrino::PathRouter::Route.new('/new', :get, name: :page)
+      assert_equal '/new', router.path(:page)
+    end
+
+    it 'picks the first route of a name in the order requests try them' do
+      mock_app do
+        get(:page, map: '/low', priority: :low) { 'low' }
+        get(:page, map: '/normal') { 'normal' }
+      end
+      @app.url(:page)
+      get '/normal'
+      assert_equal '/normal', @app.url(:page)
+    end
+
+    it 'picks the route of a name that takes the params given' do
+      mock_app do
+        get(:show, map: '/show/:id') { 'id' }
+        get(:show, map: '/show/:id/:slug') { 'slug' }
+      end
+      2.times do
+        assert_equal '/show/1', @app.url(:show, id: 1)
+        assert_equal '/show/1/x', @app.url(:show, id: 1, slug: 'x')
+        assert_equal '/show/1?ref=a', @app.url(:show, id: 1, ref: 'a')
+      end
+    end
+
+    it 'expands the same url for each form of the params' do
+      mock_app do
+        get(:item, map: '/item/:id(.:format)?') { 'item' }
+        get(:opt, map: '/opt(/:a(/:b))?') { 'opt' }
+      end
+      2.times do
+        assert_equal '/item/7', @app.url(:item, id: 7)
+        assert_equal '/item/7', @app.url(:item, 'id' => 7)
+        assert_equal '/item/-7', @app.url(:item, id: -7)
+        assert_equal '/item/7.json', @app.url(:item, id: '7', format: :json)
+        assert_equal '/item/a%20b', @app.url(:item, id: 'a b')
+        assert_equal '/opt/1/2', @app.url(:opt, a: 1, b: 2)
+        assert_equal '/opt?b=2', @app.url(:opt, b: 2)
+        assert_equal '/opt?b=2', @app.url(:opt, a: nil, b: 2)
+        assert_equal '/opt/1/2', @app.routes.find { |route| route.name == :opt }.path(a: 1, b: 2)
+        assert_equal '/opt?b=2', @app.routes.find { |route| route.name == :opt }.path(a: nil, b: 2)
+      end
+    end
+
+    it 'expands values other than Strings, Symbols and Integers as before' do
+      list = Class.new(Array)
+      value = Class.new { def to_s; 'v1'; end }.new
+      mock_app do
+        get(:files, map: '/files/*') { 'files' }
+        get(:opt, map: '/opt(/:a(/:b))?') { 'opt' }
+      end
+      2.times do
+        assert_equal '/files/x', @app.url(:files, splat: 'x')
+        assert_equal '/files/x', @app.url(:files, splat: list['x'])
+        assert_equal '/opt/1/2', @app.url(:opt, a: 1, b: 2)
+        assert_equal '/opt/v1/2', @app.url(:opt, a: value, b: 2)
+        assert_equal '/opt/false/2', @app.url(:opt, a: false, b: 2)
+      end
     end
   end
 end

@@ -113,6 +113,53 @@ describe 'FormatHelpers' do
       actual_text = highlight('Lorem ipsum dolor sit amet', 'dolor', highlighter: '<span class="custom">\1</span>')
       assert_equal 'Lorem ipsum <span class="custom">dolor</span> sit amet', actual_text
     end
+
+    it 'should leave words inside html tags alone' do
+      actual_text = highlight('<b class="b">bold</b> <a href="/b">b</a>', 'b')
+      assert_equal '<b class="b"><strong class="highlight">b</strong>old</b> <a href="/b"><strong class="highlight">b</strong></a>', actual_text
+    end
+
+    it 'should leave a quoted attribute alone when it holds a >' do
+      actual_text = highlight('<a title="x > y">y</a>', 'y')
+      assert_equal '<a title="x > y"><strong class="highlight">y</strong></a>', actual_text
+    end
+
+    it 'should leave a quoted attribute alone when it holds a <' do
+      actual_text = highlight(%(<a title="x < y" data-y='y < x'>y</a>), 'y')
+      assert_equal %(<a title="x < y" data-y='y < x'><strong class="highlight">y</strong></a>), actual_text
+    end
+
+    it 'should highlight text around a < that does not start a tag' do
+      assert_equal 'if a < b then <strong class="highlight">y</strong>', highlight('if a < b then y', 'y')
+      assert_equal 'if <strong class="highlight">a < b</strong> then y', highlight('if a < b then y', 'a < b')
+      assert_equal "<\u212A <strong class=\"highlight\">b</strong>", highlight("<\u212A b", 'b')
+    end
+
+    it 'should read a quote in a tag as a value only after =' do
+      actual_text = highlight("<img alt=it's> Ruby isn't", 'ruby')
+      assert_equal %(<img alt=it's> <strong class="highlight">Ruby</strong> isn't), actual_text
+    end
+
+    it 'should not split a tag at its closing >' do
+      assert_equal '<b>x</b>', highlight('<b>x</b>', '>x')
+    end
+
+    it 'should highlight long text in linear time' do
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      actual_text = highlight('word ' * 20_000, 'word')
+      assert_operator Process.clock_gettime(Process::CLOCK_MONOTONIC) - started, :<, 2
+      assert_equal '<strong class="highlight">word</strong> ' * 20_000, actual_text
+    end
+
+    it 'should highlight html safe text' do
+      actual_text = highlight('<p>Lorem</p><p>ipsum dolor</p>'.html_safe, %w[lorem dolor])
+      assert_equal '<p><strong class="highlight">Lorem</strong></p><p>ipsum <strong class="highlight">dolor</strong></p>', actual_text
+    end
+
+    it 'should highlight several words across tags' do
+      actual_text = highlight('<p>Lorem</p><p>ipsum lorem</p>', %w[lorem ipsum])
+      assert_equal '<p><strong class="highlight">Lorem</strong></p><p><strong class="highlight">ipsum</strong> <strong class="highlight">lorem</strong></p>', actual_text
+    end
   end
 
   describe 'for #truncate method' do

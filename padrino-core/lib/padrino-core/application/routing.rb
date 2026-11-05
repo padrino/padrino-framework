@@ -500,8 +500,8 @@ module Padrino
       def rebase_url(url)
         if url.start_with?('/')
           new_url = String.new
-          new_url << conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
-          new_url << conform_uri(uri_root) if defined?(uri_root)
+          new_url << conformed_uri(:@_conformed_base_uri, ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
+          new_url << conformed_uri(:@_conformed_uri_root, uri_root) if defined?(uri_root)
           new_url << url
         else
           url.empty? ? '/' : url
@@ -596,6 +596,17 @@ module Padrino
       # Add prefix slash if its not present and remove trailing slashes.
       def conform_uri(uri_string)
         uri_string.gsub(%r{^(?!/)(.*)}, '/\1').gsub(%r{/+$}, '')
+      end
+
+      # conform_uri, remembered in +ivar+ for the last value it was given (the base URI and
+      # uri_root rarely change). The memo is a frozen [value, result] pair, replaced whole.
+      def conformed_uri(ivar, uri_string)
+        memo = instance_variable_get(ivar)
+        return memo[1] if memo && memo[0] == uri_string
+
+        memo = [uri_string.dup.freeze, conform_uri(uri_string).freeze].freeze
+        instance_variable_set(ivar, memo)
+        memo[1]
       end
 
       ##

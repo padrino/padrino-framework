@@ -32,6 +32,7 @@ module Padrino
         route = Route.new(path, verb, options, &block)
         route.router = self
         @routes << route
+        @named_routes = nil
         route
       end
 
@@ -56,13 +57,17 @@ module Padrino
       #
       def path(name, *args)
         params = args.last.is_a?(Hash) ? args.pop : {}
-        candidates = @routes.select { |route| route.name == name }
-        raise InvalidRouteException if candidates.empty?
-        i = 0
-        route = candidates.sort_by! do |candidate|
+        candidates = named_routes[name]
+        raise InvalidRouteException unless candidates
+        route = candidates.first
+        # Candidates that all take the same params (a GET and its HEAD) rank in their order.
+        unless candidates.all? { |candidate| candidate.matcher.names == route.matcher.names }
+          keys = params.keys.map(&:to_s)
           # Tries to find the route that matches more, but with fewer names, in stable order
-          [(params.keys.map(&:to_s) - candidate.matcher.names).length, candidate.matcher.names.size, i += 1]
-        end.shift
+          route = candidates.each_with_index.min_by do |candidate, i|
+            [(keys - candidate.matcher.names).length, candidate.matcher.names.size, i]
+          end.first
+        end
         matcher = route.matcher
         params_for_expand = params.dup
         if !args.empty? && matcher.mustermann?
@@ -86,6 +91,7 @@ module Padrino
       # Resets all routes, current order and preparation.
       #
       def reset!
+        @named_routes = nil
         @routes = []
         @current_order = 0
         @prepared = nil
@@ -107,9 +113,38 @@ module Padrino
         @prepared = true
         return if @current_order.zero?
         @routes.sort_by!(&:order)
+        @named_routes = nil
+      end
+
+      ##
+      # Forgets the routes by name, after a route was added, sorted or renamed.
+      #
+      # @api private
+      def named_routes_changed!
+        @named_routes = nil
       end
 
       private
+
+      ##
+      # The routes by name, in the order of +routes+, rebuilt when +routes+ changes size so
+      # that a route added to or deleted from +routes+ directly is seen.
+      # ceiling: a direct edit that keeps the size (one route swapped for another) isn't seen,
+      # nor is a rename of a route this router shares with, or took from, another router;
+      # rebuild on every call if that has to work.
+      #
+      def named_routes
+        size = @routes.size
+        memo = @named_routes
+        return memo[1] if memo && memo[0] == size
+
+        # A route pushed onto +routes+ directly has no router; give it this one, so that
+        # renaming it clears this index.
+        @routes.each { |route| route.adopt(self) }
+        by_name = @routes.group_by(&:name).freeze
+        @named_routes = [size, by_name].freeze
+        by_name
+      end
 
       ##
       # Returns true if the router has been prepared.

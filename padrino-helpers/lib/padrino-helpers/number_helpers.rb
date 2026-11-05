@@ -146,7 +146,8 @@ module Padrino
 
         begin
           parts = number.to_s.split('.')
-          parts[0].gsub!(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1#{delimiter}")
+          reversed_delimiter = delimiter.to_s.reverse
+          parts[0].gsub!(/\d+/) { |digits| digits.reverse.scan(/\d{1,3}/).join(reversed_delimiter).reverse }
           parts.join(separator)
         rescue StandardError
           number
