@@ -107,8 +107,8 @@ module Padrino
       end
 
       ##
-      # Run the Padrino app as a self-hosted server using
-      # Thin, Mongrel or WEBrick (in that order).
+      # Run the Padrino app as a self-hosted server using the first
+      # available handler in Padrino::Server::Handlers.
       #
       # @see Padrino::Server#start
       #

@@ -426,17 +426,6 @@ unless defined? Padrino::Rendering::HamlitTemplate
   end
 end
 
-unless defined? Padrino::Rendering::ErubisTemplate
-  begin
-    require 'erubis'
-  rescue LoadError
-    # do nothing since erubis is not available
-  else
-    # Tilt 2.5 dropped its Erubis template; without it there is nothing to extend.
-    require 'padrino/rendering/erubis_template' if defined?(Tilt::ErubisTemplate)
-  end
-end
-
 unless defined? Padrino::Rendering::SlimTemplate
   begin
     require 'slim'

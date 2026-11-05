@@ -1,4 +1,5 @@
 require 'padrino-core/version'
+require 'padrino-core/server_names'
 require 'securerandom' unless defined?(SecureRandom)
 
 module Padrino
@@ -32,7 +33,7 @@ module Padrino
       class_option :gem,              desc: 'Generate project as a gem',                                        aliases: '-g', default: false,       type: :boolean
       class_option :migration_format, desc: 'Filename format for migrations (number, timestamp)',                              default: 'number',    type: :string
       class_option :adapter,          desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, trilogy, postgres)', aliases: '-a', default: 'sqlite', type: :string
-      class_option :server,           desc: 'HTTP server to use (webrick, thin, puma, falcon)', default: 'webrick', type: :string
+      class_option :server,           desc: "HTTP server to use (#{Padrino::SERVERS.join(', ')})", default: 'webrick', type: :string
 
       # Definitions for the available customizable components.
       defines_component_options
@@ -45,8 +46,10 @@ module Padrino
       #
       def setup_project
         valid_constant? name
+        removed = Padrino.removed_server_message(options[:server]) || Padrino.removed_server_message(options[:script])
+        raise Thor::Error, removed if removed
         # In 0.16.0 and 0.16.1 -s meant --server; stop before prompting for a script named after a server.
-        if %w[webrick thin puma falcon trinidad mongrel spider-gazelle].include?(options[:script].to_s)
+        if Padrino::SERVERS.include?(options[:script].to_s)
           raise Thor::Error, "-s selects the javascript library (--script); use --server=#{options[:script]} to choose the HTTP server"
         end
         app = options[:app] || 'App'

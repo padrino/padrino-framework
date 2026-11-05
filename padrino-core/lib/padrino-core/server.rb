@@ -1,11 +1,13 @@
+require 'padrino-core/server_names'
+
 module Padrino
   ##
   # Runs the Padrino apps as a self-hosted server using the first available
-  # handler in Server::Handlers (thin, puma, falcon, ..., WEBrick).
+  # handler in Server::Handlers (thin, puma, falcon, WEBrick).
   #
   # @example
   #   Padrino.run! # with these defaults => host: '127.0.0.1', port: '3000', adapter: the first found
-  #   Padrino.run!('0.0.0.0', '4000', 'mongrel') # use => host: '0.0.0.0', port: '4000', adapter: 'mongrel'
+  #   Padrino.run!(host: '0.0.0.0', port: '4000', server: 'puma')
   #
   def self.run!(options = {})
     Padrino.load!
@@ -31,12 +33,14 @@ module Padrino
     DEFAULT_ADDRESS = { Host: '127.0.0.1', Port: 3000 }
 
     # Server Handlers
-    Handlers = %i[thin puma falcon spider-gazelle mongrel trinidad webrick]
+    Handlers = SERVERS.map(&:to_sym)
 
     # Starts the application on the available server with specified options.
     def self.start(app, options = {})
       options = Utils.symbolize_keys(options.to_hash)
       options.update(parse_server_options(options.delete(:options)))
+      removed = Padrino.removed_server_message(options[:server])
+      raise removed if removed
       options.update(detect_address(options))
       options[:pid] = prepare_pid(options[:pid]) if options[:daemonize]
       options[:server] ||= detect_rack_handler
@@ -93,8 +97,7 @@ module Padrino
     # Parses an array of server options.
     #
     def self.parse_server_options(options)
-      parsed_server_options = Array(options).flat_map { |option| option.split('=', 2) }
-      Utils.symbolize_keys(Hash[*parsed_server_options])
+      Padrino.parse_server_options(options)
     end
 
     # Detects Host and Port for Rack server.

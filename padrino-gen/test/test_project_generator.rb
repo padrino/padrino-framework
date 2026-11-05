@@ -470,19 +470,17 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/# Server requirements\ngem 'thin'\n/, "#{@apptmp}/sample_project/Gemfile")
     end
 
-    it 'should properly generate for mongrel' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=mongrel') }
-      assert_match_in_file(/# Server requirements\ngem 'mongrel'\n/, "#{@apptmp}/sample_project/Gemfile")
-    end
-
-    it 'should properly generate for spider-gazelle' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=spider-gazelle') }
-      assert_match_in_file(/# Server requirements\ngem 'spider-gazelle'\n/, "#{@apptmp}/sample_project/Gemfile")
-    end
-
-    it 'should properly generate for trinidad' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=trinidad') }
-      assert_match_in_file(/# Server requirements\ngem 'trinidad', platform: 'jruby'\n/, "#{@apptmp}/sample_project/Gemfile")
+    {
+      %w[--server=mongrel] => 'mongrel', %w[--server=spider-gazelle] => 'spider-gazelle', %w[--server=trinidad] => 'trinidad',
+      %w[--server=Mongrel] => 'Mongrel', %w[--server=spider_gazelle] => 'spider_gazelle', %w[-s mongrel] => 'mongrel'
+    }.each do |option, server|
+      it "should stop naming the supported servers for #{option.join(' ')}" do
+        stop = nil
+        _, err = capture_io { stop = assert_raises(SystemExit) { generate(:project, 'sample_project', "--root=#{@apptmp}", *option) } }
+        assert_equal 1, stop.status
+        assert_match(/\AThe #{server} server was removed from Padrino; use one of .*\bwebrick\b.*\n\z/, err)
+        assert_no_dir_exists("#{@apptmp}/sample_project")
+      end
     end
   end
 
