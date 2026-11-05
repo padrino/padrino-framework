@@ -79,22 +79,21 @@ module Padrino
 
         trimmed = path[0..-2] if path.end_with?('/')
         routes = @routes
-        if (prefix_index = @prefix_index) && path.length >= PREFIX_SIZE
-          by_prefix, unprefixed = prefix_index
+        # The index holds positions in routes as they were compiled, so it is used only while
+        # routes still holds the same routes in the same order. After any other edit to routes,
+        # match? looks through them one by one.
+        if (prefix_index = @prefix_index) && path.length >= PREFIX_SIZE && routes == prefix_index[2]
+          by_prefix, unprefixed, = prefix_index
           candidates = by_prefix.fetch(path[0, PREFIX_SIZE], unprefixed)
           from = candidates.bsearch_index { |index| index >= offset }
           return unless from
 
-          moved = from.upto(candidates.size - 1) do |at|
-            route = routes[index = candidates[at]]
-            # A route removed from or inserted into routes after compiling moves the ones after it:
-            # their positions no longer match the index, so look through routes one by one instead.
-            break true unless route && route.index == index
-
+          from.upto(candidates.size - 1) do |at|
+            route = routes[candidates[at]]
             regexp = route.regexp
             return route if regexp.match?(path) || (trimmed && regexp.match?(trimmed))
           end
-          return unless moved == true
+          return
         end
         while (route = routes[offset])
           regexp = route.regexp
@@ -123,9 +122,9 @@ module Padrino
           (prefix = literal_prefix(route)) ? prefixed[prefix] << index : unprefixed << index
         end
         by_prefix = prefixed.transform_values { |indexes| (indexes + unprefixed).sort.freeze }.freeze
-        # One frozen pair, set in one assignment: match? reads it once, so a thread matching while
-        # another compiles the same engine sees both lists from the same compile.
-        @prefix_index = [by_prefix, unprefixed.freeze].freeze
+        # One frozen value, set in one assignment: match? reads it once, so a thread matching while
+        # another compiles the same engine sees the lists and routes from the same compile.
+        @prefix_index = [by_prefix, unprefixed.freeze, @routes.dup.freeze].freeze
       end
 
       # The first PREFIX_SIZE characters every path the route matches starts with, or nil.

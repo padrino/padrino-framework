@@ -3280,6 +3280,24 @@ describe 'Routing' do
       assert_equal 'cap', body
     end
 
+    it 'keeps serving its routes when routes are reordered after a request' do
+      mock_app do
+        get('/abc') { 'abc' }
+        get('/abd') { 'abd' }
+        get('/zzz') { 'zzz' }
+      end
+      get '/abc'
+      routes = @app.router.routes
+      first = routes.index { |route| route.original_path == '/abc' && route.verb == 'GET' }
+      last = routes.rindex { |route| route.original_path == '/zzz' && route.verb == 'GET' }
+      routes[first], routes[last] = routes[last], routes[first]
+      get '/abc'
+      assert_equal 200, status
+      assert_equal 'abc', body
+      get '/zzz'
+      assert_equal 'zzz', body
+    end
+
     it 'matches routes whose pattern starts with an optional or variable part' do
       mock_app do
         get('/colou?r') { 'color' }
