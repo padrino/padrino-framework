@@ -3261,6 +3261,25 @@ describe 'Routing' do
       assert_equal 404, status
     end
 
+    it 'keeps serving its routes when routes are removed or inserted after a request' do
+      mock_app do
+        get(:gone, map: '/gone') { 'gone' }
+        get(:abc, map: '/abc') { 'abc' }
+        get(:cap, map: '/:x') { 'cap' }
+      end
+      get '/abc'
+      @app.router.routes.reject! { |route| route.name == :gone }
+      get '/abc'
+      assert_equal 'abc', body
+      get '/zz'
+      assert_equal 'cap', body
+      @app.router.routes.unshift(Padrino::PathRouter::Route.new('/new', :get))
+      get '/abc'
+      assert_equal 'abc', body
+      get '/gone'
+      assert_equal 'cap', body
+    end
+
     it 'matches routes whose pattern starts with an optional or variable part' do
       mock_app do
         get('/colou?r') { 'color' }

@@ -85,12 +85,16 @@ module Padrino
           from = candidates.bsearch_index { |index| index >= offset }
           return unless from
 
-          from.upto(candidates.size - 1) do |at|
-            route = routes[candidates[at]]
+          moved = from.upto(candidates.size - 1) do |at|
+            route = routes[index = candidates[at]]
+            # A route removed from or inserted into routes after compiling moves the ones after it:
+            # their positions no longer match the index, so look through routes one by one instead.
+            break true unless route && route.index == index
+
             regexp = route.regexp
             return route if regexp.match?(path) || (trimmed && regexp.match?(trimmed))
           end
-          return
+          return unless moved == true
         end
         while (route = routes[offset])
           regexp = route.regexp
