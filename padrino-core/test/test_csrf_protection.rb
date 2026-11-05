@@ -500,7 +500,7 @@ describe 'Application' do
         assert_equal 1, setup_warnings
       end
 
-      it 'should warn for a subclass that turns sessions on' do
+      it 'should warn for a subclass that turns sessions on, since a subclass starts from the defaults' do
         parent = mock_app do
           enable :sessions
           disable :protect_from_csrf
