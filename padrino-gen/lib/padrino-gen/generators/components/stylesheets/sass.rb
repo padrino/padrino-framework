@@ -14,5 +14,5 @@ def setup_stylesheet
   empty_directory destination_root('/app/stylesheets')
   # Ruby Sass caches compiled templates in .sass-cache in the project root.
   gitignore = destination_root('.gitignore')
-  append_line(gitignore, ".sass-cache/*\n") if File.exist?(gitignore) && !File.read(gitignore).match?(/^[^#\n]*\.sass-cache/)
+  append_line(gitignore, ".sass-cache/*\n") if File.exist?(gitignore) && !File.read(gitignore).match?(%r{^[ \t]*(\*\*/)?/?\.sass-cache(/\*{0,2})?[ \t\r]*$})
 end

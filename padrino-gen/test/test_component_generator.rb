@@ -138,19 +138,21 @@ describe 'ComponentGenerator' do
     it 'should keep a Sass cache line a project already has' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       gitignore = "#{@apptmp}/sample_project/.gitignore"
-      ["/.sass-cache\n", "  .sass-cache/\n", "**/.sass-cache/\n"].each do |line|
+      [".sass-cache\n", "/.sass-cache\n", "  .sass-cache/\n", ".sass-cache/**\n", "**/.sass-cache/\n", ".sass-cache/*\r\n"].each do |line|
         File.write(gitignore, "log/**/*\n#{line}")
         capture_io { generate(:component, '--stylesheet=scss', "-r=#{@apptmp}/sample_project") }
         assert_equal "log/**/*\n#{line}", File.read(gitignore)
       end
     end
 
-    it 'should add the Sass cache line when the project only mentions it in a comment' do
+    it 'should add the Sass cache line when no rule ignores the whole cache' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       gitignore = "#{@apptmp}/sample_project/.gitignore"
-      File.write(gitignore, "# .sass-cache\n")
-      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
-      assert_equal "# .sass-cache\n.sass-cache/*\n", File.read(gitignore)
+      ["# .sass-cache\n", ".sass-cache-old/\n", ".sass-cache/README\n"].each do |line|
+        File.write(gitignore, line)
+        capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
+        assert_equal "#{line}.sass-cache/*\n", File.read(gitignore)
+      end
     end
 
     it 'should start the tailwind lines on a new line' do
