@@ -18,7 +18,7 @@ module Padrino
   module Rendering
     if defined?(Haml::VERSION) && Gem::Version.new(Haml::VERSION) >= Gem::Version.new('6')
       class HamlOutputBuffer < Temple::Generators::StringBuffer
-        define_options buffer_class: 'SafeBuffer'
+        define_options buffer_class: '::Padrino::SafeBuffer'
 
         def call(exp)
           [preamble, compile(exp), postamble].flatten.compact.join('; '.freeze)
