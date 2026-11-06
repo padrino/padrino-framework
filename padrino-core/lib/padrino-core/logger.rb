@@ -586,6 +586,12 @@ module Kernel
   ##
   # Define a logger available every where in our app
   #
+  # @deprecated Calling it with a receiver, such as +some_object.logger+, +settings.logger+ or
+  #   +MyApp.logger+. In Padrino 1.0 this method becomes private: +logger+ without a receiver
+  #   keeps working, while calling it on an object that doesn't define its own +logger+ raises
+  #   NoMethodError (or reaches that object's +method_missing+), and +respond_to?(:logger)+ is
+  #   false for such objects. Use +Padrino.logger+ there.
+  #
   def logger
     Padrino.logger
   end
