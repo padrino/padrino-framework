@@ -114,6 +114,22 @@ describe 'SafeBuffer' do
     end
   end
 
+  it 'should stay defined when the warning raises, as with warnings turned into errors' do
+    out, _err = run_script(<<~'RUBY')
+      require 'padrino-helpers'
+      def Warning.warn(message, *)
+        raise message
+      end
+      begin
+        SafeBuffer
+      rescue RuntimeError
+        nil
+      end
+      print SafeBuffer.equal?(Padrino::SafeBuffer)
+    RUBY
+    assert_equal 'true', out
+  end
+
   it 'should be Padrino::SafeBuffer when ActiveSupport defines its own' do
     out, err = run_script(<<~RUBY)
       begin
