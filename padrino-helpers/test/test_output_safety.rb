@@ -60,6 +60,46 @@ describe 'SafeBuffer' do
     assert_equal 'not loaded', out
   end
 
+  it 'should not warn when Padrino renders erb with the stdlib ERB engine' do
+    out, err = run_script(<<~'RUBY')
+      require 'padrino-core'
+      require 'padrino-helpers'
+      require 'padrino/rendering/erb_template'
+      abort Tilt[:erb].name unless Tilt[:erb] == Padrino::Rendering::ERBTemplate
+      app = Sinatra.new(Padrino::Application) do
+        register Padrino::Helpers
+        get('/erb') { render :erb, '<%= "<b>" %><% form_tag("/") do %><%= text_field_tag :q %><% end %>' }
+      end
+      body = Rack::MockRequest.new(app).get('/erb').body
+      abort body unless body.include?('&lt;b&gt;') && body.include?('<form')
+      print Object.autoload?(:SafeBuffer) ? 'not loaded' : 'loaded'
+    RUBY
+    refute_includes err, deprecation
+    assert_equal 'not loaded', out
+  end
+
+  it 'should name the reference, not a require wrapper, and warn once if loaded again' do
+    out, err = run_script(<<~'RUBY')
+      require 'padrino-helpers'
+      module Wrapper
+        def load_dependency(file)
+          yield
+        end
+
+        def require(file)
+          load_dependency(file) { super }
+        end
+      end
+      Object.include(Wrapper)
+      SafeBuffer.new
+      load Object.const_source_location(:SafeBuffer).first if Object.respond_to?(:const_source_location)
+      print 'done'
+    RUBY
+    assert_equal 'done', out
+    assert_equal 1, err.scan(deprecation).size, err
+    assert_includes err, '(first referenced at -e:12)'
+  end
+
   it 'should be Padrino::SafeBuffer when ActiveSupport defines its own' do
     out, err = run_script(<<~RUBY)
       begin
