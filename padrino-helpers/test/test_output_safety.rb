@@ -100,6 +100,20 @@ describe 'SafeBuffer' do
     assert_includes err, '(first referenced at -e:12)'
   end
 
+  it 'should name a reference at the top of a required file or in a method named like require' do
+    [['EMPTY = SafeBuffer.new', 'thing.rb:1'],
+     ["def require_permission\n  SafeBuffer.new\nend\nrequire_permission", 'thing.rb:2']].each do |code, location|
+      Dir.mktmpdir do |dir|
+        File.write(File.join(dir, 'thing.rb'), code)
+        _out, err = run_script(<<~RUBY)
+          require 'padrino-helpers'
+          require #{File.join(dir, 'thing').inspect}
+        RUBY
+        assert_includes err, "first referenced at #{File.join(dir, location)})", err
+      end
+    end
+  end
+
   it 'should be Padrino::SafeBuffer when ActiveSupport defines its own' do
     out, err = run_script(<<~RUBY)
       begin

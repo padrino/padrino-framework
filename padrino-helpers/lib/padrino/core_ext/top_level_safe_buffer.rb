@@ -7,12 +7,12 @@ return if Padrino.instance_variable_defined?(:@_top_level_safe_buffer_warned)
 Padrino.instance_variable_set(:@_top_level_safe_buffer_warned, true)
 
 # The frames before the reference are require and its wrappers (RubyGems, Bundler, Bootsnap,
-# ActiveSupport's load_dependency...). ceiling: a wrapper named otherwise is reported as the
-# reference; the upgrade path is a list of wrapper paths instead of labels.
+# Zeitwerk, ActiveSupport's load_dependency...). ceiling: a wrapper named otherwise is reported as
+# the reference; the upgrade path is a list of wrapper paths instead of labels.
+wrappers = %w[require require_relative load_dependency require_with_bootsnap_lpc]
 ruby_lib = RbConfig::CONFIG['rubylibdir']
 reference = caller_locations.find do |location|
-  label = location.base_label.to_s
-  !label.include?('require') && label != 'load_dependency' && !location.path.start_with?('<internal:', ruby_lib)
+  !wrappers.include?(location.base_label) && !location.path.to_s.start_with?('<internal:', ruby_lib)
 end
 # Warning.warn prints even while $VERBOSE is nil, as it is while the reloader loads app files:
 # this file runs once, so a warning dropped there would never be seen.
