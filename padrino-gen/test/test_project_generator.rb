@@ -959,14 +959,14 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the generator for stylesheet component' do
-    # Boots the project in development with a stand-in for Dart Sass (the sass-embedded gem isn't in Padrino's
+    # Boots the project in env (development by default) with a stand-in for Dart Sass (the sass-embedded gem isn't in Padrino's
     # bundle). Each round writes stylesheets (later rounds date them in the future, so they are newer than any
     # compiled file) and requests paths; returns the stand-in's compiles and each response (its body when 200), in order.
-    def request_stylesheets(project, rounds)
+    def request_stylesheets(project, rounds, env = 'development')
       script = <<~'RUBY'
         require 'json'
         PADRINO_ROOT, rounds = ARGV[0], JSON.parse(ARGV[1])
-        RACK_ENV = 'development'
+        RACK_ENV = ENV['RACK_ENV']
         module Sass
           class CompileError < StandardError
             attr_reader :sass_stack
@@ -1006,7 +1006,7 @@ describe 'ProjectGenerator' do
           end
         end
       RUBY
-      out, = Open3.capture2e({ 'RACK_ENV' => 'development' }, RbConfig.ruby, '-rbundler/setup', '-e', script, project, JSON.generate(rounds))
+      out, = Open3.capture2e({ 'RACK_ENV' => env }, RbConfig.ruby, '-rbundler/setup', '-e', script, project, JSON.generate(rounds))
       [out.lines.grep(/\A\[/).map { |line| JSON.parse(line) }, out]
     end
 
@@ -1040,6 +1040,17 @@ describe 'ProjectGenerator' do
         assert_equal expected, results, out
         assert_no_file_exists("#{project}/public/stylesheets/_colors.css")
       end
+    end
+
+    it 'should compile the stylesheets once, on the first request, outside development' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=scss') }
+      project = "#{@apptmp}/sample_project"
+      rounds = [[{ 'application.scss' => 'a { b: c }', '_colors.scss' => '$c: red;' }, %w[/stylesheets/application.css]],
+                [{ '_colors.scss' => '$c: blue;' }, %w[/stylesheets/application.css]]]
+      results, out = request_stylesheets(project, rounds, 'production')
+      expected = [%w[compile application.scss], ['/stylesheets/application.css', 200, "/* application.scss */\n"],
+                  ['/stylesheets/application.css', 200, "/* application.scss */\n"]]
+      assert_equal expected, results, out
     end
 
     it 'should properly generate for tailwind' do

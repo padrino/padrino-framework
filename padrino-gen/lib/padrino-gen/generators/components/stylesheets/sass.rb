@@ -2,15 +2,19 @@
 # elsewhere aren't watched; track each compile's loaded_urls if that gets slow or misses a change.
 SASS_INIT = <<-'SASS' unless defined?(SASS_INIT)
     # Compiles the Sass and SCSS files in app/stylesheets to public/stylesheets with Dart Sass
-    # (https://sass-lang.com/dart-sass) when a file there changes, so app/stylesheets/application.scss
-    # is served as /stylesheets/application.css. Files whose names start with "_" are partials:
-    # they are compiled into the stylesheets that use them, not on their own.
+    # (https://sass-lang.com/dart-sass), so app/stylesheets/application.scss is served as
+    # /stylesheets/application.css. In development it checks on every request and compiles what
+    # changed; in other environments it compiles once, on the first request. Files whose names
+    # start with "_" are partials: they are compiled into the stylesheets that use them.
     require 'fileutils'
     source = Padrino.root('app/stylesheets')
     target = Padrino.root('public/stylesheets')
     lock = Mutex.new
+    compiled = false
     app.use Rack::Config do
       lock.synchronize do
+        next if compiled && Padrino.env != :development
+
         files = Dir.glob('**/*.{sass,scss}', base: source)
         changed = files.map { |file| File.mtime(File.join(source, file)) }.max
         files.reject { |file| File.basename(file).start_with?('_') }.each do |file|
@@ -29,6 +33,7 @@ SASS_INIT = <<-'SASS' unless defined?(SASS_INIT)
           File.write(temp = "#{css}.#{Process.pid}.tmp", output)
           File.rename(temp, css)
         end
+        compiled = true
       end
     end
 SASS
