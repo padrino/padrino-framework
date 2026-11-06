@@ -32,6 +32,22 @@ describe 'FormBuilder' do
     Padrino::Helpers::FormBuilder::StandardFormBuilder.new(self, object)
   end
 
+  describe 'for #object_model_name method' do
+    it 'should work without String#underscore from ActiveSupport or padrino-gen' do
+      hidden = String.method_defined?(:underscore)
+      if hidden
+        String.send(:alias_method, :__hidden_underscore, :underscore)
+        String.send(:remove_method, :underscore)
+      end
+      assert_equal 'user', standard_builder.send(:object_model_name)
+    ensure
+      if hidden
+        String.send(:alias_method, :underscore, :__hidden_underscore)
+        String.send(:remove_method, :__hidden_underscore)
+      end
+    end
+  end
+
   describe 'for #form_for method' do
     it 'should display correct form html' do
       actual_html = form_for(@user, '/register', id: 'register', "accept-charset": 'UTF-8', method: 'post') { 'Demo' }
