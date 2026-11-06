@@ -959,21 +959,87 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the generator for stylesheet component' do
-    it 'should properly generate for sass' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=sass') }
-      assert_match_in_file(/gem 'sass'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/sass.rb")
-      assert_match_in_file(/register SassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
+    # Boots the project in development with a stand-in for Dart Sass (the sass-embedded gem isn't in Padrino's
+    # bundle). Each round writes stylesheets (later rounds date them in the future, so they are newer than any
+    # compiled file) and requests paths; returns the stand-in's compiles and each response (its body when 200), in order.
+    def request_stylesheets(project, rounds)
+      script = <<~'RUBY'
+        require 'json'
+        PADRINO_ROOT, rounds = ARGV[0], JSON.parse(ARGV[1])
+        RACK_ENV = 'development'
+        module Sass
+          class CompileError < StandardError
+            attr_reader :sass_stack
+
+            def initialize(message, sass_stack)
+              super(message)
+              @sass_stack = sass_stack
+            end
+          end
+
+          def self.compile(path, load_paths:)
+            name = path.delete_prefix("#{load_paths.join}/")
+            puts JSON.generate(['compile', name])
+            source = File.read(path)
+            raise CompileError.new(source.chomp, "#{name} 1:1  root stylesheet") if source.start_with?('error')
+
+            Struct.new(:css).new("/* #{name} */\n")
+          end
+        end
+        require 'padrino-core'
+        require 'padrino-helpers'
+        require 'padrino-mailer'
+        require 'rack/mock'
+        # As config/boot.rb does.
+        Padrino.dependency_paths.unshift Padrino.root('config/initializers/*.rb')
+        Padrino.load!
+        rounds.each_with_index do |(files, paths), round|
+          files.each do |name, source|
+            path = File.join(PADRINO_ROOT, 'app/stylesheets', name)
+            FileUtils.mkdir_p(File.dirname(path))
+            File.write(path, source)
+            File.utime(Time.now + 60, Time.now + 60, path) if round.positive?
+          end
+          paths.each do |path|
+            response = Rack::MockRequest.new(Padrino.application).get(path)
+            puts JSON.generate([path, response.status, (response.body if response.ok?)])
+          end
+        end
+      RUBY
+      out, = Open3.capture2e({ 'RACK_ENV' => 'development' }, RbConfig.ruby, '-rbundler/setup', '-e', script, project, JSON.generate(rounds))
+      [out.lines.grep(/\A\[/).map { |line| JSON.parse(line) }, out]
     end
 
-    it 'should properly generate for scss' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=scss') }
-      assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/scss.rb")
-      assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, "#{@apptmp}/sample_project/config/initializers/scss.rb")
-      assert_match_in_file(/register ScssInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
+    %w[sass scss].each do |stylesheet|
+      it "should compile the stylesheets in app/stylesheets with Dart Sass for #{stylesheet}" do
+        root = "#{@apptmp}/#{stylesheet}"
+        capture_io { generate(:project, 'sample_project', "--root=#{root}", '--renderer=haml', '--script=none', "--stylesheet=#{stylesheet}") }
+        project = "#{root}/sample_project"
+        assert_match_in_file(/^gem 'sass-embedded'/, "#{project}/Gemfile")
+        assert_no_match_in_file(/^gem 'sass'/, "#{project}/Gemfile")
+        assert_match_in_file(/register #{stylesheet.capitalize}Initializer/, "#{project}/app/app.rb")
+        assert_dir_exists("#{project}/app/stylesheets")
+
+        sources = { 'application.scss' => 'a { b: c }', '_colors.scss' => '$c: red;', 'admin/panel.sass' => 'a', 'broken.scss' => %(error "x" \\ y\n) }
+        paths = %w[/stylesheets/application.css /stylesheets/admin/panel.css /stylesheets/_colors.css /stylesheets/broken.css]
+        results, out = request_stylesheets(project, [[sources, paths], [{}, %w[/stylesheets/application.css]], [{ '_colors.scss' => '$c: blue;' }, %w[/stylesheets/application.css]]])
+        compiles = [%w[compile admin/panel.sass], %w[compile application.scss], %w[compile broken.scss]]
+        error = %(body::before { white-space: pre; font-family: monospace; content: "error \\"x\\" \\\\ y\\A broken.scss 1:1  root stylesheet"; }\n)
+        expected = [
+          *compiles,
+          ['/stylesheets/application.css', 200, "/* application.scss */\n"],
+          ['/stylesheets/admin/panel.css', 200, "/* admin/panel.sass */\n"],
+          ['/stylesheets/_colors.css', 404, nil],
+          ['/stylesheets/broken.css', 200, error],
+          # Nothing changed, so nothing is compiled again.
+          ['/stylesheets/application.css', 200, "/* application.scss */\n"],
+          # A changed partial compiles the stylesheets again.
+          *compiles,
+          ['/stylesheets/application.css', 200, "/* application.scss */\n"]
+        ]
+        assert_equal expected, results, out
+        assert_no_file_exists("#{project}/public/stylesheets/_colors.css")
+      end
     end
 
     it 'should properly generate for tailwind' do

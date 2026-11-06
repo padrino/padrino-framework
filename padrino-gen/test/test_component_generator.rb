@@ -394,6 +394,31 @@ describe 'ComponentGenerator' do
         end
       end
 
+      it 'should say how to switch a stylesheet initializer from Ruby Sass to Dart Sass' do
+        %w[sass scss].each do |stylesheet|
+          `rm -rf #{@apptmp}/sample_project`
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", "--stylesheet=#{stylesheet}") }
+          initializer = "config/initializers/#{stylesheet}.rb"
+          dart_sass = File.read(project_file(initializer))
+          out, = rerun("--stylesheet=#{stylesheet}")
+          refute_match(/Ruby Sass/, out)
+
+          # As written by earlier versions of the component.
+          ruby_sass = "    require 'sass/plugin/rack'\n    app.use Sass::Plugin::Rack\n"
+          File.write(project_file(initializer), ruby_sass)
+          out, = rerun("--stylesheet=#{stylesheet}")
+          assert_match(/#{initializer} still uses Ruby Sass\. To switch to Dart Sass, remove gem 'sass' from Gemfile, delete #{initializer}, run bundle install and run this command again\./, out)
+          assert_equal ruby_sass, File.read(project_file(initializer))
+          assert_equal 1, File.read(project_file('Gemfile')).scan(/^gem 'sass-embedded'/).size, stylesheet
+          assert_equal 1, File.read(project_file('app/app.rb')).scan(/register #{stylesheet.capitalize}Initializer/).size, stylesheet
+
+          File.delete(project_file(initializer))
+          out, = rerun("--stylesheet=#{stylesheet}")
+          refute_match(/Ruby Sass/, out)
+          assert_equal dart_sass, File.read(project_file(initializer))
+        end
+      end
+
       it 'should still point the test setup at the app named with --app' do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest') }
         capture_io { generate(:app, 'compo', "-r=#{@apptmp}/sample_project") }
