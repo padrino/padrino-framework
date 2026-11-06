@@ -1,57 +1,65 @@
-# ceiling: a change to any file in app/stylesheets recompiles every stylesheet there, and files imported from
-# elsewhere aren't watched; track each compile's loaded_urls if that gets slow or misses a change.
-SASS_INIT = <<-'SASS' unless defined?(SASS_INIT)
-    # Compiles the Sass and SCSS files in app/stylesheets to public/stylesheets with Dart Sass
-    # (https://sass-lang.com/dart-sass), so app/stylesheets/application.scss is served as
-    # /stylesheets/application.css. In development it checks on every request and compiles what
-    # changed; in other environments it compiles once, on the first request. Files whose names
-    # start with "_" are partials: they are compiled into the stylesheets that use them.
-    require 'fileutils'
-    source = Padrino.root('app/stylesheets')
-    target = Padrino.root('public/stylesheets')
-    lock = Mutex.new
-    compiled = false
-    app.use Rack::Config do
-      lock.synchronize do
-        next if compiled && Padrino.env != :development
+SASS_RAKE = <<~RAKE unless defined?(SASS_RAKE)
+  # Dart Sass compiles each file in app/stylesheets to public/stylesheets, in the same folders:
+  # app/stylesheets/application.scss becomes public/stylesheets/application.css.
+  # Files whose names start with "_" are partials, compiled only into the stylesheets that @use them.
+  SASS_ARGS = %w[--no-source-map --load-path=app/stylesheets app/stylesheets:public/stylesheets].freeze
 
-        files = Dir.glob('**/*.{sass,scss}', base: source)
-        changed = files.map { |file| File.mtime(File.join(source, file)) }.max
-        files.reject { |file| File.basename(file).start_with?('_') }.each do |file|
-          css = File.join(target, file.sub(/\.s[ac]ss\z/, '.css'))
-          next if File.exist?(css) && File.mtime(css) >= changed
-
-          output = begin
-            Sass.compile(File.join(source, file), load_paths: [source]).css
-          rescue Sass::CompileError => e
-            # Show the error at the top of the pages that use this stylesheet, instead of failing each request.
-            message = "#{e.message}\n#{e.sass_stack}".gsub(/["\\\n]/, '"' => '\"', '\\' => '\\\\', "\n" => '\A ')
-            %(body::before { white-space: pre; font-family: monospace; content: "#{message}"; }\n)
-          end
-          # Write a whole file and rename it, so a request never gets a half-written stylesheet.
-          FileUtils.mkdir_p(File.dirname(css))
-          File.write(temp = "#{css}.#{Process.pid}.tmp", output)
-          File.rename(temp, css)
-        end
-        compiled = true
-      end
+  namespace :sass do
+    desc 'Build public/stylesheets from the Sass and SCSS files in app/stylesheets'
+    task :build do
+      mkdir_p 'app/stylesheets', verbose: false
+      sh Gem.ruby, Gem.bin_path('sass-embedded', 'sass'), *SASS_ARGS
     end
-SASS
 
-# Shared with the scss component, which names its initializer scss.
-def setup_sass_stylesheet(name)
-  require_dependencies 'sass-embedded', version: '~> 1.63'
-  initializer name, SASS_INIT.chomp, skip: reapplying_component?(:stylesheet)
-  empty_directory destination_root('/app/stylesheets')
-  # Projects generated before Dart Sass keep their Ruby Sass initializer when the component is applied again.
-  path = "config/initializers/#{name}.rb"
-  file = destination_root(path)
-  return unless File.exist?(file) && File.read(file).include?('Sass::Plugin')
+    desc 'Rebuild public/stylesheets whenever a file in app/stylesheets changes'
+    task :watch do
+      mkdir_p 'app/stylesheets', verbose: false
+      sh Gem.ruby, Gem.bin_path('sass-embedded', 'sass'), '--watch', *SASS_ARGS
+    end
+  end
 
-  say "#{path} still uses Ruby Sass. To switch to Dart Sass, remove gem 'sass' from Gemfile, " \
-      "delete #{path}, run bundle install and run this command again.", :yellow
-end
+  namespace :assets do
+    task precompile: 'sass:build'
+  end
+RAKE
 
+# Also the scss component's setup: Dart Sass tells the two syntaxes apart by file extension.
 def setup_stylesheet
-  setup_sass_stylesheet(:sass)
+  require_dependencies 'sass-embedded', version: '~> 1.63'
+  empty_directory destination_root('/app/stylesheets')
+  create_file destination_root('tasks/sass.rake'), SASS_RAKE, skip: true
+
+  watcher = "css: bundle exec rake sass:watch\n"
+  procfile = destination_root('Procfile.dev')
+  if !File.exist?(procfile)
+    create_file procfile, "web: bundle exec padrino start\n#{watcher}"
+  elsif !(content = File.binread(procfile)).match?(/^css:/n)
+    # Write bytes, so a file in any encoding works, and start on a new line, so a last line without one stays intact.
+    say_status :append, 'Procfile.dev'
+    File.open(procfile, 'ab') { |file| file.write(content.empty? || content.end_with?("\n") ? watcher : "\n#{watcher}") }
+  elsif !content.match?(/^#{watcher.chomp}\r?$/n)
+    say "Procfile.dev already runs a css: process; to rebuild stylesheets on change, make it `#{watcher.chomp}`.", :yellow
+  end
+
+  # Projects generated before Dart Sass keep Ruby Sass, which still compiles app/stylesheets on request, over Dart Sass's output.
+  read = ->(path) { File.exist?(destination_root(path)) ? File.binread(destination_root(path)) : '' }
+  remove = []
+  remove << "gem 'sass' from Gemfile" if read.call('Gemfile').match?(/^\s*gem[\s(]+['"]sass['"]/n)
+  delete = []
+  app = read.call('app/app.rb')
+  %w[sass scss].each do |name|
+    path = "config/initializers/#{name}.rb"
+    ruby_sass = read.call(path).include?('Sass::Plugin')
+    delete << path if ruby_sass
+    next unless ruby_sass || !File.exist?(destination_root(path))
+
+    register = "register #{name.capitalize}Initializer"
+    remove << "`#{register}` from app/app.rb" if app.match?(/^\s*#{register}\b/n)
+  end
+  steps = []
+  steps << "remove #{remove.join(' and ')}" unless remove.empty?
+  steps << "delete #{delete.join(' and ')}" unless delete.empty?
+  say "This project still has Ruby Sass. To switch to Dart Sass, #{steps.join(', ')}, then run bundle install.", :yellow unless steps.empty?
+
+  say 'Run `bundle exec rake sass:build` to compile app/stylesheets into public/stylesheets (or run Procfile.dev to rebuild on change).', :yellow
 end

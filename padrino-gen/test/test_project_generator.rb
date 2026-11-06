@@ -1,6 +1,7 @@
 require_relative 'helper'
 require 'timeout'
 require 'erb'
+require 'json'
 require 'open3'
 require 'shellwords'
 
@@ -959,98 +960,64 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the generator for stylesheet component' do
-    # Boots the project in env (development by default) with a stand-in for Dart Sass (the sass-embedded gem isn't in Padrino's
-    # bundle). Each round writes stylesheets (later rounds date them in the future, so they are newer than any
-    # compiled file) and requests paths; returns the stand-in's compiles and each response (its body when 200), in order.
-    def request_stylesheets(project, rounds, env = 'development')
-      script = <<~'RUBY'
-        require 'json'
-        PADRINO_ROOT, rounds = ARGV[0], JSON.parse(ARGV[1])
-        RACK_ENV = ENV['RACK_ENV']
-        module Sass
-          class CompileError < StandardError
-            attr_reader :sass_stack
-
-            def initialize(message, sass_stack)
-              super(message)
-              @sass_stack = sass_stack
-            end
-          end
-
-          def self.compile(path, load_paths:)
-            name = path.delete_prefix("#{load_paths.join}/")
-            puts JSON.generate(['compile', name])
-            source = File.read(path)
-            raise CompileError.new(source.chomp, "#{name} 1:1  root stylesheet") if source.start_with?('error')
-
-            Struct.new(:css).new("/* #{name} */\n")
-          end
-        end
-        require 'padrino-core'
-        require 'padrino-helpers'
-        require 'padrino-mailer'
-        require 'rack/mock'
-        # As config/boot.rb does.
-        Padrino.dependency_paths.unshift Padrino.root('config/initializers/*.rb')
-        Padrino.load!
-        rounds.each_with_index do |(files, paths), round|
-          files.each do |name, source|
-            path = File.join(PADRINO_ROOT, 'app/stylesheets', name)
-            FileUtils.mkdir_p(File.dirname(path))
-            File.write(path, source)
-            File.utime(Time.now + 60, Time.now + 60, path) if round.positive?
-          end
-          paths.each do |path|
-            response = Rack::MockRequest.new(Padrino.application).get(path)
-            puts JSON.generate([path, response.status, (response.body if response.ok?)])
-          end
-        end
-      RUBY
-      out, = Open3.capture2e({ 'RACK_ENV' => env }, RbConfig.ruby, '-rbundler/setup', '-e', script, project, JSON.generate(rounds))
-      [out.lines.grep(/\A\[/).map { |line| JSON.parse(line) }, out]
-    end
-
     %w[sass scss].each do |stylesheet|
-      it "should compile the stylesheets in app/stylesheets with Dart Sass for #{stylesheet}" do
-        root = "#{@apptmp}/#{stylesheet}"
-        capture_io { generate(:project, 'sample_project', "--root=#{root}", '--renderer=haml', '--script=none', "--stylesheet=#{stylesheet}") }
-        project = "#{root}/sample_project"
-        assert_match_in_file(/^gem 'sass-embedded'/, "#{project}/Gemfile")
+      it "should set up Dart Sass with build and watch tasks for #{stylesheet}" do
+        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', "--stylesheet=#{stylesheet}") }
+        project = "#{@apptmp}/sample_project"
+        assert_match_in_file(/^gem 'sass-embedded', '~> 1\.63'$/, "#{project}/Gemfile")
         assert_no_match_in_file(/^gem 'sass'/, "#{project}/Gemfile")
-        assert_match_in_file(/register #{stylesheet.capitalize}Initializer/, "#{project}/app/app.rb")
+        assert_no_match_in_file(/Initializer/, "#{project}/app/app.rb")
+        assert_no_file_exists("#{project}/config/initializers/#{stylesheet}.rb")
         assert_dir_exists("#{project}/app/stylesheets")
-
-        sources = { 'application.scss' => 'a { b: c }', '_colors.scss' => '$c: red;', 'admin/panel.sass' => 'a', 'broken.scss' => %(error "x" \\ y\n) }
-        paths = %w[/stylesheets/application.css /stylesheets/admin/panel.css /stylesheets/_colors.css /stylesheets/broken.css]
-        results, out = request_stylesheets(project, [[sources, paths], [{}, %w[/stylesheets/application.css]], [{ '_colors.scss' => '$c: blue;' }, %w[/stylesheets/application.css]]])
-        compiles = [%w[compile admin/panel.sass], %w[compile application.scss], %w[compile broken.scss]]
-        error = %(body::before { white-space: pre; font-family: monospace; content: "error \\"x\\" \\\\ y\\A broken.scss 1:1  root stylesheet"; }\n)
-        expected = [
-          *compiles,
-          ['/stylesheets/application.css', 200, "/* application.scss */\n"],
-          ['/stylesheets/admin/panel.css', 200, "/* admin/panel.sass */\n"],
-          ['/stylesheets/_colors.css', 404, nil],
-          ['/stylesheets/broken.css', 200, error],
-          # Nothing changed, so nothing is compiled again.
-          ['/stylesheets/application.css', 200, "/* application.scss */\n"],
-          # A changed partial compiles the stylesheets again.
-          *compiles,
-          ['/stylesheets/application.css', 200, "/* application.scss */\n"]
-        ]
-        assert_equal expected, results, out
-        assert_no_file_exists("#{project}/public/stylesheets/_colors.css")
+        assert_equal "web: bundle exec padrino start\ncss: bundle exec rake sass:watch\n", File.read("#{project}/Procfile.dev")
+        assert_match(%r{Run `bundle exec rake sass:build` to compile app/stylesheets into public/stylesheets \(or run Procfile\.dev to rebuild on change\)\.}, out)
       end
     end
 
-    it 'should compile the stylesheets once, on the first request, outside development' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=scss') }
+    # Runs tasks/sass.rake in the project with a stand-in for the sass-embedded gem, which isn't in Padrino's bundle:
+    # its sass executable records the directory and arguments it runs with and exits with the given status.
+    def run_sass_task(project, task, status = 0)
+      gems = "#{@apptmp}/gems"
+      exe = "#{gems}/gems/sass-embedded-1.63.1/exe"
+      FileUtils.mkdir_p(["#{gems}/specifications", exe])
+      spec = Gem::Specification.new do |s|
+        s.name = 'sass-embedded'
+        s.version = '1.63.1'
+        s.summary = 'Stand-in'
+        s.bindir = 'exe'
+        s.executables = ['sass']
+      end
+      File.write("#{gems}/specifications/sass-embedded-1.63.1.gemspec", spec.to_ruby)
+      File.write("#{exe}/sass", "require 'json'\nFile.open(ENV['SASS_LOG'], 'a') { |log| log.puts(JSON.generate([Dir.pwd, *ARGV])) }\nexit Integer(ENV['SASS_STATUS'])\n")
+      log = "#{@apptmp}/sass.log"
+      File.write(log, '')
+      rake = Gem.loaded_specs.fetch('rake').full_require_paths.map { |path| "-I#{path}" }
+      env = { 'GEM_HOME' => gems, 'GEM_PATH' => gems, 'SASS_LOG' => log, 'SASS_STATUS' => status.to_s }
+      script = "require 'rake'; Rake.application.run(#{['-f', 'tasks/sass.rake', task].inspect})"
+      out, result = Bundler.with_unbundled_env { Open3.capture2e(env, RbConfig.ruby, *rake, '-e', script, chdir: project) }
+      [File.readlines(log).map { |line| JSON.parse(line) }, result, out]
+    end
+
+    it 'should build and watch app/stylesheets with the sass executable of sass-embedded' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
       project = "#{@apptmp}/sample_project"
-      rounds = [[{ 'application.scss' => 'a { b: c }', '_colors.scss' => '$c: red;' }, %w[/stylesheets/application.css]],
-                [{ '_colors.scss' => '$c: blue;' }, %w[/stylesheets/application.css]]]
-      results, out = request_stylesheets(project, rounds, 'production')
-      expected = [%w[compile application.scss], ['/stylesheets/application.css', 200, "/* application.scss */\n"],
-                  ['/stylesheets/application.css', 200, "/* application.scss */\n"]]
-      assert_equal expected, results, out
+      args = %w[--no-source-map --load-path=app/stylesheets app/stylesheets:public/stylesheets]
+      # A clone has no app/stylesheets until a stylesheet is added, since git drops empty directories.
+      FileUtils.rm_rf("#{project}/app/stylesheets")
+      { 'sass:build' => args, 'assets:precompile' => args, 'sass:watch' => ['--watch', *args] }.each do |task, expected|
+        runs, result, out = run_sass_task(project, task)
+        assert result.success?, out
+        assert_equal [[File.realpath(project), *expected]], runs, task
+      end
+      assert_dir_exists("#{project}/app/stylesheets")
+    end
+
+    it 'should fail the sass build when Dart Sass reports an error' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=sass') }
+      runs, result, out = run_sass_task("#{@apptmp}/sample_project", 'sass:build', 65)
+      refute result.success?, out
+      assert_match(/Command failed with status \(65\)/, out)
+      assert_equal 1, runs.size
     end
 
     it 'should properly generate for tailwind' do
