@@ -9,6 +9,9 @@ SASS_INIT = <<-SASS unless defined?(SASS_INIT)
 SASS
 
 def setup_stylesheet
+  # Ruby Sass caches compiled templates in .sass-cache in the project root.
+  gitignore = destination_root('.gitignore')
+  append_line(gitignore, ".sass-cache/*\n") if File.exist?(gitignore)
   require_dependencies 'sass'
   initializer :sass, SASS_INIT.chomp, skip: reapplying_component?(:stylesheet)
   empty_directory destination_root('/app/stylesheets')

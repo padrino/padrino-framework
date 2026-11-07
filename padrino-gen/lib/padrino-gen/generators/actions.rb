@@ -506,6 +506,30 @@ module Padrino
       end
 
       ##
+      # Appends text to a file unless the file already has it as whole lines,
+      # starting it on a new line so a file without a trailing newline keeps its
+      # last line intact. Works on the file's bytes, so content that isn't valid
+      # in the default encoding doesn't stop it.
+      #
+      # @param [String] path
+      #   Path of the file to append to.
+      # @param [String] text
+      #   Text to append, ending in a newline.
+      #
+      def append_line(path, text)
+        content = File.binread(path)
+        addition = text.b
+        lines = "\n#{content}".b
+        if lines.include?("\n#{addition}".b) || lines.end_with?("\n#{addition.chomp}".b)
+          say_status :unchanged, relative_to_original_destination_root(path), :blue
+          return
+        end
+        addition = "\n#{addition}".b unless content.empty? || content.end_with?("\n")
+        say_status :append, relative_to_original_destination_root(path)
+        File.open(path, 'ab') { |file| file.write(addition) }
+      end
+
+      ##
       # Returns true if the project runs on Falcon, which serves each request in
       # a fiber. Uses the --server option when generating a project, and the
       # project's Gemfile when adding a component later.
