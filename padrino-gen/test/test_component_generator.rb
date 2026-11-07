@@ -134,6 +134,30 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{@apptmp}/sample_project/.gitignore").scan(%r{^public/stylesheets/application\.css$}).size
     end
 
+    it 'should add the sass watcher after a Procfile.dev line that only ends like it' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec padrino start\nxcss: bundle exec rake sass:watch")
+      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: bundle exec padrino start\nxcss: bundle exec rake sass:watch\ncss: bundle exec rake sass:watch\n", File.read(procfile)
+    end
+
+    it 'should add the tailwind watcher to a Procfile.dev that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.binwrite(procfile, "web: caf\xE9\n".b)
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: caf\xE9\ncss: bundle exec rake tailwind:watch\n".b, File.binread(procfile)
+    end
+
+    it 'should add the vite dev server to a Procfile.dev that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.binwrite(procfile, "web: caf\xE9\n".b)
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: caf\xE9\nvite: bundle exec vite dev\n".b, File.binread(procfile)
+    end
+
     it 'should start the tailwind lines on a new line' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"

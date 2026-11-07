@@ -49,7 +49,7 @@ module Smoke
       @name = attrs.fetch('name')
       COMPONENT_TYPES.each { |type| instance_variable_set("@#{type}", attrs.fetch(type, 'none')) }
       @adapter = SQL_ORMS.include?(@orm) ? attrs.fetch('adapter', 'sqlite') : nil
-      @server = attrs.fetch('server', 'webrick')
+      @server = attrs.fetch('server', 'puma')
       @ruby = attrs.fetch('ruby', '4.0').to_s
       @no_db_clients = attrs.fetch('no_db_clients', false)
       @add_component = attrs.fetch('add_component', {})

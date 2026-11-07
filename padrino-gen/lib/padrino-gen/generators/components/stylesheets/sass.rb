@@ -34,9 +34,7 @@ def setup_stylesheet
   if !File.exist?(procfile)
     create_file procfile, "web: bundle exec padrino start\n#{watcher}"
   elsif !(content = File.binread(procfile)).match?(/^css:/n)
-    # Write bytes, so a file in any encoding works, and start on a new line, so a last line without one stays intact.
-    say_status :append, 'Procfile.dev'
-    File.open(procfile, 'ab') { |file| file.write(content.empty? || content.end_with?("\n") ? watcher : "\n#{watcher}") }
+    append_line(procfile, watcher)
   elsif !content.match?(/^#{watcher.chomp}\r?$/n)
     say "Procfile.dev already runs a css: process; to rebuild stylesheets on change, make it `#{watcher.chomp}`.", :yellow
   end

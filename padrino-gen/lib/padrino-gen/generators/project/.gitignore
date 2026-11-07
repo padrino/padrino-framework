@@ -3,5 +3,6 @@ log/**/*
 tmp/**/*
 vendor/gems/*
 !vendor/gems/cache/
+.env
 db/*.db
 .*.sw*

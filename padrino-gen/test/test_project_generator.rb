@@ -294,6 +294,14 @@ describe 'ProjectGenerator' do
     end
   end
 
+  describe 'the generated .gitignore' do
+    it 'should ignore .env and leave out the Sass cache' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      assert_match_in_file(/^\.env$/, "#{@apptmp}/sample_project/.gitignore")
+      assert_no_match_in_file(/sass-cache/, "#{@apptmp}/sample_project/.gitignore")
+    end
+  end
+
   describe 'the /up health route' do
     # Boots the project in production, as a load balancer sees it, and prints what each request answers.
     def request_in_production(*requests)
@@ -421,9 +429,16 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the generator for HTTP server' do
-    it 'should properly generate for webrick by default' do
+    it 'should properly generate for puma by default' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      assert_match_in_file(/# Server requirements\ngem 'puma'\n/, "#{@apptmp}/sample_project/Gemfile")
+      assert_no_match_in_file(/gem 'webrick'/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should properly generate for webrick' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=webrick') }
       assert_match_in_file(/# Server requirements\ngem 'webrick'\n/, "#{@apptmp}/sample_project/Gemfile")
+      assert_no_match_in_file(/gem 'puma'/, "#{@apptmp}/sample_project/Gemfile")
     end
 
     it 'should properly generate for puma' do
