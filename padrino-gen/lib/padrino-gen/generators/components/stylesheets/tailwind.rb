@@ -64,9 +64,12 @@ def setup_stylesheet
       say "Switching from #{previous}: tasks/sass.rake also writes public/stylesheets, so delete it, remove gem 'sass-embedded' " \
           'from Gemfile and make the css: line in Procfile.dev `css: bundle exec rake tailwind:watch`.', :yellow
     end
-    if File.exist?(destination_root("config/initializers/#{previous}.rb"))
+    # A project switched between sass and scss can still hold the other one's initializer.
+    names = previous == 'less' ? %w[less] : %w[sass scss]
+    initializers = names.map { |name| "config/initializers/#{name}.rb" }.select { |path| File.exist?(destination_root(path)) }
+    unless initializers.empty?
       say "Switching from #{previous}: its gems and initializer remain and also write public/stylesheets/application.css, " \
-          "so remove them from Gemfile, app/app.rb and config/initializers/#{previous}.rb.", :yellow
+          "so remove them from Gemfile, app/app.rb and #{initializers.join(' and ')}.", :yellow
     end
   end
 

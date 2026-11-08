@@ -110,6 +110,15 @@ describe 'ComponentGenerator' do
       assert_match(%r{Switching from scss: .* remove them from Gemfile, app/app\.rb and config/initializers/scss\.rb\.}, out)
     end
 
+    it 'should name the scss initializer of a project switched to sass when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=sass') }
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
+      File.write("#{@apptmp}/sample_project/config/initializers/scss.rb", "require 'sass/plugin/rack'\n")
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_match(%r{Switching from sass: its gems and initializer remain .* config/initializers/scss\.rb\.}, out)
+    end
+
     it 'should name both the Dart Sass task and a Ruby Sass initializer left from before when switching to tailwind' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
       FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
