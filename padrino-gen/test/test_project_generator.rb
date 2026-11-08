@@ -979,7 +979,7 @@ describe 'ProjectGenerator' do
       it "should set up Dart Sass with build and watch tasks for #{stylesheet}" do
         out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', "--stylesheet=#{stylesheet}") }
         project = "#{@apptmp}/sample_project"
-        assert_match_in_file(/^gem 'sass-embedded', '~> 1\.63'$/, "#{project}/Gemfile")
+        assert_match_in_file(/^gem 'sass-embedded', '~> 1\.63', require: false$/, "#{project}/Gemfile")
         assert_no_match_in_file(/^gem 'sass'/, "#{project}/Gemfile")
         assert_no_match_in_file(/Initializer/, "#{project}/app/app.rb")
         assert_no_file_exists("#{project}/config/initializers/#{stylesheet}.rb")

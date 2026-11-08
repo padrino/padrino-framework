@@ -58,10 +58,12 @@ def setup_stylesheet
   gitignore = destination_root('.gitignore')
   append_line(gitignore, "public/stylesheets/application.css\n") if File.exist?(gitignore)
 
-  if preprocessed && File.exist?(destination_root('tasks/sass.rake'))
+  dart_sass = File.exist?(destination_root('tasks/sass.rake'))
+  if preprocessed && dart_sass
     say "Switching from #{previous}: tasks/sass.rake also writes public/stylesheets, so delete it, remove gem 'sass-embedded' " \
         'from Gemfile and make the css: line in Procfile.dev `css: bundle exec rake tailwind:watch`.', :yellow
-  elsif preprocessed
+  end
+  if preprocessed && (!dart_sass || File.exist?(destination_root("config/initializers/#{previous}.rb")))
     say "Switching from #{previous}: its gems and initializer remain and also write public/stylesheets/application.css, " \
         "so remove them from Gemfile, app/app.rb and config/initializers/#{previous}.rb.", :yellow
   end

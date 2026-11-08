@@ -2,6 +2,7 @@ SASS_RAKE = <<~RAKE unless defined?(SASS_RAKE)
   # Dart Sass compiles each file in app/stylesheets to public/stylesheets, in the same folders:
   # app/stylesheets/application.scss becomes public/stylesheets/application.css.
   # Files whose names start with "_" are partials, compiled only into the stylesheets that @use them.
+  # Plain .css files are copied as they are.
   SASS_ARGS = %w[--no-source-map --load-path=app/stylesheets app/stylesheets:public/stylesheets].freeze
 
   namespace :sass do
@@ -25,7 +26,7 @@ RAKE
 
 # Also the scss component's setup: Dart Sass tells the two syntaxes apart by file extension.
 def setup_stylesheet
-  require_dependencies 'sass-embedded', version: '~> 1.63'
+  require_dependencies 'sass-embedded', version: '~> 1.63', require: false
   empty_directory destination_root('/app/stylesheets')
   create_file destination_root('tasks/sass.rake'), SASS_RAKE, skip: true
 
@@ -54,10 +55,18 @@ def setup_stylesheet
     register = "register #{name.capitalize}Initializer"
     remove << "`#{register}` from app/app.rb" if app.match?(/^\s*#{register}\b/n)
   end
+  remove << '.sass-cache/* from .gitignore' if read.call('.gitignore').match?(%r{^/?\.sass-cache}n)
   steps = []
   steps << "remove #{remove.join(' and ')}" unless remove.empty?
   steps << "delete #{delete.join(' and ')}" unless delete.empty?
   say "This project still has Ruby Sass. To switch to Dart Sass, #{steps.join(', ')}, then run bundle install.", :yellow unless steps.empty?
+
+  if File.exist?(destination_root('tasks/tailwind.rake'))
+    say 'Switching from tailwind: tasks/tailwind.rake also writes public/stylesheets/application.css, and Dart Sass copies ' \
+        "app/stylesheets/application.css (Tailwind's source) over it. Delete tasks/tailwind.rake, move the rules you keep from " \
+        "app/stylesheets/application.css into a .scss or .sass file and delete it, remove gem 'tailwindcss-ruby' from Gemfile " \
+        'and make the css: line in Procfile.dev `css: bundle exec rake sass:watch`.', :yellow
+  end
 
   say 'Run `bundle exec rake sass:build` to compile app/stylesheets into public/stylesheets (or run Procfile.dev to rebuild on change).', :yellow
 end
