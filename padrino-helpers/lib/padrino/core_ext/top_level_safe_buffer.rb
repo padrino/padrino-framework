@@ -1,0 +1,23 @@
+# Loaded by the autoload in output_safety.rb the first time the top-level SafeBuffer is referenced.
+require 'rbconfig'
+
+# A reloader that tracks this file as a feature of an app file may load it again: warn only once.
+return if Padrino.instance_variable_defined?(:@_top_level_safe_buffer_warned)
+
+Padrino.instance_variable_set(:@_top_level_safe_buffer_warned, true)
+# Defined before warning, so a Warning.warn that raises (warnings as errors) leaves it defined.
+SafeBuffer = Padrino::SafeBuffer
+
+# The frames before the reference are require and its wrappers (RubyGems, Bundler, Bootsnap,
+# Zeitwerk, ActiveSupport's load_dependency...). ceiling: a wrapper under another name, or one
+# defined with define_method, is reported as the reference; the upgrade path is a list of
+# wrapper paths instead of labels.
+wrappers = %w[require require_relative load_dependency require_with_bootsnap_lpc]
+ruby_lib = RbConfig::CONFIG['rubylibdir']
+reference = caller_locations.find do |location|
+  location.path && !wrappers.include?(location.base_label) && !location.path.start_with?('<internal:', ruby_lib)
+end
+# Warning.warn prints even while $VERBOSE is nil, as it is while the reloader loads app files:
+# this file runs once, so a warning dropped there would never be seen.
+Warning.warn 'WARNING! The top-level SafeBuffer constant is deprecated and will be removed in Padrino 1.0. ' \
+             "Use Padrino::SafeBuffer instead#{" (first referenced at #{reference.path}:#{reference.lineno})" if reference}.\n"
