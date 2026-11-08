@@ -1,6 +1,8 @@
 require_relative '../helper'
 require_relative '../fixtures/sequel'
+require 'json'
 require 'nokogiri'
+require 'open3'
 require 'padrino-gen/generators/cli'
 
 describe 'AdminPageGenerator' do
@@ -323,6 +325,71 @@ describe 'AdminPageGenerator' do
     ensure
       Object.send(:remove_const, :SampleProject) if Object.const_defined?(:SampleProject, false)
       Object.const_set(:SampleProject, saved) if saved
+    end
+
+    it 'should answer a missing record with 404 and still find existing ones with activerecord' do
+      skip 'activerecord and sqlite3 are only bundled on MRI' if RUBY_ENGINE == 'jruby'
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      # Active Record is loaded in a separate process so that it stays out of the other tests.
+      # Entry has a primary key other than id.
+      script = <<~'RUBY'
+        require 'json'
+        require 'active_record'
+        require 'thor/group'
+        require 'padrino-admin'
+        Padrino::Generators.load_components!
+        ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: ':memory:')
+        ActiveRecord::Schema.verbose = false
+        ActiveRecord::Schema.define do
+          create_table(:posts) { |t| t.string :title }
+          create_table(:entries, id: false) { |t| t.primary_key :code; t.string :title }
+        end
+        class Post < ActiveRecord::Base; end
+        class Entry < ActiveRecord::Base
+          self.primary_key = 'code'
+        end
+        Padrino::Generators::AdminPage.start(%w[post entry -r=.])
+        module SampleProject
+          Admin = Sinatra.new(Padrino::Application) do
+            register Padrino::Helpers
+            enable :sessions
+            helpers Padrino::Admin::Helpers::ViewHelpers
+            set :views, File.expand_path('admin/views')
+          end
+        end
+        # The admin layout needs the whole admin app (accounts, sessions, project modules).
+        File.write('admin/views/layouts/application.erb', '<%= yield %>')
+        load 'admin/controllers/posts.rb'
+        load 'admin/controllers/entries.rb'
+        browser = Rack::MockRequest.new(SampleProject::Admin)
+        status = lambda do |verb, path, params = {}|
+          browser.request(verb, path, params: params, lint: true).status
+        rescue StandardError => e
+          "#{e.class.name}: #{e.message}"
+        end
+        results = {}
+        { 'posts' => [Post, 'post'], 'entries' => [Entry, 'entry'] }.each do |plural, (model, param)|
+          id = model.create!(title: 'kept').id
+          results[plural] = [
+            status.call('GET', "/#{plural}/edit/#{id}"),
+            status.call('PUT', "/#{plural}/update/#{id}", param => { title: 'changed' }),
+            model.find(id).title,
+            status.call('GET', "/#{plural}/edit/999"),
+            status.call('PUT', "/#{plural}/update/999"),
+            status.call('DELETE', "/#{plural}/destroy/999"),
+            status.call('DELETE', "/#{plural}/destroy/#{id}"),
+            model.exists?(id)
+          ]
+        end
+        puts "RESULTS #{JSON.generate(results)}"
+      RUBY
+      env = { 'RACK_ENV' => 'test', 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'] || File.expand_path('../../../Gemfile', __dir__) }
+      out, err, = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: "#{@apptmp}/sample_project")
+      results = out[/^RESULTS (.*)$/, 1]
+      assert results, err
+      expected = [200, 303, 'changed', 404, 404, 404, 303, false]
+      assert_equal({ 'posts' => expected, 'entries' => expected }, JSON.parse(results))
     end
 
     it 'should correctly generate a new padrino admin application with multiple models at the same time' do
