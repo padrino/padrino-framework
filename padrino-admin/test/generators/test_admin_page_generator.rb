@@ -385,9 +385,9 @@ describe 'AdminPageGenerator' do
         puts "RESULTS #{JSON.generate(results)}"
       RUBY
       env = { 'RACK_ENV' => 'test', 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'] || File.expand_path('../../../Gemfile', __dir__) }
-      out, err, = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: "#{@apptmp}/sample_project")
+      out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: "#{@apptmp}/sample_project")
       results = out[/^RESULTS (.*)$/, 1]
-      assert results, err
+      assert results, "#{status}\n#{out}\n#{err}"
       expected = [200, 303, 'changed', 404, 404, 404, 303, false]
       assert_equal({ 'posts' => expected, 'entries' => expected }, JSON.parse(results))
     end
