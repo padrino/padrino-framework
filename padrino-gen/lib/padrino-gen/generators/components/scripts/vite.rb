@@ -53,12 +53,6 @@ VITE_GITIGNORE = <<~GITIGNORE unless defined?(VITE_GITIGNORE)
 GITIGNORE
 
 def setup_script
-  # Start on a new line so a file without a trailing newline keeps its last line intact.
-  append_line = lambda do |path, text|
-    content = File.read(path)
-    append_file path, content.empty? || content.end_with?("\n") ? text : "\n#{text}"
-  end
-
   gemfile = destination_root('Gemfile')
   require_dependencies 'activesupport', version: '>= 3.1' unless File.exist?(gemfile) && File.read(gemfile).match?(/^\s*gem[\s(]+['"]activesupport['"]/)
   require_dependencies 'vite_padrino', version: '~> 3.0'
@@ -76,12 +70,12 @@ def setup_script
   create_file destination_root('app/frontend/entrypoints/application.js'), VITE_ENTRYPOINT, skip: true
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
-    append_line.call(procfile, "vite: bundle exec vite dev\n") unless File.read(procfile).match?(/^vite:/)
+    append_line(procfile, "vite: bundle exec vite dev\n") unless File.binread(procfile).match?(/^vite:/n)
   else
     create_file procfile, "web: bundle exec padrino start\nvite: bundle exec vite dev\n"
   end
   append_file destination_root('Rakefile'), VITE_RAKE if File.exist?(destination_root('Rakefile'))
-  append_line.call(destination_root('.gitignore'), VITE_GITIGNORE) if File.exist?(destination_root('.gitignore'))
+  append_line(destination_root('.gitignore'), VITE_GITIGNORE) if File.exist?(destination_root('.gitignore'))
   renderer = layout_renderer
   tags = renderer == 'erb' ? ['<%= vite_client_tag %>', "<%= vite_javascript_tag 'application' %>"] : ['= vite_client_tag', "= vite_javascript_tag 'application'"]
   install = package_json_exists ? 'npm install -D vite@^8.0.0 vite-plugin-ruby@^5.2.5' : 'npm install'

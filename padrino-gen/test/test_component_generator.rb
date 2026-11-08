@@ -124,6 +124,74 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{@apptmp}/sample_project/.gitignore").scan(%r{^public/stylesheets/application\.css$}).size
     end
 
+    it 'should ignore the Sass cache once when adding sass or scss' do
+      %w[sass scss].each do |stylesheet|
+        `rm -rf #{@apptmp}/sample_project`
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        gitignore = "#{@apptmp}/sample_project/.gitignore"
+        File.write(gitignore, '.env')
+        2.times { capture_io { generate(:component, "--stylesheet=#{stylesheet}", "-r=#{@apptmp}/sample_project") } }
+        assert_equal ".env\n.sass-cache/*\n", File.read(gitignore), stylesheet
+      end
+    end
+
+    it 'should keep a Sass cache line a project already has' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, "log/**/*\n.sass-cache/*\ntmp/**/*\n")
+      capture_io { generate(:component, '--stylesheet=scss', "-r=#{@apptmp}/sample_project") }
+      assert_equal "log/**/*\n.sass-cache/*\ntmp/**/*\n", File.read(gitignore)
+    end
+
+    it 'should add the Sass cache line next to other rules that mention the cache' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, ".sass-cache-old/\n")
+      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
+      assert_equal ".sass-cache-old/\n.sass-cache/*\n", File.read(gitignore)
+    end
+
+    it 'should add the Sass cache line to a .gitignore that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.binwrite(gitignore, "caf\xE9/\n".b)
+      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
+      assert_equal "caf\xE9/\n.sass-cache/*\n".b, File.binread(gitignore)
+      assert_match(/gem 'sass'/, File.read("#{@apptmp}/sample_project/Gemfile"))
+    end
+
+    it 'should not repeat the Sass cache line when the file ends in it without a newline' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, "log/**/*\n.sass-cache/*")
+      capture_io { generate(:component, '--stylesheet=scss', "-r=#{@apptmp}/sample_project") }
+      assert_equal "log/**/*\n.sass-cache/*", File.read(gitignore)
+    end
+
+    it 'should add the Sass cache line after a longer line that ends like it' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, "log/**/*\napp/.sass-cache/*")
+      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
+      assert_equal "log/**/*\napp/.sass-cache/*\n.sass-cache/*\n", File.read(gitignore)
+    end
+
+    it 'should add the tailwind watcher to a Procfile.dev that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.binwrite(procfile, "web: caf\xE9\n".b)
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: caf\xE9\ncss: bundle exec rake tailwind:watch\n".b, File.binread(procfile)
+    end
+
+    it 'should add the vite dev server to a Procfile.dev that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.binwrite(procfile, "web: caf\xE9\n".b)
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: caf\xE9\nvite: bundle exec vite dev\n".b, File.binread(procfile)
+    end
+
     it 'should start the tailwind lines on a new line' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"
