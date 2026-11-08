@@ -2,14 +2,14 @@ SASS_RAKE = <<~RAKE unless defined?(SASS_RAKE)
   # Dart Sass compiles each file in app/stylesheets to public/stylesheets, in the same folders:
   # app/stylesheets/application.scss becomes public/stylesheets/application.css.
   # Files whose names start with "_" are partials, compiled only into the stylesheets that @use them.
-  # Plain .css files are copied as they are.
+  # Plain .css files are written out as plain CSS too.
   SASS_ARGS = %w[--no-source-map --load-path=app/stylesheets app/stylesheets:public/stylesheets].freeze
 
   namespace :sass do
     desc 'Build public/stylesheets from the Sass and SCSS files in app/stylesheets'
     task :build do
       mkdir_p 'app/stylesheets', verbose: false
-      sh Gem.ruby, Gem.bin_path('sass-embedded', 'sass'), *SASS_ARGS
+      sh Gem.ruby, Gem.bin_path('sass-embedded', 'sass'), '--no-error-css', *SASS_ARGS
     end
 
     desc 'Rebuild public/stylesheets whenever a file in app/stylesheets changes'
@@ -56,7 +56,6 @@ def setup_stylesheet
     register = "register #{name.capitalize}Initializer"
     remove << "`#{register}` from app/app.rb" if app.match?(/^\s*#{register}\b/n)
   end
-  remove << '.sass-cache/* from .gitignore' if read.call('.gitignore').to_s.match?(%r{^/?\.sass-cache}n)
   steps = [("remove #{remove.join(' and ')}" if remove.any?), ("delete #{delete.join(' and ')}" if delete.any?)].compact
   say "This project still has Ruby Sass. To switch to Dart Sass, #{steps.join(', ')}, then run bundle install.", :yellow if steps.any?
 

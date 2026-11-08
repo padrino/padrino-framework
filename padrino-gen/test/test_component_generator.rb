@@ -103,6 +103,8 @@ describe 'ComponentGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
       # A project from before the scss component used Dart Sass has an initializer instead of tasks/sass.rake.
       FileUtils.rm_f("#{@apptmp}/sample_project/tasks/sass.rake")
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
+      File.write("#{@apptmp}/sample_project/config/initializers/scss.rb", "require 'sass/plugin/rack'\n")
       Readline.stubs(:readline).returns('yes').once
       out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       assert_match(%r{Switching from scss: .* remove them from Gemfile, app/app\.rb and config/initializers/scss\.rb\.}, out)
@@ -247,19 +249,17 @@ describe 'ComponentGenerator' do
           File.write(project_file(initializer), ruby_sass)
           File.write(project_file('app/app.rb'), File.read(project_file('app/app.rb')).sub("Padrino::Application\n", "\\0    register #{name}Initializer\n"))
           File.write(project_file('Gemfile'), File.read(project_file('Gemfile')).sub("# Component requirements\n", "\\0gem 'sass'\n"))
-          File.write(project_file('.gitignore'), "#{File.read(project_file('.gitignore'))}.sass-cache/*\n")
           before = %w[Gemfile app/app.rb].to_h { |path| [path, File.read(project_file(path))] }
 
           out = apply(stylesheet)
           assert_includes out, "This project still has Ruby Sass. To switch to Dart Sass, remove gem 'sass' from Gemfile and " \
-                               "`register #{name}Initializer` from app/app.rb and .sass-cache/* from .gitignore, delete #{initializer}, then run bundle install."
+                               "`register #{name}Initializer` from app/app.rb, delete #{initializer}, then run bundle install."
           assert_equal ruby_sass, File.read(project_file(initializer))
           assert_equal before['app/app.rb'], File.read(project_file('app/app.rb'))
           assert_equal before['Gemfile'].sub("# Component requirements\n", "\\0gem 'sass-embedded', '~> 1.63', require: false\n"), File.read(project_file('Gemfile'))
 
           File.delete(project_file(initializer))
-          assert_includes apply(stylesheet), "To switch to Dart Sass, remove gem 'sass' from Gemfile and `register #{name}Initializer` from app/app.rb " \
-                                             'and .sass-cache/* from .gitignore, then run bundle install.'
+          assert_includes apply(stylesheet), "To switch to Dart Sass, remove gem 'sass' from Gemfile and `register #{name}Initializer` from app/app.rb, then run bundle install."
         end
       end
 
@@ -269,8 +269,16 @@ describe 'ComponentGenerator' do
         # As the tailwind component leaves it; the switch itself asks first, so write it directly.
         File.write(project_file('tasks/tailwind.rake'), "# tailwind\n")
         out = apply('sass')
-        assert_includes out, "Switching from tailwind: tasks/tailwind.rake also writes public/stylesheets/application.css, and Dart Sass copies"
+        assert_includes out, 'Switching from tailwind: tasks/tailwind.rake also writes public/stylesheets/application.css, and Dart Sass copies'
         assert_includes out, "remove gem 'tailwindcss-ruby' from Gemfile and make the css: line in Procfile.dev `css: bundle exec rake sass:watch`."
+      end
+
+      it 'should not take the .gitignore line or a commented register line of a project from before for Ruby Sass' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        # Projects generated before Puma became the default have .sass-cache/* in .gitignore, whatever the stylesheet.
+        File.write(project_file('.gitignore'), "#{File.read(project_file('.gitignore'))}.sass-cache/*\n")
+        File.write(project_file('app/app.rb'), File.read(project_file('app/app.rb')).sub("Padrino::Application\n", "\\0    # register SassInitializer\n"))
+        refute_match(/Ruby Sass/, apply('sass'))
       end
 
       it 'should not take an initializer that is not Ruby Sass for a leftover' do

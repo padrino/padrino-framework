@@ -1019,7 +1019,7 @@ describe 'ProjectGenerator' do
       args = %w[--no-source-map --load-path=app/stylesheets app/stylesheets:public/stylesheets]
       # A clone has no app/stylesheets until a stylesheet is added, since git drops empty directories.
       FileUtils.rm_rf("#{project}/app/stylesheets")
-      { 'sass:build' => args, 'assets:precompile' => args, 'sass:watch' => ['--watch', *args] }.each do |task, expected|
+      { 'sass:build' => ['--no-error-css', *args], 'assets:precompile' => ['--no-error-css', *args], 'sass:watch' => ['--watch', *args] }.each do |task, expected|
         runs, result, out = run_sass_task(project, task)
         assert result.success?, out
         assert_equal [[File.realpath(project), *expected]], runs, task
