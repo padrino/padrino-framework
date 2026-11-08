@@ -41,25 +41,24 @@ def setup_stylesheet
   end
 
   # Projects generated before Dart Sass keep Ruby Sass, which still compiles app/stylesheets on request, over Dart Sass's output.
-  read = ->(path) { File.exist?(destination_root(path)) ? File.binread(destination_root(path)) : '' }
+  read = ->(path) { File.file?(file = destination_root(path)) ? File.binread(file) : nil }
   remove = []
-  remove << "gem 'sass' from Gemfile" if read.call('Gemfile').match?(/^\s*gem[\s(]+['"]sass['"]/n)
+  remove << "gem 'sass' from Gemfile" if gemfile_gems.include?('sass')
   delete = []
-  app = read.call('app/app.rb')
+  app = read.call('app/app.rb').to_s
   %w[sass scss].each do |name|
     path = "config/initializers/#{name}.rb"
-    ruby_sass = read.call(path).include?('Sass::Plugin')
-    delete << path if ruby_sass
-    next unless ruby_sass || !File.exist?(destination_root(path))
+    initializer = read.call(path)
+    delete << path if initializer&.include?('Sass::Plugin')
+    # An initializer of the project's own with that name is what the register line loads.
+    next if initializer && !initializer.include?('Sass::Plugin')
 
     register = "register #{name.capitalize}Initializer"
     remove << "`#{register}` from app/app.rb" if app.match?(/^\s*#{register}\b/n)
   end
-  remove << '.sass-cache/* from .gitignore' if read.call('.gitignore').match?(%r{^/?\.sass-cache}n)
-  steps = []
-  steps << "remove #{remove.join(' and ')}" unless remove.empty?
-  steps << "delete #{delete.join(' and ')}" unless delete.empty?
-  say "This project still has Ruby Sass. To switch to Dart Sass, #{steps.join(', ')}, then run bundle install.", :yellow unless steps.empty?
+  remove << '.sass-cache/* from .gitignore' if read.call('.gitignore').to_s.match?(%r{^/?\.sass-cache}n)
+  steps = [("remove #{remove.join(' and ')}" if remove.any?), ("delete #{delete.join(' and ')}" if delete.any?)].compact
+  say "This project still has Ruby Sass. To switch to Dart Sass, #{steps.join(', ')}, then run bundle install.", :yellow if steps.any?
 
   if File.exist?(destination_root('tasks/tailwind.rake'))
     say 'Switching from tailwind: tasks/tailwind.rake also writes public/stylesheets/application.css, and Dart Sass copies ' \
