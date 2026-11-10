@@ -86,9 +86,12 @@ module Padrino
           "#{klass_name}.all"
         end
 
+        # Must return nil for a missing id: Active Record's find raises, and so does Mongoid's
+        # unless raise_not_found_error is off.
         def find(params = nil)
           case orm
-          when :activerecord, :mongoid then "#{klass_name}.find(#{params})"
+          when :activerecord then "#{klass_name}.find_by(#{klass_name}.primary_key => #{params})"
+          when :mongoid then "#{klass_name}.where(_id: #{params}).first"
           when :sequel then "#{klass_name}[#{params}]"
           else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
@@ -122,8 +125,8 @@ module Padrino
         def find_by_ids(params = nil)
           case orm
           when :sequel then "#{klass_name}.where(id: #{params})"
-          when :mongoid then "#{klass_name}.find(#{params})"
-          else find(params)
+          when :activerecord, :mongoid then "#{klass_name}.find(#{params})"
+          else raise OrmError, "Adapter #{orm} is not yet supported!"
           end
         end
 

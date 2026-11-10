@@ -175,6 +175,10 @@ describe 'FormatHelpers' do
       actual_text = truncate('And they found that many people were sleeping better.', length: 25, omission: '(clipped)')
       assert_equal 'And they found t(clipped)', actual_text
     end
+    it 'should not return more text when the length is shorter than the omission' do
+      assert_equal '...', truncate('hello world', length: 2)
+      assert_equal '(cut)', truncate('hello world', length: 3, omission: '(cut)')
+    end
   end
 
   describe 'for #truncate_words method' do
@@ -192,6 +196,9 @@ describe 'FormatHelpers' do
     it 'should support specifying omission text' do
       actual_text = truncate_words('And they found that many people were sleeping better.', length: 4, omission: '(clipped)')
       assert_equal 'And they found that(clipped)', actual_text
+    end
+    it 'should keep no words for a length of zero' do
+      assert_equal '...', truncate_words('one two three', length: 0)
     end
   end
 
