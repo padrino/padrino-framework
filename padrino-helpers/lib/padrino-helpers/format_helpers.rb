@@ -128,7 +128,7 @@ module Padrino
         options = { length: 30, omission: '...' }.update(options)
         return unless text
 
-        len = options[:length] - options[:omission].length
+        len = [options[:length] - options[:omission].length, 0].max
         chars = text
         (chars.length > options[:length] ? chars[0...len] + options[:omission] : text).to_s
       end
@@ -156,7 +156,7 @@ module Padrino
         return unless text
 
         words = text.split
-        words[0..(options[:length] - 1)].join(' ') + (words.length > options[:length] ? options[:omission] : '')
+        words.first([options[:length], 0].max).join(' ') + (words.length > options[:length] ? options[:omission] : '')
       end
 
       ##
