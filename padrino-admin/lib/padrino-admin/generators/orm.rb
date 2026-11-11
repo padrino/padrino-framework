@@ -17,6 +17,9 @@ module Padrino
           sequel: 'Sequel::Model'
         }.freeze
 
+        # Column types of numbers with a fractional part.
+        FRACTIONAL_TYPES = %i[float decimal bigdecimal].freeze
+
         attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm, :name_param
 
         def initialize(name, orm, columns = nil, column_fields = nil)
@@ -49,14 +52,15 @@ module Padrino
         end
 
         def field_type(type)
-          type = :string if type.nil?
-          type = Padrino::Inflections.demodulize(type).downcase.to_sym unless type.is_a?(Symbol)
-
-          case type
-          when :integer, :float, :decimal   then :text_field
-          when :string                      then :text_field
-          when :text                        then :text_area
-          when :boolean                     then :check_box
+          case type_name(type)
+          when :integer, *FRACTIONAL_TYPES              then :number_field
+          when :date                                    then :date_field
+          when :datetime, :timestamptz, :timewithzone   then :datetime_local_field
+          # Mongoid's Time holds a date and a time; an SQL time column only a time of day.
+          when :time                                    then orm == :mongoid ? :datetime_local_field : :time_field
+          when :string                                  then :text_field
+          when :text                                    then :text_area
+          when :boolean                                 then :check_box
           else :text_field
           end
         end
@@ -78,7 +82,9 @@ module Padrino
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
-            { name: column.name, field_type: field_type(column.type) }
+            # A number input takes only whole numbers unless its step allows fractions.
+            step = 'any' if FRACTIONAL_TYPES.include?(type_name(column.type))
+            { name: column.name, field_type: field_type(column.type), step: step }
           end
         end
 
@@ -146,6 +152,13 @@ module Padrino
         end
 
         private
+
+        # A column's type as a lowercase symbol: Active Record and Sequel give a symbol, Mongoid a
+        # class (BigDecimal => :bigdecimal, Mongoid::Boolean => :boolean).
+        def type_name(type)
+          return :string if type.nil?
+          type.is_a?(Symbol) ? type : Padrino::Inflections.demodulize(type).downcase.to_sym
+        end
 
         # Returns nil when the model is not defined. A model that failed to load keeps its error in
         # @load_error, whether looking it up raised it or loading the project (config/boot.rb) did.

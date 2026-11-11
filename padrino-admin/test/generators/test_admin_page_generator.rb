@@ -300,6 +300,123 @@ describe 'AdminPageGenerator' do
           Sequel::Model.db.drop_table?(:switches)
         end
       end
+
+      it "should generate a form with an input for each column type, no placeholder help, and Save back to the list (#{renderer})" do
+        skip 'the sqlite3 gem is only bundled on MRI' if RUBY_ENGINE == 'jruby'
+        # Without the fixture's Account, the admin generator adds the account model and its migration.
+        account = Object.send(:remove_const, :Account) if Object.const_defined?(:Account, false)
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
+        capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+        project = "#{@apptmp}/sample_project"
+        File.write("#{project}/db/migrate/002_create_gadgets.rb", <<~'RUBY')
+          Sequel.migration do
+            up do
+              create_table :gadgets do
+                primary_key :id
+                String :name
+                Text :notes
+                Integer :quantity
+                Decimal :price
+                Float :weight
+                Date :released_on
+                DateTime :published_at
+                Time :opens_at, only_time: true
+                TrueClass :active
+              end
+            end
+          end
+        RUBY
+        File.write("#{project}/models/gadget.rb", "class Gadget < Sequel::Model; end\n")
+        db = Sequel.sqlite("#{project}/db/sample_project_test.db")
+        Sequel.extension :migration
+        Sequel::Migrator.run(db, "#{project}/db/migrate")
+        Object.const_set(:Gadget, Class.new(Sequel::Model(db[:gadgets])))
+        capture_io { generate(:admin_page, 'gadget', "--root=#{project}") }
+        script = <<~'RUBY'
+          ENV['RACK_ENV'] = 'test'
+          %w[json sequel haml slim erubi nokogiri rack/test].each { |lib| require lib }
+          require File.expand_path('config/boot')
+          account_id = Account.dataset.insert(email: 'admin@example.com', role: 'admin', crypted_password: 'unused')
+          browser = Rack::Test::Session.new(Padrino.application)
+          browser.env('rack.session', SampleProject::Admin.session_id => account_id)
+          page = lambda do |path|
+            browser.get(path)
+            raise "#{path} answered #{browser.last_response.status}" unless browser.last_response.status == 200
+            Nokogiri::HTML(browser.last_response.body)
+          end
+          inputs = lambda do |html|
+            html.css('form .controls input:not([type=hidden]), form .controls textarea').to_h do |input|
+              [input['name'][/\[(.*)\]/, 1], [input.name == 'textarea' ? 'textarea' : input['type'], input['step'], input['value']]]
+            end
+          end
+          location = ->(response) { URI(response['Location']).path }
+          attributes = { name: 'Widget', quantity: '7', price: '9.99', weight: '1.25', released_on: '2026-11-11',
+                         published_at: '2026-11-11T10:30', opens_at: '09:15', active: '1' }
+          new_page = page.call('/admin/gadgets/new')
+          results = { 'new' => inputs.call(new_page), 'help' => new_page.css('.help-inline').map { |help| help.text.strip } }
+          browser.post('/admin/gadgets/create', gadget: attributes)
+          results['create'] = location.call(browser.last_response)
+          browser.post('/admin/gadgets/create', gadget: attributes, save_and_continue: 'Save and continue')
+          results['create and continue'] = location.call(browser.last_response)
+          browser.put('/admin/gadgets/update/1', gadget: { quantity: '8' })
+          results['update'] = location.call(browser.last_response)
+          browser.put('/admin/gadgets/update/1', gadget: { quantity: '9' }, save_and_continue: 'Save and continue')
+          results['update and continue'] = location.call(browser.last_response)
+          results['edit'] = inputs.call(page.call('/admin/gadgets/edit/1'))
+          puts "RESULTS #{JSON.generate(results)}"
+        RUBY
+        env = { 'BUNDLE_GEMFILE' => File.expand_path('../../../Gemfile', __dir__) }
+        out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: project)
+        results = out[/^RESULTS (.*)$/, 1]
+        assert results, "#{status}\n#{out}\n#{err}"
+        results = JSON.parse(results)
+        types = results['new'].transform_values { |(type, step)| [type, step] }
+        assert_equal({ 'name' => ['text', nil], 'notes' => ['textarea', nil], 'quantity' => ['number', nil],
+                       'price' => %w[number any], 'weight' => %w[number any], 'released_on' => ['date', nil],
+                       'published_at' => ['datetime-local', nil], 'opens_at' => ['time', nil], 'active' => ['checkbox', nil] }, types)
+        assert_equal [''] * 9, results['help']
+        assert_equal '/admin/gadgets', results['create']
+        assert_equal '/admin/gadgets/edit/2', results['create and continue']
+        assert_equal '/admin/gadgets', results['update']
+        assert_equal '/admin/gadgets/edit/1', results['update and continue']
+        values = results['edit'].transform_values(&:last)
+        assert_equal '9', values['quantity']
+        assert_equal 9.99, Float(values['price'])
+        assert_equal '2026-11-11', values['released_on']
+        assert_equal '2026-11-11T10:30:00', values['published_at']
+        assert_equal '09:15:00.000', values['opens_at']
+      ensure
+        Object.send(:remove_const, :Gadget) if Object.const_defined?(:Gadget, false)
+        Object.send(:remove_const, :Account) if Object.const_defined?(:Account, false)
+        Object.const_set(:Account, account) if account
+        db&.disconnect
+      end
+    end
+
+    describe 'the form field of a column' do
+      def form_fields(orm, types)
+        columns = types.each_with_index.map { |type, index| Padrino::Admin::Generators::Orm::Column.new(:"column#{index}", type) }
+        Padrino::Admin::Generators::Orm.new('friend', orm, columns).column_fields.map { |column| [column[:field_type], column[:step]].compact }
+      end
+
+      def named_class(name)
+        Class.new.tap { |klass| klass.define_singleton_method(:to_s) { name } }
+      end
+
+      it 'should match the Active Record column type' do
+        types = %i[string text integer float decimal date datetime timestamptz time boolean binary]
+        expected = [[:text_field], [:text_area], [:number_field], [:number_field, 'any'], [:number_field, 'any'], [:date_field],
+                    [:datetime_local_field], [:datetime_local_field], [:time_field], [:check_box], [:text_field]]
+        assert_equal expected, form_fields(:activerecord, types)
+      end
+
+      it 'should match the Mongoid field type, where a Time holds a date as well' do
+        types = [String, Integer, Float, BigDecimal, Date, DateTime, Time, named_class('ActiveSupport::TimeWithZone'),
+                 named_class('Mongoid::Boolean'), Object]
+        expected = [[:text_field], [:number_field], [:number_field, 'any'], [:number_field, 'any'], [:date_field],
+                    [:datetime_local_field], [:datetime_local_field], [:datetime_local_field], [:check_box], [:text_field]]
+        assert_equal expected, form_fields(:mongoid, types)
+      end
     end
 
     it 'should not carry a flash over to the next page when a record is not found' do
