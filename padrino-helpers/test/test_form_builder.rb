@@ -497,6 +497,16 @@ describe 'FormBuilder' do
         end
       end
 
+      it 'should not raise for an option that is not a finite number when BigDecimal raises on it' do
+        flags = [BigDecimal::EXCEPTION_NaN, BigDecimal::EXCEPTION_INFINITY, BigDecimal::EXCEPTION_OVERFLOW]
+        saved = flags.map { |flag| BigDecimal.mode(BigDecimal::EXCEPTION_ALL).anybits?(flag) }
+        flags.each { |flag| BigDecimal.mode(flag, true) }
+        actual_html = standard_builder.select(:price, options: %w[NaN Infinity 1e99999999999999999999 2])
+        assert_html_has_tag(actual_html, 'option[selected]', content: '2', count: 1)
+      ensure
+        flags.zip(saved).each { |flag, on| BigDecimal.mode(flag, on) }
+      end
+
       it 'should select an option written with trailing zeros' do
         @user.stubs(price: BigDecimal('9.5'))
         assert_html_has_tag(standard_builder.select(:price, options: %w[9.05 9.50]), 'option[selected]', value: '9.50', count: 1)

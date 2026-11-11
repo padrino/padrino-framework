@@ -112,7 +112,7 @@ module Padrino
       #
       def self.decimal_from(text)
         BigDecimal(text)
-      rescue ArgumentError, TypeError
+      rescue ArgumentError, TypeError, FloatDomainError
         nil
       end
       private_class_method :decimal_from
