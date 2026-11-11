@@ -15,8 +15,8 @@ end
 def setup_mock
   require_dependencies 'rr', require: false, group: 'test'
 
-  test = options[:test].to_s
-  test = fetch_component_choice(:test).to_s if test.empty?
+  # The test component is applied and stored first, so this is the one the project keeps when its switch is declined.
+  test = fetch_component_choice(:test).to_s
   require_dependencies 'test-unit-rr', require: false, group: 'test' if %w[testunit shoulda].include?(test)
   if (setup = mock_setup_lines(test))
     inject_into_file setup[:path], setup[:text], after: setup[:after]
