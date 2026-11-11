@@ -300,6 +300,7 @@ module Padrino
 
           all << ' ' if all.empty?
           name = tag_attribute_name(key)
+          name = '_' if name.empty?
           all <<
             if value.is_a?(Hash)
               nested_values(name, value)

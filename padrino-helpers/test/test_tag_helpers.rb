@@ -125,6 +125,12 @@ describe 'TagHelpers' do
       assert_equal "<div data-a\uFFFDb=\"1\" />", tag(:div, data: { "a\xFFb" => 1 })
     end
 
+    it 'should write an empty attribute name as an underscore' do
+      assert_equal '<div _="v" />', tag(:div, '' => 'v')
+      assert_equal '<div _="v" />', tag(:div, nil => 'v')
+      assert_equal '<div _="v">c</div>', content_tag(:div, 'c', :'' => 'v')
+    end
+
     it 'should replace characters a tag name cannot contain' do
       assert_equal '<p_onclick_x>c</p_onclick_x>', content_tag(:'p onclick=x', 'c')
       assert_equal '<br_x />', tag(:'br/x')

@@ -13,6 +13,10 @@ describe 'FormatHelpers' do
   end
 
   describe 'for #simple_format method' do
+    it 'should close each paragraph with the tag name it opens it with' do
+      assert_equal "<p_x>a</p_x>\n\n<p_x>b</p_x>", simple_format("a\n\nb", tag: 'p x')
+    end
+
     it 'should format simple text into html format' do
       actual_text = simple_format("Here is some basic text...\n...with a line break.")
       assert actual_text.html_safe?
