@@ -142,6 +142,7 @@ describe 'NumberHelpers' do
       limit = BigDecimal.limit(3)
       assert_equal '12345.67', number_with_precision(BigDecimal('12345.67'), precision: 2)
       assert_equal '$12,345.67', number_to_currency(BigDecimal('12345.67'))
+      assert_equal '-12345.68', number_with_precision(BigDecimal('-12345.678'), precision: 2)
       assert_equal 3, BigDecimal.limit
     ensure
       BigDecimal.limit(limit)

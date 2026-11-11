@@ -227,24 +227,17 @@ module Padrino
       def self.decimal_with_precision(number, precision)
         # format raises the same for these on the Float path.
         raise ArgumentError, "invalid precision: #{precision.inspect}" unless precision.is_a?(Integer) && precision >= 0
+        raise FloatDomainError, number.to_s unless number.finite?
 
-        # Exact whatever BigDecimal.limit says (lifted for this thread) and BigDecimal.mode
-        # says (the mode is given). Rational arithmetic would also be exact, but to_r builds
-        # a huge Integer for a tiny value such as 1e-10000000.
+        # BigDecimal#round(n, mode) is exact whatever BigDecimal.limit and BigDecimal.mode say.
         # A value below 10**-(precision + 1) rounds to zero; skipping it keeps a tiny exponent
         # from costing time (JRuby's round divides by 10 to the exponent).
-        scaled =
-          if number.exponent < -precision
-            0
-          else
-            ::BigDecimal.save_limit do
-              ::BigDecimal.limit(0)
-              (number * 10**precision).round(0, ::BigDecimal::ROUND_HALF_UP).to_i
-            end
-          end
-        digits = format('%0*d', precision + 1, scaled.abs)
-        digits.insert(-precision - 1, '.') if precision.positive?
-        scaled.negative? ? "-#{digits}" : digits
+        rounded = number.exponent < -precision ? BigDecimal(0) : number.round(precision, ::BigDecimal::ROUND_HALF_UP)
+        # to_s is US-ASCII or binary, depending on the bigdecimal version; a Float gets UTF-8.
+        # The sign comes off the string: bigdecimal 2.0's abs rounds to BigDecimal.limit.
+        integer, fraction = rounded.to_s('F').encode(::Encoding::UTF_8).delete_prefix('-').split('.')
+        digits = precision.zero? ? integer : "#{integer}.#{fraction.ljust(precision, '0')}"
+        rounded.negative? ? "-#{digits}" : digits
       end
 
       # The units available for storage formatting.
