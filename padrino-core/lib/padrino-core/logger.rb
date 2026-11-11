@@ -358,8 +358,16 @@ module Padrino
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
+    # Built with the class, not on first use, so threads that log for the first time at once share it.
+    @_mutex = Mutex.new
+
+    def self.inherited(subclass)
+      super
+      subclass.instance_variable_set(:@_mutex, Mutex.new)
+    end
+
     def self.mutex
-      @_mutex ||= Mutex.new
+      @_mutex
     end
 
     def self.logger

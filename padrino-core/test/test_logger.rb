@@ -102,6 +102,26 @@ describe 'PadrinoLogger' do
       assert_match(/log via alias/, @log.string)
     end
 
+    it 'should give threads that log for the first time the same mutex' do
+      logger_class = Class.new(Padrino::Logger)
+      release = Queue.new
+      new_mutex = Mutex.method(:new)
+      # Holds every thread that builds a Mutex until both threads have started, so that
+      # each one would build its own if the mutex were built on first use.
+      held_new = lambda do |*_args|
+        release.pop
+        new_mutex.call
+      end
+      mutexes = Mutex.stub(:new, held_new) do
+        threads = Array.new(2) { Thread.new { logger_class.mutex } }
+        Thread.pass until threads.all?(&:stop?)
+        threads.size.times { release << true }
+        threads.map(&:value)
+      end
+      assert_same mutexes[0], mutexes[1]
+      assert_instance_of Thread::Mutex, mutexes[0]
+    end
+
     it 'should not warn about an empty datetime format' do
       setup_logger(log_level: :error, colorize_logging: false, format_datetime: '')
       verbose = $VERBOSE

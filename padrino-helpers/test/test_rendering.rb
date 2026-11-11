@@ -802,6 +802,51 @@ describe 'Rendering' do
       get '/test'
       assert_equal 'test', body
     end
+
+    it 'should read and write the cached paths one thread at a time' do
+      # Counts the times a thread reads or writes while another is still inside: on JRuby,
+      # where threads run at once, that can drop entries or raise.
+      overlap_counting_hash = Class.new(Hash) do
+        attr_reader :overlaps
+
+        def initialize
+          super
+          @inside = 0
+          @overlaps = 0
+          @count_lock = Mutex.new
+        end
+
+        def [](key)
+          visit { super }
+        end
+
+        def []=(key, value)
+          visit { super }
+        end
+
+        private
+
+        def visit
+          @count_lock.synchronize { @overlaps += 1 if (@inside += 1) > 1 }
+          sleep 0.005
+          yield
+        ensure
+          @count_lock.synchronize { @inside -= 1 }
+        end
+      end
+      create_layout :application, 'layout <%= yield %>'
+      create_view :index, 'page'
+      mock_app do
+        disable :reload_templates
+        get('/') { render :index }
+      end
+      caches = %i[@_cached_templates @_cached_layout].map do |name|
+        @app.instance_variable_set(name, overlap_counting_hash.new)
+      end
+      threads = Array.new(4) { Thread.new { Rack::MockRequest.new(@app).get('/').body } }
+      assert_equal ['layout page'] * 4, threads.map(&:value)
+      assert_equal [0, 0], caches.map(&:overlaps)
+    end
   end
 
   describe 'rendering bug in some' do
