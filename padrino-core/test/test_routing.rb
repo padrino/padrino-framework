@@ -806,6 +806,33 @@ describe 'Routing' do
     assert_equal 404, status
   end
 
+  it 'should not provide a file extension with no MIME type for provides :any' do
+    mock_app do
+      get(:a, provides: :any) { content_type.to_s }
+      get('/a.:format') { "next #{params[:format]}" }
+      get(:b, provides: :any) { content_type.to_s }
+    end
+
+    get '/a.nosuchext'
+    assert_equal [200, 'next nosuchext'], [status, body]
+    get '/b.nosuchext'
+    assert_equal 404, status
+    get '/b.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
+  it 'should return 406 on a file extension with no MIME type for provides :any and flag is set' do
+    mock_app do
+      enable :treat_format_as_accept
+      get(:a, provides: :any) { content_type.to_s }
+    end
+
+    get '/a.nosuchext'
+    assert_equal 406, status
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
   it 'should not set content_type to :html if Accept */* and html not in provides' do
     mock_app do
       get('/foo', provides: %i[json xml]) { content_type.to_s }
@@ -1093,8 +1120,8 @@ describe 'Routing' do
     assert_equal 'js', body
     get '/b'
     assert_equal 'any', body
-    # TODO: randomly fails in minitest :(
-    # assert_raises(RuntimeError) { get "/b.foo" }
+    get '/b.nosuchext'
+    assert_equal 404, status
     get '/c'
     assert_equal 200, status
     assert_equal 'js,json', body

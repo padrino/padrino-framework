@@ -773,6 +773,19 @@ describe 'Filters' do
       end
     end
 
+    it 'should not run a filter for the path with a slash for a format with no MIME type on a provides :any route' do
+      mock_app do
+        before('/any/') { @public = true }
+        before { halt 401, 'login' unless @public }
+        get('/any', provides: :any) { 'any' }
+        get('/any.:format') { "member #{params[:format]}" }
+      end
+      get '/any.nosuchext'
+      assert_equal [401, 'login'], [status, body]
+      get '/any.json'
+      assert_equal [200, 'any'], [status, body]
+    end
+
     it 'should run a filter for a format the route answers itself with treat_format_as_accept' do
       mock_app do
         enable :treat_format_as_accept
