@@ -173,6 +173,13 @@ describe 'ProjectGenerator' do
       assert_match_in_file(/^\s*set :protect_from_csrf, proc \{ sessions\? && Padrino\.env != :test \}$/, "#{@apptmp}/sample_project/config/apps.rb")
     end
 
+    it 'should take padrino-support from the checkout in a --dev api project' do
+      capture_io { generate(:project, 'sample_project', '--api', '--dev', "--root=#{@apptmp}") }
+      %w[core support gen].each do |name|
+        assert_match_in_file(%r{^gem 'padrino-#{name}', path: '[^']+/padrino-#{name}'$}, "#{@apptmp}/sample_project/Gemfile")
+      end
+    end
+
     it 'should generate a tiny api project without mailers' do
       capture_io { generate(:project, 'sample_project', '--api', '--tiny', "--root=#{@apptmp}") }
       assert_no_file_exists("#{@apptmp}/sample_project/app/mailers.rb")
