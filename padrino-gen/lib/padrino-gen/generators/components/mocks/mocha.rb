@@ -12,8 +12,7 @@ end
 def setup_mock
   require_dependencies 'mocha', group: 'test', require: false
 
-  # The test component is applied and stored first, so this is the one the project keeps when its switch is declined.
-  test = fetch_component_choice(:test).to_s
+  test = applied_component_choice(:test)
   if (setup = mock_setup_lines(test))
     inject_into_file setup[:path], setup[:text], after: setup[:after]
     # After the insert, so a helper Thor fails to read keeps the previous mock.

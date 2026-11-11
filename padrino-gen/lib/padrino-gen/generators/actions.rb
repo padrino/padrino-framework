@@ -131,14 +131,26 @@ module Padrino
       end
 
       ##
-      # Returns the template engine that layout snippets should be printed for: the renderer this run
-      # applies, which .components only records once it is applied, otherwise the stored one.
+      # Returns the choice this run applies for a component, which .components only records once it is
+      # applied, otherwise the stored one (also when this run declined to switch it).
+      #
+      # @param [Symbol] component
+      #   The type of component module.
+      #
+      # @return [String] Name of the component module.
+      #
+      def applied_component_choice(component)
+        chosen = @_components && @_components[component].to_s
+        chosen.nil? || chosen.empty? ? fetch_component_choice(component).to_s : chosen
+      end
+
+      ##
+      # Returns the template engine that layout snippets should be printed for.
       #
       # @return [String] 'haml', 'slim', or 'erb' for any other renderer.
       #
       def layout_renderer
-        chosen = @_components && @_components[:renderer].to_s
-        renderer = chosen.nil? || chosen.empty? ? fetch_component_choice(:renderer).to_s : chosen
+        renderer = applied_component_choice(:renderer)
         %w[haml slim].include?(renderer) ? renderer : 'erb'
       end
 

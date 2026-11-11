@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'rb-readline'
 require 'timeout'
 require 'erb'
 require 'json'
@@ -425,6 +426,15 @@ describe 'ProjectGenerator' do
         assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/project_#{test}/Gemfile")
       end
       assert_no_match_in_file(/mocha|Mocha/, "#{@apptmp}/project_bacon/test/test_config.rb")
+    end
+
+    it 'should set up the mock for the test component it applies when generated again over a project whose .components is kept' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      Readline.stubs(:readline).returns('n')
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
+      assert_match(/skip\s+\.components/, out)
+      assert_match_in_file(/^  conf\.mock_with :rr\n/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_no_match_in_file(/require 'rr'/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
   end
 
