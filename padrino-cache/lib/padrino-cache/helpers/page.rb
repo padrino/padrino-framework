@@ -117,7 +117,8 @@ module Padrino
         private
 
         def serve_cached_response
-          if settings.caching? && (cached_response = load_cached_response)
+          @_cache_lookup_key = @_cache_key
+          if settings.caching? && @route.cache_lookup && (cached_response = load_cached_response)
             env['sinatra.route'] = "#{request.request_method} #{@route.sinatra_pattern}"
             content_type cached_response[:content_type]
             halt 200, cached_response[:body]
@@ -147,6 +148,9 @@ module Padrino
           }
 
           settings.cache.store(route_cache_key, content, expires: cache_expires)
+          # The lookup runs before the handler, so it can only use a key set by then (or one the route recorded
+          # from an earlier request). Look pages up once that key is the one this page was stored under.
+          @route.cache_lookup = (@_cache_key || @route.cache_key) == (@_cache_lookup_key || @route.cache_key)
 
           logger.bench 'SET Cache', began_at, route_cache_key if defined?(logger) && logger.respond_to?(:bench) && logger.debug?
         end
