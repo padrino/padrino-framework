@@ -411,10 +411,12 @@ module Padrino
       $-v = verbosity_level
     end
 
+    # Module#name as Ruby defines it, so a class that overrides +name+ is still found by its constant.
+    MODULE_NAME = ::Module.instance_method(:name)
+    private_constant :MODULE_NAME
+
     def constant_name(constant)
-      constant._orig_klass_name
-    rescue NoMethodError
-      constant.name
+      MODULE_NAME.bind_call(constant)
     end
   end
 end
