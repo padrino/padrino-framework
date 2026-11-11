@@ -340,7 +340,8 @@ but it will do so immediately if any tweets have been deleted.
 ==== Page-level expiration
 
 Page-level expiration works exactly like the example above--by using
-<tt>expire</tt> in your controller. The key is typically <tt>env['PATH_INFO']</tt>.
+<tt>expire</tt> in your controller. The key is typically <tt>env['PATH_INFO']</tt>; for a route given <tt>host:</tt> it is the
+lowercased host followed by the path (<tt>admin.example.com/</tt>).
 
 == Copyright
 
