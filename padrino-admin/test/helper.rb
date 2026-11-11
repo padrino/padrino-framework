@@ -7,6 +7,7 @@ require 'rack/test'
 require 'thor/group'
 require 'sequel/model'
 require 'padrino-admin'
+require 'padrino-gen'
 
 require 'ext/minitest-spec'
 require 'ext/rack-test-methods'
