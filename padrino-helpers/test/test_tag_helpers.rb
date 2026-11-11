@@ -125,6 +125,22 @@ describe 'TagHelpers' do
       assert_equal "<div data-a\uFFFDb=\"1\" />", tag(:div, data: { "a\xFFb" => 1 })
     end
 
+    it 'should start a tag name with a letter' do
+      assert_equal '<_!-- class="k" />', tag(:'!--', class: 'k')
+      assert_equal '<_?x>c</_?x>', content_tag('?x', 'c')
+      assert_equal '<_ />', tag('')
+      assert_equal '<_1x />', tag(:'1x')
+      assert_equal '<my-element />', tag('my-element')
+    end
+
+    it 'should write a name and a value in the same encoding as UTF-8' do
+      result = tag(:div, "donn\xC3\xA9es".b => "\xC3\xA9".b)
+      assert_equal "<div donn\u00E9es=\"\u00E9\" />", result
+      assert_equal Encoding::UTF_8, result.encoding
+      latin = "\xE9t\xE9".dup.force_encoding(Encoding::ISO_8859_1)
+      assert_equal "<div caf\u00E9=\"\u00E9t\u00E9\" />", tag(:div, "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1) => latin)
+    end
+
     it 'should write an empty attribute name as an underscore' do
       assert_equal '<div _="v" />', tag(:div, '' => 'v')
       assert_equal '<div _="v" />', tag(:div, nil => 'v')

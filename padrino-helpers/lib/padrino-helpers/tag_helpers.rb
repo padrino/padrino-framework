@@ -137,7 +137,7 @@ module Padrino
         attributes = tag_attributes(options)
         output = SafeBuffer.new
 
-        name = tag_attribute_name(name)
+        name = tag_name(name)
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each do |item|
@@ -248,7 +248,7 @@ module Padrino
       def tag(name, options = nil, open = false)
         options = parse_data_options(name, options)
         attributes = tag_attributes(options)
-        "<#{tag_attribute_name(name)}#{attributes}#{open ? '>' : ' />'}".html_safe
+        "<#{tag_name(name)}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
 
       SAFE_URI_SCHEMES = %w[http https mailto tel ftp].freeze
@@ -318,7 +318,7 @@ module Padrino
       #
       def escape_value(string)
         string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
-        string = string.to_s
+        string = utf8_text(string)
         string.match?(ESCAPE_REGEXP) ? string.gsub(ESCAPE_REGEXP, ESCAPE_VALUES) : string
       end
 
@@ -335,6 +335,15 @@ module Padrino
               %(#{attribute_with_name}="#{escape_value(value)}" )
             end
         end
+      end
+
+      ##
+      # Returns the name as an HTML tag name: an attribute name that starts
+      # with an ASCII letter, or else gets a leading underscore.
+      #
+      def tag_name(name)
+        name = tag_attribute_name(name)
+        name.match?(/\A[A-Za-z]/) ? name : "_#{name}"
       end
 
       ##
