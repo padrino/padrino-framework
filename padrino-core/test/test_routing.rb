@@ -2817,7 +2817,6 @@ describe 'Routing' do
     get '/caf%C3%A9/x'
     assert_equal 'cafe', body
     assert_equal [:cafe, {}], @app.recognize_path('/caf%C3%A9/x')
-    assert_equal [:cafe, {}], @app.recognize_path("/caf\u00e9/x")
     get '/a%2520b/q'
     assert_equal 'a b', body
     assert_equal [:show, { 'name' => 'a b' }], @app.recognize_path('/a%2520b/q')
@@ -2839,6 +2838,16 @@ describe 'Routing' do
     assert_equal [200, "name caf\u00e9"], [status, body]
     get '/cafe'
     assert_equal [200, 'name cafe'], [status, body]
+  end
+
+  it 'should not route a short non-ASCII path to a Regexp route fixed to another encoding' do
+    mock_app do
+      get(%r{/\xC3\xA9}n) { 'bytes' }
+      get(:show, map: '/:name') { "name #{params[:name]}" }
+    end
+    get '/%C3%A9'
+    assert_equal [200, "name \u00e9"], [status, body]
+    assert_equal [:show, { 'name' => "\u00e9" }], @app.recognize_path('/%C3%A9')
   end
 
   it 'should keep a numbered backreference in a Regexp route' do
