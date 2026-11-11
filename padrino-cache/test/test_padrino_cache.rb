@@ -96,6 +96,24 @@ describe 'PadrinoCache' do
     refute_equal false, called
   end
 
+  it 'should cache the page of a route given host: for that host only' do
+    calls = Hash.new(0)
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get(:index, host: 'admin.example.com', cache: true) { "admin #{calls[:admin] += 1}" }
+      get(:index, cache: true) { "public #{calls[:public] += 1}" }
+    end
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com'
+    assert_equal 'admin 1', body
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public 1', body
+    get '/', {}, 'HTTP_HOST' => 'Admin.Example.COM'
+    assert_equal 'admin 1', body
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public 1', body
+  end
+
   it 'should cache HEAD verb' do
     called_times = 0
     mock_app do
@@ -678,6 +696,62 @@ describe 'PadrinoCache' do
     adapter = @app.cache.adapter
     adapter = adapter.adapter while adapter.respond_to?(:adapter)
     assert_kind_of Moneta::Adapters::Memory, adapter
+  end
+
+  describe 'default store' do
+    def standalone_app(text, base = Sinatra.new)
+      base.class_eval do
+        register Padrino::Routing
+        register Padrino::Cache
+        enable :caching
+        get('/foo', cache: true) { text }
+      end
+      base
+    end
+
+    def store_adapter(app)
+      adapter = app.cache.adapter
+      adapter = adapter.adapter while adapter.respond_to?(:adapter)
+      adapter
+    end
+
+    it 'should keep the cache directory of a Padrino app at tmp/<app_name>/cache' do
+      mock_app { register Padrino::Cache }
+      assert_equal Padrino.root('tmp', @app.app_name.to_s, 'cache'), store_adapter(@app).config.dir
+    end
+
+    it 'should give each named Sinatra app its own store' do
+      Object.const_set(:CacheSpecShop, Class.new(Sinatra::Base))
+      Object.const_set(:CacheSpecNs, Module.new)
+      CacheSpecNs.const_set(:CacheSpecShop, Class.new(Sinatra::Base))
+      Object.const_set(:CacheSpecBlog, Class.new(Sinatra::Base))
+      @app = Rack::URLMap.new(
+        '/shop' => standalone_app('top-level shop', CacheSpecShop),
+        '/ns' => standalone_app('namespaced shop', CacheSpecNs::CacheSpecShop),
+        '/blog' => standalone_app('blog', CacheSpecBlog)
+      )
+      2.times do
+        get '/shop/foo'
+        assert_equal 'top-level shop', body
+        get '/ns/foo'
+        assert_equal 'namespaced shop', body
+        get '/blog/foo'
+        assert_equal 'blog', body
+      end
+      assert_equal Padrino.root('tmp', 'cache_spec_ns', 'cache_spec_shop', 'cache'), store_adapter(CacheSpecNs::CacheSpecShop).config.dir
+    ensure
+      %i[CacheSpecShop CacheSpecNs CacheSpecBlog].each { |name| Object.send(:remove_const, name) if Object.const_defined?(name, false) }
+    end
+
+    it 'should give each anonymous Sinatra app its own store' do
+      @app = Rack::URLMap.new('/a' => standalone_app('from A'), '/b' => standalone_app('from B'))
+      2.times do
+        get '/a/foo'
+        assert_equal 'from A', body
+        get '/b/foo'
+        assert_equal 'from B', body
+      end
+    end
   end
 
   it 'should check key existence' do
