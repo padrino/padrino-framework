@@ -57,16 +57,23 @@ module Padrino
       ].freeze
 
       attribute_rules = ->(rule, names) { (names + names.map(&:to_s)).to_h { |name| [name, rule] } }
+      false_value_attributes = %i[
+        contenteditable draggable spellcheck writingsuggestions
+        aria-atomic aria-busy aria-checked aria-current aria-disabled aria-expanded aria-grabbed aria-haspopup
+        aria-hidden aria-invalid aria-modal aria-multiline aria-multiselectable aria-pressed aria-readonly
+        aria-required aria-selected
+      ]
 
       # How +tag_attributes+ writes a value, for the attributes that need more than escaping:
-      # * boolean: +true+ writes the name (checked="checked"); a String is kept (hidden="until-found").
+      # * boolean: +true+ writes the name (checked="checked"); a String or Symbol is kept (hidden="until-found").
       # * empty_value: enumerated attributes whose empty value is a state, so +true+ writes "" (popover="" is auto).
-      # * false_value: enumerated attributes with a "false" keyword, so +false+ is written, as for aria-*.
+      # * false_value: attributes with a "false" keyword (HTML, and the WAI-ARIA true/false, tristate and
+      #   token states), so +false+ is written rather than dropped.
       ATTRIBUTE_RULES = {
         **attribute_rules.call(:boolean, BOOLEAN_ATTRIBUTES),
         **attribute_rules.call(:class, %i[class]),
         **attribute_rules.call(:empty_value, %i[autocorrect crossorigin popover preload translate]),
-        **attribute_rules.call(:false_value, %i[contenteditable draggable spellcheck writingsuggestions])
+        **attribute_rules.call(:false_value, false_value_attributes)
       }.freeze
       private_constant :ATTRIBUTE_RULES
 
@@ -318,13 +325,13 @@ module Padrino
           when :empty_value then value = '' if value == true
           when :false_value then value = 'false' if value == false
           end
-          next unless value || (value == false && key.to_s.start_with?('aria-'))
+          next unless value
 
           all << ' ' if all.empty?
           all <<
             if value.is_a?(Hash)
               nested_values(key, value)
-            elsif rule == :boolean && !value.is_a?(String)
+            elsif rule == :boolean && !value.is_a?(String) && !value.is_a?(Symbol)
               %(#{key}="#{key}" )
             else
               %(#{key}="#{escape_value(value)}" )

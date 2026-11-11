@@ -243,7 +243,7 @@ module Padrino
         #
         def labeled_group(field, options = {})
           options = { id: field_id(field), selected: field_value(field) }.update(options)
-          options.update(error_class(field)) { |_, *values| values.compact.join(' ') }
+          options.update(error_class(field)) { |_, *values| values }
           selected_values = resolve_checked_values(field, options)
           variants_for_group(options).inject(SafeBuffer.new) do |html, (caption, value)|
             variant_id = "#{options[:id]}_#{value}"
@@ -318,7 +318,7 @@ module Padrino
           { value: field_value(field), id: field_id(field) }
             .update(defaults)
             .update(options)
-            .update(error_class(field)) { |_, *values| values.compact.join(' ') }
+            .update(error_class(field)) { |_, *values| values }
         end
       end
     end

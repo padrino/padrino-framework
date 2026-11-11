@@ -166,6 +166,15 @@ describe 'FormBuilder' do
       assert_html_has_tag(actual_html, :input, type: 'text', name: 'user[email]', id: 'user_email', class: 'invalid')
     end
 
+    it 'should add "invalid" to a String, Array or Hash class on fields with errors' do
+      actual_html = form_for(@user, '/register') do |f|
+        f.text_field(:email, class: 'a') << f.text_field(:email, class: ['b', nil]) << f.text_field(:email, class: { wide: true, off: false })
+      end
+      assert_includes actual_html, 'class="a invalid"'
+      assert_includes actual_html, 'class="b invalid"'
+      assert_includes actual_html, 'class="wide invalid"'
+    end
+
     it 'should not have a class of "invalid" for fields with no errors' do
       actual_html = form_for(@user, '/register') { |f| f.text_field(:first_name) }
       assert_html_has_no_tag(actual_html, :input, type: 'text', name: 'user[first_name]', id: 'user_first_name', class: 'invalid')

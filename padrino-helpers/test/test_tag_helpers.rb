@@ -103,6 +103,8 @@ describe 'TagHelpers' do
       assert_equal '<div hidden="until-found" />', tag(:div, hidden: 'until-found')
       assert_equal '<div hidden="hidden" />', tag(:div, hidden: true)
       assert_equal '<div />', tag(:div, hidden: false)
+      assert_equal '<div hidden="until-found" />', tag(:div, hidden: :'until-found')
+      assert_equal '<input disabled="disabled" />', tag(:input, disabled: 1)
     end
 
     it 'should write popover as empty when true and keep its keyword otherwise' do
@@ -114,10 +116,14 @@ describe 'TagHelpers' do
     it 'should write false for aria attributes and the true/false enumerated attributes' do
       assert_equal '<div aria-hidden="false" spellcheck="false" draggable="false" contenteditable="false" />',
                    tag(:div, 'aria-hidden': false, spellcheck: false, draggable: false, contenteditable: false)
-      assert_equal '<div aria-expanded="false" />', tag(:div, 'aria-expanded' => false)
+      assert_equal '<div aria-expanded="false" aria-current="false" />', tag(:div, 'aria-expanded' => false, 'aria-current': false)
       assert_equal '<div aria-hidden="false" />', tag(:div, aria: { hidden: false })
       assert_equal '<div spellcheck="true" />', tag(:div, spellcheck: true)
       assert_equal '<div />', tag(:div, 'aria-hidden': nil, spellcheck: nil, title: false)
+    end
+
+    it 'should drop false for ARIA attributes whose values are not true/false states' do
+      assert_equal '<td />', tag(:td, 'aria-label': false, 'aria-describedby': false, 'aria-labelledby' => false)
     end
 
     it 'should build class from Arrays and Hashes of names' do
