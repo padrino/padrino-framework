@@ -438,6 +438,25 @@ describe 'FormBuilder' do
       assert_html_has_no_tag(actual_html, 'input[checked]')
     end
 
+    # Active Record reads 10 from a decimal(10, 2) column as BigDecimal('10').
+    describe 'that is a whole number' do
+      before { @user.stubs(price: BigDecimal('10')) }
+
+      it 'should write it without a fraction' do
+        assert_html_has_tag(standard_builder.number_field(:price), 'input[type=number]', value: '10')
+      end
+
+      it 'should select the option written the way a form sends it back' do
+        actual_html = standard_builder.select(:price, options: %w[5 10 20])
+        assert_html_has_tag(actual_html, 'option', value: '10', selected: 'selected')
+        assert_html_has_tag(actual_html, 'option[selected]', count: 1)
+      end
+
+      it 'should check the radio button written the way a form sends it back' do
+        assert_html_has_tag(standard_builder.radio_button(:price, value: '10'), 'input[type=radio]', value: '10', checked: 'checked')
+      end
+    end
+
     it 'should write BigDecimal options of a group in plain decimal notation' do
       actual_html = standard_builder.check_box_group(:price, options: [BigDecimal('1.5')])
       assert_html_has_tag(actual_html, 'label', content: '1.5', for: 'user_price_1.5')
@@ -446,7 +465,7 @@ describe 'FormBuilder' do
     it 'should write BigDecimal values of a collection in plain decimal notation' do
       prices = [mock_model('Price', name: BigDecimal('1.5'), id: BigDecimal('2'))]
       actual_html = standard_builder.radio_button_group(:price, collection: prices)
-      assert_html_has_tag(actual_html, 'input[type=radio]', value: '2.0', id: 'user_price_2.0')
+      assert_html_has_tag(actual_html, 'input[type=radio]', value: '2', id: 'user_price_2')
       assert_html_has_tag(actual_html, 'label', content: '1.5')
     end
   end

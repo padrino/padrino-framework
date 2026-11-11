@@ -49,10 +49,7 @@ module Padrino
         end
 
         def field_type(type)
-          type = :string if type.nil?
-          type = Padrino::Inflections.demodulize(type).downcase.to_sym unless type.is_a?(Symbol)
-
-          case type
+          case type_name(type)
           when :integer, :float, :decimal   then :text_field
           when :string                      then :text_field
           when :text                        then :text_area
@@ -148,10 +145,17 @@ module Padrino
         # Whether the column holds BigDecimal values: Active Record and Sequel report :decimal,
         # Mongoid the class BigDecimal.
         def decimal?(type)
-          %w[decimal BigDecimal].include?(type.to_s)
+          %i[decimal bigdecimal].include?(type_name(type))
         end
 
         private
+
+        # A column's type as a lowercase symbol: Active Record and Sequel give a symbol, Mongoid a
+        # class (BigDecimal => :bigdecimal, Mongoid::Boolean => :boolean).
+        def type_name(type)
+          return :string if type.nil?
+          type.is_a?(Symbol) ? type : Padrino::Inflections.demodulize(type).downcase.to_sym
+        end
 
         # Returns nil when the model is not defined. A model that failed to load keeps its error in
         # @load_error, whether looking it up raised it or loading the project (config/boot.rb) did.

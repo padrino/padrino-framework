@@ -82,8 +82,8 @@ describe 'TagHelpers' do
 
     it 'should write BigDecimal values in plain decimal notation' do
       {
-        '9.99' => '9.99', '-9.99' => '-9.99', '9' => '9.0', '0' => '0.0',
-        '1e20' => '100000000000000000000.0', '0.0000001' => '0.0000001',
+        '9.99' => '9.99', '-9.99' => '-9.99', '9.50' => '9.5', '10' => '10', '0' => '0',
+        '1e20' => '100000000000000000000', '0.0000001' => '0.0000001', '-0.0001' => '-0.0001',
         'NaN' => 'NaN', 'Infinity' => 'Infinity', '-Infinity' => '-Infinity'
       }.each do |given, written|
         assert_equal %(<input value="#{written}" />), tag(:input, value: BigDecimal(given))
@@ -138,6 +138,16 @@ describe 'TagHelpers' do
 
     it 'should write BigDecimal content in plain decimal notation' do
       assert_equal '<td>9.99</td>', content_tag(:td, BigDecimal('9.99'))
+    end
+
+    it 'should write BigDecimal items of a content list in plain decimal notation' do
+      assert_equal "<td>9.99\n10\n</td>", content_tag(:td, [BigDecimal('9.99'), BigDecimal('10')])
+      assert_equal "<td>10\n</td>", content_tag(:td, [10])
+    end
+
+    it 'should write other numbers as they are' do
+      assert_equal '<td>10.0</td>', content_tag(:td, 10.0)
+      assert_equal '<input value="10.0" size="10" />', tag(:input, value: 10.0, size: 10)
     end
 
     it 'should support tags with erb' do

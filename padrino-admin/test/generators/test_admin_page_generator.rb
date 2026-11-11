@@ -216,6 +216,16 @@ describe 'AdminPageGenerator' do
       end
     end
 
+    it 'should tell decimal column types the way it picks their fields' do
+      orm = Padrino::Admin::Generators::Orm.new('price', :sequel, [])
+      mongoid_decimal = Class.new { def self.to_s; 'Mongoid::BigDecimal'; end }
+      [:decimal, BigDecimal, mongoid_decimal].each do |type|
+        assert orm.decimal?(type), "#{type} holds decimals"
+        assert_equal orm.field_type(:decimal), orm.field_type(type)
+      end
+      [nil, :string, :integer, :float, :boolean, String, Float].each { |type| refute orm.decimal?(type), "#{type.inspect} doesn't hold decimals" }
+    end
+
     %w[erb haml slim].each do |renderer|
       # Mongoid reports a decimal field's type as the class BigDecimal, not as :decimal.
       [false, true].each do |mongoid_types|
@@ -227,6 +237,7 @@ describe 'AdminPageGenerator' do
           end
           Object.const_set(:Price, Class.new(Sequel::Model(:prices)))
           Price.create(amount: BigDecimal('9.99'), quantity: 3)
+          Price.create(amount: BigDecimal('10'))
           Price.create(amount: BigDecimal('-0.0001'))
           Price.create(amount: nil)
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
@@ -256,9 +267,11 @@ describe 'AdminPageGenerator' do
           assert_equal 200, last_response.status
           page = Nokogiri::HTML(last_response.body)
           headers = page.css('#list thead th').map { |th| th.text.strip }
-          cells = ->(name) { page.css('#list tbody tr').map { |row| row.css('td')[headers.index(name)].text.strip } }
-          assert_equal ['9.99', '-0.0001', ''], cells.call('Amount')
-          assert_equal ['3', '', ''], cells.call('Quantity')
+          cells = ->(name) { page.css('#list tbody tr').map { |row| row.css('td')[headers.index(name)] } }
+          texts = ->(name) { cells.call(name).map { |cell| cell.text.strip } }
+          assert_equal ['9.99', '10', '-0.0001', ''], texts.call('Amount')
+          assert_equal ['3', '', '', ''], texts.call('Quantity')
+          assert_equal [%w[list-column]], (cells.call('Amount') + cells.call('Quantity')).map { |cell| cell['class'].split }.uniq
         ensure
           Object.send(:remove_const, :Price) if Object.const_defined?(:Price, false)
           Sequel::Model.db.drop_table?(:prices)

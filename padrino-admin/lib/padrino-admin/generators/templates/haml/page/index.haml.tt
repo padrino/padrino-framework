@@ -42,7 +42,7 @@
           <%- elsif @orm.field_type(column.type) == :check_box -%>
           %td.list-column= tag_icon(<%= @orm.name_singular %>.<%= column.name %> ? :check : :times) + content_tag(:span, <%= @orm.name_singular %>.<%= column.name %>.to_s, class: 'sr-only') unless <%= @orm.name_singular %>.<%= column.name %>.nil?
           <%- elsif @orm.decimal?(column.type) -%>
-          %td.list-column= <%= @orm.name_singular %>.<%= column.name %>.is_a?(BigDecimal) ? <%= @orm.name_singular %>.<%= column.name %>.to_s('F') : <%= @orm.name_singular %>.<%= column.name %>
+          = content_tag(:td, <%= @orm.name_singular %>.<%= column.name %>, class: 'list-column')
           <%- else -%>
           %td.list-column=<%= @orm.name_singular %>.<%= column.name %>
           <%- end -%>

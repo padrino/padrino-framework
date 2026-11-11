@@ -61,17 +61,19 @@ module Padrino
       NEWLINE = "\n".html_safe.freeze
 
       ##
-      # Returns the text a value is written as in HTML: a BigDecimal in plain
-      # decimal notation (BigDecimal#to_s gives "0.999e1" for 9.99), as
-      # ActiveSupport writes it; anything else as its +to_s+.
+      # Returns the text a value is written as in HTML: a BigDecimal in its
+      # shortest exact plain decimal form (BigDecimal#to_s gives "0.999e1" for
+      # 9.99, and to_s('F') gives "10.0" for 10), so it matches the text a form
+      # sends back; anything else as its +to_s+.
       #
       # @example
       #   TagHelpers.value_to_s(BigDecimal('9.99')) # => "9.99"
+      #   TagHelpers.value_to_s(BigDecimal('10'))   # => "10"
       #   TagHelpers.value_to_s(:price)             # => "price"
       #
       # @api private
       def self.value_to_s(value)
-        defined?(::BigDecimal) && value.is_a?(::BigDecimal) ? value.to_s('F') : value.to_s
+        defined?(::BigDecimal) && value.is_a?(::BigDecimal) ? value.to_s('F').delete_suffix('.0') : value.to_s
       end
 
       ##
@@ -142,7 +144,7 @@ module Padrino
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each do |item|
-            output.concat item
+            output.concat TagHelpers.value_to_s(item)
             output.safe_concat NEWLINE
           end
         else
