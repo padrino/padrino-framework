@@ -12,7 +12,7 @@ module Padrino
       # Formats a +number+ into a currency string (e.g., $13.65). You can customize the format
       # in the +options+ hash.
       #
-      # @param [Float] number
+      # @param [Float, BigDecimal] number
       #   Currency value to format.
       # @param [Hash] options
       #   Options for currency conversion.
@@ -66,7 +66,7 @@ module Padrino
       # Formats a +number+ as a percentage string (e.g., 65%). You can customize the
       # format in the +options+ hash.
       #
-      # @param [Integer, Float] number
+      # @param [Integer, Float, BigDecimal] number
       #   Percentage value to format.
       # @param [Hash] options
       #   Options for percentage conversion.
@@ -159,7 +159,7 @@ module Padrino
       # You can customize the format in the +options+ hash.
       #
       # @overload number_with_precision(number, options = {})
-      #   @param [Integer, Float] number
+      #   @param [Integer, Float, BigDecimal] number
       #     Number value to format.
       #   @param [Hash] options
       #     Options for formatter.
@@ -198,15 +198,40 @@ module Padrino
         end
 
         begin
-          rounded_number = (Float(number) * (10**precision)).round.to_f / 10**precision
-          number_with_delimiter(
-            format("%01.#{precision}f", rounded_number),
-            separator: separator,
-            delimiter: delimiter
-          )
+          # ceiling: a BigDecimal beyond Float's range takes the Float path, which returns it
+          # unformatted as before, so a huge exponent can't make a huge string; write those out
+          # too, with a length limit, if anyone needs them.
+          formatted_number =
+            if defined?(::BigDecimal) && number.is_a?(::BigDecimal) && number.exponent <= Float::MAX_10_EXP + 1
+              NumberHelpers.decimal_with_precision(number, precision)
+            else
+              rounded_number = (Float(number) * (10**precision)).round.to_f / 10**precision
+              format("%01.#{precision}f", rounded_number)
+            end
+          number_with_delimiter(formatted_number, separator: separator, delimiter: delimiter)
         rescue StandardError
           number
         end
+      end
+
+      ##
+      # Writes a BigDecimal rounded to +precision+ fraction digits exactly, halves away
+      # from zero as Float#round does, with every fraction digit written. Through a Float,
+      # BigDecimal('1.005') would round to 1.00 and digits past the 16th would be lost.
+      #
+      # @example
+      #   NumberHelpers.decimal_with_precision(BigDecimal('1.005'), 2) # => "1.01"
+      #   NumberHelpers.decimal_with_precision(BigDecimal('-2.5'), 0)  # => "-3"
+      #
+      # @api private
+      def self.decimal_with_precision(number, precision)
+        # format raises the same for these on the Float path.
+        raise ArgumentError, "invalid precision: #{precision.inspect}" unless precision.is_a?(Integer) && precision >= 0
+
+        scaled = (number * 10**precision).round(0, ::BigDecimal::ROUND_HALF_UP).to_i
+        digits = scaled.abs.to_s.rjust(precision + 1, '0')
+        digits.insert(-precision - 1, '.') if precision.positive?
+        scaled.negative? ? "-#{digits}" : digits
       end
 
       # The units available for storage formatting.
