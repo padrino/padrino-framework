@@ -143,12 +143,13 @@ module Padrino
     #
     def remove_constant(const)
       return if constant_excluded?(const)
-      base, _, object = const.to_s.rpartition('::')
+      name = constant_name(const) || return
+      base, _, object = name.rpartition('::')
       base = base.empty? ? Object : Inflections.constantize(base)
       return if base.autoload?(object, false) || !base.const_defined?(object, false)
       return unless base.const_get(object, false).equal?(const)
       base.send :remove_const, object
-      logger.devel "Removed constant #{const} from #{base}"
+      logger.devel "Removed constant #{name} from #{base}"
     rescue NameError
       # no const to remove
     end
@@ -336,8 +337,9 @@ module Padrino
     # Tells if a constant is defined only outside of Padrino project path.
     # If a constant has any methods defined inside of the project path it's
     # considered internal and will be included in further testing.
-    # A constant without methods (an exception class, say) is judged by
-    # where its name was defined instead.
+    # A constant without methods written in Ruby (an exception class, or a
+    # Struct with only its members, say) is judged by where its name was
+    # defined instead.
     #
     def external_constant?(const)
       sources = object_sources(const)
@@ -370,14 +372,18 @@ module Padrino
         next unless method_name.is_a?(Symbol)
 
         method_object = target.method(method_name)
-        sources << method_object.source_location.first if method_object.owner == target.singleton_class
+        next unless method_object.owner == target.singleton_class && method_object.source_location
+
+        sources << method_object.source_location.first
       end
 
       target.instance_methods.each do |method_name|
         next unless method_name.is_a?(Symbol)
 
         method_object = target.instance_method(method_name)
-        sources << method_object.source_location.first if method_object.owner == target
+        next unless method_object.owner == target && method_object.source_location
+
+        sources << method_object.source_location.first
       end
       sources
     end

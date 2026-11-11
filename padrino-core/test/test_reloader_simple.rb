@@ -165,5 +165,46 @@ describe 'SimpleReloader' do
     ensure
       Object.send(:remove_const, :ReloaderNamespace)
     end
+
+    it 'should remove a class that overrides to_s by the constant it is named after' do
+      module ::ReloaderNamespace
+        class Disguised
+          def self.to_s
+            'SomethingElse'
+          end
+        end
+      end
+
+      Padrino::Reloader.remove_constant(ReloaderNamespace::Disguised)
+      refute ReloaderNamespace.const_defined?(:Disguised, false)
+    ensure
+      Object.send(:remove_const, :ReloaderNamespace)
+    end
+
+    it 'should remove project classes with methods not written in Ruby and keep external ones' do
+      ::ReloaderStruct = Struct.new(:x)
+      ::ReloaderStructWithMethods = Struct.new(:x) do
+        def double
+          x * 2
+        end
+      end
+      ::ReloaderData = Data.define(:x) if defined?(Data) && Data.respond_to?(:define)
+      class ::ReloaderAliased
+        alias label inspect
+      end
+      Dir.mktmpdir do |dir|
+        File.write("#{dir}/external_struct.rb", 'ReloaderExternalStruct = Struct.new(:x)')
+        load "#{dir}/external_struct.rb"
+      end
+      project = %i[ReloaderStruct ReloaderStructWithMethods ReloaderData ReloaderAliased].select { |name| Object.const_defined?(name, false) }
+
+      (project + [:ReloaderExternalStruct]).each { |name| Padrino::Reloader.remove_constant(Object.const_get(name)) }
+      project.each { |name| refute Object.const_defined?(name, false), "#{name} was not removed" }
+      assert Object.const_defined?(:ReloaderExternalStruct, false), 'ReloaderExternalStruct was removed'
+    ensure
+      %i[ReloaderStruct ReloaderStructWithMethods ReloaderData ReloaderAliased ReloaderExternalStruct].each do |name|
+        Object.send(:remove_const, name) if Object.const_defined?(name, false)
+      end
+    end
   end
 end
