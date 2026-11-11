@@ -478,6 +478,7 @@ describe 'AdminPageGenerator' do
         require 'active_record'
         require 'thor/group'
         require 'padrino-admin'
+        require 'padrino-gen'
         Padrino::Generators.load_components!
         ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: ':memory:')
         ActiveRecord::Schema.verbose = false
