@@ -297,6 +297,104 @@ describe 'AssetTagHelpers' do
     it 'should have xhtml convention tag' do
       assert_equal image_tag('/absolute/pic.gif'), '<img src="/absolute/pic.gif" alt="Pic" />'
     end
+
+    it 'should resolve each source of a srcset hash like src' do
+      time = stop_time_for_test
+      self.class.stubs(:uri_root).returns('/blog')
+      actual_html = image_tag('pic.jpg', srcset: { 'pic.jpg' => '1x', 'hd/pic@2x.jpg' => '2x' })
+      srcset = "/blog/images/pic.jpg?#{time.to_i} 1x, /blog/images/hd/pic@2x.jpg?#{time.to_i} 2x"
+      assert_equal %(<img src="/blog/images/pic.jpg?#{time.to_i}" srcset="#{srcset}" alt="Pic" />), actual_html
+    end
+
+    it 'should write a srcset array of pairs with sizes' do
+      self.class.stubs(:asset_stamp).returns(false)
+      actual_html = image_tag('small.jpg', srcset: [['small.jpg', '480w'], ['large.jpg', '1080w']], sizes: '(max-width: 600px) 480px, 1080px')
+      expected = '<img src="/images/small.jpg" srcset="/images/small.jpg 480w, /images/large.jpg 1080w" ' \
+                 'sizes="(max-width: 600px) 480px, 1080px" alt="Small" />'
+      assert_equal expected, actual_html
+    end
+
+    it 'should keep absolute urls and paths in a srcset' do
+      self.class.stubs(:asset_stamp).returns(false)
+      actual_html = image_tag('pic.jpg', srcset: { '/static/pic.jpg' => '1x', 'https://cdn.example.com/pic@2x.jpg' => '2x' })
+      assert_html_has_tag(actual_html, 'img', srcset: '/static/pic.jpg 1x, https://cdn.example.com/pic@2x.jpg 2x')
+    end
+
+    it 'should write a srcset string as given' do
+      actual_html = image_tag('/pic.jpg', srcset: 'pic@2x.jpg 2x, pic&3x.jpg 3x')
+      assert_equal '<img src="/pic.jpg" srcset="pic@2x.jpg 2x, pic&amp;3x.jpg 3x" alt="Pic" />', actual_html
+    end
+
+    it 'should escape the sources and descriptors of a srcset' do
+      self.class.stubs(:asset_stamp).returns(false)
+      actual_html = image_tag('/pic.jpg', srcset: { 'pic.jpg?w=1&h=2' => '2x', 'a"b.jpg' => '<3x>' })
+      assert_includes actual_html, 'srcset="/images/pic.jpg?w=1&amp;h=2 2x, /images/a&quot;b.jpg &lt;3x&gt;"'
+    end
+  end
+
+  describe 'for #picture_tag method' do
+    before { self.class.stubs(:asset_stamp).returns(false) }
+
+    it 'should write a source for each source but the last and an img for the last' do
+      expected = '<picture><source srcset="/images/pic.webp" type="image/webp" />' \
+                 '<img src="/images/pic.jpg" alt="Pic" /></picture>'
+      assert_equal expected, picture_tag('pic.webp', 'pic.jpg')
+    end
+
+    it 'should infer the type of each source from its extension' do
+      types = {
+        'a.avif' => 'image/avif', 'a.webp' => 'image/webp', 'a.png' => 'image/png', 'a.gif' => 'image/gif',
+        'a.svg' => 'image/svg+xml', 'a.jpeg' => 'image/jpeg', 'a.jpg' => 'image/jpeg', 'b.JPG' => 'image/jpeg',
+        'https://cdn.example.com/c.webp?w=300&q=80' => 'image/webp', 'd.avif#frag' => 'image/avif'
+      }
+      actual_html = picture_tag(*types.keys, 'fallback.jpg')
+      types.each do |source, type|
+        assert_html_has_tag(actual_html, 'picture source', srcset: asset_path(:images, source), type: type)
+      end
+      assert_html_has_tag(actual_html, 'picture source', count: types.size)
+    end
+
+    it 'should leave out the type when the extension is unknown or missing' do
+      actual_html = picture_tag('https://cdn.example.com/pic', 'pic.unknown', 'pic.jpg')
+      assert_html_has_tag(actual_html, 'picture source', count: 2)
+      assert_html_has_no_tag(actual_html, 'picture source[type]')
+    end
+
+    it 'should write only an img for one source' do
+      assert_equal '<picture><img src="/images/pic.jpg" alt="Pic" /></picture>', picture_tag('pic.jpg')
+      assert_equal '<picture><img src="/images/pic.jpg" alt="Pic" /></picture>', picture_tag(['pic.jpg'])
+    end
+
+    it 'should pass options to the picture and the image option to the img' do
+      options = { 'class' => 'hero', image: { alt: 'A hill', class: 'photo', srcset: { 'pic@2x.jpg' => '2x' } } }
+      actual_html = picture_tag('pic.webp', 'pic.jpg', options)
+      expected = '<picture class="hero"><source srcset="/images/pic.webp" type="image/webp" />' \
+                 '<img src="/images/pic.jpg" alt="A hill" class="photo" srcset="/images/pic@2x.jpg 2x" /></picture>'
+      assert_equal expected, actual_html
+      assert_equal %w[class image], options.keys.map(&:to_s)
+    end
+
+    it 'should escape attribute values' do
+      actual_html = picture_tag('a"b.webp', 'pic&.jpg', title: '<x>', image: { alt: '"y"' })
+      expected = '<picture title="&lt;x&gt;"><source srcset="/images/a&quot;b.webp" type="image/webp" />' \
+                 '<img src="/images/pic&amp;.jpg" alt="&quot;y&quot;" /></picture>'
+      assert_equal expected, actual_html
+    end
+
+    it 'should write the block as the content of the picture' do
+      actual_html = picture_tag(class: 'hero') do
+        tag(:source, srcset: image_path('wide.jpg'), media: '(min-width: 800px)') + image_tag('narrow.jpg')
+      end
+      expected = '<picture class="hero"><source srcset="/images/wide.jpg" media="(min-width: 800px)" />' \
+                 '<img src="/images/narrow.jpg" alt="Narrow" /></picture>'
+      assert_equal expected, actual_html
+    end
+
+    it 'should refuse both sources and a block, or neither' do
+      assert_raises(ArgumentError) { picture_tag('pic.jpg') { image_tag('pic.jpg') } }
+      assert_raises(ArgumentError) { picture_tag }
+      assert_raises(ArgumentError) { picture_tag(class: 'hero') }
+    end
   end
 
   describe 'for #stylesheet_link_tag method' do

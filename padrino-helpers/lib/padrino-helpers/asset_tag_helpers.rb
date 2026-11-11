@@ -202,14 +202,31 @@ module Padrino
       #   The source path for the image tag.
       # @param [Hash] options
       #   The html options for the image tag.
+      # @option options [Hash, Array, String] :srcset
+      #   The image candidates for the +srcset+ attribute. A Hash or an Array of pairs maps each source to its
+      #   descriptor (+'2x'+, +'480w'+), and each source is resolved like +url+. A String is written as given.
+      # @option options [String] :sizes
+      #   The +sizes+ attribute, for +srcset+ with width descriptors.
       #
       # @return [String] Image html tag with +url+ and specified +options+.
       #
       # @example
       #   image_tag('icons/avatar.png')
       #
+      #   image_tag('pic.jpg', srcset: { 'pic.jpg' => '1x', 'pic@2x.jpg' => '2x' })
+      #   # Generates: <img src="/images/pic.jpg?1269008689" srcset="/images/pic.jpg?1269008689 1x,
+      #   #   /images/pic@2x.jpg?1269008689 2x" alt="Pic" />
+      #
+      #   image_tag('small.jpg', srcset: [['small.jpg', '480w'], ['large.jpg', '1080w']], sizes: '(max-width: 600px) 480px, 1080px')
+      #   # Generates: <img src="/images/small.jpg?1269008689" srcset="/images/small.jpg?1269008689 480w,
+      #   #   /images/large.jpg?1269008689 1080w" sizes="(max-width: 600px) 480px, 1080px" alt="Small" />
+      #
       def image_tag(url, options = {})
         options = { src: image_path(url) }.update(options)
+        srcset = options[:srcset]
+        if srcset.is_a?(Hash) || srcset.is_a?(Array)
+          options[:srcset] = srcset.map { |source, descriptor| "#{image_path(source)} #{descriptor}" }.join(', ')
+        end
         options[:alt] ||= image_alt(url) unless url.to_s =~ /\A(?:cid|data):|\A\Z/
         tag(:img, options)
       end
@@ -223,6 +240,51 @@ module Padrino
       #
       def image_alt(src)
         File.basename(src, '.*').sub(/-[[:xdigit:]]{32,64}\z/, '').tr('-_', ' ').capitalize
+      end
+
+      ##
+      # Creates a picture element. Each source but the last becomes a source element, with its +type+ taken
+      # from the file extension; the last becomes the img element, which browsers use when no source suits them.
+      # With a block, the block's output is the content of the picture element instead.
+      #
+      # @overload picture_tag(*sources, options={})
+      #   @param [Array<String>] sources   Splat of image source paths, in order of preference
+      #   @param [Hash]          options   The html options for the picture tag
+      #   @option options [Hash] :image    The html options for the img tag, as for {#image_tag}
+      # @overload picture_tag(options={}, &block)
+      #   @param [Hash] options   The html options for the picture tag
+      #   @param [Proc] block     The content of the picture tag
+      #
+      # @return [String] Picture html tag for +sources+ with specified +options+.
+      #
+      # @example
+      #   picture_tag('pic.avif', 'pic.webp', 'pic.jpg', image: { alt: 'A picture' })
+      #   # Generates: <picture><source srcset="/images/pic.avif?1269008689" type="image/avif" />
+      #   #   <source srcset="/images/pic.webp?1269008689" type="image/webp" />
+      #   #   <img src="/images/pic.jpg?1269008689" alt="A picture" /></picture>
+      #
+      #   picture_tag(class: 'hero') do
+      #     tag(:source, srcset: image_path('wide.jpg'), media: '(min-width: 800px)') +
+      #       image_tag('narrow.jpg')
+      #   end
+      #
+      def picture_tag(*sources, &block)
+        options = sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {}
+        sources = sources.flatten
+        image_options = options.delete(:image) || {}
+        if block_given?
+          raise ArgumentError, 'picture_tag takes image sources or a block, not both' unless sources.empty?
+
+          return content_tag(:picture, options, &block)
+        end
+        raise ArgumentError, 'picture_tag needs at least one image source' if sources.empty?
+
+        fallback = sources.pop
+        content = sources.inject(SafeBuffer.new) do |all, source|
+          type = Rack::Mime.mime_type(File.extname(source.to_s.sub(/[?#].*/m, '')), nil)
+          all << tag(:source, srcset: image_path(source), type: type)
+        end
+        content_tag(:picture, content << image_tag(fallback, image_options), options)
       end
 
       ##
