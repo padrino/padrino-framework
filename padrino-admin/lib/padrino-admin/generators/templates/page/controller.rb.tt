@@ -16,7 +16,7 @@
     if <%= @orm.save %>
       @title = pat(:create_title, model: "<%= @orm.name_singular %> #{@<%= @orm.name_singular %>.id}")
       flash[:success] = pat(:create_success, model: '<%= @orm.klass_name %>')
-      params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :index)) : redirect(url(:<%= @orm.name_plural %>, :edit, id: @<%= @orm.name_singular %>.id))
+      params[:save_and_continue] ? redirect(url(:<%= @orm.name_plural %>, :edit, id: @<%= @orm.name_singular %>.id)) : redirect(url(:<%= @orm.name_plural %>, :index))
     else
       @title = pat(:create_title, model: '<%= @orm.name_singular %>')
       flash.now[:error] = pat(:create_error, model: '<%= @orm.name_singular %>')
@@ -41,8 +41,8 @@
       if <%= @orm.update_attributes("params[:#{@orm.name_param}]") %>
         flash[:success] = pat(:update_success, model: '<%= @orm.name_singular.capitalize %>', id: params[:id])
         params[:save_and_continue] ?
-          redirect(url(:<%= @orm.name_plural %>, :index)) :
-          redirect(url(:<%= @orm.name_plural %>, :edit, id: @<%= @orm.name_singular %>.id))
+          redirect(url(:<%= @orm.name_plural %>, :edit, id: @<%= @orm.name_singular %>.id)) :
+          redirect(url(:<%= @orm.name_plural %>, :index))
       else
         flash.now[:error] = pat(:update_error, model: '<%= @orm.name_singular %>')
         render '<%= @orm.name_plural %>/edit'
