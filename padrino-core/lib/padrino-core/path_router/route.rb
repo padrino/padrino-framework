@@ -37,8 +37,8 @@ module Padrino
       ##
       # The accessors will be used in other classes
       #
-      attr_accessor :action, :cache, :cache_key, :cache_expires,
-                    :parent, :use_layout, :controller, :user_agent, :path_for_generation, :default_values,
+      attr_accessor :action, :cache, :cache_key, :cache_expires, :cache_lookup,
+                    :parent, :use_layout, :controller, :host, :user_agent, :path_for_generation, :default_values,
                     :provided_formats
 
       ##

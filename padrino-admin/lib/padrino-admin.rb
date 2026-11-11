@@ -45,11 +45,8 @@ module Padrino
 end
 
 ##
-# Now we need to add admin generators to padrino-gen
+# The admin generators (g admin, g admin_page). padrino-admin doesn't load padrino-gen, so apps don't get its
+# String extensions at runtime: whichever of the two loads second adds these to padrino-gen's load paths.
 #
-begin
-  require 'padrino-gen'
-  Padrino::Generators.load_paths << Dir["#{__dir__}/padrino-admin/generators/{actions,keep_files,orm,admin_app,admin_page}.rb"]
-rescue LoadError
-  # do nothing if padrino-gen is not available
-end
+Padrino::Admin::GENERATORS = Dir["#{__dir__}/padrino-admin/generators/{actions,keep_files,orm,admin_app,admin_page}.rb"].freeze
+Padrino::Generators.load_paths << Padrino::Admin::GENERATORS if defined?(Padrino::Generators)
