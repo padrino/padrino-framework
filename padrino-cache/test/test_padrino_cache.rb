@@ -96,6 +96,24 @@ describe 'PadrinoCache' do
     refute_equal false, called
   end
 
+  it 'should cache the page of a route given host: for that host only' do
+    calls = Hash.new(0)
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get(:index, host: 'admin.example.com', cache: true) { "admin #{calls[:admin] += 1}" }
+      get(:index, cache: true) { "public #{calls[:public] += 1}" }
+    end
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com'
+    assert_equal 'admin 1', body
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public 1', body
+    get '/', {}, 'HTTP_HOST' => 'Admin.Example.COM'
+    assert_equal 'admin 1', body
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public 1', body
+  end
+
   it 'should cache HEAD verb' do
     called_times = 0
     mock_app do
