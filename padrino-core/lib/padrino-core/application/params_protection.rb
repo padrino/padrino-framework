@@ -24,7 +24,7 @@ module Padrino
       #   post :update, params: [{ name: proc { |v| v.reverse } }]
       #   post :update, params: [:name, { parent: [:name, :position] }]
       #   post :update, params: [{ tags: [] }]             # an array of plain values
-      #   post :update, params: [{ people: [:name, :age] }] # an array or collection of hashes
+      #   post :update, params: [{ users: [:name, :age] }] # an array or collection of hashes
       #   post :update, params: false
       #   post :update, params: true
       # @example
@@ -41,15 +41,17 @@ module Padrino
       #     # gives its own +params:+.
       #   end
       #
-      # A list keeps the parameters a route's +with:+ and +parent:+ options
-      # capture when each is a string. Other captures, such as those in a
-      # +map:+ or the format, are kept only when listed.
+      # A route's or controller's +params:+ list keeps the parameters the
+      # route's +with:+ and +parent:+ options capture when each is a string.
+      # Other captures, such as those in a +map:+ or the format, are kept only
+      # when listed.
       #
       def params(*allowed_params)
         allowed_params = prepare_allowed_params(allowed_params)
         condition do
-          @original_params = Utils.deep_dup(params)
-          filter_params!(params, allowed_params)
+          @original_params = params
+          @params = Utils.deep_dup(params)
+          filter_params!(@params, allowed_params)
         end
       end
 

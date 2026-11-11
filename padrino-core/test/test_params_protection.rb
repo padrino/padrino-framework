@@ -386,6 +386,26 @@ describe 'Padrino::ParamsProtection' do
     assert_equal({ 'id' => 5 }, result)
   end
 
+  it 'should give the next route the params as sent when a filtered route passes' do
+    result = nil
+    mock_app do
+      post(:a, params: [{ people: [:name] }, { person: [:name] }]) { pass }
+      post(:a) { result = params; '' }
+    end
+    post '/a?people[][name]=x&people[][age]=1&person[name]=y&person[age]=2'
+    assert_equal [{ 'name' => 'x', 'age' => '1' }], result['people']
+    assert_equal({ 'name' => 'y', 'age' => '2' }, result['person'])
+  end
+
+  it 'should filter a collection of hashes under the documented key' do
+    result = nil
+    mock_app do
+      post(:update, params: [{ users: %i[name age] }]) { result = params; '' }
+    end
+    post '/update?users[0][name]=a&users[0][age]=1&users[0][x]=1&users[1][name]=b'
+    assert_equal({ 'users' => { '0' => { 'name' => 'a', 'age' => '1' }, '1' => { 'name' => 'b' } } }, result)
+  end
+
   it 'should filter the routes of a nested controller with the outer list' do
     result = nil
     mock_app do
