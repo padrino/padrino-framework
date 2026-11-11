@@ -17,8 +17,10 @@ require 'padrino-core/tasks'
 require 'padrino-core/module'
 
 if ENV['PADRINO_ENV'] || defined?(PADRINO_ENV)
+  padrino_env_variable = ENV['PADRINO_ENV']
   ENV['RACK_ENV'] ||= ENV['PADRINO_ENV'] ||= PADRINO_ENV
-  Padrino::Utils.warn_deprecated('PADRINO_ENV', 'Set RACK_ENV instead')
+  Padrino::Utils.warn_deprecated('The PADRINO_ENV environment variable', 'Set RACK_ENV instead') if padrino_env_variable
+  Padrino::Utils.warn_deprecated('The PADRINO_ENV constant', 'Remove it and set RACK_ENV instead') if defined?(PADRINO_ENV)
 end
 RACK_ENV = ENV['RACK_ENV'] ||= 'development' unless defined?(RACK_ENV)
 PADRINO_ROOT = ENV['PADRINO_ROOT'] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)

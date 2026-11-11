@@ -151,7 +151,10 @@ describe 'Core' do
     end
 
     it 'should copy PADRINO_ENV into RACK_ENV and warn once that it is removed in Padrino 1.0' do
-      ["ENV['PADRINO_ENV'] = 'staging'", "PADRINO_ENV = 'staging'"].each do |padrino_env|
+      {
+        "ENV['PADRINO_ENV'] = 'staging'" => 'The PADRINO_ENV environment variable is deprecated and will be removed in Padrino 1.0. Set RACK_ENV instead.',
+        "PADRINO_ENV = 'staging'" => 'The PADRINO_ENV constant is deprecated and will be removed in Padrino 1.0. Remove it and set RACK_ENV instead.'
+      }.each do |padrino_env, warning|
         out, err = run_script(<<~RUBY)
           ENV.delete('RACK_ENV')
           ENV.delete('PADRINO_ENV')
@@ -160,8 +163,8 @@ describe 'Core' do
           print [RACK_ENV, ENV['RACK_ENV'], ENV['PADRINO_ENV']].inspect
         RUBY
         assert_equal %w[staging staging staging].inspect, out
-        assert_equal 1, err.scan('PADRINO_ENV is deprecated').size, err
-        assert_includes err, 'PADRINO_ENV is deprecated and will be removed in Padrino 1.0. Set RACK_ENV instead.'
+        assert_equal 1, err.scan('PADRINO_ENV').size, err
+        assert_includes err, warning
       end
     end
   end
