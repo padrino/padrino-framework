@@ -203,6 +203,10 @@ describe 'SimpleReloader' do
       assert_empty kept_constants_from('app/configuration', 'app/config')
     end
 
+    it 'should keep constants defined in a folder next to the project that shares its name as a prefix' do
+      assert_equal %i[ReloaderLocatedClass ReloaderLocatedError], kept_constants_from('app-other')
+    end
+
     it 'should remove constants defined in the project folder' do
       assert_empty kept_constants_from('app')
     end

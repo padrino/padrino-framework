@@ -317,11 +317,11 @@ module Padrino
     # Tells if a feature should be excluded from Reloader tracking.
     #
     def feature_excluded?(file)
-      !file.start_with?(Padrino.root) || exclude.any? { |excluded_path| path_inside?(file, excluded_path) }
+      !path_inside?(file, Padrino.root) || exclude.any? { |excluded_path| path_inside?(file, excluded_path) }
     end
 
     ##
-    # Tells if the file is the path itself or inside it, so /app/testapp isn't inside /app/test.
+    # Tells if the file is the path itself or inside it, so /app-gem isn't inside /app.
     #
     def path_inside?(file, path)
       file == path || file.start_with?(File.join(path, ''))
@@ -403,7 +403,7 @@ module Padrino
     #
     def reloadable_apps
       Padrino.mounted_apps.select do |app|
-        next unless app.app_file.start_with?(Padrino.root)
+        next unless path_inside?(app.app_file, Padrino.root)
         app.app_obj.respond_to?(:reload) && app.app_obj.reload?
       end
     end
