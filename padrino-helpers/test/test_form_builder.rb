@@ -410,6 +410,22 @@ describe 'FormBuilder' do
   describe 'for a BigDecimal value' do
     before { @user.stubs(price: BigDecimal('9.99')) }
 
+    # Runs the block with BigDecimal#to_s raising unless given a format. BigDecimal
+    # values are frozen, so it replaces the method where it is defined and puts the
+    # original back afterwards.
+    def with_formatted_decimal_to_s
+      owner = BigDecimal.instance_method(:to_s).owner
+      original = owner.instance_method(:to_s)
+      owner.send(:define_method, :to_s) do |*format|
+        raise ArgumentError, 'BigDecimal#to_s called without a format' if format.empty?
+
+        original.bind(self).call(*format)
+      end
+      yield
+    ensure
+      owner.send(:define_method, :to_s, original) if original
+    end
+
     %i[text_field number_field hidden_field].each do |field|
       it "should write the value of a #{field} in plain decimal notation" do
         assert_html_has_tag(standard_builder.send(field, :price), 'input', value: '9.99', name: 'user[price]')
@@ -495,6 +511,48 @@ describe 'FormBuilder' do
         prices = [mock_model('Price', name: 'Two', id: BigDecimal('2')), mock_model('Price', name: 'Five', id: BigDecimal('5'))]
         actual_html = standard_builder.radio_button_group(:price, collection: prices, selected: ['2.0'])
         assert_html_has_tag(actual_html, 'input[type=radio][checked]', value: '2', count: 1)
+      end
+
+      ['2', '2.00', 2].each do |two|
+        it "should check the radio button of a collection whose id is the same number, #{two.inspect}" do
+          prices = [mock_model('Price', name: 'Two', id: two), mock_model('Price', name: 'Five', id: 5)]
+          actual_html = standard_builder.radio_button_group(:price, collection: prices)
+          assert_html_has_tag(actual_html, 'input[type=radio][checked]', value: two.to_s, count: 1)
+        end
+
+        it "should check the box of a collection whose id is the same number, #{two.inspect}" do
+          prices = [mock_model('Price', name: 'Two', id: two), mock_model('Price', name: 'Five', id: 5)]
+          actual_html = standard_builder.check_box_group(:price, collection: prices)
+          assert_html_has_tag(actual_html, 'input[type=checkbox][checked]', value: two.to_s, count: 1)
+        end
+      end
+
+      it 'should not check a box of a collection whose id is another number or not a number' do
+        prices = [mock_model('Price', name: 'Half', id: '2.5'), mock_model('Price', name: 'Other', id: 'abc')]
+        assert_html_has_no_tag(standard_builder.check_box_group(:price, collection: prices), 'input[checked]')
+      end
+
+      describe 'without its to_s text' do
+        it 'should select the option that is the same number' do
+          actual_html = with_formatted_decimal_to_s { standard_builder.select(:price, options: %w[5 2.0]) }
+          assert_html_has_tag(actual_html, 'option[selected]', value: '2.0', count: 1)
+        end
+
+        it 'should check the radio button that is the same number' do
+          actual_html = with_formatted_decimal_to_s { standard_builder.radio_button(:price, value: '2') }
+          assert_html_has_tag(actual_html, 'input[type=radio]', value: '2', checked: 'checked')
+        end
+
+        it 'should check the check box that is the same number' do
+          actual_html = with_formatted_decimal_to_s { standard_builder.check_box(:price, value: '2.00') }
+          assert_html_has_tag(actual_html, 'input[type=checkbox]', value: '2.00', checked: 'checked')
+        end
+
+        it 'should check the radio button of a collection whose id is the same number' do
+          prices = [mock_model('Price', name: 'Two', id: 2), mock_model('Price', name: 'Five', id: 5)]
+          actual_html = with_formatted_decimal_to_s { standard_builder.radio_button_group(:price, collection: prices) }
+          assert_html_has_tag(actual_html, 'input[type=radio][checked]', value: '2', count: 1)
+        end
       end
 
       it 'should compare other numbers as text' do

@@ -103,9 +103,19 @@ module Padrino
       def self.decimal_equal?(value, other)
         return false unless decimal?(value) || decimal?(other)
 
-        value, other = [value, other].map { |item| decimal?(item) ? item : BigDecimal(item.to_s, exception: false) }
+        value, other = [value, other].map { |item| decimal?(item) ? item : decimal_from(item.to_s) }
         value == other
       end
+
+      ##
+      # Reads the text as a BigDecimal, or returns nil when it is not a number.
+      #
+      def self.decimal_from(text)
+        BigDecimal(text)
+      rescue ArgumentError, TypeError
+        nil
+      end
+      private_class_method :decimal_from
 
       ##
       # Creates an HTML tag with given name, content, and options.

@@ -261,7 +261,7 @@ module Padrino
           return false if options.key?(:checked)
 
           value = field_value(field)
-          [options[:value].to_s, 'true'].include?(value.to_s) || TagHelpers.decimal_equal?(value, options[:value])
+          [TagHelpers.value_to_s(options[:value]), 'true'].include?(TagHelpers.value_to_s(value)) || TagHelpers.decimal_equal?(value, options[:value])
         end
 
         def variants_for_group(options)
@@ -279,7 +279,8 @@ module Padrino
           if options[:collection]
             _, id_method = *field_methods(options)
             selected_values.map do |value|
-              (value.respond_to?(id_method) ? value.send(id_method) : value).to_s
+              id = value.respond_to?(id_method) ? value.send(id_method) : value
+              TagHelpers.decimal?(id) ? id : id.to_s
             end
           else
             selected_values
