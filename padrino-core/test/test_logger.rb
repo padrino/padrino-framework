@@ -1,6 +1,7 @@
 # coding:utf-8
 require_relative 'helper'
 require 'logger'
+require 'open3'
 require 'tempfile'
 
 describe 'PadrinoLogger' do
@@ -433,6 +434,26 @@ describe 'options :colorize_logging' do
       access_to_mock_app
       assert_match(/200 OK/, Padrino.logger.log.string)
     end
+  end
+
+  it 'should colorize without the deprecated String#colorize' do
+    # A new process, since the deprecation warns only once per process.
+    script = <<~'RUBY'
+      require 'padrino-core'
+      log = StringIO.new
+      Padrino.logger = Padrino::Logger.new(log_level: :devel, stream: log, colorize_logging: true)
+      %i[fatal error warn info debug devel].each { |level| Padrino.logger.public_send(level, level) }
+      Padrino.logger.bench 'GET', Time.now, '/bench'
+      Padrino.logger.exception RuntimeError.new('boom')
+      app = Sinatra.new(Padrino::Application) { get('/') { 'Foo' } }
+      Rack::MockRequest.new(Padrino::Logger::Rack.new(app, '/')).get('/')
+      print log.string.include?("\e[1;31m  FATAL\e[0m") && log.string.include?("\e[1;9m200\e[0m OK")
+    RUBY
+    env = { 'RACK_ENV' => 'test', 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
+    out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-I', File.expand_path('../lib', __dir__), '-e', script)
+    assert status.success?, err
+    assert_equal 'true', out.lines.last
+    refute_includes err, 'deprecated'
   end
 end
 
