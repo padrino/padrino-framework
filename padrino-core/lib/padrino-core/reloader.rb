@@ -142,13 +142,14 @@ module Padrino
     # Removes the specified class and constant.
     #
     def remove_constant(const)
+      name = constant_name(const) || return
       return if constant_excluded?(const)
-      base, _, object = const.to_s.rpartition('::')
+      base, _, object = name.rpartition('::')
       base = base.empty? ? Object : Inflections.constantize(base)
       return if base.autoload?(object, false) || !base.const_defined?(object, false)
       return unless base.const_get(object, false).equal?(const)
       base.send :remove_const, object
-      logger.devel "Removed constant #{const} from #{base}"
+      logger.devel "Removed constant #{name} from #{constant_name(base)}"
     rescue NameError
       # no const to remove
     end
@@ -162,7 +163,7 @@ module Padrino
       %i[@_included_block @_prepended_block].each do |ivar|
         concern.remove_instance_variable(ivar) if concern.instance_variable_defined?(ivar)
       end
-      logger.devel "Reset concern #{concern}"
+      logger.devel "Reset concern #{constant_name(concern)}"
     end
 
     ##
