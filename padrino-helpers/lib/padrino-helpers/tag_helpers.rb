@@ -20,6 +20,20 @@ module Padrino
       #
       ESCAPE_REGEXP = Regexp.union(*ESCAPE_VALUES.keys).freeze
 
+      ##
+      # Characters that can't appear in an HTML attribute name: controls, space,
+      # quotes, <, >, /, = and Unicode noncharacters. The ASCII ones are kept
+      # apart, without a fixed encoding, so that ASCII names are checked without
+      # the slower Unicode classes and names in other ASCII-compatible encodings
+      # can be checked in their own encoding. The Unicode classes are UTF-8
+      # (+u+), also when Ruby reads sources in another encoding (-K).
+      #
+      INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER = %r{[\x00-\x20"'<>/=\x7F]}.freeze
+      INVALID_ATTRIBUTE_NAME_CHARACTER = Regexp.union(
+        INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER, /[\p{Cc}\p{Noncharacter_Code_Point}]/u
+      ).freeze
+      private_constant :INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER, :INVALID_ATTRIBUTE_NAME_CHARACTER
+
       BOOLEAN_ATTRIBUTES = %i[
         autoplay
         autofocus
@@ -125,6 +139,7 @@ module Padrino
         attributes = tag_attributes(options)
         output = SafeBuffer.new
 
+        name = TagHelpers.html_tag_name(name)
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each do |item|
@@ -235,7 +250,52 @@ module Padrino
       def tag(name, options = nil, open = false)
         options = parse_data_options(name, options)
         attributes = tag_attributes(options)
-        "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
+        "<#{TagHelpers.html_tag_name(name)}#{attributes}#{open ? '>' : ' />'}".html_safe
+      end
+
+      ##
+      # Returns the name as an HTML tag name: an attribute name that starts
+      # with an ASCII letter, or else gets a leading underscore.
+      #
+      def self.html_tag_name(name)
+        name = html_attribute_name(name)
+        name.match?(/\A[A-Za-z]/) ? name : "_#{name}"
+      end
+
+      ##
+      # Returns the name as an HTML tag or attribute name, with each character
+      # such a name can't contain replaced by an underscore. UTF-8 names are
+      # checked for the Unicode characters too; names in other encodings keep
+      # their encoding and are checked for the ASCII ones.
+      #
+      def self.html_attribute_name(name)
+        name = html_name_text(name)
+        invalid =
+          if name.encoding == Encoding::UTF_8 && !name.ascii_only?
+            INVALID_ATTRIBUTE_NAME_CHARACTER
+          else
+            INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER
+          end
+        name.match?(invalid) ? name.gsub(invalid, '_') : name
+      end
+
+      ##
+      # Returns the name as valid text in an ASCII-compatible encoding: names
+      # in other encodings (UTF-16 and UTF-32) are converted to UTF-8.
+      #
+      def self.html_name_text(name)
+        name = name.to_s
+        name = name.encode(Encoding::UTF_8, invalid: :replace, undef: :replace) unless name.encoding.ascii_compatible?
+        valid_text(name)
+      end
+
+      ##
+      # Returns the text as a String in its own encoding, with bytes that
+      # aren't valid in it replaced.
+      #
+      def self.valid_text(text)
+        text = text.to_s
+        text.valid_encoding? ? text : text.scrub
       end
 
       SAFE_URI_SCHEMES = %w[http https mailto tel ftp].freeze
@@ -286,13 +346,15 @@ module Padrino
           next unless value
 
           all << ' ' if all.empty?
+          name = TagHelpers.html_attribute_name(key)
+          name = '_' if name.empty?
           all <<
             if value.is_a?(Hash)
-              nested_values(key, value)
+              nested_values(name, value)
             elsif BOOLEAN_ATTRIBUTE_LOOKUP.key?(key)
-              %(#{key}="#{key}" )
+              %(#{name}="#{name}" )
             else
-              %(#{key}="#{escape_value(value)}" )
+              %(#{name}="#{escape_value(value)}" )
             end
         end
         all.chomp!(' ')
@@ -303,7 +365,7 @@ module Padrino
       #
       def escape_value(string)
         string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
-        string = string.to_s
+        string = TagHelpers.valid_text(string)
         string.match?(ESCAPE_REGEXP) ? string.gsub(ESCAPE_REGEXP, ESCAPE_VALUES) : string
       end
 
@@ -312,7 +374,7 @@ module Padrino
       #
       def nested_values(attribute, hash)
         hash.inject(+'') do |all, (key, value)|
-          attribute_with_name = "#{attribute}-#{key.to_s.tr('_', '-')}"
+          attribute_with_name = "#{attribute}-#{TagHelpers.html_attribute_name(TagHelpers.html_name_text(key).tr('_', '-'))}"
           all <<
             if value.is_a?(Hash)
               nested_values(attribute_with_name, value)

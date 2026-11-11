@@ -77,12 +77,13 @@ module Padrino
       def simple_format(text, options = {})
         t = options.delete(:tag) || :p
         start_tag = tag(t, options, true)
+        end_tag = "</#{TagHelpers.html_tag_name(t)}>"
         text = text.html_safe? ? text.dup : escape_html(text.to_s.dup)
-        text.gsub!(/\r\n?/, "\n")                      # \r\n and \r -> \n
-        text.gsub!(/\n\n+/, "</#{t}>\n\n#{start_tag}") # 2+ newline  -> paragraph
-        text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />')   # 1 newline   -> br
+        text.gsub!(/\r\n?/, "\n")                            # \r\n and \r -> \n
+        text.gsub!(/\n\n+/) { "#{end_tag}\n\n#{start_tag}" } # 2+ newline  -> paragraph
+        text.gsub!(/([^\n]\n)(?=[^\n])/, '\1<br />')         # 1 newline   -> br
         text.insert 0, start_tag
-        text << "</#{t}>"
+        text << end_tag
         text.html_safe
       end
 
