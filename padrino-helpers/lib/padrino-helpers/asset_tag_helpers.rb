@@ -1,3 +1,5 @@
+require 'json'
+
 module Padrino
   module Helpers
     ###
@@ -10,6 +12,13 @@ module Padrino
         js: 'javascripts',
         css: 'stylesheets'
       }
+      PRELOAD_DESTINATIONS = { 'js' => 'script', 'mjs' => 'module', 'css' => 'style', 'vtt' => 'track' }
+                             .merge(%w[otf ttf woff woff2].to_h { |extension| [extension, 'font'] })
+                             .merge(%w[avif gif ico jpeg jpg png svg webp].to_h { |extension| [extension, 'image'] })
+                             .freeze
+      PRELOAD_ASSET_KINDS = { 'script' => :js, 'module' => :js, 'style' => :css, 'image' => :images }.freeze
+      JSON_ESCAPE = { '<' => '\u003c', '>' => '\u003e', '&' => '\u0026', "\u2028" => '\u2028', "\u2029" => '\u2029' }.freeze
+      private_constant :PRELOAD_DESTINATIONS, :PRELOAD_ASSET_KINDS, :JSON_ESCAPE
 
       ##
       # Creates a div to display the flash of given type if it exists.
@@ -270,6 +279,97 @@ module Padrino
       end
 
       ##
+      # Returns an import map script tag, which maps the module names that scripts import to the files
+      # that hold them, then a module script tag that imports +entry+, if given. Each file in +imports+
+      # resolves like a +javascript_include_tag+ source; a full URL, or a path starting with "/", is kept.
+      #
+      # @overload javascript_importmap_tag(entry = nil, options = {})
+      #   @param [String] entry
+      #     The module to import from the page, usually a name in +imports+.
+      #   @param [Hash] options
+      #     The html options for each tag this writes, such as a CSP +nonce+.
+      #   @option options [Hash] :imports
+      #     The module names, each with the javascript source or URL it maps to.
+      #   @option options [Boolean] :preload
+      #     If true, a modulepreload link is written for each import, so browsers fetch them
+      #     all at once instead of one import at a time.
+      #
+      # @return [String] Import map, modulepreload and module script html tags.
+      #
+      # @example
+      #   javascript_importmap_tag 'application', imports: {
+      #     'application' => 'application',
+      #     '@hotwired/stimulus' => 'https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm'
+      #   }
+      #   # Generates: <script type="importmap">{"imports":{"application":"/javascripts/application.js?1269008689",
+      #   #   "@hotwired/stimulus":"https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm"}}</script>
+      #   #   <script type="module">import "application"</script>
+      #
+      #   javascript_importmap_tag imports: { 'app' => 'app' }, preload: true
+      #   # Generates: <script type="importmap">{"imports":{"app":"/javascripts/app.js?1269008689"}}</script>
+      #   #   <link rel="modulepreload" href="/javascripts/app.js?1269008689" />
+      #
+      def javascript_importmap_tag(entry = nil, options = {})
+        entry, options = nil, entry if entry.is_a?(Hash)
+        options = Utils.symbolize_keys(options)
+        imports = (options.delete(:imports) || {}).each_with_object({}) do |(name, source), all|
+          all[name.to_s] = asset_path(:js, source)
+        end
+        preload = options.delete(:preload)
+        html = SafeBuffer.new
+        html << content_tag(:script, script_safe_json('imports' => imports), { type: 'importmap' }.update(options))
+        imports.each_value { |href| html << tag(:link, { rel: 'modulepreload', href: href }.update(options)) } if preload
+        html << content_tag(:script, "import #{script_safe_json(entry.to_s)}".html_safe, { type: 'module' }.update(options)) if entry
+        html
+      end
+
+      ##
+      # Returns a link tag that tells browsers to fetch +source+ early, before the page asks for it.
+      # A relative script, stylesheet or image source resolves like +javascript_include_tag+,
+      # +stylesheet_link_tag+ and +image_tag+ sources; any other resolves from the public folder.
+      #
+      # Browsers only use a preload for a request to the same URL, asset stamp included, so preload a
+      # file that a stylesheet refers to (such as a font) by the path the stylesheet uses.
+      #
+      # @param [String] source
+      #   The path or URL of the file to preload.
+      # @param [Hash] options
+      #   The html options for the link tag.
+      # @option options [String, Symbol] :as
+      #   What the file is for: +:script+, +:style+, +:font+, +:image+, +:track+, +:fetch+, or +:module+
+      #   for a module script (written as +rel="modulepreload"+). Defaults from the extension:
+      #   js, mjs (module), css, vtt, otf, ttf, woff, woff2, avif, gif, ico, jpeg, jpg, png, svg and webp;
+      #   pass it for any other file, since browsers skip a preload without it.
+      # @option options [String] :type
+      #   The MIME type, so browsers skip a file they can't use.
+      # @option options [String, Boolean] :crossorigin
+      #   The CORS mode; +true+ writes "anonymous". Fonts default to "anonymous", which browsers need to use
+      #   a font preload; +false+ leaves it out.
+      #
+      # @return [String] Link tag html for +source+ with specified +options+.
+      #
+      # @example
+      #   preload_link_tag 'application.css'
+      #   # Generates: <link rel="preload" href="/stylesheets/application.css?1269008689" as="style" />
+      #
+      #   preload_link_tag '/fonts/inter.woff2', type: 'font/woff2'
+      #   # Generates: <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+      #
+      #   preload_link_tag 'application', as: :module
+      #   # Generates: <link rel="modulepreload" href="/javascripts/application.js?1269008689" />
+      #
+      def preload_link_tag(source, options = {})
+        options = Utils.symbolize_keys(options)
+        as = options.delete(:as)&.to_s || PRELOAD_DESTINATIONS[File.extname(source.to_s.sub(/[?#].*/m, '')).downcase.delete('.')]
+        crossorigin = options.delete(:crossorigin)
+        crossorigin = 'anonymous' if crossorigin == true || (crossorigin.nil? && as == 'font')
+        rel = as == 'module' ? 'modulepreload' : 'preload'
+        href = asset_path(PRELOAD_ASSET_KINDS[as], source)
+        defaults = { rel: rel, href: href, as: (as if rel == 'preload'), type: options.delete(:type), crossorigin: crossorigin }
+        tag(:link, defaults.update(options))
+      end
+
+      ##
       # Returns the path to the image, either relative or absolute. We search it in your +appname.public_folder+
       # like app/public/images for inclusion. You can provide also a full path.
       #
@@ -321,6 +421,13 @@ module Padrino
       end
 
       private
+
+      ##
+      # Returns +value+ as JSON that can't end or change the script element it's written in.
+      #
+      def script_safe_json(value)
+        JSON.generate(value).gsub(/[<>&\u2028\u2029]/, JSON_ESCAPE).html_safe
+      end
 
       ##
       # Returns the URI root of the application with optional paths appended.
