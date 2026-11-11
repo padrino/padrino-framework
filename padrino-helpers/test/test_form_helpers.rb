@@ -251,6 +251,13 @@ describe 'FormHelpers' do
   end
 
   describe 'for #label_tag method' do
+    it 'should display label tag with text in another encoding' do
+      text = "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1)
+      actual_html = label_tag(:name, caption: text, title: text)
+      assert_equal %(<label for="name" title="#{text}">#{text}</label>), actual_html
+      assert_equal Encoding::ISO_8859_1, actual_html.encoding
+    end
+
     it 'should display label tag in ruby' do
       actual_html = label_tag(:username, class: 'long-label', caption: 'Nickname')
       assert_html_has_tag(actual_html, :label, for: 'username', class: 'long-label', content: 'Nickname')
@@ -499,6 +506,13 @@ describe 'FormHelpers' do
   end
 
   describe 'for #text_area_tag method' do
+    it 'should display text area with text in another encoding' do
+      text = "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1)
+      actual_html = text_area_tag(:about, value: text, placeholder: text)
+      assert_equal %(<textarea name="about" placeholder="#{text}">\n#{text}</textarea>), actual_html
+      assert_equal Encoding::ISO_8859_1, actual_html.encoding
+    end
+
     it 'should display text area in ruby' do
       actual_html = text_area_tag(:about, class: 'long')
       assert_html_has_tag(actual_html, :textarea, class: 'long', name: 'about')
@@ -651,6 +665,13 @@ describe 'FormHelpers' do
   end
 
   describe 'for #select_tag method' do
+    it 'should display select tag with options in another encoding' do
+      text = "\u8868\u793A".encode(Encoding::Shift_JIS)
+      actual_html = select_tag(:color, options: [text])
+      assert_equal %(<select name="color"><option value="#{text}">#{text}</option>\n</select>), actual_html
+      assert_equal Encoding::Shift_JIS, actual_html.encoding
+    end
+
     it 'should display select tag in ruby' do
       actual_html = select_tag(:favorite_color, options: %w[green blue black], include_blank: true)
       assert_html_has_tag(actual_html, :select, name: 'favorite_color')

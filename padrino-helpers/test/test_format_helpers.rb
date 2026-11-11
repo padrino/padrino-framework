@@ -13,6 +13,13 @@ describe 'FormatHelpers' do
   end
 
   describe 'for #simple_format method' do
+    it 'should format text and attribute values in another encoding' do
+      text = "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1)
+      actual_html = simple_format(text, class: text)
+      assert_equal %(<p class="#{text}">#{text}</p>), actual_html
+      assert_equal Encoding::ISO_8859_1, actual_html.encoding
+    end
+
     it 'should close each paragraph with the tag name it opens it with' do
       assert_equal "<p_x>a</p_x>\n\n<p_x>b</p_x>", simple_format("a\n\nb", tag: 'p x')
     end

@@ -35,6 +35,13 @@ describe 'AssetTagHelpers' do
       assert_html_has_tag(link_to('Sign up', '/register'), 'a', content: 'Sign up', href: '/register')
     end
 
+    it 'should display link element with text in another encoding' do
+      text = "\u8868\u793A".encode(Encoding::Shift_JIS)
+      actual_html = link_to(text, '/x', title: text)
+      assert_equal %(<a href="/x" title="#{text}">#{text}</a>), actual_html
+      assert_equal Encoding::Shift_JIS, actual_html.encoding
+    end
+
     it 'should display link element with given attributes' do
       actual_html = link_to('Sign up', '/register', class: 'first', id: 'linky')
       assert_html_has_tag(actual_html, 'a#linky.first', content: 'Sign up', href: '/register')

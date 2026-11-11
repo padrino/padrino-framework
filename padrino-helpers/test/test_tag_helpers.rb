@@ -114,11 +114,36 @@ describe 'TagHelpers' do
       assert_equal '<div a_b_c_d_e="1" />', tag(:div, "a\rb\fc\x01d\x7Fe" => 1)
     end
 
-    it 'should write a valid attribute name given in another encoding' do
-      assert_equal '<div café="1" />', tag(:div, "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1) => 1)
-      assert_equal '<div données_x="1" />', tag(:div, 'données x'.b => 1)
-      assert_equal '<div café="1" />', tag(:div, 'café'.dup.force_encoding(Encoding::US_ASCII) => 1)
-      assert_equal '<div data-café="1" />', tag(:div, data: { "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1) => 1 })
+    it 'should write a valid attribute name given in another encoding in that encoding' do
+      latin = "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1)
+      result = tag(:div, latin => 1)
+      assert_equal %(<div #{latin}="1" />), result
+      assert_equal Encoding::ISO_8859_1, result.encoding
+      assert_equal %(<div data-#{latin}="1" />), tag(:div, data: { latin => 1 })
+      result = tag(:div, 'données x'.b => 1)
+      assert_equal '<div données_x="1" />'.b, result
+      assert_equal Encoding::BINARY, result.encoding
+    end
+
+    it 'should replace characters a name cannot contain in names given in another ASCII-compatible encoding' do
+      name = "a b<\u8868\u30BD".encode(Encoding::Shift_JIS)
+      result = tag(:div, name => 1)
+      assert_equal %(<div a_b_#{"\u8868\u30BD".encode(Encoding::Shift_JIS)}="1" />), result
+      assert_equal Encoding::Shift_JIS, result.encoding
+      assert_equal '<div a_b="1" />', tag(:div, 'a b'.b => 1)
+      assert_equal '<_!x />', tag('!x'.b)
+    end
+
+    it 'should replace bytes that are not valid in a name given in another encoding' do
+      result = tag(:div, "a\x81 b".dup.force_encoding(Encoding::Shift_JIS) => 1)
+      assert_equal '<div a?_b="1" />', result
+      assert_equal '<div caf??="1" />', tag(:div, 'café'.dup.force_encoding(Encoding::US_ASCII) => 1)
+    end
+
+    it 'should write a name in UTF-16 or UTF-32 as UTF-8' do
+      assert_equal '<div a_b="1" />', tag(:div, 'a b'.encode(Encoding::UTF_16LE) => 1)
+      assert_equal "<div data-caf\u00E9=\"1\" />", tag(:div, data: { 'café'.encode(Encoding::UTF_32BE) => 1 })
+      assert_equal '<p>c</p>', content_tag('p'.encode(Encoding::UTF_16LE), 'c')
     end
 
     it 'should write a nested attribute name with bytes that are not valid UTF-8' do
@@ -133,12 +158,40 @@ describe 'TagHelpers' do
       assert_equal '<my-element />', tag('my-element')
     end
 
-    it 'should write a name and a value in the same encoding as UTF-8' do
+    it 'should write a name and a value in the same encoding in that encoding' do
       result = tag(:div, "donn\xC3\xA9es".b => "\xC3\xA9".b)
-      assert_equal "<div donn\u00E9es=\"\u00E9\" />", result
-      assert_equal Encoding::UTF_8, result.encoding
-      latin = "\xE9t\xE9".dup.force_encoding(Encoding::ISO_8859_1)
-      assert_equal "<div caf\u00E9=\"\u00E9t\u00E9\" />", tag(:div, "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1) => latin)
+      assert_equal "<div donn\xC3\xA9es=\"\xC3\xA9\" />".b, result
+      assert_equal Encoding::BINARY, result.encoding
+      name = "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1)
+      value = "\xE9t\xE9".dup.force_encoding(Encoding::ISO_8859_1)
+      result = tag(:div, name => value)
+      assert_equal %(<div #{name}="#{value}" />), result
+      assert_equal Encoding::ISO_8859_1, result.encoding
+    end
+
+    it 'should replace bytes that are not valid in an attribute value' do
+      assert_equal "<div title=\"a\uFFFDb\" />", tag(:div, title: "a\xFFb")
+      result = tag(:div, title: "\x83\x5C\x81".dup.force_encoding(Encoding::Shift_JIS))
+      assert_equal %(<div title="#{"\u30BD?".encode(Encoding::Shift_JIS)}" />), result
+      assert_equal Encoding::Shift_JIS, result.encoding
+    end
+
+    it 'should not use methods of the object that includes the helpers' do
+      helper = Class.new do
+        include Padrino::Helpers::OutputHelpers
+        include Padrino::Helpers::TagHelpers
+        include Padrino::Helpers::AssetTagHelpers
+
+        def tag_name(_name)
+          'x'
+        end
+
+        def tag_attribute_name(_name)
+          'y'
+        end
+      end.new
+      assert_equal '<p />', helper.tag(:p)
+      assert_equal '<a href="/">Home</a>', helper.link_to('Home', '/')
     end
 
     it 'should write an empty attribute name as an underscore' do
@@ -198,6 +251,13 @@ describe 'TagHelpers' do
     it 'should write attribute names with each character a name cannot hold replaced by an underscore' do
       assert_equal '<p ___z="1" data-a_b="2">x</p>', content_tag(:p, 'x', '"><z' => 1, data: { 'a b' => 2 })
       assert_equal '<p a_b="1">x</p>', content_tag(:p, 'a"b': 1) { 'x' }
+    end
+
+    it 'should write content and attribute values in their encoding' do
+      text = "donn\xC3\xA9es".b
+      result = content_tag(:div, text, title: text)
+      assert_equal %(<div title="#{text}">#{text}</div>), result
+      assert_equal Encoding::BINARY, result.encoding
     end
 
     it 'should convert to a string if the content is not a string' do
