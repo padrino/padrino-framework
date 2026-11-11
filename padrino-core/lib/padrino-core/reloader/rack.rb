@@ -13,13 +13,20 @@ module Padrino
         @last = (Time.now - cooldown)
       end
 
-      # Invoked in order to perform the reload as part of the request stack.
+      # Invoked in order to perform the reload as part of the request stack. The request runs
+      # in turn with code reloads (see Reloader.serve), as does the reload it starts.
+      #
+      # ceiling: the turn ends when call returns, so a streamed body (Sinatra's +stream+) runs
+      # outside it; keeping it until the body closes would let one open stream hold off reloads.
+      #
       def call(env)
-        if @cooldown && Time.now > @last + @cooldown
-          Padrino.reload!
-          @last = Time.now
+        Reloader.serve do
+          if @cooldown && Time.now > @last + @cooldown
+            Padrino.reload!
+            @last = Time.now
+          end
+          @app.call(env)
         end
-        @app.call(env)
       end
     end
   end

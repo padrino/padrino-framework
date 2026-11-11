@@ -25,9 +25,16 @@ module Padrino
     @readers = 0
     @writers_waiting = 0
     @writing = false
-    # The fiber-local key holding this fiber's turn: :serve, :reload or nil.
-    TURN = :padrino_reloader_turn
-    private_constant :TURN
+    # Counts the reloads done, so the requests that saw the same changes reload them once.
+    @generation = 0
+    @max_wait = 3
+    # Thread variables, which every fiber of a thread shares (on JRuby too, where each fiber has
+    # its own Thread.current): the number of requests the thread is serving (nested calls, or
+    # fibers), and whether it reloads or waits to. A thread counts in @readers while it serves
+    # and doesn't reload.
+    SERVING = :padrino_reloader_serving
+    RELOADING = :padrino_reloader_reloading
+    private_constant :SERVING, :RELOADING
 
     ##
     # Specified folders can be excluded from the code reload detection process.
@@ -64,48 +71,54 @@ module Padrino
     end
 
     ##
-    # Runs the block as a request: requests run together, but never while a reload runs.
-    # A request that arrives during a reload, or while one waits to start, waits for it.
-    # A call nested in a request or a reload runs at once.
+    # How long, in seconds, a reload waits for the requests in progress to finish (3 by default).
+    # Past it, the reload goes ahead and logs a warning: a request paused in a debugger, or one
+    # that waits for another request (calling its own server, say), can't hold up the server.
     #
-    # ceiling: a request that waits on another thread's request (a thread it spawns and joins)
-    # deadlocks with a reload waiting for it; the other thread would need to share its turn.
+    attr_accessor :max_wait
+
+    ##
+    # Runs the block as a request: requests run together, but not while a reload runs. A request
+    # that arrives during a reload, or while one waits to start, waits for it. A call nested in
+    # a request or a reload, from any fiber of its thread, runs at once.
     #
-    def serve
-      return yield if Thread.current[TURN]
-      @gate.synchronize do
-        @gate_changed.wait(@gate) while @writing || @writers_waiting.positive?
-        @readers += 1
-      end
-      begin
-        Thread.current[TURN] = :serve
-        yield
-      ensure
-        Thread.current[TURN] = nil
-        @gate.synchronize do
-          @readers -= 1
-          @gate_changed.broadcast if @readers.zero?
+    # ceiling: turns belong to threads, so under a fiber scheduler (one thread serving several
+    # requests) a reload started by one of its requests doesn't wait for the others.
+    #
+    def serve(&block)
+      thread = Thread.current
+      # Interrupts (Thread#raise, Timeout) wait until the turn is taken or given back.
+      Thread.handle_interrupt(Object => :never) do
+        take_serving_turn(thread)
+        begin
+          Thread.handle_interrupt(Object => :immediate, &block)
+        ensure
+          give_serving_turn(thread)
         end
       end
     end
 
     ##
-    # Runs the block alone, once the requests in progress have finished. Called from a
-    # request, the request gives up its turn while it waits and takes it back afterwards.
+    # Runs the block alone, if the code changed: once the requests in progress have finished, or
+    # max_wait seconds have passed. Called from a request, the request gives up its turn while it
+    # waits and takes it back afterwards. Returns without running the block if another thread
+    # reloaded the changes meanwhile, so one edit causes one reload.
     #
-    def exclusively
-      turn = Thread.current[TURN]
-      return yield if turn == :reload
-      wait_for_exclusive_turn(turn)
-      begin
-        Thread.current[TURN] = :reload
-        yield
-      ensure
-        Thread.current[TURN] = turn
-        @gate.synchronize do
-          @writing = false
-          @readers += 1 if turn
-          @gate_changed.broadcast
+    def exclusively(&block)
+      generation = @generation
+      return unless changed?
+      thread = Thread.current
+      return yield if thread.thread_variable_get(RELOADING)
+      Thread.handle_interrupt(Object => :never) do
+        in_progress = wait_for_exclusive_turn(thread, generation)
+        return unless in_progress
+        reloaded = false
+        begin
+          warn_about_requests_in_progress(in_progress) if in_progress.positive?
+          Thread.handle_interrupt(Object => :immediate, &block)
+          reloaded = true
+        ensure
+          end_exclusive_turn(thread, reloaded)
         end
       end
     end
@@ -246,24 +259,87 @@ module Padrino
     private
 
     ##
-    # Waits until no request or other reload runs, then marks a reload as running. New requests
-    # wait meanwhile, so a busy server can't keep the reload waiting. If the wait is interrupted,
-    # the request it was called from gets its turn back.
+    # Waits while a reload runs or waits to start, so a busy server can't keep a reload waiting,
+    # unless the thread already holds a turn.
     #
-    def wait_for_exclusive_turn(turn)
+    def take_serving_turn(thread)
       @gate.synchronize do
-        @readers -= 1 if turn
+        unless thread.thread_variable_get(SERVING) || thread.thread_variable_get(RELOADING)
+          wait_at_gate while @writing || @writers_waiting.positive?
+        end
+        change_turn(thread, SERVING, thread.thread_variable_get(SERVING).to_i + 1)
+      end
+    end
+
+    def give_serving_turn(thread)
+      @gate.synchronize do
+        serving = thread.thread_variable_get(SERVING) - 1
+        change_turn(thread, SERVING, (serving if serving.positive?))
+        @gate_changed.broadcast if @readers.zero?
+      end
+    end
+
+    ##
+    # Waits until no request or other reload runs, or max_wait seconds have passed while only
+    # requests run, then marks a reload as running and returns the number of requests still in
+    # progress. Returns nil if another reload ends meanwhile. The thread gives up its own turn
+    # while it waits.
+    #
+    def wait_for_exclusive_turn(thread, generation)
+      @gate.synchronize do
+        change_turn(thread, RELOADING, true)
         @writers_waiting += 1
         taken = false
         begin
-          @gate_changed.wait(@gate) while @writing || @readers.positive?
-          @writing = taken = true
+          deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + max_wait
+          until @generation != generation
+            left = deadline - Process.clock_gettime(Process::CLOCK_MONOTONIC)
+            break taken = true unless @writing || (@readers.positive? && left.positive?)
+            wait_at_gate(@writing ? nil : left)
+          end
+          @writing = true if taken
+          @readers if taken
         ensure
           @writers_waiting -= 1
-          @readers += 1 if turn && !taken
+          change_turn(thread, RELOADING, nil) unless taken
           @gate_changed.broadcast
         end
       end
+    end
+
+    def end_exclusive_turn(thread, reloaded)
+      @gate.synchronize do
+        @writing = false
+        @generation += 1 if reloaded
+        change_turn(thread, RELOADING, nil)
+        @gate_changed.broadcast
+      end
+    end
+
+    ##
+    # Waits for the gate to change, at most timeout seconds. Called holding @gate, with
+    # interrupts deferred: they may stop the wait, before the caller changes anything.
+    #
+    def wait_at_gate(timeout = nil)
+      Thread.handle_interrupt(Object => :immediate) { @gate_changed.wait(@gate, timeout) }
+    end
+
+    ##
+    # Sets one of the thread's turn variables, keeping @readers in step. Called holding @gate.
+    #
+    def change_turn(thread, key, value)
+      counted = counts_as_reader?(thread)
+      thread.thread_variable_set(key, value)
+      @readers += (counts_as_reader?(thread) ? 1 : 0) - (counted ? 1 : 0)
+    end
+
+    def counts_as_reader?(thread)
+      thread.thread_variable_get(SERVING) && !thread.thread_variable_get(RELOADING)
+    end
+
+    def warn_about_requests_in_progress(count)
+      logger.warn "Reloading the code after waiting #{max_wait}s (Padrino::Reloader.max_wait) for the " \
+                  "requests in progress to finish; #{count} still running"
     end
 
     ##

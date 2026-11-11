@@ -51,19 +51,6 @@ module Padrino
       end
 
       ##
-      # Serves a request. While reloading is on, it runs in turn with code reloads
-      # (see Reloader.serve), so it never sees an application halfway through a reload.
-      # The turn is taken inside Sinatra's lock, which a reloading request may hold.
-      #
-      # ceiling: the turn ends when call returns, so a streamed body (Sinatra's +stream+) runs
-      # outside it; keeping it until the body closes would let one open stream hold off reloads.
-      #
-      def call(env)
-        return super unless reload?
-        synchronize { Reloader.serve { prototype.call(env) } }
-      end
-
-      ##
       # Reloads the application files from all defined load paths.
       #
       # This method is used from our Padrino Reloader during development mode
