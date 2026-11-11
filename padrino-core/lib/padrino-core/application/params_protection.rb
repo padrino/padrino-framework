@@ -115,7 +115,7 @@ module Padrino
             end
           elsif type.is_a?(Hash) && value.is_a?(Array)
             params[key] = filter_array_param(value, type)
-          elsif type == Integer && (value.nil? || value.is_a?(String))
+          elsif type == Integer && (value.nil? || value.is_a?(String) || value.is_a?(Integer))
             params[key] = value.to_s.empty? ? nil : value.to_i
           elsif type.is_a?(Proc)
             params[key] = type.call(value)

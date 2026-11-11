@@ -291,6 +291,37 @@ describe 'Padrino::ParamsProtection' do
     assert_equal({ 'name' => 'Kim', 'id' => 42 }, result)
   end
 
+  it 'should keep the path captures of a route with a params list' do
+    result = nil
+    mock_app do
+      controller :posts, params: [:title] do
+        controller :comments, parent: :post do
+          get(:index) { result = params; '' }
+        end
+      end
+      controller :notes, parent: :post, params: [:title] do
+        get(:index) { result = params; '' }
+      end
+      get(:list, map: '/c/:cid/list', params: [:title]) { result = params; '' }
+    end
+    get '/post/7/comments?title=t&x=1'
+    assert_equal({ 'title' => 't', 'post_id' => '7' }, result)
+    get '/post/8/notes?title=t&x=1'
+    assert_equal({ 'title' => 't', 'post_id' => '8' }, result)
+    get '/c/9/list?title=t&x=1'
+    assert_equal({ 'title' => 't', 'cid' => '9' }, result)
+  end
+
+  it 'should keep an Integer given for an Integer' do
+    result = nil
+    mock_app do
+      post(:create, params: [{ id: Integer }]) { result = params; '' }
+    end
+    input = StringIO.new(''.b)
+    post '/create', {}, 'rack.input' => input, 'rack.request.form_input' => input, 'rack.request.form_hash' => { 'id' => 5 }
+    assert_equal({ 'id' => 5 }, result)
+  end
+
   it 'should filter the routes of a nested controller with the outer list' do
     result = nil
     mock_app do

@@ -700,6 +700,8 @@ module Padrino
             true
           end
         end
+        # A params: list keeps the route's own path captures (with:, parent:, map:), listed first so a type the list gives wins.
+        options[:params] = route.significant_variable_names.map(&:to_sym) | options[:params] if options[:params].is_a?(Array)
 
         # Add Sinatra conditions.
         options.each do |option, args|
@@ -745,7 +747,6 @@ module Padrino
           options.delete(:params)
         elsif options.include?(:params)
           options[:params] ||= []
-          options[:params] = Array(options[:with]) | options[:params] if options[:with]
         end
 
         # We need check if path is a symbol, if that it's a named route.
