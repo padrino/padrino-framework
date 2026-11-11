@@ -637,6 +637,12 @@ describe 'AssetTagHelpers' do
                    javascript_importmap_tag({ imports: { 'app' => '/app.js' } }, { nonce: 'n' })
     end
 
+    it 'should leave nil scopes and integrity out of the import map' do
+      actual_html = javascript_importmap_tag(imports: { 'a' => '/a.js' }, scopes: nil, integrity: nil)
+      assert_equal({ 'imports' => { 'a' => '/a.js' } }, importmap_of(actual_html))
+      assert_html_has_no_tag(actual_html, 'script[scopes]')
+    end
+
     it 'should write scopes and integrity into the import map' do
       scopes = { '/admin/' => { 'chart' => '/javascripts/chart-2.js' } }
       integrity = { '/javascripts/app.js' => 'sha384-</script>' }

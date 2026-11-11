@@ -300,9 +300,9 @@ module Padrino
       #     The module names, each with the javascript source or URL it maps to (a blank one raises
       #     ArgumentError).
       #   @option options [Hash] :scopes
-      #     Written as the import map's "scopes", as given.
+      #     Written as the import map's "scopes", as given; nil leaves it out.
       #   @option options [Hash] :integrity
-      #     Written as the import map's "integrity" (URLs to their integrity metadata), as given.
+      #     Written as the import map's "integrity" (URLs to their integrity metadata), as given; nil leaves it out.
       #   @option options [Boolean] :preload
       #     If true, a modulepreload link is written for each import (but not for prefixes), so browsers
       #     fetch them all at once instead of one import at a time.
@@ -329,7 +329,10 @@ module Padrino
           all[name.to_s] = importmap_address(name.to_s, source)
         end
         importmap = { 'imports' => imports }
-        %i[scopes integrity].each { |key| importmap[key.to_s] = options.delete(key) if options.key?(key) }
+        %i[scopes integrity].each do |key|
+          value = options.delete(key)
+          importmap[key.to_s] = value if value
+        end
         preload = options.delete(:preload)
         options.delete(:type)
         nonce = options[:nonce]
@@ -350,7 +353,8 @@ module Padrino
       # Returns a link tag that tells browsers to fetch +source+ early, before the page asks for it.
       # Browsers only use a preload for a request to the same URL, so +source+ resolves the way the
       # page will ask for it. A relative script, module, stylesheet or image source resolves like
-      # +javascript_include_tag+, +stylesheet_link_tag+ and +image_tag+ sources, asset stamp included.
+      # +javascript_include_tag+, +stylesheet_link_tag+ and +image_tag+ sources, asset stamp included;
+      # pass an absolute path ('/images/hero.jpg') to preload an image a stylesheet's url() loads.
       # Any other relative source (a font a stylesheet refers to, a track, a file for fetch()) resolves
       # from the public folder without the asset stamp ('fonts/a.woff2' is /fonts/a.woff2). Preload
       # the modules an import map maps with +javascript_importmap_tag+'s +preload+ option, whose links
