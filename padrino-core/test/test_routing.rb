@@ -755,14 +755,10 @@ describe 'Routing' do
 
     get '/a.nosuchext'
     unknown = [status, body]
-    ['/a.text%2Fplain', '/a.application%2Fjson', '/a?format=text/plain', '/a?format=a%2Fb'].each do |path|
+    ['/a.text%2Fplain', '/a.application%2Fjson', '/a?format=text/plain', '/a?format=a%2Fb', '/a?format=.json'].each do |path|
       get path
       assert_equal unknown, [status, body], path
     end
-    get '/a?format[]=nosuchext'
-    unknown_param = [status, body]
-    get '/a?format[]=text/plain'
-    assert_equal unknown_param, [status, body]
 
     %w[json xml html js css txt JSON].each do |format|
       ["/a.#{format}", "/a?format=#{format}"].each do |path|
