@@ -437,7 +437,7 @@ module Padrino
       # Recognize a given path.
       #
       # @param [String] path
-      #   Path+Query to parse
+      #   The path to recognize, percent-encoded or not, without a query string.
       #
       # @return [Array(Symbol, Hash), nil]
       #   Returns controller and query params, or nil when no route matches the path.
