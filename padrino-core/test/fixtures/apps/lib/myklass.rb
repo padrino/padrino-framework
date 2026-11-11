@@ -1,2 +1,2 @@
-class MyKlass < OpenStruct
+class MyKlass < Hash
 end

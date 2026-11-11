@@ -218,7 +218,7 @@ describe 'RenderHelpers' do
       class Standalone
         include Padrino::Helpers::RenderHelpers
       end
-      locals = { user: OpenStruct.new(name: 'Joe') }
+      locals = { user: Struct.new(:name).new('Joe') }
       result = Standalone.new.partial(File.join(__dir__, 'fixtures/render_app/views/template/user'), engine: :haml, locals: locals)
       assert_equal '<h1>User name is Joe</h1>', result.chomp
     end
@@ -227,7 +227,7 @@ describe 'RenderHelpers' do
       class Standalone1
         include Padrino::Helpers::RenderHelpers
         def user
-          OpenStruct.new(name: 'Jane')
+          Struct.new(:name).new('Jane')
         end
       end
 

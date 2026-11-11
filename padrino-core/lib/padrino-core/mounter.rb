@@ -11,6 +11,8 @@ module Padrino
   #
   class Mounter
     DEFAULT_CASCADE = [404, 405]
+    # One entry of {#named_routes}.
+    NamedRoute = Struct.new(:verb, :identifier, :name, :path, keyword_init: true)
     class MounterException < RuntimeError
     end
 
@@ -141,7 +143,7 @@ module Padrino
     ###
     # Returns the basic route information for each named route.
     #
-    # @return [Array]
+    # @return [Array<NamedRoute>]
     #   Array of routes.
     #
     def named_routes
@@ -160,7 +162,7 @@ module Padrino
         name_array = "(#{route_name})"
         original_path = route.original_path.is_a?(Regexp) ? route.original_path.inspect : route.original_path
         full_path = File.join(uri_root, original_path)
-        OpenStruct.new(verb: request_method, identifier: route.name, name: name_array, path: full_path)
+        NamedRoute.new(verb: request_method, identifier: route.name, name: name_array, path: full_path)
       end.compact
     end
 
