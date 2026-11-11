@@ -91,6 +91,15 @@ describe 'TagHelpers' do
       assert_equal '<a data-geo="1.5 -0.25" />', tag(:a, data: { geo: [BigDecimal('1.5'), BigDecimal('-0.25')] })
     end
 
+    it 'should keep the scientific form for a very large or small exponent' do
+      assert_equal '<input value="0.1e1000001" />', tag(:input, value: BigDecimal('1e1000000'))
+      assert_equal '<input value="0.1e-999999" />', tag(:input, value: BigDecimal('1e-1000000'))
+      assert_equal '<input value="0.1e101" />', tag(:input, value: BigDecimal('1e100'))
+      assert_equal '<input value="0.1e-101" />', tag(:input, value: BigDecimal('1e-102'))
+      assert_equal %(<input value="1#{'0' * 99}" />), tag(:input, value: BigDecimal('1e99'))
+      assert_equal %(<input value="0.#{'0' * 100}1" />), tag(:input, value: BigDecimal('1e-101'))
+    end
+
     it 'should write data attributes added to DATA_ATTRIBUTES' do
       Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
       assert_equal '<a data-dialog="true" />', tag(:a, dialog: true)

@@ -61,10 +61,26 @@ module Padrino
       NEWLINE = "\n".html_safe.freeze
 
       ##
-      # Returns the text a value is written as in HTML: a BigDecimal in its
-      # shortest exact plain decimal form (BigDecimal#to_s gives "0.999e1" for
-      # 9.99, and to_s('F') gives "10.0" for 10), so it matches the text a form
-      # sends back; anything else as its +to_s+.
+      # The largest exponent, either way, of a BigDecimal written in plain decimal
+      # notation; one beyond it is written in scientific notation ("0.1e1001"),
+      # which writes the exponent as digits instead of writing out every zero.
+      #
+      PLAIN_DECIMAL_EXPONENT_LIMIT = 100
+      private_constant :PLAIN_DECIMAL_EXPONENT_LIMIT
+
+      ##
+      # Whether the value is a BigDecimal.
+      #
+      # @api private
+      def self.decimal?(value)
+        defined?(::BigDecimal) && value.is_a?(::BigDecimal)
+      end
+
+      ##
+      # Returns the text a value is written as in HTML: a finite BigDecimal in
+      # its shortest exact plain decimal form (BigDecimal#to_s gives "0.999e1"
+      # for 9.99, and to_s('F') gives "10.0" for 10), so it matches the text a
+      # form sends back; anything else as its +to_s+.
       #
       # @example
       #   TagHelpers.value_to_s(BigDecimal('9.99')) # => "9.99"
@@ -73,7 +89,22 @@ module Padrino
       #
       # @api private
       def self.value_to_s(value)
-        defined?(::BigDecimal) && value.is_a?(::BigDecimal) ? value.to_s('F').delete_suffix('.0') : value.to_s
+        return value.to_s unless decimal?(value)
+
+        value.finite? && value.exponent.abs <= PLAIN_DECIMAL_EXPONENT_LIMIT ? value.to_s('F').delete_suffix('.0') : value.to_s('E')
+      end
+
+      ##
+      # Whether two values are equal numbers, when either is a BigDecimal: the
+      # other is read as a decimal from its text, so BigDecimal('10') equals
+      # "10", "10.0", "10.00", 10 and 10.0. False for anything else.
+      #
+      # @api private
+      def self.decimal_equal?(value, other)
+        return false unless decimal?(value) || decimal?(other)
+
+        value, other = [value, other].map { |item| decimal?(item) ? item : BigDecimal(item.to_s, exception: false) }
+        value == other
       end
 
       ##

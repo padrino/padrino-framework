@@ -684,6 +684,11 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, 'option', value: '100000000000000000000', content: 'High')
     end
 
+    it 'should select the option whose value is the same number as a BigDecimal' do
+      actual_html = select_tag(:price, options: [['Two', '2.0'], ['Five', BigDecimal('5')]], selected: [BigDecimal('2'), '5.00'])
+      assert_html_has_tag(actual_html, 'option[selected]', count: 2)
+    end
+
     it 'should select the option that holds a BigDecimal selected value' do
       actual_html = select_tag(:price, options: %w[1.5 9.99], selected: BigDecimal('9.99'))
       assert_html_has_tag(actual_html, 'option', value: '9.99', selected: 'selected')
