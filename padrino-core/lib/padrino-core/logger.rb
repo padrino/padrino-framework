@@ -364,7 +364,7 @@ module Padrino
     private_constant :MUTEX_INIT
 
     def self.mutex
-      @_mutex || MUTEX_INIT.synchronize { @_mutex ||= Mutex.new }
+      (@_mutex if defined?(@_mutex)) || MUTEX_INIT.synchronize { @_mutex ||= Mutex.new }
     end
 
     def self.logger

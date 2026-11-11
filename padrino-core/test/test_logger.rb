@@ -132,6 +132,15 @@ describe 'PadrinoLogger' do
       assert_match(/logged/, stream.string)
     end
 
+    it 'should not warn when a logger class builds its mutex' do
+      verbose = $VERBOSE
+      $VERBOSE = true
+      _, err = capture_io { Class.new(Padrino::Logger).mutex }
+      assert_empty err
+    ensure
+      $VERBOSE = verbose
+    end
+
     it 'should not warn about an empty datetime format' do
       setup_logger(log_level: :error, colorize_logging: false, format_datetime: '')
       verbose = $VERBOSE

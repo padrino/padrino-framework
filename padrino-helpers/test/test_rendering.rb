@@ -840,12 +840,15 @@ describe 'Rendering' do
         disable :reload_templates
         get('/') { render :index }
       end
+      # Build the app's prototype first, as a server does before taking requests.
+      @app.prototype
       caches = %i[@_cached_templates @_cached_layout].map do |name|
         @app.instance_variable_set(name, overlap_counting_hash.new)
       end
       threads = Array.new(4) { Thread.new { Rack::MockRequest.new(@app).get('/').body } }
       assert_equal ['layout page'] * 4, threads.map(&:value)
       assert_equal [0, 0], caches.map(&:overlaps)
+      assert caches.all? { |cache| cache.size.positive? }
     end
   end
 
