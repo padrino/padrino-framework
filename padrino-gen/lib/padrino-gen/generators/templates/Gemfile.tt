@@ -29,6 +29,7 @@ gem 'rake'
 <% if options.api? -%>
 <% if options.dev? -%>
 gem 'padrino-core', path: '<%= Padrino::Generators::DEV_PATH %>/padrino-core'
+gem 'padrino-support', path: '<%= Padrino::Generators::DEV_PATH %>/padrino-support'
 gem 'padrino-gen', path: '<%= Padrino::Generators::DEV_PATH %>/padrino-gen'
 <% else -%>
 gem 'padrino-core', '<%= Padrino.version %>'

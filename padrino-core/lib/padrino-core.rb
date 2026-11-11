@@ -17,8 +17,10 @@ require 'padrino-core/tasks'
 require 'padrino-core/module'
 
 if ENV['PADRINO_ENV'] || defined?(PADRINO_ENV)
-  warn 'Environment variable PADRINO_ENV is deprecated. Please, use RACK_ENV.'
+  padrino_env_variable = ENV['PADRINO_ENV']
   ENV['RACK_ENV'] ||= ENV['PADRINO_ENV'] ||= PADRINO_ENV
+  Padrino::Utils.warn_deprecated('The PADRINO_ENV environment variable', 'Set RACK_ENV instead') if padrino_env_variable
+  Padrino::Utils.warn_deprecated('The PADRINO_ENV constant', 'Remove it and set RACK_ENV instead') if defined?(PADRINO_ENV)
 end
 RACK_ENV = ENV['RACK_ENV'] ||= 'development' unless defined?(RACK_ENV)
 PADRINO_ROOT = ENV['PADRINO_ROOT'] ||= File.dirname(Padrino.first_caller) unless defined?(PADRINO_ROOT)
@@ -101,19 +103,14 @@ module Padrino
     end
 
     ##
-    # Set +Encoding.default_internal+ and +Encoding.default_external+
-    # to +Encoding::UFT_8+.
+    # Does nothing: Padrino no longer manages Ruby default encodings.
     #
-    # Please note that in +1.9.2+ with some template engines like +haml+
-    # you should turn off Encoding.default_internal to prevent problems.
-    #
-    # @see https://github.com/rtomayko/tilt/issues/75
+    # @deprecated Removed in Padrino 1.0. Remove the call.
     #
     # @return [NilClass]
     #
     def set_encoding
-      # remove after 0.15
-      warn 'Warning! Padrino.set_encoding is deprecated. Padrino no longer manages ruby default encodings'
+      Padrino::Utils.warn_deprecated('Padrino.set_encoding', 'It does nothing, as Padrino no longer manages Ruby default encodings: remove the call', caller_locations(1, 1).first)
       nil
     end
 

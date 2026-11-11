@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'rb-readline'
 require 'timeout'
 require 'erb'
 require 'json'
@@ -170,6 +171,13 @@ describe 'ProjectGenerator' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
       assert_no_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/^\s*set :protect_from_csrf, proc \{ sessions\? && Padrino\.env != :test \}$/, "#{@apptmp}/sample_project/config/apps.rb")
+    end
+
+    it 'should take padrino-support from the checkout in a --dev api project' do
+      capture_io { generate(:project, 'sample_project', '--api', '--dev', "--root=#{@apptmp}") }
+      %w[core support gen].each do |name|
+        assert_match_in_file(%r{^gem 'padrino-#{name}', path: '[^']+/padrino-#{name}'$}, "#{@apptmp}/sample_project/Gemfile")
+      end
     end
 
     it 'should generate a tiny api project without mailers' do
@@ -425,6 +433,15 @@ describe 'ProjectGenerator' do
         assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/project_#{test}/Gemfile")
       end
       assert_no_match_in_file(/mocha|Mocha/, "#{@apptmp}/project_bacon/test/test_config.rb")
+    end
+
+    it 'should set up the mock for the test component it applies when generated again over a project whose .components is kept' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      Readline.stubs(:readline).returns('n')
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
+      assert_match(/skip\s+\.components/, out)
+      assert_match_in_file(/^  conf\.mock_with :rr\n/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_no_match_in_file(/require 'rr'/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
   end
 
