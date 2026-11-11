@@ -291,7 +291,7 @@ module Padrino
     def rotation
       files_for_rotation.each do |file|
         file = File.expand_path(file)
-        next if Reloader.exclude.any? { |base| path_inside?(file, base) } || !File.file?(file)
+        next if path_excluded?(file) || !File.file?(file)
         yield file
       end
       nil
@@ -317,7 +317,14 @@ module Padrino
     # Tells if a feature should be excluded from Reloader tracking.
     #
     def feature_excluded?(file)
-      !path_inside?(file, Padrino.root) || exclude.any? { |excluded_path| path_inside?(file, excluded_path) }
+      !path_inside?(file, Padrino.root) || path_excluded?(file)
+    end
+
+    ##
+    # Tells if the file is in one of the excluded paths, or is one of them.
+    #
+    def path_excluded?(file)
+      exclude.any? { |excluded_path| path_inside?(file, excluded_path) }
     end
 
     ##
@@ -341,7 +348,8 @@ module Padrino
 
     ##
     # Tells if a constant is defined only outside of the project files the
-    # reloader tracks: outside Padrino.root or in an excluded folder.
+    # reloader tracks: outside Padrino.root, or in an excluded file that was
+    # required (a file run with +load+ runs again, so its classes are removed).
     # If a constant has any methods defined in a tracked file it's
     # considered internal and will be included in further testing.
     # A constant without methods (an exception class, say) is judged by
@@ -352,7 +360,9 @@ module Padrino
       sources = [constant_source(const)].compact if sources.empty?
       # consider methodless constants of unknown origin not external
       return false if sources.empty?
-      sources.all? { |source| feature_excluded?(source) }
+      sources.all? do |source|
+        !path_inside?(source, Padrino.root) || (path_excluded?(source) && $LOADED_FEATURES.include?(source))
+      end
     end
 
     ##

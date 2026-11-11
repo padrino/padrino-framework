@@ -167,12 +167,12 @@ describe 'SimpleReloader' do
       Object.send(:remove_const, :ReloaderNamespace)
     end
 
-    # Loads two classes from <tmp>/<folder>/located.rb and lets Reloader remove them, with the project at
-    # <tmp>/app and <tmp>/<excluded_folder> excluded. Returns the names of the ones it kept.
-    def kept_constants_from(folder, excluded_folder = nil)
+    # Requires two classes from <tmp>/<folder>/located.rb and lets Reloader remove them, with the project at
+    # <tmp>/app and <tmp>/<excluded_path> excluded. Returns the names of the ones it kept.
+    def kept_constants_from(folder, excluded_path = nil)
       names = %i[ReloaderLocatedClass ReloaderLocatedError]
       tmp = Dir.mktmpdir
-      excluded = File.join(tmp, excluded_folder) if excluded_folder
+      excluded = File.join(tmp, excluded_path) if excluded_path
       Padrino::Reloader.exclude << excluded if excluded
       file = File.join(tmp, folder, 'located.rb')
       FileUtils.mkdir_p(File.dirname(file))
@@ -184,19 +184,24 @@ describe 'SimpleReloader' do
         class ReloaderLocatedError < StandardError
         end
       DOC
-      load file
+      require file
       Padrino.stub(:root, File.join(tmp, 'app')) do
         names.each { |name| Padrino::Reloader.remove_constant(Object.const_get(name)) }
       end
       names.select { |name| Object.const_defined?(name, false) }
     ensure
       Padrino::Reloader.exclude.delete(excluded)
+      $LOADED_FEATURES.delete(file)
       names.each { |name| Object.send(:remove_const, name) if Object.const_defined?(name, false) }
       FileUtils.rm_rf(tmp)
     end
 
     it 'should keep constants defined in an excluded folder' do
       assert_equal %i[ReloaderLocatedClass ReloaderLocatedError], kept_constants_from('app/config', 'app/config')
+    end
+
+    it 'should keep constants defined in an excluded file' do
+      assert_equal %i[ReloaderLocatedClass ReloaderLocatedError], kept_constants_from('app/lib', 'app/lib/located.rb')
     end
 
     it 'should remove constants defined in a folder whose name only starts with an excluded one' do
