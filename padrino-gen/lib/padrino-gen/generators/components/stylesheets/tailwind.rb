@@ -31,7 +31,7 @@ def setup_stylesheet
     append_file path, content.empty? || content.end_with?("\n") ? text : "\n#{text}"
   end
 
-  require_dependencies 'tailwindcss-ruby', version: '~> 4.0'
+  require_dependencies 'tailwindcss-ruby', version: '~> 4.0' # The Ruby it needs is in MINIMUM_RUBY (actions.rb).
   previous = fetch_component_choice(:stylesheet).to_s
   preprocessed = %w[sass scss less].include?(previous)
   # Tailwind writes its build to public/stylesheets/application.css, so carry
