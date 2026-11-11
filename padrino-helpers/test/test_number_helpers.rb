@@ -142,6 +142,7 @@ describe 'NumberHelpers' do
       limit = BigDecimal.limit(3)
       assert_equal '12345.67', number_with_precision(BigDecimal('12345.67'), precision: 2)
       assert_equal '$12,345.67', number_to_currency(BigDecimal('12345.67'))
+      assert_equal 3, BigDecimal.limit
     ensure
       BigDecimal.limit(limit)
     end
@@ -149,6 +150,9 @@ describe 'NumberHelpers' do
     it 'should round a BigDecimal with a large negative exponent to zero' do
       assert_equal '0.00', number_with_precision(BigDecimal('1e-10000000'), precision: 2)
       assert_equal '$0.00', number_to_currency(BigDecimal('1e-10000000'))
+      assert_equal '0.01', number_with_precision(BigDecimal('5e-3'), precision: 2)
+      assert_equal '0.00', number_with_precision(BigDecimal('4.9e-3'), precision: 2)
+      assert_equal '-0.01', number_with_precision(BigDecimal('-5e-3'), precision: 2)
     end
 
     it 'should format a BigDecimal with an exponent up to 309 and return a larger one as given' do

@@ -231,10 +231,17 @@ module Padrino
         # Exact whatever BigDecimal.limit says (lifted for this thread) and BigDecimal.mode
         # says (the mode is given). Rational arithmetic would also be exact, but to_r builds
         # a huge Integer for a tiny value such as 1e-10000000.
-        scaled = ::BigDecimal.save_limit do
-          ::BigDecimal.limit(0)
-          (number * 10**precision).round(0, ::BigDecimal::ROUND_HALF_UP).to_i
-        end
+        # A value below 10**-(precision + 1) rounds to zero; skipping it keeps a tiny exponent
+        # from costing time (JRuby's round divides by 10 to the exponent).
+        scaled =
+          if number.exponent < -precision
+            0
+          else
+            ::BigDecimal.save_limit do
+              ::BigDecimal.limit(0)
+              (number * 10**precision).round(0, ::BigDecimal::ROUND_HALF_UP).to_i
+            end
+          end
         digits = format('%0*d', precision + 1, scaled.abs)
         digits.insert(-precision - 1, '.') if precision.positive?
         scaled.negative? ? "-#{digits}" : digits
