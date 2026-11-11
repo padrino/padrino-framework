@@ -260,6 +260,13 @@ describe 'FormatHelpers' do
       assert_includes err, "Use escape_html (or h) instead (first called at #{__FILE__}:#{line})"
     end
 
+    it 'should escape and warn when it is the first frame of a fiber' do
+      actual = nil
+      _out, err = capture_io { actual = Fiber.new(&method(:sanitize_html)).resume('<b>') }
+      assert_equal '&lt;b&gt;', actual
+      assert_includes err, "Use escape_html (or h) instead.\n"
+    end
+
     it 'should warn while warnings are off, as they are while the reloader loads app files' do
       verbose = $VERBOSE
       $VERBOSE = nil

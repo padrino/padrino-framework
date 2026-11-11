@@ -38,7 +38,7 @@ module Padrino
           Padrino.instance_variable_set(:@_sanitize_html_warned, true)
           location = caller_locations(1, 1).first
           Warning.warn 'WARNING! sanitize_html is deprecated and will be removed in Padrino 1.0. It escapes all HTML rather than sanitizing it. ' \
-                       "Use escape_html (or h) instead (first called at #{location.path}:#{location.lineno}).\n"
+                       "Use escape_html (or h) instead#{" (first called at #{location.path}:#{location.lineno})" if location}.\n"
         end
         escape_html(text)
       end
