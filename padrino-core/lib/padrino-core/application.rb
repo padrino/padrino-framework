@@ -1,3 +1,4 @@
+require 'monitor'
 require 'padrino-core/application/flash'
 require 'padrino-core/application/routing'
 require 'padrino-core/application/show_exceptions'
@@ -13,6 +14,8 @@ module Padrino
   # Padrino applications as well.
   #
   class Application < Sinatra::Base
+    PROTOTYPE_LOCK = Monitor.new # @private
+
     register Padrino::ApplicationSetup
     register Padrino::Routing
     register Padrino::ParamsProtection
@@ -37,6 +40,14 @@ module Padrino
 
       def callers_to_ignore
         @callers_to_ignore ||= super + PADRINO_IGNORE_CALLERS
+      end
+
+      ##
+      # The instance that serves requests, built once even when the first
+      # requests arrive at the same time.
+      #
+      def prototype
+        @prototype || PROTOTYPE_LOCK.synchronize { @prototype ||= new }
       end
 
       ##
