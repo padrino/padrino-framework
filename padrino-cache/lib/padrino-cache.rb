@@ -73,7 +73,9 @@ module Padrino
       #   set :cache, Padrino::Cache.new(:File, dir: Padrino.root('tmp', app_name.to_s, 'cache'))
       #
       # An app without an app_name, such as a Sinatra::Base subclass, uses its underscored class name
-      # (MyApi::V1 caches in tmp/my_api/v1/cache), and an anonymous class gets an in-memory LRUHash store.
+      # (MyApi::V1 caches in tmp/my_api/v1/cache), and a class without a name when it registers this
+      # (Sinatra.new, or Class.new with a block, even if assigned to a constant afterwards) gets an
+      # in-memory LRUHash store of its own in each process.
       #
       # However, you can also change the file store easily in your app.rb:
       #
