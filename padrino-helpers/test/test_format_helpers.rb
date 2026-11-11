@@ -224,6 +224,61 @@ describe 'FormatHelpers' do
     end
   end
 
+  describe 'for the deprecated #sanitize_html method' do
+    # The deprecation warns once per process: forget an earlier warning, and restore it after.
+    def setup
+      super
+      @warned = Padrino.instance_variable_defined?(:@_sanitize_html_warned)
+      Padrino.remove_instance_variable(:@_sanitize_html_warned) if @warned
+    end
+
+    def teardown
+      if @warned
+        Padrino.instance_variable_set(:@_sanitize_html_warned, true)
+      elsif Padrino.instance_variable_defined?(:@_sanitize_html_warned)
+        Padrino.remove_instance_variable(:@_sanitize_html_warned)
+      end
+      super
+    end
+
+    it 'should still escape the html and mark it as safe' do
+      capture_io do
+        actual = sanitize_html('<h1>"Me" & Bob</h1>')
+        assert_equal '&lt;h1&gt;&quot;Me&quot; &amp; Bob&lt;/h1&gt;', actual
+        assert actual.html_safe?
+      end
+    end
+
+    it 'should warn once, naming escape_html and the line of the first call' do
+      line = __LINE__ + 2
+      _out, err = capture_io do
+        sanitize_html('<b>')
+        sanitize_html('<i>')
+      end
+      assert_equal 1, err.scan('sanitize_html is deprecated').size, err
+      assert_includes err, 'Padrino 1.0'
+      assert_includes err, "Use escape_html (or h) instead (first called at #{__FILE__}:#{line})"
+    end
+
+    it 'should warn while warnings are off, as they are while the reloader loads app files' do
+      verbose = $VERBOSE
+      $VERBOSE = nil
+      _out, err = capture_io { sanitize_html('<b>') }
+      assert_includes err, 'sanitize_html is deprecated'
+    ensure
+      $VERBOSE = verbose
+    end
+
+    it 'should not warn from escape_html, h or h!' do
+      _out, err = capture_io do
+        escape_html('<b>')
+        h('<b>')
+        h!('<b>')
+      end
+      assert_empty err
+    end
+  end
+
   describe 'for #time_ago_in_words method' do
     A_DAY = 24 * 60 * 60
 

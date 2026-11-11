@@ -20,7 +20,28 @@ module Padrino
         Rack::Utils.escape_html(text).html_safe
       end
       alias h escape_html
-      alias sanitize_html escape_html
+
+      ##
+      # Returns escaped text, as {#escape_html} does.
+      #
+      # @deprecated It escapes all HTML rather than sanitizing it. Use {#escape_html} or {#h} instead.
+      #   It will be removed in Padrino 1.0; until then, the first call in a process prints a warning
+      #   naming the file and line of the call.
+      #
+      # @param (see #escape_html)
+      # @return (see #escape_html)
+      #
+      def sanitize_html(text)
+        unless Padrino.instance_variable_defined?(:@_sanitize_html_warned)
+          # Set before warning, so a Warning.warn that raises (warnings as errors) warns only once.
+          # ceiling: two threads making the first call at the same moment may both warn; a Mutex would make it exact.
+          Padrino.instance_variable_set(:@_sanitize_html_warned, true)
+          location = caller_locations(1, 1).first
+          Warning.warn 'WARNING! sanitize_html is deprecated and will be removed in Padrino 1.0. It escapes all HTML rather than sanitizing it. ' \
+                       "Use escape_html (or h) instead (first called at #{location.path}:#{location.lineno}).\n"
+        end
+        escape_html(text)
+      end
 
       ##
       # Returns escaped text to protect against malicious content.
