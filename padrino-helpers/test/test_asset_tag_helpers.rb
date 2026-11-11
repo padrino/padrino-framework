@@ -330,6 +330,17 @@ describe 'AssetTagHelpers' do
       actual_html = image_tag('/pic.jpg', srcset: { 'pic.jpg?w=1&h=2' => '2x', 'a"b.jpg' => '<3x>' })
       assert_includes actual_html, 'srcset="/images/pic.jpg?w=1&amp;h=2 2x, /images/a&quot;b.jpg &lt;3x&gt;"'
     end
+
+    it 'should write the string candidates of a srcset array as given' do
+      self.class.stubs(:asset_stamp).returns(false)
+      actual_html = image_tag('/pic.jpg', srcset: ['pic.jpg 1x', ['pic@2x.jpg', '2x'], '/hd/pic.jpg 3x'])
+      assert_html_has_tag(actual_html, 'img', srcset: 'pic.jpg 1x, /images/pic@2x.jpg 2x, /hd/pic.jpg 3x')
+    end
+
+    it 'should write no srcset for an empty hash or array' do
+      assert_equal '<img src="/pic.jpg" alt="Pic" />', image_tag('/pic.jpg', srcset: {})
+      assert_equal '<img src="/pic.jpg" alt="Pic" />', image_tag('/pic.jpg', srcset: [])
+    end
   end
 
   describe 'for #picture_tag method' do
@@ -360,6 +371,13 @@ describe 'AssetTagHelpers' do
       assert_html_has_no_tag(actual_html, 'picture source[type]')
     end
 
+    it 'should leave out the type when the extension maps to no image type' do
+      actual_html = picture_tag('https://img.example.com', 'page.html', 'data.json', 'pic.jpg')
+      assert_html_has_tag(actual_html, 'picture source', count: 3)
+      assert_html_has_tag(actual_html, 'picture source', srcset: 'https://img.example.com')
+      assert_html_has_no_tag(actual_html, 'picture source[type]')
+    end
+
     it 'should write only an img for one source' do
       assert_equal '<picture><img src="/images/pic.jpg" alt="Pic" /></picture>', picture_tag('pic.jpg')
       assert_equal '<picture><img src="/images/pic.jpg" alt="Pic" /></picture>', picture_tag(['pic.jpg'])
@@ -372,6 +390,12 @@ describe 'AssetTagHelpers' do
                  '<img src="/images/pic.jpg" alt="A hill" class="photo" srcset="/images/pic@2x.jpg 2x" /></picture>'
       assert_equal expected, actual_html
       assert_equal %w[class image], options.keys.map(&:to_s)
+    end
+
+    it 'should take string keys in the image option' do
+      symbol_keys = picture_tag('pic.webp', 'pic.jpg', image: { alt: 'A hill', srcset: { 'pic@2x.jpg' => '2x' } })
+      string_keys = picture_tag('pic.webp', 'pic.jpg', 'image' => { 'alt' => 'A hill', 'srcset' => { 'pic@2x.jpg' => '2x' } })
+      assert_equal symbol_keys, string_keys
     end
 
     it 'should escape attribute values' do
@@ -394,6 +418,10 @@ describe 'AssetTagHelpers' do
       assert_raises(ArgumentError) { picture_tag('pic.jpg') { image_tag('pic.jpg') } }
       assert_raises(ArgumentError) { picture_tag }
       assert_raises(ArgumentError) { picture_tag(class: 'hero') }
+    end
+
+    it 'should refuse the image option with a block' do
+      assert_raises(ArgumentError) { picture_tag(image: { alt: 'A hill' }) { image_tag('pic.jpg') } }
     end
   end
 

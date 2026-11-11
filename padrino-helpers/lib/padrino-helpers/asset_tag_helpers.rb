@@ -204,7 +204,8 @@ module Padrino
       #   The html options for the image tag.
       # @option options [Hash, Array, String] :srcset
       #   The image candidates for the +srcset+ attribute. A Hash or an Array of pairs maps each source to its
-      #   descriptor (+'2x'+, +'480w'+), and each source is resolved like +url+. A String is written as given.
+      #   descriptor (+'2x'+, +'480w'+), and each source is resolved like +url+. A String, or a String in the
+      #   Array, is written as given.
       # @option options [String] :sizes
       #   The +sizes+ attribute, for +srcset+ with width descriptors.
       #
@@ -225,7 +226,13 @@ module Padrino
         options = { src: image_path(url) }.update(options)
         srcset = options[:srcset]
         if srcset.is_a?(Hash) || srcset.is_a?(Array)
-          options[:srcset] = srcset.map { |source, descriptor| "#{image_path(source)} #{descriptor}" }.join(', ')
+          candidates = srcset.map do |candidate|
+            next candidate if candidate.is_a?(String)
+
+            source, descriptor = candidate
+            "#{image_path(source)} #{descriptor}"
+          end
+          options[:srcset] = (candidates.join(', ') unless candidates.empty?)
         end
         options[:alt] ||= image_alt(url) unless url.to_s =~ /\A(?:cid|data):|\A\Z/
         tag(:img, options)
@@ -271,9 +278,9 @@ module Padrino
       def picture_tag(*sources, &block)
         options = sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {}
         sources = sources.flatten
-        image_options = options.delete(:image) || {}
+        image_options = options.delete(:image)
         if block_given?
-          raise ArgumentError, 'picture_tag takes image sources or a block, not both' unless sources.empty?
+          raise ArgumentError, 'picture_tag takes image sources and image: options, or a block, not both' unless sources.empty? && image_options.nil?
 
           return content_tag(:picture, options, &block)
         end
@@ -281,10 +288,10 @@ module Padrino
 
         fallback = sources.pop
         content = sources.inject(SafeBuffer.new) do |all, source|
-          type = Rack::Mime.mime_type(File.extname(source.to_s.sub(/[?#].*/m, '')), nil)
-          all << tag(:source, srcset: image_path(source), type: type)
+          type = ::Rack::Mime.mime_type(File.extname(source.to_s.sub(/[?#].*/m, '')), nil)
+          all << tag(:source, srcset: image_path(source), type: (type if type&.start_with?('image/')))
         end
-        content_tag(:picture, content << image_tag(fallback, image_options), options)
+        content_tag(:picture, content << image_tag(fallback, Utils.symbolize_keys(image_options || {})), options)
       end
 
       ##
