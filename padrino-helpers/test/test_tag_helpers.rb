@@ -110,6 +110,10 @@ describe 'TagHelpers' do
       assert_equal '<div a_b-c="1" />', tag(:div, 'a b' => { c: 1 })
     end
 
+    it 'should write an attribute name with bytes that are not valid UTF-8' do
+      assert_equal "<div a\uFFFDb=\"1\" />", tag(:div, "a\xFFb" => 1)
+    end
+
     it 'should replace Unicode controls and noncharacters in attribute names' do
       assert_equal '<div a_b_c_d="1" />', tag(:div, "a\u0085b\uFDD0c\u{10FFFF}d" => 1)
     end

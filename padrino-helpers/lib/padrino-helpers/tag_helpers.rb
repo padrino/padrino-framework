@@ -341,6 +341,7 @@ module Padrino
       #
       def attribute_name(name)
         name = name.to_s
+        name = name.scrub unless name.valid_encoding?
         invalid = name.ascii_only? ? INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER : INVALID_ATTRIBUTE_NAME_CHARACTER
         name.match?(invalid) ? name.gsub(invalid, '_') : name
       end
