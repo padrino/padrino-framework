@@ -700,8 +700,6 @@ module Padrino
             true
           end
         end
-        # A params: list keeps the route's own path captures (with:, parent:, map:), listed first so a type the list gives wins.
-        options[:params] = route.significant_variable_names.map(&:to_sym) | options[:params] if options[:params].is_a?(Array)
 
         # Add Sinatra conditions.
         options.each do |option, args|
@@ -796,6 +794,9 @@ module Padrino
             path = process_path_for_parent_params(path, parent_params)
           end
 
+          # A params: list keeps the with: and parent: captures as strings, listed first so a type the list gives wins.
+          options[:params] = [path_capture_params(with_params, parent_params)] + Array(options[:params]) if options.key?(:params)
+
           # Add any controller level map to the front of the path.
           path = "#{@_map}/#{path}".squeeze('/') unless absolute_map || !@_map
 
@@ -830,6 +831,14 @@ module Padrino
         File.join(path, Array(with_params).map do |step|
           step.is_a?(String) ? step : step.inspect
         end.join('/'))
+      end
+
+      ##
+      # Returns the names the 'with' and 'parent' parameters capture, each allowed as a string.
+      #
+      def path_capture_params(with_params, parent_params)
+        pattern = process_path_for_parent_params(process_path_for_with_params('', with_params), Array(parent_params))
+        Mustermann.new(pattern).names.to_h { |name| [name, String] }
       end
 
       ##

@@ -41,6 +41,10 @@ module Padrino
       #     # gives its own +params:+.
       #   end
       #
+      # A list keeps the parameters a route's +with:+ and +parent:+ options
+      # capture when each is a string. Other captures, such as those in a
+      # +map:+ or the format, are kept only when listed.
+      #
       def params(*allowed_params)
         allowed_params = prepare_allowed_params(allowed_params)
         condition do
@@ -76,10 +80,10 @@ module Padrino
       #   Warning: this hash will be changed by deleting or replacing its values.
       # @param [Hash] allowed_params
       #   A hash of allowed keys and value classes or processing procs. Supported
-      #   scalar classes are: Integer (empty string is cast to nil). A value of
-      #   another shape than its key allows (a hash or an array for Integer, a
-      #   string for a nested list) is dropped. A proc is called with the value
-      #   as sent, an array or a hash included.
+      #   scalar classes are: Integer (empty string is cast to nil) and String.
+      #   A value of another shape than its key allows (a hash or an array for
+      #   Integer or String, a string for a nested list) is dropped. A proc is
+      #   called with the value as sent, an array or a hash included.
       #
       # @example
       #   filter_params!( { 'a' => '1', 'b' => 'abc', 'd' => 'drop' },
@@ -119,6 +123,8 @@ module Padrino
             params[key] = value.to_s.empty? ? nil : value.to_i
           elsif type.is_a?(Proc)
             params[key] = type.call(value)
+          elsif type == String
+            params.delete(key) unless value.is_a?(String)
           elsif type != true
             params.delete(key)
           end

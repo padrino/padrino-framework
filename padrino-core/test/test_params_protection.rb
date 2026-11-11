@@ -235,6 +235,22 @@ describe 'Padrino::ParamsProtection' do
     assert_equal({ 'id' => 3 }, result)
   end
 
+  it 'should keep only a string given for a String' do
+    result = nil
+    mock_app do
+      post :basic, params: [{ name: String }] do
+        result = params
+        ''
+      end
+    end
+    post '/basic?name[]=Jack'
+    assert_empty(result)
+    post '/basic?name[first]=Jack'
+    assert_empty(result)
+    post '/basic?name=Jack'
+    assert_equal({ 'name' => 'Jack' }, result)
+  end
+
   it 'should cast an Integer given without a value to nil' do
     result = nil
     mock_app do
@@ -291,7 +307,7 @@ describe 'Padrino::ParamsProtection' do
     assert_equal({ 'name' => 'Kim', 'id' => 42 }, result)
   end
 
-  it 'should keep the path captures of a route with a params list' do
+  it 'should keep the :parent parameters of a route with a params list' do
     result = nil
     mock_app do
       controller :posts, params: [:title] do
@@ -302,14 +318,62 @@ describe 'Padrino::ParamsProtection' do
       controller :notes, parent: :post, params: [:title] do
         get(:index) { result = params; '' }
       end
-      get(:list, map: '/c/:cid/list', params: [:title]) { result = params; '' }
     end
     get '/post/7/comments?title=t&x=1'
     assert_equal({ 'title' => 't', 'post_id' => '7' }, result)
     get '/post/8/notes?title=t&x=1'
     assert_equal({ 'title' => 't', 'post_id' => '8' }, result)
-    get '/c/9/list?title=t&x=1'
-    assert_equal({ 'title' => 't', 'cid' => '9' }, result)
+  end
+
+  it 'should keep a :with or :parent parameter only as a string' do
+    result = nil
+    mock_app do
+      get(:list, with: '(:cat)?', params: [:title]) { result = params; '' }
+      controller :products, params: [:title] do
+        parent :shop, optional: true
+        get(:index) { result = params; '' }
+      end
+    end
+    get '/list/?title=t&cat[name]=x'
+    assert_equal({ 'title' => 't' }, result)
+    get '/list/?title=t&cat[]=x'
+    assert_equal({ 'title' => 't' }, result)
+    get '/list/?title=t&cat=x'
+    assert_equal({ 'title' => 't', 'cat' => 'x' }, result)
+    get '/list/books?title=t'
+    assert_equal({ 'title' => 't', 'cat' => 'books' }, result)
+    get '/products?title=t&shop_id[name]=x'
+    assert_equal({ 'title' => 't' }, result)
+    get '/shop/3/products?title=t'
+    assert_equal({ 'title' => 't', 'shop_id' => '3' }, result)
+  end
+
+  it 'should keep the other captures of a route only when listed' do
+    result = nil
+    mock_app do
+      get(:list, map: '/people/list(/:cat)?', params: [:title]) { result = params; '' }
+      get(:items, map: '/items(.:format)?', params: [:title]) { result = params; '' }
+    end
+    get '/people/list?title=t&cat[name]=x'
+    assert_equal({ 'title' => 't' }, result)
+    get '/people/list/books?title=t'
+    assert_equal({ 'title' => 't' }, result)
+    get '/items?title=t&format[name]=x'
+    assert_equal({ 'title' => 't' }, result)
+    get '/items.json?title=t'
+    assert_equal({ 'title' => 't' }, result)
+  end
+
+  it 'should pass the captures of a route to its action' do
+    result = nil
+    mock_app do
+      get(:list, map: '/people/:cat/list', params: [:title]) { |cat| result = [cat, params]; '' }
+      get(:show, map: '/people/:cat/show', params: %i[title cat]) { result = params; '' }
+    end
+    get '/people/books/list?title=t'
+    assert_equal(['books', { 'title' => 't' }], result)
+    get '/people/books/show?title=t'
+    assert_equal({ 'title' => 't', 'cat' => 'books' }, result)
   end
 
   it 'should keep an Integer given for an Integer' do
