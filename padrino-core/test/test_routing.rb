@@ -2809,6 +2809,49 @@ describe 'Routing' do
     assert_equal [:with_format, { 'id' => '9', 'format' => 'js' }], @app.recognize_path(@app.url(:with_format, id: 9, format: :js))
   end
 
+  it 'should recognize an encoded path as a request to it is routed' do
+    mock_app do
+      get(:show, map: '/:name/q') { params[:name] }
+      get(:cafe, map: "/caf\u00e9/x") { 'cafe' }
+    end
+    get '/caf%C3%A9/x'
+    assert_equal 'cafe', body
+    assert_equal [:cafe, {}], @app.recognize_path('/caf%C3%A9/x')
+    assert_equal [:cafe, {}], @app.recognize_path("/caf\u00e9/x")
+    get '/a%2520b/q'
+    assert_equal 'a b', body
+    assert_equal [:show, { 'name' => 'a b' }], @app.recognize_path('/a%2520b/q')
+    assert_equal [:show, { 'name' => "caf\u00e9" }], @app.recognize_path(@app.url(:show, name: "caf\u00e9"))
+  end
+
+  it 'should recognize no route for a path no route matches' do
+    mock_app { get(:show, map: '/:name/q') {} }
+    assert_nil @app.recognize_path('/o')
+    assert_nil @app.recognize_path('/%ff/q')
+  end
+
+  it 'should not route a non-ASCII path to a Regexp route fixed to another encoding' do
+    mock_app do
+      get(%r{/caf\xC3\xA9}n) { 'bytes' }
+      get('/:name') { "name #{params[:name]}" }
+    end
+    get '/caf%C3%A9'
+    assert_equal [200, "name caf\u00e9"], [status, body]
+    get '/cafe'
+    assert_equal [200, 'name cafe'], [status, body]
+  end
+
+  it 'should keep a numbered backreference in a Regexp route' do
+    mock_app do
+      get(%r{/(\w)\1}) { "double #{params[:captures].first}" }
+      get('/:name') { "name #{params[:name]}" }
+    end
+    get '/aa'
+    assert_equal 'double a', body
+    get '/ab'
+    assert_equal 'name ab', body
+  end
+
   it 'should have current_path' do
     mock_app do
       controller :foo do

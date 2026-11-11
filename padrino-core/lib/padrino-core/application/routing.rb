@@ -106,6 +106,18 @@ module Padrino
       end
 
       ##
+      # Whether +pattern+ (a Regexp, String or anything with ===) matches +path+, a
+      # decoded form of a request path. A Regexp fixed to an encoding the path can't be
+      # read in (/n with non-ASCII bytes) doesn't match it, as in Sinatra.
+      #
+      # @api private
+      def path_match?(pattern, path)
+        pattern === path
+      rescue Encoding::CompatibilityError
+        false
+      end
+
+      ##
       # Whether a provides condition for +types+ accepts +format+, a Symbol
       # decoded as route params receive it.
       #
@@ -427,8 +439,8 @@ module Padrino
       # @param [String] path
       #   Path+Query to parse
       #
-      # @return [Symbol, Hash]
-      #   Returns controller and query params.
+      # @return [Array(Symbol, Hash), nil]
+      #   Returns controller and query params, or nil when no route matches the path.
       #
       # @example Giving a controller like:
       #   controller :foo do
@@ -444,8 +456,7 @@ module Padrino
       #   # => [:foo_bar, { id: :mine }]
       #
       def recognize_path(path)
-        responses = @router.recognize_path(path)
-        [responses[0], responses[1]]
+        @router.recognize_path(path)
       end
 
       ##
