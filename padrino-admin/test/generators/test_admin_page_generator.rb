@@ -410,12 +410,29 @@ describe 'AdminPageGenerator' do
         assert_equal expected, form_fields(:activerecord, types)
       end
 
-      it 'should match the Mongoid field type, where a Time holds a date as well' do
+      it 'should match the Mongoid field type, keeping a text field for times, which carry an offset' do
         types = [String, Integer, Float, BigDecimal, Date, DateTime, Time, named_class('ActiveSupport::TimeWithZone'),
                  named_class('Mongoid::Boolean'), Object]
         expected = [[:text_field], [:number_field], [:number_field, 'any'], [:number_field, 'any'], [:date_field],
-                    [:datetime_local_field], [:datetime_local_field], [:datetime_local_field], [:check_box], [:text_field]]
+                    [:text_field], [:text_field], [:text_field], [:check_box], [:text_field]]
         assert_equal expected, form_fields(:mongoid, types)
+      end
+
+      it 'should keep a text field for a Sequel enum column, whose reader returns a name' do
+        Object.const_set(:EnumGadget, Class.new(Sequel::Model(:friends)) do
+          plugin :enum
+          enum :age, { young: 1, old: 2 }
+          enum :name, { short: 1 }, override_accessors: false
+        end)
+        Object.const_set(:EnumGadgetPart, Class.new(EnumGadget))
+        columns = %i[age name email].map { |name| Padrino::Admin::Generators::Orm::Column.new(name, :integer) }
+        %w[enum_gadget enum_gadget_part].each do |model|
+          fields = Padrino::Admin::Generators::Orm.new(model, :sequel, columns).column_fields.map { |column| column[:field_type] }
+          assert_equal %i[text_field number_field number_field], fields, model
+        end
+      ensure
+        Object.send(:remove_const, :EnumGadgetPart) if Object.const_defined?(:EnumGadgetPart, false)
+        Object.send(:remove_const, :EnumGadget) if Object.const_defined?(:EnumGadget, false)
       end
     end
 
@@ -442,6 +459,57 @@ describe 'AdminPageGenerator' do
     ensure
       Object.send(:remove_const, :SampleProject) if Object.const_defined?(:SampleProject, false)
       Object.const_set(:SampleProject, saved) if saved
+    end
+
+    it 'should keep a text field for an Active Record enum, whose value survives an edit and save' do
+      skip 'activerecord and sqlite3 are only bundled on MRI' if RUBY_ENGINE == 'jruby'
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=activerecord', '-e=erb') }
+      capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+      # Active Record is loaded in a separate process so that it stays out of the other tests.
+      script = <<~'RUBY'
+        require 'json'
+        require 'nokogiri'
+        require 'active_record'
+        require 'thor/group'
+        require 'padrino-admin'
+        Padrino::Generators.load_components!
+        ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: ':memory:')
+        ActiveRecord::Schema.verbose = false
+        ActiveRecord::Schema.define do
+          create_table(:posts) { |t| t.string :title; t.integer :status; t.integer :views }
+        end
+        class Post < ActiveRecord::Base
+          enum :status, { draft: 0, published: 1 }
+        end
+        Padrino::Generators::AdminPage.start(%w[post -r=.])
+        module SampleProject
+          Admin = Sinatra.new(Padrino::Application) do
+            register Padrino::Helpers
+            enable :sessions
+            helpers Padrino::Admin::Helpers::ViewHelpers
+            set :views, File.expand_path('admin/views')
+          end
+        end
+        # The admin layout needs the whole admin app (accounts, sessions, project modules).
+        File.write('admin/views/layouts/application.erb', '<%= yield %>')
+        load 'admin/controllers/posts.rb'
+        browser = Rack::MockRequest.new(SampleProject::Admin)
+        id = Post.create!(title: 'kept', status: :published, views: 3).id
+        form = Nokogiri::HTML(browser.get("/posts/edit/#{id}").body)
+        fields = form.css('form input[name^="post["]').to_h { |input| [input['name'][/\[(.*)\]/, 1], [input['type'], input['value']]] }
+        # Submit the form unchanged, as a browser would.
+        response = browser.request('PUT', "/posts/update/#{id}", params: { 'post' => fields.transform_values(&:last) }, lint: true)
+        post = Post.find(id)
+        puts "RESULTS #{JSON.generate(fields: fields, status: response.status, saved: [post.title, post.status, post.views])}"
+      RUBY
+      env = { 'RACK_ENV' => 'test', 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'] || File.expand_path('../../../Gemfile', __dir__) }
+      out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: "#{@apptmp}/sample_project")
+      results = out[/^RESULTS (.*)$/, 1]
+      assert results, "#{status}\n#{out}\n#{err}"
+      results = JSON.parse(results)
+      assert_equal({ 'title' => %w[text kept], 'status' => %w[text published], 'views' => %w[number 3] }, results['fields'])
+      assert_equal 303, results['status']
+      assert_equal ['kept', 'published', 3], results['saved']
     end
 
     it 'should answer a missing record with 404 and still find existing ones with activerecord' do
