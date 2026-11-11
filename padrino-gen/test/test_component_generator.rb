@@ -190,6 +190,14 @@ describe 'ComponentGenerator' do
       assert_equal ".env\npublic/stylesheets/application.css\n", File.read(gitignore)
     end
 
+    it 'should not repeat a tailwind line that ends a file without a trailing newline' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, ".env\npublic/stylesheets/application.css")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal ".env\npublic/stylesheets/application.css", File.read(gitignore)
+    end
+
     it 'should keep a css process already in Procfile.dev' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"
