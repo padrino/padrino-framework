@@ -9,6 +9,7 @@ module Padrino
     #
     # A name that is also a method of this object (such as +class+, +hash+ or
     # +to_h+) still calls that method; read and write it with +[]+ and +[]=+.
+    # +logger+ and +display+ read and write values like any other name.
     #
     # Example:
     #
@@ -128,6 +129,16 @@ module Padrino
       attr_reader :table
 
       private
+
+      # Kernel#logger (from padrino-core) and Kernel#display would otherwise hide these
+      # names; as private methods here, a call with a receiver reaches method_missing.
+      def logger
+        @table[:logger]
+      end
+
+      def display
+        @table[:display]
+      end
 
       def method_missing(name, *args)
         writer = name.end_with?('=')

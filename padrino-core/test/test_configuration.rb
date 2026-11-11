@@ -167,4 +167,21 @@ describe 'PadrinoConfiguration' do
       assert_raises(NoMethodError) { config.missing(1) }
     end
   end
+
+  it 'should read and write logger and display like other names' do
+    config = Padrino::Configuration::Store.new
+    assert_nil config.logger
+    refute config.respond_to?(:logger)
+    config.logger = :mine
+    config.display = true
+    assert_equal :mine, config.logger
+    assert_equal true, config.display
+    assert config.respond_to?(:logger)
+  end
+
+  it 'should not equal a Hash with the same values' do
+    config = Padrino::Configuration::Store.new
+    config.a = 1
+    refute config == { a: 1 }
+  end
 end
