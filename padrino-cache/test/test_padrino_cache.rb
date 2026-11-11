@@ -96,6 +96,24 @@ describe 'PadrinoCache' do
     refute_equal false, called
   end
 
+  it 'should cache the page of a route given host: for that host only' do
+    calls = Hash.new(0)
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get(:index, host: 'admin.example.com', cache: true) { "admin #{calls[:admin] += 1}" }
+      get(:index, cache: true) { "public #{calls[:public] += 1}" }
+    end
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com'
+    assert_equal 'admin 1', body
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public 1', body
+    get '/', {}, 'HTTP_HOST' => 'Admin.Example.COM'
+    assert_equal 'admin 1', body
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public 1', body
+  end
+
   it 'should cache HEAD verb' do
     called_times = 0
     mock_app do
@@ -558,6 +576,84 @@ describe 'PadrinoCache' do
     get '/foo?id=3&something_else=42'
 
     assert_equal 3, call_count
+  end
+
+  it "should look a page up under the route's own cache key from the first request" do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/dash', cache: true do
+        cache_key { "dash-#{params[:u]}" }
+        calls += 1
+        "page for #{params[:u]}"
+      end
+    end
+    @app.cache.store('/dash', { body: 'stored under the path', content_type: 'text/html' })
+
+    get '/dash?u=alice'
+    assert_equal 'page for alice', body
+    get '/dash?u=bob'
+    assert_equal 'page for bob', body
+    get '/dash?u=alice'
+    assert_equal 'page for alice', body
+    assert_equal 2, calls
+  end
+
+  it 'should not serve a page stored under another key to a route with a Symbol cache key' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/about', cache: true do
+        cache_key :about
+        calls += 1
+        'about page'
+      end
+    end
+    @app.cache.store('/about', { body: 'stored under the path', content_type: 'text/html' })
+
+    head '/about'
+    assert_equal 1, calls
+    get '/about'
+    assert_equal 'about page', body
+    get '/about'
+    assert_equal 'about page', body
+    assert_equal 2, calls
+  end
+
+  it 'should not serve a page stored under the path to a route that sets a String cache key in its body' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get '/post/:id', cache: true do
+        cache_key "post-#{params[:id]}"
+        "post #{params[:id]}"
+      end
+    end
+    @app.cache.store('/post/1', { body: 'stored under the path', content_type: 'text/html' })
+
+    2.times { get '/post/1' }
+    assert_equal 'post 1', body
+  end
+
+  it 'should not serve the page of another route on the same path to a route with a block cache key' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/p', cache: true, agent: /bot/) { 'bot page' }
+      get '/p', cache: true do
+        cache_key { "p-#{params[:u]}" }
+        "page for #{params[:u]}"
+      end
+    end
+
+    get '/p', {}, 'HTTP_USER_AGENT' => 'bot'
+    assert_equal 'bot page', body
+    get '/p?u=alice', {}, 'HTTP_USER_AGENT' => 'browser'
+    assert_equal 'page for alice', body
+    get '/p', {}, 'HTTP_USER_AGENT' => 'bot'
+    assert_equal 'bot page', body
   end
 
   it 'should raise an error if providing both a cache_key and block' do
