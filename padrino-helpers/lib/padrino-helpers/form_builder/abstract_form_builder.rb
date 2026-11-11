@@ -213,7 +213,7 @@ module Padrino
           result = namespace && !is_nested ? "#{namespace}_" : +''
           result << field_id_fragment
           result << "_#{field}" if field
-          result << "_#{value}" if value
+          result << "_#{TagHelpers.value_to_s(value)}" if value
           result
         end
 
@@ -256,12 +256,12 @@ module Padrino
         private
 
         def is_checked?(field, options)
-          !options.key?(:checked) && [options[:value].to_s, 'true'].include?(field_value(field).to_s)
+          !options.key?(:checked) && [TagHelpers.value_to_s(options[:value]), 'true'].include?(TagHelpers.value_to_s(field_value(field)))
         end
 
         def variants_for_group(options)
           if (variants = options[:options])
-            variants.map { |caption, value| [caption.to_s, (value || caption).to_s] }
+            variants.map { |caption, value| [TagHelpers.value_to_s(caption), TagHelpers.value_to_s(value || caption)] }
           elsif (collection = options[:collection])
             collection.map { |variant| field_values(variant, options) }
           else
@@ -274,7 +274,7 @@ module Padrino
           if options[:collection]
             _, id_method = *field_methods(options)
             selected_values.map do |value|
-              (value.respond_to?(id_method) ? value.send(id_method) : value).to_s
+              TagHelpers.value_to_s(value.respond_to?(id_method) ? value.send(id_method) : value)
             end
           else
             selected_values
@@ -286,7 +286,7 @@ module Padrino
         end
 
         def field_values(object, options)
-          field_methods(options).map { |field| object.send(field).to_s }
+          field_methods(options).map { |field| TagHelpers.value_to_s(object.send(field)) }
         end
 
         def field_name_fragment

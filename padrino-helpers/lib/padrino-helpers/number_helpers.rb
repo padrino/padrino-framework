@@ -145,7 +145,7 @@ module Padrino
         end
 
         begin
-          parts = number.to_s.split('.')
+          parts = TagHelpers.value_to_s(number).split('.')
           reversed_delimiter = delimiter.to_s.reverse
           parts[0].gsub!(/\d+/) { |digits| digits.reverse.scan(/\d{1,3}/).join(reversed_delimiter).reverse }
           parts.join(separator)

@@ -61,6 +61,20 @@ module Padrino
       NEWLINE = "\n".html_safe.freeze
 
       ##
+      # Returns the text a value is written as in HTML: a BigDecimal in plain
+      # decimal notation (BigDecimal#to_s gives "0.999e1" for 9.99), as
+      # ActiveSupport writes it; anything else as its +to_s+.
+      #
+      # @example
+      #   TagHelpers.value_to_s(BigDecimal('9.99')) # => "9.99"
+      #   TagHelpers.value_to_s(:price)             # => "price"
+      #
+      # @api private
+      def self.value_to_s(value)
+        defined?(::BigDecimal) && value.is_a?(::BigDecimal) ? value.to_s('F') : value.to_s
+      end
+
+      ##
       # Creates an HTML tag with given name, content, and options.
       #
       # @overload content_tag(name, content, options = nil)
@@ -132,7 +146,7 @@ module Padrino
             output.safe_concat NEWLINE
           end
         else
-          output.concat content.to_s
+          output.concat TagHelpers.value_to_s(content)
         end
         output.safe_concat "</#{name}>"
 
@@ -302,8 +316,8 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
-        string = string.to_s
+        string = string.collect { |item| TagHelpers.value_to_s(item) }.join(' ') if string.is_a?(Array)
+        string = TagHelpers.value_to_s(string)
         string.match?(ESCAPE_REGEXP) ? string.gsub(ESCAPE_REGEXP, ESCAPE_VALUES) : string
       end
 

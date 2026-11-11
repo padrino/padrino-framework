@@ -145,6 +145,12 @@ module Padrino
           end
         end
 
+        # Whether the column holds BigDecimal values: Active Record and Sequel report :decimal,
+        # Mongoid the class BigDecimal.
+        def decimal?(type)
+          %w[decimal BigDecimal].include?(type.to_s)
+        end
+
         private
 
         # Returns nil when the model is not defined. A model that failed to load keeps its error in

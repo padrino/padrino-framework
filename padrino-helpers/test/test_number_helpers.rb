@@ -1,5 +1,6 @@
 require_relative 'helper'
 require_relative 'fixtures/markup_app/app'
+require 'bigdecimal'
 
 describe 'NumberHelpers' do
   include Padrino::Helpers::NumberHelpers
@@ -67,6 +68,11 @@ describe 'NumberHelpers' do
       assert_equal '1\\1234\\1567', number_with_delimiter(1_234_567, delimiter: '\\1')
 
       assert_nil number_with_delimiter(nil)
+    end
+
+    it 'should display number_with_delimiter for a BigDecimal' do
+      assert_equal '1,234,567.5', number_with_delimiter(BigDecimal('1234567.5'))
+      assert_equal '-0.0000001', number_with_delimiter(BigDecimal('-0.0000001'))
     end
 
     it 'should display number_with_delimiter in linear time' do

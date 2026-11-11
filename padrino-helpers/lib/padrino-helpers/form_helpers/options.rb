@@ -46,9 +46,9 @@ module Padrino
         #   option_is_selected?('red', 'Red', ['green', 'blue']) => false
         #
         def option_is_selected?(value, caption, selected_values)
-          check_value = (value || caption).to_s
+          check_value = TagHelpers.value_to_s(value || caption)
 
-          Array(selected_values).any? { |selected| check_value == selected.to_s }
+          Array(selected_values).any? { |selected| check_value == TagHelpers.value_to_s(selected) }
         end
 
         ##

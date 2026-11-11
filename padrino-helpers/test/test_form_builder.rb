@@ -1,5 +1,6 @@
 require_relative 'helper'
 require_relative 'fixtures/markup_app/app'
+require 'bigdecimal'
 
 describe 'FormBuilder' do
   include Padrino::Helpers::FormHelpers
@@ -403,6 +404,50 @@ describe 'FormBuilder' do
     it 'should display correct number field in slim' do
       get '/slim/form_for'
       assert_response_has_tag '#demo input.numeric[type=number]', id: 'markup_user_age'
+    end
+  end
+
+  describe 'for a BigDecimal value' do
+    before { @user.stubs(price: BigDecimal('9.99')) }
+
+    %i[text_field number_field hidden_field].each do |field|
+      it "should write the value of a #{field} in plain decimal notation" do
+        assert_html_has_tag(standard_builder.send(field, :price), 'input', value: '9.99', name: 'user[price]')
+      end
+    end
+
+    it 'should write the content of a text_area in plain decimal notation' do
+      assert_html_has_tag(standard_builder.text_area(:price), 'textarea', content: '9.99')
+    end
+
+    it 'should select the option that holds the value' do
+      actual_html = standard_builder.select(:price, options: %w[1.5 9.99])
+      assert_html_has_tag(actual_html, 'option', value: '9.99', selected: 'selected')
+      assert_html_has_tag(actual_html, 'option', value: '1.5')
+      assert_html_has_no_tag(actual_html, 'option[value="1.5"]', selected: 'selected')
+    end
+
+    it 'should check the radio button that holds the value' do
+      actual_html = standard_builder.radio_button(:price, value: '9.99')
+      assert_html_has_tag(actual_html, 'input[type=radio]', value: '9.99', id: 'user_price_9.99', checked: 'checked')
+    end
+
+    it 'should write a BigDecimal radio button value and id in plain decimal notation' do
+      actual_html = standard_builder.radio_button(:price, value: BigDecimal('1.5'))
+      assert_html_has_tag(actual_html, 'input[type=radio]', value: '1.5', id: 'user_price_1.5')
+      assert_html_has_no_tag(actual_html, 'input[checked]')
+    end
+
+    it 'should write BigDecimal options of a group in plain decimal notation' do
+      actual_html = standard_builder.check_box_group(:price, options: [BigDecimal('1.5')])
+      assert_html_has_tag(actual_html, 'label', content: '1.5', for: 'user_price_1.5')
+    end
+
+    it 'should write BigDecimal values of a collection in plain decimal notation' do
+      prices = [mock_model('Price', name: BigDecimal('1.5'), id: BigDecimal('2'))]
+      actual_html = standard_builder.radio_button_group(:price, collection: prices)
+      assert_html_has_tag(actual_html, 'input[type=radio]', value: '2.0', id: 'user_price_2.0')
+      assert_html_has_tag(actual_html, 'label', content: '1.5')
     end
   end
 

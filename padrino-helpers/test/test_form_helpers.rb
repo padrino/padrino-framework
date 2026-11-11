@@ -1,5 +1,6 @@
 require_relative 'helper'
 require_relative 'fixtures/markup_app/app'
+require 'bigdecimal'
 
 describe 'FormHelpers' do
   include Padrino::Helpers::FormHelpers
@@ -509,6 +510,10 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, :textarea, content: 'a test', name: 'about', rows: '5', cols: '6')
     end
 
+    it 'should display a BigDecimal content in plain decimal notation' do
+      assert_html_has_tag(text_area_tag(:price, value: BigDecimal('9.99')), :textarea, content: '9.99')
+    end
+
     it 'should insert newline to before of content' do
       actual_html = text_area_tag(:about, value: "\na test&".html_safe)
       assert_html_has_tag(actual_html, :textarea, content: "\na test&".html_safe, name: 'about')
@@ -671,6 +676,17 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, 'select option', content: '1', value: '1')
       assert_html_has_tag(actual_html, 'select option', content: '2', value: '2')
       assert_html_has_tag(actual_html, 'select option', content: '3', value: '3')
+    end
+
+    it 'should write BigDecimal options in plain decimal notation and select by value' do
+      actual_html = select_tag(:price, options: [['Low', BigDecimal('1.5')], ['High', BigDecimal('1e20')]], selected: '1.5')
+      assert_html_has_tag(actual_html, 'option', value: '1.5', content: 'Low', selected: 'selected')
+      assert_html_has_tag(actual_html, 'option', value: '100000000000000000000.0', content: 'High')
+    end
+
+    it 'should select the option that holds a BigDecimal selected value' do
+      actual_html = select_tag(:price, options: %w[1.5 9.99], selected: BigDecimal('9.99'))
+      assert_html_has_tag(actual_html, 'option', value: '9.99', selected: 'selected')
     end
 
     it 'should include blank for grouped options' do

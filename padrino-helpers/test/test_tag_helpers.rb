@@ -1,5 +1,6 @@
 require_relative 'helper'
 require_relative 'fixtures/markup_app/app'
+require 'bigdecimal'
 
 describe 'TagHelpers' do
   def app
@@ -79,6 +80,17 @@ describe 'TagHelpers' do
       assert_equal '<a title="a&gt;b" />', tag(:a, title: 'a>b')
     end
 
+    it 'should write BigDecimal values in plain decimal notation' do
+      {
+        '9.99' => '9.99', '-9.99' => '-9.99', '9' => '9.0', '0' => '0.0',
+        '1e20' => '100000000000000000000.0', '0.0000001' => '0.0000001',
+        'NaN' => 'NaN', 'Infinity' => 'Infinity', '-Infinity' => '-Infinity'
+      }.each do |given, written|
+        assert_equal %(<input value="#{written}" />), tag(:input, value: BigDecimal(given))
+      end
+      assert_equal '<a data-geo="1.5 -0.25" />', tag(:a, data: { geo: [BigDecimal('1.5'), BigDecimal('-0.25')] })
+    end
+
     it 'should write data attributes added to DATA_ATTRIBUTES' do
       Padrino::Helpers::TagHelpers::DATA_ATTRIBUTES.push(:dialog)
       assert_equal '<a data-dialog="true" />', tag(:a, dialog: true)
@@ -122,6 +134,10 @@ describe 'TagHelpers' do
     it 'should convert to a string if the content is not a string' do
       actual_html = content_tag(:p, 97)
       assert_html_has_tag(actual_html, 'p', content: '97')
+    end
+
+    it 'should write BigDecimal content in plain decimal notation' do
+      assert_equal '<td>9.99</td>', content_tag(:td, BigDecimal('9.99'))
     end
 
     it 'should support tags with erb' do
