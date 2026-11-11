@@ -19,6 +19,16 @@ module Padrino
     # The modification times for every file in a project.
     MTIMES = {}
 
+    # Requests and reloads take turns through this gate (see #serve and #exclusively).
+    @gate = Mutex.new
+    @gate_changed = ConditionVariable.new
+    @readers = 0
+    @writers_waiting = 0
+    @writing = false
+    # The fiber-local key holding this fiber's turn: :serve, :reload or nil.
+    TURN = :padrino_reloader_turn
+    private_constant :TURN
+
     ##
     # Specified folders can be excluded from the code reload detection process.
     # Default excluded directories at Padrino.root are: test, spec, features, tmp, config, db and public
@@ -51,6 +61,53 @@ module Padrino
     #
     def include_constants
       @_include_constants ||= Set.new
+    end
+
+    ##
+    # Runs the block as a request: requests run together, but never while a reload runs.
+    # A request that arrives during a reload, or while one waits to start, waits for it.
+    # A call nested in a request or a reload runs at once.
+    #
+    # ceiling: a request that waits on another thread's request (a thread it spawns and joins)
+    # deadlocks with a reload waiting for it; the other thread would need to share its turn.
+    #
+    def serve
+      return yield if Thread.current[TURN]
+      @gate.synchronize do
+        @gate_changed.wait(@gate) while @writing || @writers_waiting.positive?
+        @readers += 1
+      end
+      begin
+        Thread.current[TURN] = :serve
+        yield
+      ensure
+        Thread.current[TURN] = nil
+        @gate.synchronize do
+          @readers -= 1
+          @gate_changed.broadcast if @readers.zero?
+        end
+      end
+    end
+
+    ##
+    # Runs the block alone, once the requests in progress have finished. Called from a
+    # request, the request gives up its turn while it waits and takes it back afterwards.
+    #
+    def exclusively
+      turn = Thread.current[TURN]
+      return yield if turn == :reload
+      wait_for_exclusive_turn(turn)
+      begin
+        Thread.current[TURN] = :reload
+        yield
+      ensure
+        Thread.current[TURN] = turn
+        @gate.synchronize do
+          @writing = false
+          @readers += 1 if turn
+          @gate_changed.broadcast
+        end
+      end
     end
 
     ##
@@ -187,6 +244,27 @@ module Padrino
     end
 
     private
+
+    ##
+    # Waits until no request or other reload runs, then marks a reload as running. New requests
+    # wait meanwhile, so a busy server can't keep the reload waiting. If the wait is interrupted,
+    # the request it was called from gets its turn back.
+    #
+    def wait_for_exclusive_turn(turn)
+      @gate.synchronize do
+        @readers -= 1 if turn
+        @writers_waiting += 1
+        taken = false
+        begin
+          @gate_changed.wait(@gate) while @writing || @readers.positive?
+          @writing = taken = true
+        ensure
+          @writers_waiting -= 1
+          @readers += 1 if turn && !taken
+          @gate_changed.broadcast
+        end
+      end
+    end
 
     ##
     # Returns absolute path of the file.

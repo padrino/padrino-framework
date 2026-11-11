@@ -11,15 +11,12 @@ module Padrino
         @app = app
         @cooldown = cooldown
         @last = (Time.now - cooldown)
-        @mutex = Mutex.new
       end
 
       # Invoked in order to perform the reload as part of the request stack.
       def call(env)
         if @cooldown && Time.now > @last + @cooldown
-          @mutex.synchronize do
-            Padrino.reload!
-          end
+          Padrino.reload!
           @last = Time.now
         end
         @app.call(env)
