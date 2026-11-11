@@ -284,9 +284,11 @@ module Padrino
       #
       # A relative source in +imports+ resolves in the javascripts folder like a +javascript_include_tag+
       # source, but without the asset stamp: a module the page imports both by its name and by a relative
-      # path from another module is then one module, not two. A relative source ending in "/" maps a prefix
-      # ('lib/' => 'lib/' maps "lib/chart" to /javascripts/lib/chart). A source with a scheme
-      # (https:, data:), or starting with "/" or "//", is written as given.
+      # path from another module is then one module, not two. Since the addresses carry no stamp, serve
+      # the javascripts folder with revalidation (no long-lived immutable Cache-Control), so browsers pick
+      # up changed modules after a deploy. A name ending in "/" maps a prefix ('lib/' => 'lib' maps
+      # "lib/chart" to /javascripts/lib/chart). A source with a scheme (https:, data:), or starting with
+      # "/" or "//", is written as given, with spaces escaped.
       #
       # @overload javascript_importmap_tag(entry = nil, options = {})
       #   @param [String] entry
@@ -295,7 +297,12 @@ module Padrino
       #     The html options for the import map tag. A +nonce+ goes on every tag this writes, for a
       #     Content Security Policy; +type+ is ignored.
       #   @option options [Hash] :imports
-      #     The module names, each with the javascript source or URL it maps to.
+      #     The module names, each with the javascript source or URL it maps to (a blank one raises
+      #     ArgumentError).
+      #   @option options [Hash] :scopes
+      #     Written as the import map's "scopes", as given.
+      #   @option options [Hash] :integrity
+      #     Written as the import map's "integrity" (URLs to their integrity metadata), as given.
       #   @option options [Boolean] :preload
       #     If true, a modulepreload link is written for each import (but not for prefixes), so browsers
       #     fetch them all at once instead of one import at a time.
@@ -316,18 +323,20 @@ module Padrino
       #   #   <link rel="modulepreload" href="/javascripts/app.js" />
       #
       def javascript_importmap_tag(entry = nil, options = {})
-        entry, options = nil, entry if entry.is_a?(Hash)
+        entry, options = nil, entry.merge(options) if entry.is_a?(Hash)
         options = Utils.symbolize_keys(options)
         imports = (options.delete(:imports) || {}).each_with_object({}) do |(name, source), all|
-          all[name.to_s] = importmap_address(source.to_s)
+          all[name.to_s] = importmap_address(name.to_s, source)
         end
+        importmap = { 'imports' => imports }
+        %i[scopes integrity].each { |key| importmap[key.to_s] = options.delete(key) if options.key?(key) }
         preload = options.delete(:preload)
         options.delete(:type)
         nonce = options[:nonce]
         html = SafeBuffer.new
-        html << content_tag(:script, script_safe_json('imports' => imports), { type: 'importmap' }.update(options))
+        html << content_tag(:script, script_safe_json(importmap), { type: 'importmap' }.update(options))
         if preload
-          imports.each_value do |href|
+          imports.values.uniq.each do |href|
             html << tag(:link, rel: 'modulepreload', href: href, nonce: nonce) unless href.end_with?('/')
           end
         end
@@ -339,13 +348,13 @@ module Padrino
 
       ##
       # Returns a link tag that tells browsers to fetch +source+ early, before the page asks for it.
-      # A relative script, stylesheet or image source resolves like +javascript_include_tag+,
-      # +stylesheet_link_tag+ and +image_tag+ sources; any other resolves from the public folder.
-      #
-      # Browsers only use a preload for a request to the same URL, asset stamp included, so preload a
-      # file that a stylesheet refers to (such as a font) by the path the stylesheet uses. In the same way,
-      # preload the modules an import map maps with +javascript_importmap_tag+'s +preload+ option, whose
-      # links use the map's unstamped addresses.
+      # Browsers only use a preload for a request to the same URL, so +source+ resolves the way the
+      # page will ask for it. A relative script, module, stylesheet or image source resolves like
+      # +javascript_include_tag+, +stylesheet_link_tag+ and +image_tag+ sources, asset stamp included.
+      # Any other relative source (a font a stylesheet refers to, a track, a file for fetch()) resolves
+      # from the public folder without the asset stamp ('fonts/a.woff2' is /fonts/a.woff2). Preload
+      # the modules an import map maps with +javascript_importmap_tag+'s +preload+ option, whose links
+      # use the map's unstamped addresses.
       #
       # @param [String] source
       #   The path or URL of the file to preload.
@@ -359,8 +368,10 @@ module Padrino
       # @option options [String] :type
       #   The MIME type, so browsers skip a file they can't use.
       # @option options [String, Boolean] :crossorigin
-      #   The CORS mode; +true+ writes "anonymous". Fonts and +:fetch+ default to "anonymous", since browsers
-      #   fetch those in CORS mode and only use a preload made the same way; +false+ leaves it out.
+      #   The CORS mode; +true+ writes "anonymous", +false+ leaves it out. Fonts, tracks and +:fetch+ default
+      #   to "anonymous": browsers only use a preload fetched the way the page fetches the file, which for
+      #   those is in CORS mode. A track preload is used only when its media element has
+      #   crossorigin="anonymous" too.
       #
       # @return [String] Link tag html for +source+ with specified +options+.
       #
@@ -368,7 +379,7 @@ module Padrino
       #   preload_link_tag 'application.css'
       #   # Generates: <link rel="preload" href="/stylesheets/application.css?1269008689" as="style" />
       #
-      #   preload_link_tag '/fonts/inter.woff2', type: 'font/woff2'
+      #   preload_link_tag 'fonts/inter.woff2', type: 'font/woff2'
       #   # Generates: <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
       #
       #   preload_link_tag 'application', as: :module
@@ -376,11 +387,13 @@ module Padrino
       #
       def preload_link_tag(source, options = {})
         options = Utils.symbolize_keys(options)
-        as = options.delete(:as)&.to_s&.downcase || PRELOAD_DESTINATIONS[File.extname(source.to_s.sub(/[?#].*/m, '')).downcase.delete('.')]
+        as = (options.delete(:as) || '').to_s.strip.downcase
+        as = PRELOAD_DESTINATIONS[File.extname(source.to_s.sub(/[?#].*/m, '')).downcase.delete('.')] if as.empty?
         crossorigin = options.delete(:crossorigin)
-        crossorigin = 'anonymous' if crossorigin == true || (crossorigin.nil? && %w[font fetch].include?(as))
+        crossorigin = 'anonymous' if crossorigin == true || (crossorigin.nil? && %w[fetch font track].include?(as))
         rel = as == 'module' ? 'modulepreload' : 'preload'
-        href = asset_path(PRELOAD_ASSET_KINDS[as], source)
+        kind = PRELOAD_ASSET_KINDS[as]
+        href = kind ? asset_path(kind, source) : unstamped_asset_path(nil, source)
         defaults = { rel: rel, href: href, as: (as if rel == 'preload'), type: options.delete(:type), crossorigin: crossorigin }
         tag(:link, defaults.update(options))
       end
@@ -446,15 +459,27 @@ module Padrino
       end
 
       ##
-      # Returns the import map address for +source+: as given with a scheme or a leading "/",
-      # else in the javascripts folder, without the asset stamp (and without ".js" for a prefix).
+      # Returns the import map address for the import +name+: its +source+ without the asset stamp,
+      # ending in "/" for a prefix (a +name+ ending in "/").
       #
-      def importmap_address(source)
+      def importmap_address(name, source)
+        raise ArgumentError, "import #{name.inspect} has no source" if source.to_s.strip.empty?
+
+        source = source.to_s
+        source = "#{source}/" if name.end_with?('/') && !source.end_with?('/')
+        unstamped_asset_path(:js, source)
+      end
+
+      ##
+      # Returns the path to +source+ like +asset_path+, but without the asset stamp. A source with
+      # a scheme or a leading "/" is kept, and one ending in "/" gets no extension.
+      #
+      def unstamped_asset_path(kind, source)
+        source = source.to_s.gsub(' ', '%20')
         return source if source.match?(%r{\A(?:[a-z][a-z0-9+.-]*:|/)}i)
 
-        source = source.gsub(' ', '%20')
-        source = asset_normalize_extension(:js, source) unless source.end_with?('/')
-        uri_root_path(asset_folder_name(:js), source)
+        source = asset_normalize_extension(kind, source) unless source.end_with?('/')
+        uri_root_path(asset_folder_name(kind), source)
       end
 
       ##

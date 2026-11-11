@@ -511,10 +511,19 @@ describe 'AssetTagHelpers' do
       assert_equal image_tag('logo.PNG')[/src="([^"]*)"/, 1], preload_link_tag('logo.PNG')[/href="([^"]*)"/, 1]
     end
 
-    it 'should resolve other sources from the public folder' do
-      self.class.stubs(:asset_stamp).returns(false)
-      assert_equal '<link rel="preload" href="/captions/en.vtt" as="track" />', preload_link_tag('captions/en.vtt')
+    it 'should resolve other sources from the public folder without the asset stamp' do
+      assert_equal '<link rel="preload" href="/captions/en.vtt" as="track" crossorigin="anonymous" />', preload_link_tag('captions/en.vtt')
       assert_equal '<link rel="preload" href="/fonts/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('fonts/a.woff2')
+      assert_equal '<link rel="preload" href="/api/items" as="fetch" crossorigin="anonymous" />', preload_link_tag('api/items', as: :fetch)
+      assert_equal '<link rel="preload" href="/data/my%20file.json" />', preload_link_tag('data/my file.json')
+    end
+
+    it 'should resolve unstamped sources under the uri root and keep absolute ones' do
+      self.class.stubs(:uri_root).returns('/blog')
+      assert_equal '<link rel="preload" href="/blog/fonts/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('fonts/a.woff2')
+      assert_equal '<link rel="preload" href="/fonts/my%20a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('/fonts/my a.woff2')
+      assert_equal '<link rel="preload" href="//cdn.example.com/a.vtt" as="track" crossorigin="anonymous" />',
+                   preload_link_tag('//cdn.example.com/a.vtt')
     end
 
     it 'should keep absolute paths and urls' do
@@ -542,7 +551,15 @@ describe 'AssetTagHelpers' do
       assert_equal '<link rel="preload" href="/data.json" />', preload_link_tag('/data.json')
     end
 
-    it 'should write crossorigin for fonts unless told otherwise' do
+    it 'should infer the destination for a false or blank one' do
+      assert_equal '<link rel="preload" href="/a.css" as="style" />', preload_link_tag('/a.css', as: false)
+      assert_equal '<link rel="preload" href="/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('/a.woff2', as: '')
+      assert_equal '<link rel="preload" href="/data.json" />', preload_link_tag('/data.json', as: ' ')
+    end
+
+    it 'should write crossorigin for fonts, tracks and fetches unless told otherwise' do
+      assert_equal '<link rel="preload" href="/a.vtt" as="track" crossorigin="anonymous" />', preload_link_tag('/a.vtt')
+      assert_equal '<link rel="preload" href="/a.vtt" as="track" />', preload_link_tag('/a.vtt', crossorigin: false)
       assert_equal 'crossorigin="use-credentials"', preload_link_tag('/a.woff2', crossorigin: 'use-credentials')[/crossorigin="[^"]*"/]
       assert_equal '<link rel="preload" href="/a.woff2" as="font" />', preload_link_tag('/a.woff2', crossorigin: false)
       assert_equal '<link rel="preload" href="/a.css" as="style" />', preload_link_tag('/a.css')
@@ -598,8 +615,36 @@ describe 'AssetTagHelpers' do
     it 'should keep sources with a scheme or a leading slash as given' do
       self.class.stubs(:uri_root).returns('/blog')
       sources = { 'cdn' => 'https://cdn.example.com/x', 'rel' => '//cdn.example.com/p', 'root' => '/js/y',
-                  'lodash/' => '/vendor/lodash/', 'data' => 'data:text/javascript,export default 1', 'blob' => 'BLOB:x' }
+                  'lodash/' => '/vendor/lodash/', 'data' => 'data:text/javascript,export%20default%201', 'blob' => 'BLOB:x' }
       assert_equal({ 'imports' => sources }, importmap_of(javascript_importmap_tag(imports: sources)))
+      assert_equal({ 'imports' => { 'a' => '/my%20a.js' } }, importmap_of(javascript_importmap_tag(imports: { 'a' => '/my a.js' })))
+    end
+
+    it 'should map a name ending in a slash as a prefix' do
+      assert_equal({ 'imports' => { 'lib/' => '/javascripts/lib/', 'vendor/' => '/vendor/', 'cdn/' => 'https://cdn.example.com/x/' } },
+                   importmap_of(javascript_importmap_tag(imports: { 'lib/' => 'lib', 'vendor/' => '/vendor', 'cdn/' => 'https://cdn.example.com/x' })))
+    end
+
+    it 'should raise for an import without a source' do
+      [nil, '', '  '].each do |source|
+        error = assert_raises(ArgumentError) { javascript_importmap_tag(imports: { 'app' => '/app.js', 'chart' => source }) }
+        assert_includes error.message, '"chart"'
+      end
+    end
+
+    it 'should take the options as a second hash' do
+      assert_equal '<script type="importmap" nonce="n">{"imports":{"app":"/app.js"}}</script>',
+                   javascript_importmap_tag({ imports: { 'app' => '/app.js' } }, { nonce: 'n' })
+    end
+
+    it 'should write scopes and integrity into the import map' do
+      scopes = { '/admin/' => { 'chart' => '/javascripts/chart-2.js' } }
+      integrity = { '/javascripts/app.js' => 'sha384-</script>' }
+      actual_html = javascript_importmap_tag(imports: { 'app' => 'app' }, scopes: scopes, integrity: integrity)
+      assert_equal({ 'imports' => { 'app' => '/javascripts/app.js' }, 'scopes' => scopes, 'integrity' => integrity }, importmap_of(actual_html))
+      assert_equal 1, actual_html.scan('</script').size
+      assert_html_has_no_tag(actual_html, 'script[scopes]')
+      assert_html_has_no_tag(actual_html, 'script[integrity]')
     end
 
     it 'should resolve a relative prefix to the javascripts folder' do
@@ -630,6 +675,11 @@ describe 'AssetTagHelpers' do
                    '<link rel="modulepreload" href="/app.js" />' \
                    '<link rel="modulepreload" href="https://cdn.example.com/x.js" />' \
                    '<script type="module">import "app"</script>', actual_html
+    end
+
+    it 'should preload each address once' do
+      actual_html = javascript_importmap_tag(imports: { 'app' => 'app', 'main' => 'app', 'x' => '/javascripts/app.js' }, preload: true)
+      assert_equal 1, actual_html.scan('<link rel="modulepreload" href="/javascripts/app.js" />').size
     end
 
     it 'should not preload prefixes' do
