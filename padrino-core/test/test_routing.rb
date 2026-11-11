@@ -596,6 +596,22 @@ describe 'Routing' do
     assert_equal 404, status
   end
 
+  it 'should match a host given in any case, or one of an Array of hosts' do
+    mock_app do
+      get(:index, host: 'admin.example.com') { 'admin' }
+      get('/api', host: ['api.example.com', /\Aapi\d\./]) { 'api' }
+      get(:index) { 'public' }
+    end
+    get '/', {}, 'HTTP_HOST' => 'Admin.Example.COM'
+    assert_equal 'admin', body
+    get '/api', {}, 'HTTP_HOST' => 'api.example.com'
+    assert_equal 'api', body
+    get '/api', {}, 'HTTP_HOST' => 'api2.example.com'
+    assert_equal 'api', body
+    get '/api', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 404, status
+  end
+
   it 'should match hosts given to a controller, without running its filters for other hosts' do
     mock_app do
       controller :admin, map: '/', conditions: { host: 'admin.example.com' } do

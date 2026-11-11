@@ -127,7 +127,7 @@ module Padrino
 
         def load_cached_response
           began_at = Time.now
-          route_cache_key = resolve_cache_key || env['PATH_INFO']
+          route_cache_key = page_cache_key
 
           value = settings.cache[route_cache_key]
           logger.bench 'GET Cache', began_at, route_cache_key if defined?(logger) && logger.respond_to?(:bench) && logger.debug? && value
@@ -139,7 +139,7 @@ module Padrino
           return unless @_response_buffer.is_a?(String)
 
           began_at = Time.now
-          route_cache_key = resolve_cache_key || env['PATH_INFO']
+          route_cache_key = page_cache_key
 
           content = {
             body: @_response_buffer,
@@ -149,6 +149,12 @@ module Padrino
           settings.cache.store(route_cache_key, content, expires: cache_expires)
 
           logger.bench 'SET Cache', began_at, route_cache_key if defined?(logger) && logger.respond_to?(:bench) && logger.debug?
+        end
+
+        # The key a page is kept under: its cache_key, or else its path, after the host for a route
+        # given +host:+, since the same path can serve another route on another host.
+        def page_cache_key
+          resolve_cache_key || (@route.host ? "#{request.host.to_s.downcase}#{env['PATH_INFO']}" : env['PATH_INFO'])
         end
 
         ##
