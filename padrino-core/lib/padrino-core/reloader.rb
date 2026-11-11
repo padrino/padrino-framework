@@ -81,7 +81,7 @@ module Padrino
     attr_reader :max_wait
 
     def max_wait=(seconds)
-      unless seconds.nil? || (seconds.is_a?(Numeric) && seconds.real?)
+      unless seconds.nil? || (seconds.is_a?(Numeric) && seconds.real? && !seconds.to_f.nan?)
         raise ArgumentError, "Padrino::Reloader.max_wait must be a number of seconds or nil, not #{seconds.inspect}"
       end
       @max_wait = seconds
@@ -90,16 +90,16 @@ module Padrino
     ##
     # Runs the block as a request: requests run together, but not while a reload runs. A request
     # that arrives during a reload, or while one waits to start, waits for it. A call nested in
-    # a request or a reload, from any fiber of its thread, runs at once. While reloading is
-    # disabled, it just runs the block.
+    # a request or a reload, from any fiber of its thread, runs at once.
     #
     # ceiling: turns belong to threads, so under a fiber scheduler (one thread serving several
     # requests) a reload started by one of its requests doesn't wait for the others, and the
-    # thread's requests don't wait for it. A reload from another of its fibers still waits for
-    # the turn, and skips the changes reloaded meanwhile.
+    # thread's requests don't wait for it. While one of its fibers reloads, a reload from another
+    # runs at once, alongside it; one that was already waiting for the turn still waits, and
+    # skips the changes reloaded meanwhile. Upgrade path: tell the reloading fiber apart from the
+    # thread's others (Fiber storage, Ruby 3.2+), still letting the fibers nested in a reload run.
     #
     def serve(&block)
-      return yield unless enabled?
       thread = Thread.current
       # Interrupts (Thread#raise, Timeout) wait until the turn is taken or given back.
       Thread.handle_interrupt(Object => :never) do
@@ -116,14 +116,13 @@ module Padrino
     # Runs the block alone, if the code changed: once the requests in progress have finished, or
     # max_wait seconds have passed. Called from a request, the request gives up its turn while it
     # waits and takes it back afterwards. Returns without running the block if another thread
-    # reloaded the changes meanwhile, so one edit causes one reload. While reloading is disabled,
-    # it runs the block at once if the code changed.
+    # reloaded the changes meanwhile, so one edit causes one reload.
     #
     def exclusively(&block)
       generation = @generation
       return unless changed?
       thread = Thread.current
-      return yield if !enabled? || thread.thread_variable_get(RELOADING)
+      return yield if thread.thread_variable_get(RELOADING)
       Thread.handle_interrupt(Object => :never) do
         in_progress = wait_for_exclusive_turn(thread, generation)
         return unless in_progress
@@ -297,8 +296,8 @@ module Padrino
     ##
     # Waits until no request or other reload runs, or max_wait seconds have passed while only
     # requests run, then marks a reload as running and returns the number of requests still in
-    # progress. Returns nil if another reload ends meanwhile. The thread gives up its own turn
-    # while it waits.
+    # progress. Returns nil if another reload ends meanwhile, once no reload runs. The thread
+    # gives up its own turn while it waits.
     #
     def wait_for_exclusive_turn(thread, generation)
       @gate.synchronize do
@@ -316,6 +315,9 @@ module Padrino
           if taken
             @writing = true
             change_turn(thread, RELOADING, true)
+          else
+            # A newer reload may have started: the thread's request mustn't run during it.
+            wait_at_gate while @writing
           end
           @readers if taken
         ensure

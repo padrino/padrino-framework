@@ -65,8 +65,9 @@ module Padrino
     # While reloading is enabled, every request, to any mounted app, runs in turn with code
     # reloads (see Reloader.serve).
     #
-    # @return [Padrino::Router]
-    #   The router for the application.
+    # @return [#call]
+    #   The Rack app: the router for the application, behind the middleware added with
+    #   {Padrino.use}, and, while reloading is enabled, wrapped in a lambda that takes turns.
     #
     # @raise [ApplicationLoadError]
     #   No applications were mounted.

@@ -188,16 +188,21 @@ describe 'Reloader while serving' do
 
   it 'answers every request while the code reloads over and over' do
     Padrino::Reloader.max_wait = 10
-    expected = { '/' => 'served', '/other' => 'other', '/steady' => 'steady', '/sinatra' => 'sinatra' }
+    # Two clients of ServingDemo, so that one can come in while the other reloads the code.
+    expected = [%w[/ served], %w[/ served], %w[/other other], %w[/steady steady], %w[/sinatra sinatra]]
     answered = Queue.new
+    # The requests each client has started and finished, written by that client only.
+    counts = expected.map { [0, 0] }
     done = false
-    clients = expected.map do |path, body|
+    clients = expected.each_with_index.map do |(path, body), index|
       Thread.new do
         failures = []
         until done
+          counts[index][0] += 1
           answer = request(path)
+          counts[index][1] += 1
           failures << "#{path}: #{answer[0]} #{answer[1][0, 80]}" unless answer == [200, body]
-          answered << path
+          answered << index
           # Lets the reloading thread run between requests, as a server's I/O would.
           Thread.pass
         end
@@ -205,10 +210,24 @@ describe 'Reloader while serving' do
       end
     end
 
-    # Gives the clients a chance to run in the middle of each reload.
+    # Each reload pauses once ServingDemo's routes are reset, until a client of ServingDemo
+    # comes in: it waits for the reload, or (without the gate) runs in the middle of it.
+    resets = overlaps = 0
     reset_router = ServingDemo.method(:reset_router!)
-    ServingDemo.stub(:reset_router!, -> { reset_router.call.tap { 10.times { Thread.pass } } }) do
-      10.times do
+    paused = lambda do
+      reset_router.call
+      resets += 1
+      index = clients.index { |client| client != Thread.current }
+      count = counts[index]
+      started = count[0]
+      deadline = Time.now + 5
+      Thread.pass until (came_in = waiting_for_turn?(clients[index]) || (count[0] > started && count[1] >= count[0])) ||
+                        Time.now > deadline
+      overlaps += 1 if came_in
+    end
+    ServingDemo.stub(:reset_router!, paused) do
+      # An edit made while a client's reload runs can be reloaded with it.
+      until resets >= 10
         # Every client is serving requests when the code changes.
         seen = Set.new
         seen << pop_from(answered, clients.first) until seen.size == expected.size
@@ -219,6 +238,7 @@ describe 'Reloader while serving' do
       done = true
     end
     assert_empty values_of(*clients).flatten
+    assert_equal resets, overlaps, 'no request came in during a reload'
     assert_empty warnings
   end
 
@@ -307,6 +327,46 @@ describe 'Reloader while serving' do
     assert_empty warnings
   end
 
+  it 'holds a request whose reload was skipped while a newer reload runs' do
+    Padrino::Reloader.max_wait = 10
+    entered = Queue.new
+    release = Queue.new
+    hold_requests(entered, release)
+    reloads = count_reloads
+    reloader = Padrino::Reloader
+    change_gate = lambda do |changes|
+      reloader.instance_variable_get(:@gate).synchronize do
+        changes.each { |name, value| reloader.instance_variable_set(name, value) }
+        reloader.instance_variable_get(:@gate_changed).broadcast
+      end
+    end
+
+    begin
+      holder = Thread.new { request('/hold') }
+      pop_from(entered, holder)
+      change_apps!
+      # The other app's first request sees the changes, and its reload waits for the holder.
+      skipped = Thread.new { request('/other') }
+      wait_for_turn(skipped)
+      assert waiting_for_turn?(skipped), 'the reload did not wait for the request in progress'
+
+      # Meanwhile, as far as the waiting reload can tell, another reload has reloaded the changes,
+      # and a newer one has started.
+      change_gate.call(:@generation => reloader.instance_variable_get(:@generation) + 1, :@writing => true)
+      refute skipped.join(0.5), 'the request ran during the newer reload'
+      assert waiting_for_turn?(skipped), 'the request did not wait for the newer reload'
+
+      change_gate.call(:@writing => false)
+      assert_equal [[200, 'other']], values_of(skipped)
+      assert_equal 0, reloads.size
+    ensure
+      release << true
+    end
+
+    assert_equal [[200, 'held']], values_of(holder)
+    assert_empty warnings
+  end
+
   [nil, Float::INFINITY].each do |max_wait|
     it "waits as long as the requests in progress take with max_wait #{max_wait.inspect}" do
       Padrino::Reloader.max_wait = max_wait
@@ -336,7 +396,7 @@ describe 'Reloader while serving' do
   end
 
   it 'refuses a max_wait that is not a number of seconds' do
-    ['3', :forever, Complex(1, 1)].each do |max_wait|
+    ['3', :forever, Complex(1, 1), Float::NAN].each do |max_wait|
       assert_raises(ArgumentError) { Padrino::Reloader.max_wait = max_wait }
     end
     assert_equal @max_wait, Padrino::Reloader.max_wait
@@ -423,36 +483,37 @@ describe 'Reloader while serving' do
     assert_empty warnings
   end
 
-  it 'reloads without waiting for the requests in progress while reloading is disabled' do
+  it 'reloads the changes once when two requests see them while reloading is disabled' do
     enabled = Padrino::Reloader.instance_variable_get(:@enabled)
     Padrino::Reloader.max_wait = 10
     entered = Queue.new
     release = Queue.new
-    hold_requests(entered, release)
     reloads = count_reloads
+    Padrino.before_load do
+      entered << true
+      release.pop
+    end
+    clients = []
 
     begin
       # As in development with Padrino::Reloader.enabled = false: the apps still set :reload.
       Padrino::Reloader.enabled = false
       @app = Padrino.application
-      holder = Thread.new { request('/hold') }
-      pop_from(entered, holder)
       change_apps!
-      # The other app's first request reloads the changes, and neither it nor the reload waits
-      # at the gate.
-      other = nil
-      Padrino::Reloader.instance_variable_get(:@gate).synchronize do
-        other = Thread.new { request('/other') }
-        assert other.join(2), 'the request or its reload waited at the gate'
-      end
-      assert_equal [[200, 'other']], values_of(other)
-      assert_equal 1, reloads.size
+      clients << Thread.new { request('/other') }
+      pop_from(entered, clients.first)
+      # The second request comes in while the first one reloads the changes.
+      clients << Thread.new { request('/other') }
+      wait_for_turn(clients.last)
+      assert_equal 1, reloads.size, 'two reloads ran at once'
+      assert waiting_for_turn?(clients.last), 'the request did not wait for the reload'
     ensure
-      release << true
+      clients.size.times { release << true }
       Padrino::Reloader.enabled = enabled
     end
 
-    assert_equal [[200, 'held']], values_of(holder)
+    assert_equal [[200, 'other']] * 2, values_of(*clients)
+    assert_equal 1, reloads.size
     assert_empty warnings
   end
 
@@ -607,15 +668,21 @@ describe 'Reloader while serving' do
     assert_equal [200, 'served'], request('/')
   end
 
-  it 'takes no turns while reloading is disabled' do
+  it 'takes no turns while reloading is disabled and no app reloads, as in production' do
     enabled = Padrino::Reloader.instance_variable_get(:@enabled)
     Padrino::Reloader.enabled = false
     Padrino.clear!
-    Padrino.mount('serving_steady_demo', app_file: File.expand_path('fixtures/apps/serving/steady.rb', __dir__)).to('/')
+    steady = File.expand_path('fixtures/apps/serving/steady.rb', __dir__)
+    Padrino.mount('serving_sinatra_demo', app_file: steady).to('/sinatra')
+    Padrino.mount('serving_steady_demo', app_file: steady).to('/')
     @app = Padrino.application
+    Padrino::Reloader::MTIMES[steady] = Time.at(0)
 
     Padrino::Reloader.stub(:serve, ->(*) { flunk 'the request took a turn' }) do
-      assert_equal [200, 'steady'], request('/')
+      Padrino::Reloader.stub(:exclusively, ->(*) { flunk 'the request reloaded the code' }) do
+        assert_equal [200, 'steady'], request('/')
+        assert_equal [200, 'sinatra'], request('/sinatra')
+      end
     end
   ensure
     Padrino::Reloader.enabled = enabled
