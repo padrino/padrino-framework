@@ -383,7 +383,8 @@ module Padrino
       #
       def asset_normalize_extension(kind, source)
         ignore_extension = !APPEND_ASSET_EXTENSIONS.include?(kind.to_s)
-        source << ".#{kind}" unless ignore_extension || source =~ /\.#{kind}/ || source =~ ABSOLUTE_URL_PATTERN
+        module_script = kind.to_s == 'js' && source =~ /\.[cm]js/
+        source << ".#{kind}" unless ignore_extension || module_script || source =~ /\.#{kind}/ || source =~ ABSOLUTE_URL_PATTERN
         source
       end
 

@@ -439,6 +439,14 @@ describe 'AssetTagHelpers' do
       actual_html = javascript_include_tag('application', 'base', type: 'module')
       assert_html_has_tag(actual_html, 'script', type: 'module', count: 2)
     end
+
+    it 'should keep the extension of .mjs and .cjs scripts' do
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<script src="/javascripts/app.mjs" type="module"></script>', javascript_include_tag('app.mjs', type: 'module')
+      assert_equal '<script src="/javascripts/lib/app.cjs"></script>', javascript_include_tag('lib/app.cjs')
+      assert_equal '<script src="/javascripts/app.mjs?v=2"></script>', javascript_include_tag('app.mjs?v=2')
+      assert_equal '<script src="/javascripts/app.js"></script>', javascript_include_tag('app')
+    end
   end
 
   describe 'for #favicon_tag method' do
