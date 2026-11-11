@@ -1795,6 +1795,19 @@ describe 'Routing' do
     assert_equal 'text/javascript', body
   end
 
+  it 'should filters by a media type that has no format name' do
+    mock_app do
+      post('/foo', accepts: [:json, 'application/vnd.api+json']) { content_type.to_s }
+    end
+
+    post '/foo', {}, { 'CONTENT_TYPE' => 'application/vnd.api+json' }
+    assert ok?
+    assert_equal 'application/vnd.api+json', body
+    assert_equal 'application/vnd.api+json', response['Content-Type']
+    post '/foo', {}, { 'CONTENT_TYPE' => 'application/json' }
+    assert_equal 'json', body
+  end
+
   it 'should filters by accept header' do
     mock_app do
       get '/foo', provides: %i[xml js] do
@@ -1923,6 +1936,50 @@ describe 'Routing' do
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
     assert_equal 'js', body
+  end
+
+  it 'should set content_type to :html if Accept has no type with a format name and provides of :any' do
+    mock_app do
+      get('/foo', provides: :any) { content_type.to_s }
+    end
+
+    ['application/x-unknown', 'foo/bar', 'text/*', 'application/*', 'application/x-unknown, */*;q=0.1'].each do |accept|
+      get '/foo', {}, { 'HTTP_ACCEPT' => accept }
+      assert_equal 200, status, accept
+      assert_equal 'html', body, accept
+      assert_equal 'text/html;charset=utf-8', response['Content-Type'], accept
+    end
+  end
+
+  it 'should set content_type to the first accepted type with a format name and provides of :any' do
+    mock_app do
+      get('/foo', provides: :any) { content_type.to_s }
+    end
+
+    {
+      'application/json' => 'json',
+      'application/x-unknown, application/json;q=0.9' => 'json',
+      'application/x-unknown, text/html;q=0.9' => 'html',
+      'foo/bar, application/*;q=0.9, application/xml;q=0.8' => 'xml',
+      'text/*, application/json;q=0.5' => 'html'
+    }.each do |accept, format|
+      get '/foo', {}, { 'HTTP_ACCEPT' => accept }
+      assert_equal 200, status, accept
+      assert_equal format, body, accept
+    end
+  end
+
+  it 'should set content_type to a provided media type that has no format name' do
+    mock_app do
+      get('/foo', provides: [:html, 'application/vnd.api+json']) { content_type.to_s }
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/vnd.api+json' }
+    assert_equal 200, status
+    assert_equal 'application/vnd.api+json', body
+    assert_equal 'application/vnd.api+json', response['Content-Type']
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'text/html' }
+    assert_equal 'html', body
   end
 
   it 'should allows custom route-conditions to be set via route options and halt' do
