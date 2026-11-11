@@ -34,6 +34,21 @@ describe 'ComponentGenerator' do
       assert_equal 'activerecord', components_chosen[:orm]
     end
 
+    it 'should warn when adding tailwind on Ruby 2.7' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Padrino::Generators::Component.any_instance.stubs(:running_ruby_version).returns('2.7.8')
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_includes out, 'The tailwind stylesheet uses the tailwindcss-ruby gem, which needs Ruby 3.0 or later; bundle install will fail on Ruby 2.7.8.'
+      assert_match_in_file(/gem 'tailwindcss-ruby', '~> 4.0'$/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should not warn when adding tailwind on Ruby 3.0' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Padrino::Generators::Component.any_instance.stubs(:running_ruby_version).returns('3.0.0')
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      refute_match(/needs Ruby/, out)
+    end
+
     it 'should move existing public styles into the tailwind source' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "body { color: red; }\n")

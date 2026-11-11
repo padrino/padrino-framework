@@ -10,6 +10,7 @@ source 'https://rubygems.org'
 <% if options.server == 'trinidad' -%>
 gem 'trinidad', platform: 'jruby'
 <% elsif options.server == 'falcon' -%>
+<%# The Ruby this falcon requirement needs is in MINIMUM_RUBY (actions.rb). -%>
 gem 'falcon', '>= 0.43'
 <% else -%>
 gem '<%= options.server %>'
