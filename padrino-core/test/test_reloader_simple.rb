@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'tmpdir'
 
 require_relative 'fixtures/apps/simple'
 
@@ -164,6 +165,46 @@ describe 'SimpleReloader' do
       refute ReloaderNamespace.const_defined?(:Inner, false)
     ensure
       Object.send(:remove_const, :ReloaderNamespace)
+    end
+
+    # Loads two classes from <tmp>/<folder>/located.rb and lets Reloader remove them, with the project at
+    # <tmp>/app and <tmp>/<excluded_folder> excluded. Returns the names of the ones it kept.
+    def kept_constants_from(folder, excluded_folder = nil)
+      names = %i[ReloaderLocatedClass ReloaderLocatedError]
+      tmp = Dir.mktmpdir
+      excluded = File.join(tmp, excluded_folder) if excluded_folder
+      Padrino::Reloader.exclude << excluded if excluded
+      file = File.join(tmp, folder, 'located.rb')
+      FileUtils.mkdir_p(File.dirname(file))
+      File.write(file, <<-DOC)
+        class ReloaderLocatedClass
+          def self.value; end
+        end
+
+        class ReloaderLocatedError < StandardError
+        end
+      DOC
+      load file
+      Padrino.stub(:root, File.join(tmp, 'app')) do
+        names.each { |name| Padrino::Reloader.remove_constant(Object.const_get(name)) }
+      end
+      names.select { |name| Object.const_defined?(name, false) }
+    ensure
+      Padrino::Reloader.exclude.delete(excluded)
+      names.each { |name| Object.send(:remove_const, name) if Object.const_defined?(name, false) }
+      FileUtils.rm_rf(tmp)
+    end
+
+    it 'should keep constants defined in an excluded folder' do
+      assert_equal %i[ReloaderLocatedClass ReloaderLocatedError], kept_constants_from('app/config', 'app/config')
+    end
+
+    it 'should remove constants defined in a folder whose name only starts with an excluded one' do
+      assert_empty kept_constants_from('app/configuration', 'app/config')
+    end
+
+    it 'should remove constants defined in the project folder' do
+      assert_empty kept_constants_from('app')
     end
   end
 end
