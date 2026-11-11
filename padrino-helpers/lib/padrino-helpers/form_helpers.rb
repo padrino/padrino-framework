@@ -517,7 +517,7 @@ module Padrino
       #   #    </datalist>
       #
       def datalist_tag(id, values, options = {})
-        content_tag(:datalist, options_for_select(values), { id: id }.update(options))
+        content_tag(:datalist, options_for_select(Array(values)), { id: id }.update(options))
       end
 
       ##

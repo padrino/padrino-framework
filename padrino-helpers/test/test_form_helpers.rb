@@ -901,6 +901,10 @@ describe 'FormHelpers' do
   end
 
   describe 'for #datalist_tag method' do
+    it 'should display an empty datalist for nil values' do
+      assert_equal '<datalist id="tags"></datalist>', datalist_tag(:tags, nil)
+    end
+
     it 'should display a datalist with an option for each value' do
       actual_html = datalist_tag(:browsers, %w[Firefox Safari])
       assert_html_has_tag(actual_html, 'datalist#browsers option', count: 2)
