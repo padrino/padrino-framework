@@ -148,18 +148,25 @@ describe 'Reloader while serving' do
     queue.pop
   end
 
-  # Waits until the thread ends or waits at Padrino::Reloader's gate.
-  def wait_for_turn(thread)
+  # Waits until the thread ends or waits at Padrino::Reloader's gate (or, given a block, until
+  # the block is true for it).
+  def wait_for_turn(thread, &waiting)
+    waiting ||= method(:waiting_for_turn?)
     deadline = Time.now + 5
-    Thread.pass until !thread.alive? || waiting_for_turn?(thread) || Time.now > deadline
+    Thread.pass until !thread.alive? || waiting.call(thread) || Time.now > deadline
   end
 
-  # True while the thread sleeps at Padrino::Reloader's gate: the gate's methods are among its
-  # innermost frames, above only the mutex, the condition variable and the interrupt mask.
+  # True while the thread sleeps at Padrino::Reloader's gate, waiting for its turn to change:
+  # the gate's wait is among its innermost frames, above only the condition variable and the
+  # interrupt mask. A thread only blocked on the gate's mutex doesn't count, since it may go on
+  # without waiting.
   def waiting_for_turn?(thread)
-    thread.status == 'sleep' && thread.backtrace_locations.to_a.first(6).any? do |location|
-      %w[serve take_serving_turn give_serving_turn wait_for_exclusive_turn].include?(location.base_label)
-    end
+    sleeping_in?(thread, 'wait_at_gate')
+  end
+
+  # True while the thread sleeps with the named method among its innermost frames.
+  def sleeping_in?(thread, label)
+    thread.status == 'sleep' && thread.backtrace_locations.to_a.first(6).any? { |location| location.base_label == label }
   end
 
   # Returns the threads' values, failing if one doesn't finish in time.
@@ -578,8 +585,8 @@ describe 'Reloader while serving' do
     # The request ends while the gate is busy, then is interrupted as it waits to give its turn back.
     Padrino::Reloader.instance_variable_get(:@gate).synchronize do
       release << true
-      wait_for_turn(holder)
-      assert waiting_for_turn?(holder), 'the request did not wait to give its turn back'
+      wait_for_turn(holder) { sleeping_in?(holder, 'give_serving_turn') }
+      assert sleeping_in?(holder, 'give_serving_turn'), 'the request did not wait to give its turn back'
       holder.raise(ServingInterrupt)
     end
     assert_kind_of ServingInterrupt, values_of(holder).first
@@ -795,7 +802,7 @@ describe 'Reloader while serving' do
     change_apps!
 
     assert_equal [true], values_of(Thread.new { Padrino.reload! })
-    assert nested.pop, 'the nested reload did not reload the changes'
+    assert_same true, nested.pop, 'the nested reload did not reload the changes'
     assert_equal [200, 'served'], request('/')
   end
 
@@ -823,6 +830,19 @@ describe 'Reloader while serving' do
       end
 
       assert_equal [[200, 'held']], values_of(holder)
+    end
+
+    it 'waits for the request that forked once another thread takes a turn' do
+      Padrino::Reloader.max_wait = 0.2
+      result = Padrino::Reloader.serve do
+        in_fork do
+          # In the forked process, another thread comes to the gate first.
+          Thread.new { request('/steady') }.join
+          change_apps!
+          [Thread.new { Padrino.reload! }.value, warnings.map { |line| line[/\d+ still running/] }]
+        end
+      end
+      assert_equal [true, ['1 still running']].inspect, result
     end
 
     it 'serves without waiting for the reload the parent was running' do

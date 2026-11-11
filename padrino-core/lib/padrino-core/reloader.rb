@@ -124,7 +124,10 @@ module Padrino
       generation = @generation
       return unless changed?
       thread = Thread.current
-      return yield if thread.thread_variable_get(RELOADING)
+      if thread.thread_variable_get(RELOADING)
+        yield
+        return true
+      end
       Thread.handle_interrupt(Object => :never) do
         in_progress = wait_for_exclusive_turn(thread, generation)
         return unless in_progress
@@ -278,8 +281,12 @@ module Padrino
     # Waits while a reload runs or waits to start, so a busy server can't keep a reload waiting,
     # unless the thread already holds a turn.
     #
+    # ceiling: requests wait for a running reload without a time limit, so an after_load block
+    # that requests the app's own server and waits for the answer waits forever. Upgrade path:
+    # bound that wait too.
+    #
     def take_serving_turn(thread)
-      at_gate(thread) do
+      at_gate do
         unless thread.thread_variable_get(SERVING) || thread.thread_variable_get(RELOADING)
           wait_at_gate while @writing || @writers_waiting.positive?
         end
@@ -288,7 +295,7 @@ module Padrino
     end
 
     def give_serving_turn(thread)
-      at_gate(thread) do
+      at_gate do
         serving = thread.thread_variable_get(SERVING) - 1
         change_turn(thread, SERVING, (serving if serving.positive?))
         @gate_changed.broadcast if @readers.zero?
@@ -302,7 +309,7 @@ module Padrino
     # gives up its own turn while it waits.
     #
     def wait_for_exclusive_turn(thread, generation)
-      at_gate(thread) do
+      at_gate do
         change_turn(thread, WAITING, thread.thread_variable_get(WAITING).to_i + 1)
         @writers_waiting += 1
         taken = false
@@ -333,7 +340,7 @@ module Padrino
     end
 
     def end_exclusive_turn(thread, reloaded)
-      at_gate(thread) do
+      at_gate do
         @writing = false
         @generation += 1 if reloaded
         change_turn(thread, RELOADING, nil)
@@ -343,15 +350,17 @@ module Padrino
 
     ##
     # Runs the block holding @gate. In a process forked since the gate was last used, the turns
-    # of the threads that didn't survive the fork are dropped first, keeping the thread's own.
+    # of the threads that didn't survive the fork are dropped first, keeping those of the thread
+    # that forked, which is the child's main thread.
     #
-    def at_gate(thread)
+    def at_gate
       @gate.synchronize do
         unless @gate_pid == Process.pid
           @gate_pid = Process.pid
-          @readers = counts_as_reader?(thread) ? 1 : 0
-          @writers_waiting = thread.thread_variable_get(WAITING).to_i
-          @writing = thread.thread_variable_get(RELOADING) || false
+          forker = Thread.main
+          @readers = counts_as_reader?(forker) ? 1 : 0
+          @writers_waiting = forker.thread_variable_get(WAITING).to_i
+          @writing = forker.thread_variable_get(RELOADING) || false
         end
         yield
       end
