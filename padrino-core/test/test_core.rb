@@ -1,4 +1,6 @@
 require_relative 'helper'
+require 'open3'
+require 'tmpdir'
 
 describe 'Core' do
   def setup
@@ -82,6 +84,85 @@ describe 'Core' do
       assert_equal 500, status
       assert_includes body, 'StandardError'
       assert_includes body, '<code>show_exceptions</code> setting'
+    end
+  end
+
+  describe 'for deprecated shims' do
+    def setup
+      super
+      @warned = Padrino::Utils.instance_variable_get(:@warned_deprecations)
+      Padrino::Utils.instance_variable_set(:@warned_deprecations, nil)
+    end
+
+    def teardown
+      Padrino::Utils.instance_variable_set(:@warned_deprecations, @warned)
+    end
+
+    # Runs script in a new process, as PADRINO_ENV is read when padrino-core loads, and returns
+    # the last line it prints (the Gemfile may print first) and its stderr.
+    def run_script(script)
+      Dir.mktmpdir do |dir|
+        env = { 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
+        lib = File.expand_path('../lib', __dir__)
+        out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-I', lib, '-e', script, chdir: dir)
+        assert status.success?, err
+        [out.lines.last, err]
+      end
+    end
+
+    it 'should warn once that Padrino.set_encoding is removed in Padrino 1.0, naming the first call, and return nil' do
+      _out, err = capture_io do
+        assert_nil Padrino.set_encoding
+        assert_nil Padrino.set_encoding
+      end
+      assert_equal 1, err.scan('Padrino.set_encoding is deprecated').size, err
+      assert_includes err, "will be removed in Padrino 1.0. It does nothing, as Padrino no longer manages Ruby default encodings: remove the call (first used at #{__FILE__}:#{__LINE__ - 4})."
+    end
+
+    it 'should warn about Padrino.set_encoding while warnings are off and without a caller' do
+      verbose = $VERBOSE
+      $VERBOSE = nil
+      _out, err = capture_io { assert_nil Fiber.new(&Padrino.method(:set_encoding)).resume }
+      assert_includes err, 'Padrino.set_encoding is deprecated'
+    ensure
+      $VERBOSE = verbose
+    end
+
+    it 'should warn once that the default images_path is removed in Padrino 1.0, naming the first use' do
+      mock_app
+      _out, err = capture_io do
+        assert_equal File.join(@app.public_folder, 'images'), @app.images_path
+        assert @app.images_path?
+      end
+      assert_equal 1, err.scan('The images_path setting is deprecated').size, err
+      assert_includes err, "will be removed in Padrino 1.0. Use File.join(settings.public_folder, 'images') instead, or set :images_path yourself (first used at #{__FILE__}:#{__LINE__ - 4})."
+    end
+
+    it 'should name the caller of images_path? as the first use of images_path' do
+      mock_app
+      _out, err = capture_io { @app.images_path? }
+      assert_includes err, "(first used at #{__FILE__}:#{__LINE__ - 1})"
+    end
+
+    it 'should not warn about an images_path the app sets itself' do
+      mock_app { set :images_path, 'pictures' }
+      _out, err = capture_io { assert_equal 'pictures', @app.images_path }
+      refute_includes err, 'images_path'
+    end
+
+    it 'should copy PADRINO_ENV into RACK_ENV and warn once that it is removed in Padrino 1.0' do
+      ["ENV['PADRINO_ENV'] = 'staging'", "PADRINO_ENV = 'staging'"].each do |padrino_env|
+        out, err = run_script(<<~RUBY)
+          ENV.delete('RACK_ENV')
+          ENV.delete('PADRINO_ENV')
+          #{padrino_env}
+          require 'padrino-core'
+          print [RACK_ENV, ENV['RACK_ENV'], ENV['PADRINO_ENV']].inspect
+        RUBY
+        assert_equal %w[staging staging staging].inspect, out
+        assert_equal 1, err.scan('PADRINO_ENV is deprecated').size, err
+        assert_includes err, 'PADRINO_ENV is deprecated and will be removed in Padrino 1.0. Set RACK_ENV instead.'
+      end
     end
   end
 end
