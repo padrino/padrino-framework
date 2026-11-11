@@ -563,6 +563,19 @@ describe 'Routing' do
     assert_equal 'hello IE', body
   end
 
+  it 'should match a user agent given as a String exactly' do
+    mock_app do
+      get('/main', agent: 'Exact Agent') { 'exact' }
+      get('/main') { 'hello' }
+    end
+    get '/main', {}, { 'HTTP_USER_AGENT' => 'Exact Agent' }
+    assert_equal 'exact', body
+    get '/main', {}, { 'HTTP_USER_AGENT' => 'Exact Agent 2' }
+    assert_equal 'hello', body
+    get '/main'
+    assert_equal 'hello', body
+  end
+
   it 'should match hosts' do
     mock_app do
       get(:index, host: 'admin.example.com') { 'admin' }

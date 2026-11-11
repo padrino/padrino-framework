@@ -1129,7 +1129,7 @@ module Padrino
           # ceiling: a route skipped here for its host or agent still counts for the 405 check below;
           # drop those routes from +routes+ before the check to answer 404 instead.
           next if route.host && !(route.host === @request.host)
-          next if route.user_agent && route.user_agent !~ @request.user_agent
+          next if route.user_agent && !(route.user_agent === @request.user_agent)
           original_params, parent_layout = @params.dup, @layout
           returned_pass_block = invoke_route(route, params, first_time)
           pass_block = returned_pass_block if returned_pass_block
