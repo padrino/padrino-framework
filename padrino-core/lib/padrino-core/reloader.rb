@@ -142,14 +142,14 @@ module Padrino
     # Removes the specified class and constant.
     #
     def remove_constant(const)
-      return if constant_excluded?(const)
       name = constant_name(const) || return
+      return if constant_excluded?(const)
       base, _, object = name.rpartition('::')
       base = base.empty? ? Object : Inflections.constantize(base)
       return if base.autoload?(object, false) || !base.const_defined?(object, false)
       return unless base.const_get(object, false).equal?(const)
       base.send :remove_const, object
-      logger.devel "Removed constant #{name} from #{base}"
+      logger.devel "Removed constant #{name} from #{constant_name(base)}"
     rescue NameError
       # no const to remove
     end
@@ -163,7 +163,7 @@ module Padrino
       %i[@_included_block @_prepended_block].each do |ivar|
         concern.remove_instance_variable(ivar) if concern.instance_variable_defined?(ivar)
       end
-      logger.devel "Reset concern #{concern}"
+      logger.devel "Reset concern #{constant_name(concern)}"
     end
 
     ##
@@ -339,13 +339,14 @@ module Padrino
     # considered internal and will be included in further testing.
     # A constant without methods written in Ruby (an exception class, or a
     # Struct with only its members, say) is judged by where its name was
-    # defined instead.
+    # defined instead. If that is unknown too, it's external when it has
+    # native methods (written in C or Java) and internal when it has none.
     #
     def external_constant?(const)
       sources = object_sources(const)
+      native = sources.delete?(nil)
       sources = [constant_source(const)].compact if sources.empty?
-      # consider methodless constants of unknown origin not external
-      return false if sources.empty?
+      return !native.nil? if sources.empty?
       sources.none? { |source| source.start_with?(Padrino.root) }
     end
 
@@ -362,7 +363,8 @@ module Padrino
     end
 
     ##
-    # Gets all the sources in which target class is defined.
+    # Gets all the sources in which target class is defined, with nil for
+    # methods that have no Ruby source (written in C or Java, or Struct members).
     #
     # Note: Method#source_location is for Ruby 1.9.3+ only.
     #
@@ -372,18 +374,14 @@ module Padrino
         next unless method_name.is_a?(Symbol)
 
         method_object = target.method(method_name)
-        next unless method_object.owner == target.singleton_class && method_object.source_location
-
-        sources << method_object.source_location.first
+        sources << method_object.source_location&.first if method_object.owner == target.singleton_class
       end
 
       target.instance_methods.each do |method_name|
         next unless method_name.is_a?(Symbol)
 
         method_object = target.instance_method(method_name)
-        next unless method_object.owner == target && method_object.source_location
-
-        sources << method_object.source_location.first
+        sources << method_object.source_location&.first if method_object.owner == target
       end
       sources
     end

@@ -188,7 +188,7 @@ describe 'SimpleReloader' do
           x * 2
         end
       end
-      ::ReloaderData = Data.define(:x) if defined?(Data) && Data.respond_to?(:define)
+      ::ReloaderData = Data.define(:x) if RUBY_VERSION >= '3.2'
       class ::ReloaderAliased
         alias label inspect
       end
@@ -205,6 +205,13 @@ describe 'SimpleReloader' do
       %i[ReloaderStruct ReloaderStructWithMethods ReloaderData ReloaderAliased ReloaderExternalStruct].each do |name|
         Object.send(:remove_const, name) if Object.const_defined?(name, false)
       end
+    end
+
+    it 'should keep classes of unknown origin that have only native methods' do
+      # Encoding::Converter is defined in C, so neither its methods nor its constant have a Ruby source.
+      assert_nil Padrino::Reloader.send(:constant_source, Encoding::Converter)
+      assert Padrino::Reloader.send(:external_constant?, Encoding::Converter)
+      refute Padrino::Reloader.send(:external_constant?, Class.new)
     end
   end
 end

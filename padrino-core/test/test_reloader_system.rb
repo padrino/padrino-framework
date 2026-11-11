@@ -273,6 +273,7 @@ describe 'SystemReloader' do
       concern_file = "#{__dir__}/fixtures/apps/concerned/models/mixins/branded.rb"
       includer_file = "#{__dir__}/fixtures/apps/concerned/models/branded_item.rb"
       original = File.read(concern_file)
+      concern_mtime = File.mtime(concern_file)
       includer_mtime = File.mtime(includer_file)
       Padrino.clear!
       require File.expand_path("#{__dir__}/fixtures/apps/concerned/app.rb")
@@ -288,7 +289,10 @@ describe 'SystemReloader' do
       Padrino.reload!
       assert_equal 'b2', BrandedItem.new.brand
     ensure
-      File.write(concern_file, original) if original
+      if original
+        File.write(concern_file, original)
+        File.utime(concern_mtime, concern_mtime, concern_file)
+      end
       File.utime(includer_mtime, includer_mtime, includer_file) if includer_mtime
     end
 
