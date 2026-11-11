@@ -406,6 +406,40 @@ describe 'FormBuilder' do
     end
   end
 
+  describe 'for #range_field method' do
+    it 'should display correct range field html' do
+      actual_html = standard_builder.range_field(:volume, class: 'slider', min: 0, max: 11, step: 1)
+      assert_html_has_tag(actual_html, 'input.slider[type=range]', id: 'user_volume', name: 'user[volume]', min: '0', max: '11', step: '1')
+    end
+
+    it 'should display a range field with the value of the field and a :range option' do
+      @user.stubs(volume: 7)
+      actual_html = standard_builder.range_field(:volume, range: 1..10)
+      assert_html_has_tag(actual_html, 'input[type=range]', value: '7', min: '1', max: '10')
+    end
+
+    it 'should display the range field in a labeled block' do
+      actual_html = standard_builder.range_field_block(:volume, caption: 'Volume')
+      assert_html_has_tag(actual_html, 'p label', for: 'user_volume', content: 'Volume')
+      assert_html_has_tag(actual_html, 'p input[type=range]', id: 'user_volume', name: 'user[volume]')
+    end
+
+    it 'should display correct range field in haml' do
+      get '/haml/form_for'
+      assert_response_has_tag '#demo input.slider[type=range]', id: 'markup_user_volume', min: '0', max: '11'
+    end
+
+    it 'should display correct range field in erb' do
+      get '/erb/form_for'
+      assert_response_has_tag '#demo input.slider[type=range]', id: 'markup_user_volume', min: '0', max: '11'
+    end
+
+    it 'should display correct range field in slim' do
+      get '/slim/form_for'
+      assert_response_has_tag '#demo input.slider[type=range]', id: 'markup_user_volume', min: '0', max: '11'
+    end
+  end
+
   describe 'for #telephone_field method' do
     it 'should display correct telephone field html' do
       actual_html = standard_builder.telephone_field(:telephone, class: 'numeric')

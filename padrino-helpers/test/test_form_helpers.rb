@@ -900,6 +900,41 @@ describe 'FormHelpers' do
     end
   end
 
+  describe 'for #datalist_tag method' do
+    it 'should display a datalist with an option for each value' do
+      actual_html = datalist_tag(:browsers, %w[Firefox Safari])
+      assert_html_has_tag(actual_html, 'datalist#browsers option', count: 2)
+      assert_html_has_tag(actual_html, 'datalist option', value: 'Firefox', content: 'Firefox')
+      assert_html_has_tag(actual_html, 'datalist option', value: 'Safari', content: 'Safari')
+    end
+
+    it 'should take label and value pairs and option attributes' do
+      actual_html = datalist_tag('sizes', [%w[Small s], ['Large', 'l', { disabled: true }]])
+      assert_html_has_tag(actual_html, 'datalist#sizes option', value: 's', content: 'Small')
+      assert_html_has_tag(actual_html, 'datalist option[disabled]', value: 'l', content: 'Large')
+    end
+
+    it 'should take html options and an empty list' do
+      actual_html = datalist_tag(:none, [], class: 'suggestions')
+      assert_equal '<datalist id="none" class="suggestions"></datalist>', actual_html
+    end
+
+    it 'should escape values, labels and the id' do
+      actual_html = datalist_tag('a"b', ['"><script>x</script>', ['<b>', '"&']])
+      assert_equal <<~HTML, "#{actual_html}\n"
+        <datalist id="a&quot;b"><option value="&quot;&gt;&lt;script&gt;x&lt;/script&gt;">&quot;&gt;&lt;script&gt;x&lt;/script&gt;</option>
+        <option value="&quot;&amp;">&lt;b&gt;</option>
+        </datalist>
+      HTML
+    end
+
+    it 'should pair with the list option of an input' do
+      actual_html = text_field_tag(:browser, list: 'browsers') + datalist_tag(:browsers, %w[Firefox])
+      assert_html_has_tag(actual_html, 'input[type=text]', name: 'browser', list: 'browsers')
+      assert_html_has_tag(actual_html, 'datalist#browsers option', value: 'Firefox')
+    end
+  end
+
   describe 'for #submit_tag method' do
     it 'should display submit tag in ruby' do
       actual_html = submit_tag('Update', class: 'success')

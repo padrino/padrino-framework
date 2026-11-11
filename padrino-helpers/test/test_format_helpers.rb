@@ -292,6 +292,62 @@ describe 'FormatHelpers' do
     end
   end
 
+  describe 'for #time_tag method' do
+    before do
+      @locale = I18n.locale
+      I18n.locale = :en
+      @date = Date.new(2026, 11, 11)
+      @time = Time.utc(2026, 11, 11, 9, 30, 15)
+    end
+
+    after { I18n.locale = @locale }
+
+    it 'should display a date with an ISO 8601 datetime and the long format' do
+      assert_equal '<time datetime="2026-11-11">November 11, 2026</time>', time_tag(@date)
+    end
+
+    it 'should display a time and a datetime with their offset' do
+      assert_equal '<time datetime="2026-11-11T09:30:15Z">November 11, 2026 09:30</time>', time_tag(@time)
+      assert_equal '<time datetime="2026-11-11T09:30:15+05:30">09:30</time>',
+                   time_tag(Time.new(2026, 11, 11, 9, 30, 15, '+05:30'), format: '%H:%M')
+      assert_equal '<time datetime="2026-11-11T09:30:15+00:00">09:30</time>',
+                   time_tag(DateTime.new(2026, 11, 11, 9, 30, 15), format: '%H:%M')
+    end
+
+    it 'should localize the content with a format and the current locale' do
+      assert_equal '<time datetime="2026-11-11">Nov 11</time>', time_tag(@date, format: :short)
+      assert_equal '<time datetime="2026-11-11T09:30:15Z">11 Nov 09:30</time>', time_tag(@time, format: :short)
+      I18n.locale = :de
+      assert_equal '<time datetime="2026-11-11">11. November 2026</time>', time_tag(@date)
+    end
+
+    it 'should take content and html options' do
+      assert_equal '<time datetime="2026-11-11" class="date">Release day</time>', time_tag(@date, 'Release day', class: 'date')
+      assert_equal '<time datetime="2026-11-11" id="day">November 11, 2026</time>', time_tag(@date, id: 'day')
+    end
+
+    it 'should take the datetime attribute from the :datetime option' do
+      assert_equal '<time datetime="2026-11">November 11, 2026</time>', time_tag(@date, datetime: '2026-11')
+    end
+
+    it 'should take the content from a block' do
+      assert_equal '<time datetime="2026-11-11" class="day">Today</time>', time_tag(@date, class: 'day') { 'Today' }
+      assert_equal '<time datetime="2026-11-11">Today</time>', time_tag(@date) { 'Today' }
+    end
+
+    it 'should escape the content and the attributes' do
+      actual_html = time_tag(@date, '<script>x</script>', datetime: '"><b>', title: '"')
+      assert_equal '<time datetime="&quot;&gt;&lt;b&gt;" title="&quot;">&lt;script&gt;x&lt;/script&gt;</time>', actual_html
+      assert_equal '<time datetime="2026-11-11">&lt;11&gt;</time>', time_tag(@date, format: '<%d>')
+    end
+
+    it 'should not change the options passed in' do
+      options = { format: :short, datetime: '2026-11', class: 'date' }.freeze
+      time_tag(@date, options)
+      assert_equal({ format: :short, datetime: '2026-11', class: 'date' }, options)
+    end
+  end
+
   describe 'for #js_escape_html method' do
     it 'should escape double quotes' do
       assert_equal '\"hello\"', js_escape_html('"hello"')
