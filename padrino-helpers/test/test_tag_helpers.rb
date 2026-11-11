@@ -183,4 +183,49 @@ describe 'TagHelpers' do
       assert_html_has_tag(actual_html, 'input[type=checkbox]', disabled: 'disabled')
     end
   end
+
+  describe 'for #class_names method' do
+    it 'should join Strings, Symbols and other values' do
+      assert_equal 'btn primary 2', class_names('btn', :primary, 2)
+    end
+
+    it 'should split Strings on whitespace' do
+      assert_equal 'btn btn-lg primary', class_names("  btn\tbtn-lg\n", ' primary ')
+    end
+
+    it 'should keep the Hash keys whose values are truthy' do
+      assert_equal 'active is-big a b', class_names(active: true, disabled: false, open: nil, 'is-big' => 1, 'a b' => 'yes')
+    end
+
+    it 'should flatten nested Arrays and the Hashes in them' do
+      assert_equal 'card card--wide shadow selected', class_names(['card', ['card--wide', [:shadow, { selected: true, off: false }]]])
+    end
+
+    it 'should keep each name once, where it first appears' do
+      assert_equal 'b a c', class_names('b a', :a, %w[b c], { c: true }, 'a b')
+    end
+
+    it 'should leave out nil, false and blank values' do
+      assert_equal 'x', class_names(nil, 'x', false)
+      assert_equal '', class_names(nil, false, '', " \t ", [], {}, [nil, false], { nil => true, '' => true })
+      assert_equal '', class_names
+    end
+
+    it 'should return a String that is not marked html_safe and leave its arguments alone' do
+      buffer = 'btn <b>'.html_safe
+      names = ['a b', { 'c' => true }]
+      result = class_names(buffer, names)
+      assert_equal 'btn <b> a b c', result
+      assert_instance_of String, result
+      refute result.html_safe?
+      assert_equal 'btn <b>', buffer
+      assert_equal ['a b', { 'c' => true }], names
+    end
+
+    it 'should be escaped when written into a class attribute' do
+      assert_equal '<div class="say&quot;hi &lt;b&gt;&amp;">x</div>',
+                   content_tag(:div, 'x', class: class_names('say"hi', { '<b>&' => true }))
+      assert_equal '<hr class="a&quot; b" />', tag(:hr, class: class_names('a"', :b, 'a"'))
+    end
+  end
 end
