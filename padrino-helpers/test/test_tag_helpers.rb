@@ -128,7 +128,7 @@ describe 'TagHelpers' do
     it 'should write an empty attribute name as an underscore' do
       assert_equal '<div _="v" />', tag(:div, '' => 'v')
       assert_equal '<div _="v" />', tag(:div, nil => 'v')
-      assert_equal '<div _="v">c</div>', content_tag(:div, 'c', :'' => 'v')
+      assert_equal '<div _="v">c</div>', content_tag(:div, 'c', '': 'v')
     end
 
     it 'should replace characters a tag name cannot contain' do
