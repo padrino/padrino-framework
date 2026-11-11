@@ -418,6 +418,12 @@ describe 'AdminPageGenerator' do
         assert_equal expected, form_fields(:mongoid, types)
       end
 
+      it 'should match the Sequel column type when the model is not loaded' do
+        columns = %i[integer string].map { |type| Padrino::Admin::Generators::Orm::Column.new(type, type) }
+        fields = Padrino::Admin::Generators::Orm.new('not_loaded_model', :sequel, columns).column_fields.map { |column| column[:field_type] }
+        assert_equal %i[number_field text_field], fields
+      end
+
       it 'should keep a text field for a Sequel enum column, whose reader returns a name' do
         Object.const_set(:EnumGadget, Class.new(Sequel::Model(:friends)) do
           plugin :enum

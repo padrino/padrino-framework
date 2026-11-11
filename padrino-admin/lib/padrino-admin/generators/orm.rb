@@ -82,7 +82,7 @@ module Padrino
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
-            # An enum reads back as its name, which a number input would empty on every save.
+            # An enum reads back as its name, which a number input can't hold.
             input = enum?(column.name) ? :text_field : field_type(column.type)
             # A number input takes only whole numbers unless its step allows fractions.
             step = 'any' if input == :number_field && FRACTIONAL_TYPES.include?(type_name(column.type))
@@ -160,6 +160,8 @@ module Padrino
         # ceiling: Sequel's plugin keeps no public list of its columns, so this reads the module it
         # defines the readers in; if that changes, enum columns get number inputs again.
         def enum?(column_name)
+          return false unless @klass
+
           case orm
           when :activerecord
             @klass.respond_to?(:defined_enums) && @klass.defined_enums.key?(column_name.to_s)
