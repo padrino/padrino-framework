@@ -193,6 +193,14 @@ describe 'TagHelpers' do
       assert_equal 'btn btn-lg primary', class_names("  btn\tbtn-lg\n", ' primary ')
     end
 
+    it 'should split Strings only on ASCII whitespace' do
+      assert_equal "a\u00a0b c\u3000d", class_names("a\u00a0b", "c\u3000d")
+    end
+
+    it 'should split and dedupe Hash keys as other values' do
+      assert_equal 'a b x y', class_names('a', { 'a b' => true, %w[x y] => true })
+    end
+
     it 'should keep the Hash keys whose values are truthy' do
       assert_equal 'active is-big a b', class_names(active: true, disabled: false, open: nil, 'is-big' => 1, 'a b' => 'yes')
     end

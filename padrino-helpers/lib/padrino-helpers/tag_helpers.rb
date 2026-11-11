@@ -242,7 +242,7 @@ module Padrino
       # Builds a list of class names from Strings, Symbols, Arrays and Hashes.
       #
       # Strings are split on whitespace, Arrays are flattened, a Hash keeps the
-      # keys whose values are truthy, and nil, false and blank values are left out.
+      # keys whose values are truthy, and nil, false and blank names are left out.
       # Each name appears once, where it first appears. The result is a plain
       # String: +tag+ and +content_tag+ escape it when they write the attribute.
       #
