@@ -112,7 +112,8 @@ module Padrino
         builder.use Padrino::Reloader::Rack         if reload?
         builder.use Rack::MethodOverride            if method_override?
         builder.use Rack::Head
-        register Padrino::Flash
+        # Only once per reset!, which clears both the filters and @extensions.
+        register Padrino::Flash unless @extensions.include?(Padrino::Flash)
         setup_protection builder
         setup_host_authorization builder if host_authorization_set?
         setup_csrf_protection builder
