@@ -2,12 +2,14 @@ require_relative 'helper'
 require 'open3'
 
 describe 'Loading padrino-admin' do
-  # This process has padrino-gen loaded (helper.rb), so each check runs in a fresh Ruby.
+  # This process has padrino-gen loaded (helper.rb), so each check runs in a fresh Ruby
+  # and returns the last line it prints.
   def run_ruby(script)
     env = { 'BUNDLE_GEMFILE' => ENV['BUNDLE_GEMFILE'] || File.expand_path('../../Gemfile', __dir__) }
     out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script)
     assert status.success?, err
-    out
+    # The Gemfile may print first (HAML_VERSION, SINATRA_VERSION), so the result is the last line.
+    out.lines.last
   end
 
   it 'should not load padrino-gen or its String extensions' do
