@@ -31,6 +31,10 @@ jobs:
           - os: ubuntu-24.04
             ruby: '3.1'
             haml_version: '6'
+          # JRuby 9.4 is Ruby 3.1 compatible, so it gets HAML 6 too
+          - os: ubuntu-24.04
+            ruby: 'jruby-9.4'
+            haml_version: '6'
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     env:
       HAML_VERSION: ${{ matrix.haml_version }}
@@ -39,6 +43,22 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+    - run: bundle exec rake test
+
+  # Sinatra 4.0.x (the Gemfile reads 4.0.0 as ~> 4.0.0), the oldest series
+  # padrino-core allows, on the oldest Ruby
+  oldest-sinatra:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-24.04
+    env:
+      SINATRA_VERSION: '4.0.0'
+      HAML_VERSION: '5'
+    steps:
+    - uses: actions/checkout@v7
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.7'
         bundler-cache: true
     - run: bundle exec rake test
 
