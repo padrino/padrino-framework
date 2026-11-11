@@ -594,7 +594,7 @@ describe 'Filters' do
 
     get '/'
     assert_equal 'We broke before', body
-    assert_equal '', doodle
+    assert_equal 'Been after', doodle
   end
 
   it 'should catch exceptions in after filters if no exceptions caught before' do
@@ -618,12 +618,62 @@ describe 'Filters' do
 
     get '/foo'
     assert_equal 'We broke now', body
-    assert_equal 'Been now', doodle
+    assert_equal 'Been now and after', doodle
 
     doodle = ''
     get '/'
     assert_equal 'We broke after', body
     assert_equal 'Been now and after', doodle
+  end
+
+  describe 'on an error page' do
+    it 'should run after filters on a not_found page, whether the handler returns or halts' do
+      ran = []
+      mock_app do
+        after { ran << response.status }
+        not_found { params[:halt] ? halt(404, 'missing') : 'missing' }
+      end
+      get '/missing'
+      assert_equal 'missing', body
+      get '/missing', halt: 1
+      assert_equal 'missing', body
+      assert_equal [404, 404], ran
+    end
+
+    it 'should run after filters on a handled error, whether the handler returns or halts' do
+      ran = []
+      mock_app do
+        after { ran << response.status }
+        error(500) { params[:halt] ? halt(500, 'broke') : 'broke' }
+        get(:index) { raise StandardError, 'now' }
+      end
+      get '/'
+      assert_equal 'broke', body
+      get '/', halt: 1
+      assert_equal 'broke', body
+      assert_equal [500, 500], ran
+    end
+
+    it 'should let an after filter change the response as plain Sinatra does' do
+      routes = proc do
+        not_found { 'missing' }
+        error(500) { 'broke' }
+        get('/boom') { raise StandardError, 'now' }
+        after do
+          if response.status == 404
+            status 410
+            body 'gone'
+          end
+          halt 503, 'unavailable' if response.status == 500
+        end
+      end
+      responses = [Sinatra::Base, Padrino::Application].map do |base|
+        request = Rack::MockRequest.new(Sinatra.new(base, &routes))
+        %w[/missing /boom].map { |path| request.get(path).then { |res| [res.status, res.body] } }
+      end
+      assert_equal [[410, 'gone'], [503, 'unavailable']], responses.first
+      assert_equal responses.first, responses.last
+    end
   end
 
   it 'should trigger filters if superclass responds to :filters' do

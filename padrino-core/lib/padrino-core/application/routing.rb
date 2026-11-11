@@ -1111,9 +1111,9 @@ module Padrino
         end
       rescue ::Exception => e
         catch(:pass) { before_filter! } if e.is_a? ::Sinatra::NotFound
-        invoke { @boom_handled = handle_exception!(e) }
+        invoke { handle_exception!(e) }
       ensure
-        @boom_handled || begin
+        begin
           filter! :after unless env['sinatra.static_file']
         rescue ::Exception => e
           invoke { handle_exception!(e) } unless @env['sinatra.error']

@@ -84,6 +84,14 @@ describe Padrino::Flash do
       redirect url(:index, key: :foo), 301, foo: 'redirected!'
     end
 
+    get :lost do
+      redirect '/missing', foo: 'lost!'
+    end
+
+    not_found do
+      flash[:foo].to_s
+    end
+
     get :success do
       flash.success = 'Yup'
     end
@@ -145,6 +153,15 @@ describe Padrino::Flash do
       follow_redirect!
       assert_equal 'redirected!', body
       assert 301, status
+    end
+
+    it 'should rotate the flash on a not_found page' do
+      get '/lost'
+      follow_redirect!
+      assert_equal 404, status
+      assert_equal 'lost!', body
+      get '/', key: :foo
+      assert_equal '', body
     end
 
     it 'should set success' do
