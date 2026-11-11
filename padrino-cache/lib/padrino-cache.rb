@@ -117,6 +117,10 @@ module Padrino
     def self.new(name, options = {})
       # Activate expiration by default
       options[:expires] = true unless options.include?(:expires)
+      # Lock the stores that keep their data in a Hash in this process, which concurrent requests share.
+      # ceiling: other adapters Moneta lists as not thread-safe (PStore, YAML, Daybreak, DBM, ...) still
+      # need threadsafe: true from the caller; add them here if Padrino starts recommending one.
+      options[:threadsafe] = true if %i[LRUHash Memory].include?(name) && !options.include?(:threadsafe)
       Moneta.new(name, options)
     end
 
