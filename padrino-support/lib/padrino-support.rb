@@ -21,6 +21,7 @@ if ENV['AS_VERSION']
   rescue LoadError
     require 'active_support/core_ext/hash/deep_dup' # AS >= 3.1
   end
+  Padrino::Utils.warn_deprecated('Loading ActiveSupport extensions through AS_VERSION', 'Require the ones your app uses before Padrino instead')
 end
 
 ##
