@@ -165,5 +165,73 @@ describe 'SimpleReloader' do
     ensure
       Object.send(:remove_const, :ReloaderNamespace)
     end
+
+    it 'should remove project classes with methods not written in Ruby and keep external ones' do
+      ::ReloaderStruct = Struct.new(:x)
+      ::ReloaderStructWithMethods = Struct.new(:x) do
+        def double
+          x * 2
+        end
+      end
+      ::ReloaderData = Data.define(:x) if RUBY_VERSION >= '3.2'
+      class ::ReloaderAliased
+        alias label inspect
+      end
+      Dir.mktmpdir do |dir|
+        File.write("#{dir}/external_struct.rb", 'ReloaderExternalStruct = Struct.new(:x)')
+        load "#{dir}/external_struct.rb"
+      end
+      project = %i[ReloaderStruct ReloaderStructWithMethods ReloaderData ReloaderAliased].select { |name| Object.const_defined?(name, false) }
+
+      (project + [:ReloaderExternalStruct]).each { |name| Padrino::Reloader.remove_constant(Object.const_get(name)) }
+      project.each { |name| refute Object.const_defined?(name, false), "#{name} was not removed" }
+      assert Object.const_defined?(:ReloaderExternalStruct, false), 'ReloaderExternalStruct was removed'
+    ensure
+      %i[ReloaderStruct ReloaderStructWithMethods ReloaderData ReloaderAliased ReloaderExternalStruct].each do |name|
+        Object.send(:remove_const, name) if Object.const_defined?(name, false)
+      end
+    end
+
+    it 'should keep classes of unknown origin that have only native methods' do
+      # Encoding::Converter is defined in C, so neither its methods nor its constant have a Ruby source.
+      assert_nil Padrino::Reloader.send(:constant_source, Encoding::Converter)
+      assert Padrino::Reloader.send(:external_constant?, Encoding::Converter)
+      refute Padrino::Reloader.send(:external_constant?, Class.new)
+    end
+
+    it 'should keep a class from a C extension that a project file reopens' do
+      require 'strscan'
+      Dir.mktmpdir('reopen', Padrino.root) do |dir|
+        File.write("#{dir}/string_scanner.rb", "class StringScanner\n  def reloader_reopened; end\nend\n")
+        load "#{dir}/string_scanner.rb"
+      end
+      assert Padrino::Reloader.send(:external_constant?, StringScanner)
+    ensure
+      StringScanner.send(:remove_method, :reloader_reopened) if StringScanner.method_defined?(:reloader_reopened, false)
+    end
+
+    it 'should keep a Struct from outside the project that a project file reopens' do
+      Dir.mktmpdir do |dir|
+        File.write("#{dir}/gem_struct.rb", 'ReloaderGemStruct = Struct.new(:x)')
+        load "#{dir}/gem_struct.rb"
+      end
+      Dir.mktmpdir('reopen', Padrino.root) do |dir|
+        File.write("#{dir}/gem_struct_ext.rb", "class ReloaderGemStruct\n  def double\n    x * 2\n  end\nend\n")
+        load "#{dir}/gem_struct_ext.rb"
+      end
+      Padrino::Reloader.remove_constant(ReloaderGemStruct)
+      assert Object.const_defined?(:ReloaderGemStruct, false), 'ReloaderGemStruct was removed'
+    ensure
+      Object.send(:remove_const, :ReloaderGemStruct) if Object.const_defined?(:ReloaderGemStruct, false)
+    end
+
+    if RUBY_ENGINE == 'jruby'
+      it 'should keep Java classes' do
+        java_class = Java::JavaUtil::ArrayList
+        assert Padrino::Reloader.send(:external_constant?, java_class)
+        Padrino::Reloader.remove_constant(java_class)
+        assert_same java_class, Java::JavaUtil::ArrayList
+      end
+    end
   end
 end
