@@ -150,6 +150,28 @@ describe 'Filters' do
     assert_equal 'page report/x', body
   end
 
+  it 'should not filter a non-ASCII path by a Regexp fixed to another encoding' do
+    mock_app do
+      before(%r{\A/caf\xC3\xA9}n) { halt 403, 'filtered' }
+      before('/other') { halt 403, 'filtered' }
+      get(%r{/a.*|/caf\xC3\xA9}n) { 'bytes' }
+      get('/:name') { "name #{params[:name]}" }
+    end
+    get '/caf%C3%A9'
+    assert_equal [200, "name caf\u00e9"], [status, body]
+    get '/a%25C3%25A9'
+    assert_equal [200, 'bytes'], [status, body]
+  end
+
+  it 'should run a filter that excepts a Regexp fixed to another encoding for a non-ASCII path' do
+    mock_app do
+      before(except: %r{\A/caf\xC3\xA9}n) { @filtered = true }
+      get('/:name') { "#{params[:name]} #{@filtered.inspect}" }
+    end
+    get '/caf%C3%A9'
+    assert_equal [200, "caf\u00e9 true"], [status, body]
+  end
+
   it 'should filter by path a request the router serves with a trailing slash' do
     mock_app do
       before('/report') { halt 403, 'filtered' }
