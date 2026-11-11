@@ -122,6 +122,16 @@ describe 'PadrinoLogger' do
       assert_instance_of Thread::Mutex, mutexes[0]
     end
 
+    it 'should give a logger subclass its own mutex when its parent overrides inherited' do
+      parent = Class.new(Padrino::Logger) { def self.inherited(_subclass); end }
+      child = Class.new(parent)
+      assert_instance_of Thread::Mutex, child.mutex
+      refute_same parent.mutex, child.mutex
+      stream = StringIO.new
+      child.new(log_level: :debug, stream: stream, colorize_logging: false) << 'logged'
+      assert_match(/logged/, stream.string)
+    end
+
     it 'should not warn about an empty datetime format' do
       setup_logger(log_level: :error, colorize_logging: false, format_datetime: '')
       verbose = $VERBOSE

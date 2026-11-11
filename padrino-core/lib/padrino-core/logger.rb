@@ -358,16 +358,13 @@ module Padrino
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
-    # Built with the class, not on first use, so threads that log for the first time at once share it.
-    @_mutex = Mutex.new
-
-    def self.inherited(subclass)
-      super
-      subclass.instance_variable_set(:@_mutex, Mutex.new)
-    end
+    # Built when this file loads, so threads that log for the first time at once build each
+    # class's mutex one at a time and share it.
+    MUTEX_INIT = Mutex.new # @private
+    private_constant :MUTEX_INIT
 
     def self.mutex
-      @_mutex
+      @_mutex || MUTEX_INIT.synchronize { @_mutex ||= Mutex.new }
     end
 
     def self.logger
