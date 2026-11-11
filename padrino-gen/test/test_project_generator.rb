@@ -1053,6 +1053,34 @@ describe 'ProjectGenerator' do
     end
   end
 
+  describe 'choices that need a newer Ruby' do
+    {
+      '--server=falcon' => 'The falcon server uses the falcon gem, which needs Ruby 3.0 or later; bundle install will fail on Ruby 2.7.8.',
+      '--stylesheet=tailwind' => 'The tailwind stylesheet uses the tailwindcss-ruby gem, which needs Ruby 3.0 or later; bundle install will fail on Ruby 2.7.8.'
+    }.each do |option, warning|
+      it "should warn on Ruby 2.7 for #{option} and still generate the project" do
+        Padrino::Generators::Project.any_instance.stubs(:running_ruby_version).returns('2.7.8')
+        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", option) }
+        assert_includes out, warning
+        assert_match(/is ready for development!/, out)
+      end
+
+      it "should not warn on Ruby 3.0 for #{option}" do
+        Padrino::Generators::Project.any_instance.stubs(:running_ruby_version).returns('3.0.0')
+        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", option) }
+        refute_match(/needs Ruby/, out)
+      end
+    end
+
+    it 'should not warn on Ruby 2.7 for choices that support it' do
+      Padrino::Generators::Project.any_instance.stubs(:running_ruby_version).returns('2.7.8')
+      out, = capture_io do
+        generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma', '--stylesheet=sass', '--orm=sequel', '--renderer=haml', '--script=vite', '--test=rspec', '--mock=mocha')
+      end
+      refute_match(/needs Ruby/, out)
+    end
+  end
+
   describe 'tiny app skeleton generator for test component' do
     { 'minitest' => /skip "add some examples/, 'testunit' => /pend "add some examples/, 'shoulda' => /pend "add some examples/ }.each do |test, pending|
       it "should mark the tiny skeleton's #{test} placeholders pending, so a new project passes its own tests" do
