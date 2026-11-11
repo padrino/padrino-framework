@@ -547,6 +547,7 @@ module Padrino
         original = {}
         options = args.last.is_a?(Hash) ? args.pop.dup : {}
         options[:conditions] = @_conditions.merge(options[:conditions] || {}) if @_conditions
+        options[:params] = @_params unless options.key?(:params)
 
         CONTROLLER_OPTIONS.each { |key| replace_instance_variable(original, "@_#{key}", options.delete(key)) }
         replace_instance_variable(original, :@_controller, args)
@@ -744,7 +745,7 @@ module Padrino
           options.delete(:params)
         elsif options.include?(:params)
           options[:params] ||= []
-          options[:params] |= Array(options[:with]) if options[:with]
+          options[:params] = Array(options[:with]) | options[:params] if options[:with]
         end
 
         # We need check if path is a symbol, if that it's a named route.

@@ -23,6 +23,8 @@ module Padrino
       #   post :update, params: [:name, { id: Integer }]
       #   post :update, params: [{ name: proc { |v| v.reverse } }]
       #   post :update, params: [:name, { parent: [:name, :position] }]
+      #   post :update, params: [{ tags: [] }]             # an array of plain values
+      #   post :update, params: [{ people: [:name, :age] }] # an array or collection of hashes
       #   post :update, params: false
       #   post :update, params: true
       # @example
@@ -34,6 +36,9 @@ module Padrino
       #     post :update, with: [:id], params: [:name, :position, :addition]
       #     get :show, with: :id, params: false
       #     get :search, params: true
+      #
+      #     # A controller block nested in this one uses the same list unless it
+      #     # gives its own +params:+.
       #   end
       #
       def params(*allowed_params)
@@ -71,7 +76,10 @@ module Padrino
       #   Warning: this hash will be changed by deleting or replacing its values.
       # @param [Hash] allowed_params
       #   A hash of allowed keys and value classes or processing procs. Supported
-      #   scalar classes are: Integer (empty string is cast to nil).
+      #   scalar classes are: Integer (empty string is cast to nil). A value of
+      #   another shape than its key allows (a hash or an array for Integer, a
+      #   string for a nested list) is dropped. A proc is called with the value
+      #   as sent, an array or a hash included.
       #
       # @example
       #   filter_params!( { 'a' => '1', 'b' => 'abc', 'd' => 'drop' },
@@ -83,6 +91,12 @@ module Padrino
       #   filter_params!( { 'a' => ['1', '2', '3'] },
       #                   { 'a' => true } )
       #   # => { 'a' => ['1', '2', '3'] }
+      #   filter_params!( { 'a' => ['1', '2'], 'b' => ['1', '2'] },
+      #                   { 'a' => {}, 'b' => Integer } )
+      #   # => { 'a' => ['1', '2'] }
+      #   filter_params!( { 'people' => [{ 'name' => 'manny', 'age' => '50' }] },
+      #                   { 'people' => { 'name' => true } } )
+      #   # => { 'people' => [{ 'name' => 'manny' }] }
       #   filter_params!( { 'persons' => { 'p-1' => { 'name' => 'manny', 'age' => '50' }, 'p-2' => { 'name' => 'richard', 'age' => '50' } } },
       #                   { 'persons' => { 'name' => true } } )
       #   # => { 'persons' => { 'p-1' => { 'name' => 'manny' }, 'p-2' => { 'name' => 'richard' } } }
@@ -90,17 +104,19 @@ module Padrino
       def filter_params!(params, allowed_params)
         params.each do |key, value|
           type = allowed_params[key]
-          next if value.is_a?(Array) && type
           if type.is_a?(Hash) && value.is_a?(Hash)
             if key == Inflections.pluralize(key) && value.values.first.is_a?(Hash)
+              value.keep_if { |_, array_value| array_value.is_a?(Hash) }
               value.each do |array_index, array_value|
                 value[array_index] = filter_params!(array_value, type)
               end
             else
               params[key] = filter_params!(value, type)
             end
-          elsif type == Integer
-            params[key] = value.empty? ? nil : value.to_i
+          elsif type.is_a?(Hash) && value.is_a?(Array)
+            params[key] = filter_array_param(value, type)
+          elsif type == Integer && (value.nil? || value.is_a?(String))
+            params[key] = value.to_s.empty? ? nil : value.to_i
           elsif type.is_a?(Proc)
             params[key] = type.call(value)
           elsif type != true
@@ -114,6 +130,18 @@ module Padrino
       #
       def original_params
         @original_params || params
+      end
+
+      private
+
+      # An empty list (+names: []+) takes an array of plain values; a list of
+      # keys takes an array of hashes, each filtered by it.
+      def filter_array_param(values, allowed_params)
+        if allowed_params.empty?
+          values.reject { |value| value.is_a?(Hash) || value.is_a?(Array) }
+        else
+          values.filter_map { |value| filter_params!(value, allowed_params) if value.is_a?(Hash) }
+        end
       end
     end
   end

@@ -192,4 +192,131 @@ describe 'Padrino::ParamsProtection' do
     post '/i?gotta=go'
     assert_empty(result)
   end
+
+  it 'should filter each hash of an array with the nested list' do
+    result = nil
+    mock_app do
+      post :family, params: [{ persons: [:name, { age: Integer }] }] do
+        result = params
+        ''
+      end
+    end
+    post '/family?persons[][name]=Jack&persons[][position]=agent&persons[][age]=50&persons[][name]=Kim'
+    assert_equal({ 'persons' => [{ 'name' => 'Jack', 'age' => 50 }, { 'name' => 'Kim' }] }, result)
+  end
+
+  it 'should keep only the elements of an array that match the nested list' do
+    result = nil
+    mock_app do
+      post :family, params: [{ persons: [:name] }, { names: [] }] do
+        result = params
+        ''
+      end
+    end
+    post '/family?persons[]=Jack&persons[][name]=Kim&names[]=Teri&names[][name]=Chloe'
+    assert_equal({ 'persons' => [{ 'name' => 'Kim' }], 'names' => ['Teri'] }, result)
+    post '/family?persons[][]=Jack&names[][]=Teri'
+    assert_equal({ 'persons' => [], 'names' => [] }, result)
+  end
+
+  it 'should drop an array or a hash given for an Integer' do
+    result = nil
+    mock_app do
+      post :basic, params: [{ id: Integer }] do
+        result = params
+        ''
+      end
+    end
+    post '/basic?id[]=1&id[]=2'
+    assert_empty(result)
+    post '/basic?id[a]=1'
+    assert_empty(result)
+    post '/basic?id=3'
+    assert_equal({ 'id' => 3 }, result)
+  end
+
+  it 'should cast an Integer given without a value to nil' do
+    result = nil
+    mock_app do
+      post :basic, params: [{ id: Integer }] do
+        result = params
+        ''
+      end
+    end
+    post '/basic?id'
+    assert_equal({ 'id' => nil }, result)
+  end
+
+  it 'should drop the entries of a collection that are not hashes' do
+    result = nil
+    mock_app do
+      post :family, params: [{ persons: [:name] }] do
+        result = params
+        ''
+      end
+    end
+    post '/family?persons[1][name]=Jack&persons[1][position]=agent&persons[2]=Kim'
+    assert_equal({ 'persons' => { '1' => { 'name' => 'Jack' } } }, result)
+  end
+
+  it 'should call a proc with an array value' do
+    result = nil
+    mock_app do
+      post :family, params: [{ names: proc { |v| Array(v).join(',') } }] do
+        result = params
+        ''
+      end
+    end
+    post '/family?names[]=Jack&names[]=Kim'
+    assert_equal({ 'names' => 'Jack,Kim' }, result)
+  end
+
+  it 'should keep the type given for a :with parameter' do
+    result = nil
+    mock_app do
+      get :show, with: :id, params: [:name, { id: Integer }] do
+        result = params
+        ''
+      end
+      controller :persons, params: [:name, { id: Integer }] do
+        get :edit, with: :id do
+          result = params
+          ''
+        end
+      end
+    end
+    get '/show/24?name=Jack&position=agent'
+    assert_equal({ 'name' => 'Jack', 'id' => 24 }, result)
+    get '/persons/edit/42?name=Kim&position=daughter'
+    assert_equal({ 'name' => 'Kim', 'id' => 42 }, result)
+  end
+
+  it 'should filter the routes of a nested controller with the outer list' do
+    result = nil
+    mock_app do
+      controller :persons, params: [:name] do
+        controller :children do
+          get(:index) { result = params; '' }
+        end
+        controller :parents, params: [:position] do
+          get(:index) { result = params; '' }
+        end
+        controller :all, params: true do
+          get(:index) { result = params; '' }
+        end
+        get(:index) { result = params; '' }
+      end
+      get(:top) { result = params; '' }
+    end
+    get "/children?#{@jack_query}"
+    assert_equal({ 'name' => @jack['name'] }, result)
+    get "/parents?#{@jack_query}"
+    assert_equal({ 'position' => @jack['position'] }, result)
+    get "/all?#{@jack_query}"
+    assert_equal(@jack, result)
+    get "/persons?#{@jack_query}"
+    assert_equal({ 'name' => @jack['name'] }, result)
+    get "/top?#{@jack_query}"
+    assert_equal(@jack, result)
+  end
 end
