@@ -243,7 +243,7 @@ module Padrino
         #
         def labeled_group(field, options = {})
           options = { id: field_id(field), selected: field_value(field) }.update(options)
-          options.update(error_class(field)) { |_, *values| values }
+          options.update(error_class(field)) { |_, *values| values.compact.join(' ') }
           selected_values = resolve_checked_values(field, options)
           variants_for_group(options).inject(SafeBuffer.new) do |html, (caption, value)|
             variant_id = "#{options[:id]}_#{value}"
@@ -318,7 +318,10 @@ module Padrino
           { value: field_value(field), id: field_id(field) }
             .update(defaults)
             .update(options)
-            .update(error_class(field)) { |_, *values| values }
+            .update(error_class(field)) do |_, given, error|
+              # An Array or Hash class goes to the tag's class rule as is; a String stays a String.
+              given.is_a?(Array) || given.is_a?(Hash) ? [given, error] : [given, error].compact.join(' ')
+            end
         end
       end
     end

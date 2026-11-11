@@ -175,6 +175,18 @@ describe 'FormBuilder' do
       assert_includes actual_html, 'class="wide invalid"'
     end
 
+    it 'should give a builder that reads default_options a String class on fields with errors' do
+      form_builder_class = Class.new(Padrino::Helpers::FormBuilder::StandardFormBuilder) do
+        def text_field(field, options = {})
+          options = default_options(field, options)
+          options[:class] = "form-control #{options[:class]}"
+          @template.text_field_tag(field_name(field), options)
+        end
+      end
+      actual_html = form_for(@user, '/register', builder: form_builder_class) { |f| f.text_field(:email, class: 'wide') }
+      assert_includes actual_html, 'class="form-control wide invalid"'
+    end
+
     it 'should not have a class of "invalid" for fields with no errors' do
       actual_html = form_for(@user, '/register') { |f| f.text_field(:first_name) }
       assert_html_has_no_tag(actual_html, :input, type: 'text', name: 'user[first_name]', id: 'user_first_name', class: 'invalid')
