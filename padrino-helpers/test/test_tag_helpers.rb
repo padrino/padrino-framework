@@ -110,6 +110,27 @@ describe 'TagHelpers' do
       assert_equal '<div a_b-c="1" />', tag(:div, 'a b' => { c: 1 })
     end
 
+    it 'should replace carriage returns, form feeds, other controls and DEL in attribute names' do
+      assert_equal '<div a_b_c_d_e="1" />', tag(:div, "a\rb\fc\x01d\x7Fe" => 1)
+    end
+
+    it 'should write a valid attribute name given in another encoding' do
+      assert_equal '<div café="1" />', tag(:div, "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1) => 1)
+      assert_equal '<div données_x="1" />', tag(:div, 'données x'.b => 1)
+      assert_equal '<div café="1" />', tag(:div, 'café'.dup.force_encoding(Encoding::US_ASCII) => 1)
+      assert_equal '<div data-café="1" />', tag(:div, data: { "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1) => 1 })
+    end
+
+    it 'should write a nested attribute name with bytes that are not valid UTF-8' do
+      assert_equal "<div data-a\uFFFDb=\"1\" />", tag(:div, data: { "a\xFFb" => 1 })
+    end
+
+    it 'should replace characters a tag name cannot contain' do
+      assert_equal '<p_onclick_x>c</p_onclick_x>', content_tag(:'p onclick=x', 'c')
+      assert_equal '<br_x />', tag(:'br/x')
+      assert_equal '<my-element data-x="1">c</my-element>', content_tag('my-element', 'c', data: { x: 1 })
+    end
+
     it 'should write an attribute name with bytes that are not valid UTF-8' do
       assert_equal "<div a\uFFFDb=\"1\" />", tag(:div, "a\xFFb" => 1)
     end

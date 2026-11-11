@@ -137,6 +137,7 @@ module Padrino
         attributes = tag_attributes(options)
         output = SafeBuffer.new
 
+        name = tag_attribute_name(name)
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each do |item|
@@ -247,7 +248,7 @@ module Padrino
       def tag(name, options = nil, open = false)
         options = parse_data_options(name, options)
         attributes = tag_attributes(options)
-        "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
+        "<#{tag_attribute_name(name)}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
 
       SAFE_URI_SCHEMES = %w[http https mailto tel ftp].freeze
@@ -298,7 +299,7 @@ module Padrino
           next unless value
 
           all << ' ' if all.empty?
-          name = attribute_name(key)
+          name = tag_attribute_name(key)
           all <<
             if value.is_a?(Hash)
               nested_values(name, value)
@@ -325,7 +326,7 @@ module Padrino
       #
       def nested_values(attribute, hash)
         hash.inject(+'') do |all, (key, value)|
-          attribute_with_name = "#{attribute}-#{attribute_name(key.to_s.tr('_', '-'))}"
+          attribute_with_name = "#{attribute}-#{tag_attribute_name(utf8_text(key).tr('_', '-'))}"
           all <<
             if value.is_a?(Hash)
               nested_values(attribute_with_name, value)
@@ -336,14 +337,31 @@ module Padrino
       end
 
       ##
-      # Returns the name as an HTML attribute name, with each character an
-      # attribute name can't contain replaced by an underscore.
+      # Returns the name as an HTML tag or attribute name, with each character
+      # such a name can't contain replaced by an underscore.
       #
-      def attribute_name(name)
-        name = name.to_s
-        name = name.scrub unless name.valid_encoding?
+      def tag_attribute_name(name)
+        name = utf8_text(name)
         invalid = name.ascii_only? ? INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER : INVALID_ATTRIBUTE_NAME_CHARACTER
         name.match?(invalid) ? name.gsub(invalid, '_') : name
+      end
+
+      ##
+      # Returns the text as valid UTF-8: binary and US-ASCII bytes are read as
+      # UTF-8, other encodings are converted, and bytes that aren't valid become
+      # U+FFFD.
+      #
+      def utf8_text(text)
+        text = text.to_s
+        return text if text.ascii_only?
+
+        text =
+          case text.encoding
+          when Encoding::UTF_8 then text
+          when Encoding::BINARY, Encoding::US_ASCII then text.dup.force_encoding(Encoding::UTF_8)
+          else text.encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
+          end
+        text.valid_encoding? ? text : text.scrub
       end
 
       ##
