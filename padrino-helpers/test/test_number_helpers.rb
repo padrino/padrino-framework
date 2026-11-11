@@ -146,6 +146,17 @@ describe 'NumberHelpers' do
       BigDecimal.limit(limit)
     end
 
+    it 'should round a BigDecimal with a large negative exponent to zero' do
+      assert_equal '0.00', number_with_precision(BigDecimal('1e-10000000'), precision: 2)
+      assert_equal '$0.00', number_to_currency(BigDecimal('1e-10000000'))
+    end
+
+    it 'should format a BigDecimal with an exponent up to 309 and return a larger one as given' do
+      assert_equal "1#{'0' * 308}.00", number_with_precision(BigDecimal('1e308'), precision: 2)
+      large = BigDecimal('1e309')
+      assert_same large, number_with_precision(large, precision: 2)
+    end
+
     it 'should write a rounded BigDecimal in the encoding a Float gets' do
       assert_equal number_with_precision(1.5, precision: 2).encoding, number_with_precision(BigDecimal('1.5'), precision: 2).encoding
     end

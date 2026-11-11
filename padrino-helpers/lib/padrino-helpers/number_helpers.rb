@@ -228,8 +228,13 @@ module Padrino
         # format raises the same for these on the Float path.
         raise ArgumentError, "invalid precision: #{precision.inspect}" unless precision.is_a?(Integer) && precision >= 0
 
-        # Rational arithmetic is exact, whatever BigDecimal.mode and BigDecimal.limit say.
-        scaled = (number.to_r * 10**precision).round(half: :up)
+        # Exact whatever BigDecimal.limit says (lifted for this thread) and BigDecimal.mode
+        # says (the mode is given). Rational arithmetic would also be exact, but to_r builds
+        # a huge Integer for a tiny value such as 1e-10000000.
+        scaled = ::BigDecimal.save_limit do
+          ::BigDecimal.limit(0)
+          (number * 10**precision).round(0, ::BigDecimal::ROUND_HALF_UP).to_i
+        end
         digits = format('%0*d', precision + 1, scaled.abs)
         digits.insert(-precision - 1, '.') if precision.positive?
         scaled.negative? ? "-#{digits}" : digits
