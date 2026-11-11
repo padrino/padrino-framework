@@ -119,14 +119,17 @@ module Padrino
 
       ##
       # Whether a provides condition for +types+ accepts +format+, a Symbol
-      # decoded as route params receive it.
+      # decoded as route params receive it. :any accepts only the name of a
+      # file extension with a registered MIME type, which the route answers with.
       #
       # @example
       #   Padrino::Routing.provided_format?(%i[html json], :json) # => true
+      #   Padrino::Routing.provided_format?([:any], :nosuchext)  # => false
+      #   Padrino::Routing.provided_format?([:any], :'text/plain') # => false
       #
       # @api private
       def provided_format?(types, format)
-        !([:any, format] & types).empty?
+        types.include?(format) || (types.include?(:any) && !::Rack::Mime.mime_type(".#{format}", nil).nil?)
       end
 
       ##
@@ -641,6 +644,7 @@ module Padrino
       #   get :list, provides: [:js, :json]                # => "/list.{!format,js|json}"
       #   get :list, provides: [:html, :js, :json]         # => "/list(.{!format,js|json})"
       #   get :list, priority: :low                        # Defers route to be last
+      #   get :index, host: 'admin.example.com'            # Only for that host (a String, Regexp or Array)
       #   get /pattern/, name: :foo, generate_with: '/foo' # Generates :foo as /foo
       def route(verb, path, *args, &block)
         options =
@@ -1136,7 +1140,10 @@ module Padrino
         first_time = true
 
         routes = base.compiled_router.call(@request) do |route, params|
-          next if route.user_agent && route.user_agent !~ @request.user_agent
+          # ceiling: a route skipped here for its host or agent still counts for the 405 check below;
+          # drop those routes from +routes+ before the check to answer 404 instead.
+          next if route.host && !host_matches?(route.host)
+          next if route.user_agent && !(route.user_agent === @request.user_agent)
           original_params, parent_layout = @params.dup, @layout
           returned_pass_block = invoke_route(route, params, first_time)
           pass_block = returned_pass_block if returned_pass_block
@@ -1195,6 +1202,12 @@ module Padrino
         ensure
           (route.after_filters - settings.filters[:after]).each { |block| instance_eval(&block) }
         end
+      end
+
+      # A route's +host:+ is a String (compared ignoring case), a Regexp or an Array of them.
+      def host_matches?(hosts)
+        host = @request.host.to_s
+        Array(hosts).any? { |pattern| pattern.is_a?(String) ? pattern.casecmp?(host) : pattern === host }
       end
 
       def captures_from_params(params)
