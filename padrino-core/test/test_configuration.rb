@@ -171,17 +171,17 @@ describe 'PadrinoConfiguration' do
   it 'should read and write logger and display like other names' do
     config = Padrino::Configuration::Store.new
     assert_nil config.logger
-    refute config.respond_to?(:logger)
+    refute_respond_to config, :logger
     config.logger = :mine
     config.display = true
     assert_equal :mine, config.logger
-    assert_equal true, config.display
-    assert config.respond_to?(:logger)
+    assert config.display
+    assert_respond_to config, :logger
   end
 
   it 'should not equal a Hash with the same values' do
     config = Padrino::Configuration::Store.new
     config.a = 1
-    refute config == { a: 1 }
+    refute_equal config, { a: 1 }
   end
 end
