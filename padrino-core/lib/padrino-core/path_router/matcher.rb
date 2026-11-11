@@ -27,7 +27,7 @@ module Padrino
           whole_regexp.match(pattern[0..-2])
         end
       rescue Encoding::CompatibilityError
-        # A Regexp fixed to another encoding (/n with non-ASCII bytes) matches no path it can't read.
+        # A Regexp fixed to another encoding doesn't match (see Routing.path_match?).
         nil
       end
 

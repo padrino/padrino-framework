@@ -104,8 +104,8 @@ module Padrino
             regexp = route.regexp
             return route if regexp.match?(path) || (trimmed && regexp.match?(trimmed))
           rescue Encoding::CompatibilityError
-            # A Regexp fixed to another encoding (/n with non-ASCII bytes) matches no path it can't read.
-            next
+            # A Regexp fixed to another encoding (/n with non-ASCII bytes) matches no path it can't
+            # read, as in Sinatra (see Routing.path_match?). The same holds in the loop below.
           end
           return
         end
@@ -115,7 +115,7 @@ module Padrino
             # A route added after compiling has no regexp and matches nothing.
             return route if regexp && (regexp.match?(path) || (trimmed && regexp.match?(trimmed)))
           rescue Encoding::CompatibilityError
-            # As above: this route matches no path it can't read.
+            nil
           end
           offset += 1
         end
