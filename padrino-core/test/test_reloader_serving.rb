@@ -3,6 +3,70 @@ require_relative 'helper'
 require_relative 'fixtures/apps/serving/app'
 require_relative 'fixtures/apps/serving/steady'
 
+# A minimal fiber scheduler, so that one thread serves several requests at once, as Falcon does.
+# It resumes the thread's fibers in turn, each when what it waits for (a Mutex, ConditionVariable
+# or Queue) wakes it, from any thread. Ruby only resumes them from #run_until.
+class ServingFiberScheduler
+  def initialize
+    @ready = Thread::Queue.new
+    @sleeping = {}
+  end
+
+  def fiber(&block)
+    fiber = Fiber.new(blocking: false, &block)
+    fiber.resume
+    fiber
+  end
+
+  def block(_blocker, timeout = nil)
+    wake_after(timeout)
+    Fiber.yield
+  end
+
+  def unblock(_blocker, fiber)
+    @ready << fiber
+  end
+
+  # Where a fiber waits on a ConditionVariable, as at Padrino::Reloader's gate.
+  def kernel_sleep(duration = nil)
+    wake_after(duration)
+    @sleeping[Fiber.current] = true
+    Fiber.yield
+  ensure
+    @sleeping.delete(Fiber.current)
+  end
+
+  def io_wait(*)
+    raise NotImplementedError
+  end
+
+  def close; end
+
+  def sleeping?(fiber)
+    @sleeping.key?(fiber)
+  end
+
+  # Resumes the fibers as they wake, until the block returns true.
+  def run_until
+    until yield
+      fiber = @ready.pop
+      fiber.resume if fiber.alive?
+    end
+  end
+
+  private
+
+  def wake_after(timeout)
+    fiber = Fiber.current
+    return unless timeout
+
+    Thread.new do
+      sleep(timeout)
+      @ready << fiber
+    end
+  end
+end
+
 describe 'Reloader while serving' do
   # Raised into a request to interrupt it, as Timeout does.
   class ServingInterrupt < StandardError; end
@@ -30,6 +94,19 @@ describe 'Reloader while serving' do
     Padrino::Reloader.max_wait = @max_wait
     Padrino::Logger::Config[:test] = @log_config
     Padrino::Logger.setup!
+
+    # A test that failed with a turn taken mustn't hold up the next ones. Its threads may still
+    # be giving their turns back.
+    gate = { :@readers => 0, :@writers_waiting => 0, :@writing => false }
+    read_gate = -> { gate.to_h { |name, _| [name, Padrino::Reloader.instance_variable_get(name)] } }
+    deadline = Time.now + 2
+    sleep 0.01 until (left = read_gate.call) == gate || Time.now > deadline
+    gate.each { |name, value| Padrino::Reloader.instance_variable_set(name, value) }
+    turns = Thread.current.thread_variables.grep(/\Apadrino_reloader_/)
+    taken = turns.select { |name| Thread.current.thread_variable_get(name) }
+    turns.each { |name| Thread.current.thread_variable_set(name, nil) }
+    assert_equal gate, left, 'a turn was left taken at the gate'
+    assert_empty taken, 'a turn was left taken by the test thread'
   end
 
   def request(path)
@@ -194,6 +271,77 @@ describe 'Reloader while serving' do
     assert_equal [[200, 'held']], values_of(holder)
   end
 
+  it 'holds the requests that arrive while a reload waits, until it finishes' do
+    Padrino::Reloader.max_wait = 10
+    entered = Queue.new
+    release = Queue.new
+    reloaded = Queue.new
+    Padrino.after_load { reloaded << true }
+    calls = 0
+    ServingDemo.on_hold = lambda do
+      next "reloads: #{reloaded.size}" unless (calls += 1) == 1
+
+      entered << true
+      release.pop
+      'held'
+    end
+    reloader = newcomer = nil
+
+    begin
+      holder = Thread.new { request('/hold') }
+      pop_from(entered, holder)
+      change_apps!
+      reloader = Thread.new { Padrino.reload! }
+      wait_for_turn(reloader)
+      assert waiting_for_turn?(reloader), 'the reload did not wait for the request in progress'
+      # To an app that doesn't reload, so only the gate can hold it.
+      newcomer = Thread.new { request('/steady/hold') }
+      wait_for_turn(newcomer)
+      assert waiting_for_turn?(newcomer), 'a new request went ahead of the waiting reload'
+    ensure
+      release << true
+    end
+
+    assert_equal [[200, 'held'], [200, 'reloads: 1']], values_of(holder, newcomer)
+    values_of(reloader)
+    assert_empty warnings
+  end
+
+  [nil, Float::INFINITY].each do |max_wait|
+    it "waits as long as the requests in progress take with max_wait #{max_wait.inspect}" do
+      Padrino::Reloader.max_wait = max_wait
+      entered = Queue.new
+      release = Queue.new
+      hold_requests(entered, release)
+      reloads = count_reloads
+      reloader = nil
+
+      begin
+        holder = Thread.new { request('/hold') }
+        pop_from(entered, holder)
+        change_apps!
+        reloader = Thread.new { Padrino.reload! }
+        wait_for_turn(reloader)
+        assert waiting_for_turn?(reloader), 'the reload did not wait for the request in progress'
+        assert_equal 0, reloads.size, 'the code reloaded while a request was in progress'
+      ensure
+        release << true
+      end
+
+      assert_equal [[200, 'held']], values_of(holder)
+      values_of(reloader)
+      assert_equal 1, reloads.size
+      assert_empty warnings
+    end
+  end
+
+  it 'refuses a max_wait that is not a number of seconds' do
+    ['3', :forever, Complex(1, 1)].each do |max_wait|
+      assert_raises(ArgumentError) { Padrino::Reloader.max_wait = max_wait }
+    end
+    assert_equal @max_wait, Padrino::Reloader.max_wait
+  end
+
   it 'serves a request that calls its own server while the code changes' do
     Padrino::Reloader.max_wait = 0.2
     ServingDemo.on_hold = lambda do
@@ -232,6 +380,99 @@ describe 'Reloader while serving' do
     assert_equal [[200, 'served']], values_of(holder)
     values_of(reloader)
     assert_empty warnings
+  end
+
+  it 'holds the other fibers of a thread whose reload waits for the requests in progress' do
+    skip 'needs a fiber scheduler that CRuby runs Mutex waits through' unless RUBY_ENGINE == 'ruby' && Fiber.respond_to?(:set_scheduler)
+
+    Padrino::Reloader.max_wait = 10
+    entered = Queue.new
+    release = Queue.new
+    hold_requests(entered, release)
+    reloads = count_reloads
+    scheduler = ServingFiberScheduler.new
+    seen = Queue.new
+    answers = Queue.new
+    fibers = nil
+
+    begin
+      holder = Thread.new { request('/hold') }
+      pop_from(entered, holder)
+      change_apps!
+      # One thread serving several requests: one of them reloads, then two more arrive.
+      server = Thread.new do
+        Fiber.set_scheduler(scheduler)
+        first = Fiber.schedule { Padrino.reload! }
+        scheduler.run_until { scheduler.sleeping?(first) }
+        fibers = [first, Fiber.schedule { Padrino.reload! }, Fiber.schedule { answers << request('/') }]
+        scheduler.run_until { fibers.all? { |fiber| !fiber.alive? || scheduler.sleeping?(fiber) } }
+        seen << reloads.size
+        scheduler.run_until { fibers.none?(&:alive?) }
+      ensure
+        Fiber.set_scheduler(nil)
+      end
+      assert_equal 0, pop_from(seen, server), 'the code reloaded while a request was in progress'
+    ensure
+      release << true
+    end
+
+    assert_equal [[200, 'held']], values_of(holder)
+    values_of(server)
+    assert_equal 1, reloads.size
+    assert_equal [200, 'served'], answers.pop
+    assert_empty warnings
+  end
+
+  it 'reloads without waiting for the requests in progress while reloading is disabled' do
+    enabled = Padrino::Reloader.instance_variable_get(:@enabled)
+    Padrino::Reloader.max_wait = 10
+    entered = Queue.new
+    release = Queue.new
+    hold_requests(entered, release)
+    reloads = count_reloads
+
+    begin
+      # As in development with Padrino::Reloader.enabled = false: the apps still set :reload.
+      Padrino::Reloader.enabled = false
+      @app = Padrino.application
+      holder = Thread.new { request('/hold') }
+      pop_from(entered, holder)
+      change_apps!
+      # The other app's first request reloads the changes, and neither it nor the reload waits
+      # at the gate.
+      other = nil
+      Padrino::Reloader.instance_variable_get(:@gate).synchronize do
+        other = Thread.new { request('/other') }
+        assert other.join(2), 'the request or its reload waited at the gate'
+      end
+      assert_equal [[200, 'other']], values_of(other)
+      assert_equal 1, reloads.size
+    ensure
+      release << true
+      Padrino::Reloader.enabled = enabled
+    end
+
+    assert_equal [[200, 'held']], values_of(holder)
+    assert_empty warnings
+  end
+
+  it 'counts a dependency outside Padrino.root as changed only once it is edited' do
+    Dir.mktmpdir do |dir|
+      file = File.join(dir, 'serving_outside.rb')
+      File.write(file, "module ServingOutside; end\n")
+      Padrino.dependency_paths << File.join(dir, '*.rb')
+      Padrino.require_dependencies(file)
+      refute Padrino::Reloader.changed?, 'the dependency counts as changed after loading it'
+
+      File.utime(Time.now + 10, Time.now + 10, file)
+      assert Padrino::Reloader.changed?, 'an edit of the dependency went unnoticed'
+      Padrino.reload!
+      refute Padrino::Reloader.changed?, 'the dependency counts as changed after reloading'
+    ensure
+      Object.send(:remove_const, :ServingOutside) if defined?(ServingOutside)
+      $LOADED_FEATURES.delete(File.realpath(file)) if File.exist?(file)
+      $LOADED_FEATURES.delete(file)
+    end
   end
 
   it 'gives the turn back when a request is interrupted as it does' do
