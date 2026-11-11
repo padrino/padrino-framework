@@ -1,6 +1,7 @@
 ##
 # This file loads certain extensions required by Padrino.
 #
+require 'padrino-support/colorizer'
 require 'padrino-support/core_ext/string/colorize'
 require 'padrino-support/file_set'
 require 'padrino-support/utils'
