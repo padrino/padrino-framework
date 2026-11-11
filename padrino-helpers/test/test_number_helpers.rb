@@ -138,6 +138,18 @@ describe 'NumberHelpers' do
       BigDecimal.mode(BigDecimal::ROUND_MODE, mode)
     end
 
+    it 'should round a BigDecimal exactly whatever the BigDecimal limit' do
+      limit = BigDecimal.limit(3)
+      assert_equal '12345.67', number_with_precision(BigDecimal('12345.67'), precision: 2)
+      assert_equal '$12,345.67', number_to_currency(BigDecimal('12345.67'))
+    ensure
+      BigDecimal.limit(limit)
+    end
+
+    it 'should write a rounded BigDecimal in the encoding a Float gets' do
+      assert_equal number_with_precision(1.5, precision: 2).encoding, number_with_precision(BigDecimal('1.5'), precision: 2).encoding
+    end
+
     it 'should display number_with_precision with custom delimiter and separator' do
       assert_equal '31,83',     number_with_precision(31.826, precision: 2, separator: ',')
       assert_equal '1.231,83',  number_with_precision(1231.826, precision: 2, separator: ',', delimiter: '.')

@@ -198,9 +198,9 @@ module Padrino
         end
 
         begin
-          # ceiling: a BigDecimal beyond Float's range takes the Float path, which returns it
-          # unformatted as before, so a huge exponent can't make a huge string; write those out
-          # too, with a length limit, if anyone needs them.
+          # ceiling: a BigDecimal with an exponent above 309 takes the Float path, which returns
+          # it unformatted as before, so a huge exponent can't make a huge string; write those
+          # out too, with a length limit, if anyone needs them.
           formatted_number =
             if defined?(::BigDecimal) && number.is_a?(::BigDecimal) && number.exponent <= Float::MAX_10_EXP + 1
               NumberHelpers.decimal_with_precision(number, precision)
@@ -228,8 +228,9 @@ module Padrino
         # format raises the same for these on the Float path.
         raise ArgumentError, "invalid precision: #{precision.inspect}" unless precision.is_a?(Integer) && precision >= 0
 
-        scaled = (number * 10**precision).round(0, ::BigDecimal::ROUND_HALF_UP).to_i
-        digits = scaled.abs.to_s.rjust(precision + 1, '0')
+        # Rational arithmetic is exact, whatever BigDecimal.mode and BigDecimal.limit say.
+        scaled = (number.to_r * 10**precision).round(half: :up)
+        digits = format('%0*d', precision + 1, scaled.abs)
         digits.insert(-precision - 1, '.') if precision.positive?
         scaled.negative? ? "-#{digits}" : digits
       end
