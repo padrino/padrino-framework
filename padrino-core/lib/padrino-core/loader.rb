@@ -120,11 +120,15 @@ module Padrino
     ##
     # Method for reloading required applications and their files.
     #
+    # The reload waits for the requests in progress to finish, and requests that arrive
+    # meanwhile wait for it (see Reloader.exclusively).
+    #
     def reload!
-      return unless Reloader.changed?
-      before_load.each(&:call)
-      Reloader.reload!
-      after_load.each(&:call)
+      Reloader.exclusively do
+        before_load.each(&:call)
+        Reloader.reload!
+        after_load.each(&:call)
+      end
     end
 
     ##

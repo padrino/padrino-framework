@@ -19,6 +19,26 @@ module Padrino
     # The modification times for every file in a project.
     MTIMES = {}
 
+    # Requests and reloads take turns through this gate (see #serve and #exclusively).
+    @gate = Mutex.new
+    @gate_changed = ConditionVariable.new
+    @readers = 0
+    @writers_waiting = 0
+    @writing = false
+    # Counts the reloads done, so the requests that saw the same changes reload them once.
+    @generation = 0
+    @max_wait = 3
+    # The process the gate's state belongs to: a forked child starts with its own (see #at_gate).
+    @gate_pid = Process.pid
+    # Thread variables, which every fiber of a thread shares (on JRuby too, where each fiber has
+    # its own Thread.current): the number of requests the thread is serving (nested calls, or
+    # fibers), the number of its reloads waiting for their turn, and whether one of them runs.
+    # A thread counts in @readers while it serves and neither reloads nor waits to.
+    SERVING = :padrino_reloader_serving
+    WAITING = :padrino_reloader_waiting
+    RELOADING = :padrino_reloader_reloading
+    private_constant :SERVING, :WAITING, :RELOADING
+
     ##
     # Specified folders can be excluded from the code reload detection process.
     # Default excluded directories at Padrino.root are: test, spec, features, tmp, config, db and public
@@ -51,6 +71,75 @@ module Padrino
     #
     def include_constants
       @_include_constants ||= Set.new
+    end
+
+    ##
+    # How long, in seconds, a reload waits for the requests in progress to finish (3 by default).
+    # Past it, the reload goes ahead and logs a warning: a request paused in a debugger, or one
+    # that waits for another request (calling its own server, say), can't hold up the server,
+    # but the requests still running can see the reload in progress. +nil+ or +Float::INFINITY+
+    # waits as long as it takes.
+    #
+    attr_reader :max_wait
+
+    def max_wait=(seconds)
+      unless seconds.nil? || (seconds.is_a?(Numeric) && seconds.real? && !seconds.to_f.nan?)
+        raise ArgumentError, "Padrino::Reloader.max_wait must be a number of seconds or nil, not #{seconds.inspect}"
+      end
+      @max_wait = seconds
+    end
+
+    ##
+    # Runs the block as a request: requests run together, but not while a reload runs. A request
+    # that arrives during a reload, or while one waits to start, waits for it. A call nested in
+    # a request or a reload, from any fiber of its thread, runs at once.
+    #
+    # ceiling: turns belong to threads, so under a fiber scheduler (one thread serving several
+    # requests) a reload started by one of its requests doesn't wait for the others, and the
+    # thread's requests don't wait for it. While one of its fibers reloads, a reload from another
+    # runs at once, alongside it; one that was already waiting for the turn still waits, and
+    # skips the changes reloaded meanwhile. Upgrade path: tell the reloading fiber apart from the
+    # thread's others (Fiber storage, Ruby 3.2+), still letting the fibers nested in a reload run.
+    #
+    def serve(&block)
+      thread = Thread.current
+      # Interrupts (Thread#raise, Timeout) wait until the turn is taken or given back.
+      Thread.handle_interrupt(Object => :never) do
+        take_serving_turn(thread)
+        begin
+          Thread.handle_interrupt(Object => :immediate, &block)
+        ensure
+          give_serving_turn(thread)
+        end
+      end
+    end
+
+    ##
+    # Runs the block alone, if the code changed: once the requests in progress have finished, or
+    # max_wait seconds have passed. Called from a request, the request gives up its turn while it
+    # waits and takes it back afterwards. Returns without running the block if another thread
+    # reloaded the changes meanwhile, so one edit causes one reload.
+    #
+    def exclusively(&block)
+      generation = @generation
+      return unless changed?
+      thread = Thread.current
+      if thread.thread_variable_get(RELOADING)
+        yield
+        return true
+      end
+      Thread.handle_interrupt(Object => :never) do
+        in_progress = wait_for_exclusive_turn(thread, generation)
+        return unless in_progress
+        reloaded = false
+        begin
+          warn_about_requests_in_progress(in_progress) if in_progress.positive?
+          Thread.handle_interrupt(Object => :immediate, &block)
+          reloaded = true
+        ensure
+          end_exclusive_turn(thread, reloaded)
+        end
+      end
     end
 
     ##
@@ -101,7 +190,7 @@ module Padrino
       file     = figure_path(file)
       return unless options[:force] || file_changed?(file)
       return skip_untracked(file) if untracked_files.include?(file)
-      return require(file) if feature_excluded?(file)
+      return require_excluded(file) if feature_excluded?(file)
 
       Storage.prepare(file) # might call #safe_load recursively
       logger.devel(file_new?(file) ? :loading : :reload, began_at, file)
@@ -187,6 +276,132 @@ module Padrino
     end
 
     private
+
+    ##
+    # Waits while a reload runs or waits to start, so a busy server can't keep a reload waiting,
+    # unless the thread already holds a turn.
+    #
+    # ceiling: requests wait for a running reload without a time limit, so an after_load block
+    # that requests the app's own server and waits for the answer waits forever. Upgrade path:
+    # bound that wait too.
+    #
+    def take_serving_turn(thread)
+      at_gate do
+        unless thread.thread_variable_get(SERVING) || thread.thread_variable_get(RELOADING)
+          wait_at_gate while @writing || @writers_waiting.positive?
+        end
+        change_turn(thread, SERVING, thread.thread_variable_get(SERVING).to_i + 1)
+      end
+    end
+
+    def give_serving_turn(thread)
+      at_gate do
+        serving = thread.thread_variable_get(SERVING) - 1
+        change_turn(thread, SERVING, (serving if serving.positive?))
+        @gate_changed.broadcast if @readers.zero?
+      end
+    end
+
+    ##
+    # Waits until no request or other reload runs, or max_wait seconds have passed while only
+    # requests run, then marks a reload as running and returns the number of requests still in
+    # progress. Returns nil if another reload ends meanwhile, once no reload runs. The thread
+    # gives up its own turn while it waits.
+    #
+    def wait_for_exclusive_turn(thread, generation)
+      at_gate do
+        change_turn(thread, WAITING, thread.thread_variable_get(WAITING).to_i + 1)
+        @writers_waiting += 1
+        taken = false
+        begin
+          limit = max_wait
+          deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + limit if limit&.finite?
+          until @generation != generation
+            left = deadline - Process.clock_gettime(Process::CLOCK_MONOTONIC) if deadline
+            break taken = true unless @writing || (@readers.positive? && (left.nil? || left.positive?))
+            # ConditionVariable#wait refuses a timeout past Time's range; the loop checks again on waking.
+            wait_at_gate(@writing || left.nil? ? nil : [left, 3600].min)
+          end
+          if taken
+            @writing = true
+            change_turn(thread, RELOADING, true)
+          else
+            # A newer reload may have started: the thread's request mustn't run during it.
+            wait_at_gate while @writing
+          end
+          @readers if taken
+        ensure
+          @writers_waiting -= 1
+          waiting = thread.thread_variable_get(WAITING) - 1
+          change_turn(thread, WAITING, (waiting if waiting.positive?))
+          @gate_changed.broadcast
+        end
+      end
+    end
+
+    def end_exclusive_turn(thread, reloaded)
+      at_gate do
+        @writing = false
+        @generation += 1 if reloaded
+        change_turn(thread, RELOADING, nil)
+        @gate_changed.broadcast
+      end
+    end
+
+    ##
+    # Runs the block holding @gate. In a process forked since the gate was last used, the turns
+    # of the threads that didn't survive the fork are dropped first, keeping those of the thread
+    # that forked, which is the child's main thread.
+    #
+    def at_gate
+      @gate.synchronize do
+        unless @gate_pid == Process.pid
+          @gate_pid = Process.pid
+          forker = Thread.main
+          @readers = counts_as_reader?(forker) ? 1 : 0
+          @writers_waiting = forker.thread_variable_get(WAITING).to_i
+          @writing = forker.thread_variable_get(RELOADING) || false
+        end
+        yield
+      end
+    end
+
+    ##
+    # Waits for the gate to change, at most timeout seconds. Called holding @gate, with
+    # interrupts deferred: they may stop the wait, before the caller changes anything.
+    #
+    def wait_at_gate(timeout = nil)
+      Thread.handle_interrupt(Object => :immediate) { @gate_changed.wait(@gate, timeout) }
+    end
+
+    ##
+    # Sets one of the thread's turn variables, keeping @readers in step. Called holding @gate.
+    #
+    def change_turn(thread, key, value)
+      counted = counts_as_reader?(thread)
+      thread.thread_variable_set(key, value)
+      @readers += (counts_as_reader?(thread) ? 1 : 0) - (counted ? 1 : 0)
+    end
+
+    def counts_as_reader?(thread)
+      thread.thread_variable_get(SERVING) && !thread.thread_variable_get(WAITING) &&
+        !thread.thread_variable_get(RELOADING)
+    end
+
+    def warn_about_requests_in_progress(count)
+      logger.warn "Reloading the code after waiting #{max_wait}s (Padrino::Reloader.max_wait) for the " \
+                  "requests in progress to finish; #{count} still running"
+    end
+
+    ##
+    # Requires a file the reloader doesn't reload, recording its modification time so that it
+    # doesn't count as changed until it is edited.
+    #
+    def require_excluded(file)
+      required = require(file)
+      update_modification_time(file) if File.file?(file)
+      required
+    end
 
     ##
     # Returns absolute path of the file.

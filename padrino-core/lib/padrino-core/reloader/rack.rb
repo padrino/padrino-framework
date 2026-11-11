@@ -11,18 +11,22 @@ module Padrino
         @app = app
         @cooldown = cooldown
         @last = (Time.now - cooldown)
-        @mutex = Mutex.new
       end
 
-      # Invoked in order to perform the reload as part of the request stack.
+      # Invoked in order to perform the reload as part of the request stack. The request runs
+      # in turn with code reloads (see Reloader.serve), as does the reload it starts.
+      #
+      # ceiling: the turn ends when call returns, so a streamed body (Sinatra's +stream+) runs
+      # outside it; keeping it until the body closes would let one open stream hold off reloads.
+      #
       def call(env)
-        if @cooldown && Time.now > @last + @cooldown
-          @mutex.synchronize do
+        Reloader.serve do
+          if @cooldown && Time.now > @last + @cooldown
             Padrino.reload!
+            @last = Time.now
           end
-          @last = Time.now
+          @app.call(env)
         end
-        @app.call(env)
       end
     end
   end

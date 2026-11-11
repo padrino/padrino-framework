@@ -62,8 +62,12 @@ module Padrino
     ##
     # The resulting rack builder mapping each 'mounted' application.
     #
-    # @return [Padrino::Router]
-    #   The router for the application.
+    # While reloading is enabled, every request, to any mounted app, runs in turn with code
+    # reloads (see Reloader.serve).
+    #
+    # @return [#call]
+    #   The Rack app: the router for the application, behind the middleware added with
+    #   {Padrino.use}, and, while reloading is enabled, wrapped in a lambda that takes turns.
     #
     # @raise [ApplicationLoadError]
     #   No applications were mounted.
@@ -73,7 +77,8 @@ module Padrino
       router = Padrino::Router.new
       Padrino.mounted_apps.each { |app| app.map_onto(router) }
       warn_about_session_secret_in_source
-      middleware.empty? ? router : add_middleware(router)
+      app = middleware.empty? ? router : add_middleware(router)
+      Reloader.enabled? ? ->(env) { Reloader.serve { app.call(env) } } : app
     end
 
     ##
