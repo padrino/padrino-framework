@@ -280,19 +280,25 @@ module Padrino
 
       ##
       # Returns an import map script tag, which maps the module names that scripts import to the files
-      # that hold them, then a module script tag that imports +entry+, if given. Each file in +imports+
-      # resolves like a +javascript_include_tag+ source; a full URL, or a path starting with "/", is kept.
+      # that hold them, then a module script tag that imports +entry+, if given.
+      #
+      # A relative source in +imports+ resolves in the javascripts folder like a +javascript_include_tag+
+      # source, but without the asset stamp: a module the page imports both by its name and by a relative
+      # path from another module is then one module, not two. A relative source ending in "/" maps a prefix
+      # ('lib/' => 'lib/' maps "lib/chart" to /javascripts/lib/chart). A source with a scheme
+      # (https:, data:), or starting with "/" or "//", is written as given.
       #
       # @overload javascript_importmap_tag(entry = nil, options = {})
       #   @param [String] entry
-      #     The module to import from the page, usually a name in +imports+.
+      #     The module to import from the page, usually a name in +imports+. A blank one imports nothing.
       #   @param [Hash] options
-      #     The html options for each tag this writes, such as a CSP +nonce+.
+      #     The html options for the import map tag. A +nonce+ goes on every tag this writes, for a
+      #     Content Security Policy; +type+ is ignored.
       #   @option options [Hash] :imports
       #     The module names, each with the javascript source or URL it maps to.
       #   @option options [Boolean] :preload
-      #     If true, a modulepreload link is written for each import, so browsers fetch them
-      #     all at once instead of one import at a time.
+      #     If true, a modulepreload link is written for each import (but not for prefixes), so browsers
+      #     fetch them all at once instead of one import at a time.
       #
       # @return [String] Import map, modulepreload and module script html tags.
       #
@@ -301,25 +307,33 @@ module Padrino
       #     'application' => 'application',
       #     '@hotwired/stimulus' => 'https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm'
       #   }
-      #   # Generates: <script type="importmap">{"imports":{"application":"/javascripts/application.js?1269008689",
+      #   # Generates: <script type="importmap">{"imports":{"application":"/javascripts/application.js",
       #   #   "@hotwired/stimulus":"https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm"}}</script>
       #   #   <script type="module">import "application"</script>
       #
-      #   javascript_importmap_tag imports: { 'app' => 'app' }, preload: true
-      #   # Generates: <script type="importmap">{"imports":{"app":"/javascripts/app.js?1269008689"}}</script>
-      #   #   <link rel="modulepreload" href="/javascripts/app.js?1269008689" />
+      #   javascript_importmap_tag imports: { 'app' => 'app', 'lodash/' => '/vendor/lodash/' }, preload: true
+      #   # Generates: <script type="importmap">{"imports":{"app":"/javascripts/app.js","lodash/":"/vendor/lodash/"}}</script>
+      #   #   <link rel="modulepreload" href="/javascripts/app.js" />
       #
       def javascript_importmap_tag(entry = nil, options = {})
         entry, options = nil, entry if entry.is_a?(Hash)
         options = Utils.symbolize_keys(options)
         imports = (options.delete(:imports) || {}).each_with_object({}) do |(name, source), all|
-          all[name.to_s] = asset_path(:js, source)
+          all[name.to_s] = importmap_address(source.to_s)
         end
         preload = options.delete(:preload)
+        options.delete(:type)
+        nonce = options[:nonce]
         html = SafeBuffer.new
         html << content_tag(:script, script_safe_json('imports' => imports), { type: 'importmap' }.update(options))
-        imports.each_value { |href| html << tag(:link, { rel: 'modulepreload', href: href }.update(options)) } if preload
-        html << content_tag(:script, "import #{script_safe_json(entry.to_s)}".html_safe, { type: 'module' }.update(options)) if entry
+        if preload
+          imports.each_value do |href|
+            html << tag(:link, rel: 'modulepreload', href: href, nonce: nonce) unless href.end_with?('/')
+          end
+        end
+        unless entry.to_s.strip.empty?
+          html << content_tag(:script, "import #{script_safe_json(entry.to_s)}".html_safe, type: 'module', nonce: nonce)
+        end
         html
       end
 
@@ -329,7 +343,9 @@ module Padrino
       # +stylesheet_link_tag+ and +image_tag+ sources; any other resolves from the public folder.
       #
       # Browsers only use a preload for a request to the same URL, asset stamp included, so preload a
-      # file that a stylesheet refers to (such as a font) by the path the stylesheet uses.
+      # file that a stylesheet refers to (such as a font) by the path the stylesheet uses. In the same way,
+      # preload the modules an import map maps with +javascript_importmap_tag+'s +preload+ option, whose
+      # links use the map's unstamped addresses.
       #
       # @param [String] source
       #   The path or URL of the file to preload.
@@ -343,8 +359,8 @@ module Padrino
       # @option options [String] :type
       #   The MIME type, so browsers skip a file they can't use.
       # @option options [String, Boolean] :crossorigin
-      #   The CORS mode; +true+ writes "anonymous". Fonts default to "anonymous", which browsers need to use
-      #   a font preload; +false+ leaves it out.
+      #   The CORS mode; +true+ writes "anonymous". Fonts and +:fetch+ default to "anonymous", since browsers
+      #   fetch those in CORS mode and only use a preload made the same way; +false+ leaves it out.
       #
       # @return [String] Link tag html for +source+ with specified +options+.
       #
@@ -360,9 +376,9 @@ module Padrino
       #
       def preload_link_tag(source, options = {})
         options = Utils.symbolize_keys(options)
-        as = options.delete(:as)&.to_s || PRELOAD_DESTINATIONS[File.extname(source.to_s.sub(/[?#].*/m, '')).downcase.delete('.')]
+        as = options.delete(:as)&.to_s&.downcase || PRELOAD_DESTINATIONS[File.extname(source.to_s.sub(/[?#].*/m, '')).downcase.delete('.')]
         crossorigin = options.delete(:crossorigin)
-        crossorigin = 'anonymous' if crossorigin == true || (crossorigin.nil? && as == 'font')
+        crossorigin = 'anonymous' if crossorigin == true || (crossorigin.nil? && %w[font fetch].include?(as))
         rel = as == 'module' ? 'modulepreload' : 'preload'
         href = asset_path(PRELOAD_ASSET_KINDS[as], source)
         defaults = { rel: rel, href: href, as: (as if rel == 'preload'), type: options.delete(:type), crossorigin: crossorigin }
@@ -427,6 +443,18 @@ module Padrino
       #
       def script_safe_json(value)
         JSON.generate(value).gsub(/[<>&\u2028\u2029]/, JSON_ESCAPE).html_safe
+      end
+
+      ##
+      # Returns the import map address for +source+: as given with a scheme or a leading "/",
+      # else in the javascripts folder, without the asset stamp (and without ".js" for a prefix).
+      #
+      def importmap_address(source)
+        return source if source.match?(%r{\A(?:[a-z][a-z0-9+.-]*:|/)}i)
+
+        source = source.gsub(' ', '%20')
+        source = asset_normalize_extension(:js, source) unless source.end_with?('/')
+        uri_root_path(asset_folder_name(:js), source)
       end
 
       ##
