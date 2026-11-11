@@ -215,5 +215,12 @@ describe 'SimpleReloader' do
     it 'should remove constants defined in the project folder' do
       assert_empty kept_constants_from('app')
     end
+
+    it 'should not track files in a folder next to the project that shares its name as a prefix' do
+      Padrino.stub(:root, '/srv/app') do
+        assert Padrino::Reloader.send(:feature_excluded?, '/srv/app-gems/lib/located.rb')
+        refute Padrino::Reloader.send(:feature_excluded?, '/srv/app/lib/located.rb')
+      end
+    end
   end
 end
