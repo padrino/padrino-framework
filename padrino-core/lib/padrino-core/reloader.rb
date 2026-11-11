@@ -335,20 +335,15 @@ module Padrino
 
     ##
     # Tells if a constant is defined only outside of Padrino project path.
-    # A constant with native methods (written in C or Java, or Struct members)
-    # is judged by where its name was first defined, so a C extension class
-    # that the project reopens is kept; when that is unknown, it's external.
-    # Any other constant is internal if it has a method defined inside the
-    # project path. One without methods (an exception class, say) is judged by
-    # where its name was defined, and is internal when that is unknown.
+    # If a constant has any methods defined inside of the project path it's
+    # considered internal and will be included in further testing.
+    # A constant without methods (an exception class, say) is judged by
+    # where its name was defined instead.
     #
     def external_constant?(const)
       sources = object_sources(const)
-      if sources.delete?(nil)
-        source = constant_source(const)
-        return source.nil? || !source.start_with?(Padrino.root)
-      end
       sources = [constant_source(const)].compact if sources.empty?
+      # consider methodless constants of unknown origin not external
       return false if sources.empty?
       sources.none? { |source| source.start_with?(Padrino.root) }
     end
@@ -361,13 +356,12 @@ module Padrino
       return if object.empty?
       base = base.empty? ? Object : Inflections.constantize(base)
       base.const_source_location(object)&.first
-    rescue NameError, ArgumentError # JRuby's Java packages raise ArgumentError
+    rescue NameError
       nil
     end
 
     ##
-    # Gets all the sources in which target class is defined, with nil for
-    # methods that have no Ruby source (written in C or Java, or Struct members).
+    # Gets all the sources in which target class is defined.
     #
     # Note: Method#source_location is for Ruby 1.9.3+ only.
     #
@@ -377,14 +371,14 @@ module Padrino
         next unless method_name.is_a?(Symbol)
 
         method_object = target.method(method_name)
-        sources << method_object.source_location&.first if method_object.owner == target.singleton_class
+        sources << method_object.source_location.first if method_object.owner == target.singleton_class
       end
 
       target.instance_methods.each do |method_name|
         next unless method_name.is_a?(Symbol)
 
         method_object = target.instance_method(method_name)
-        sources << method_object.source_location&.first if method_object.owner == target
+        sources << method_object.source_location.first if method_object.owner == target
       end
       sources
     end
