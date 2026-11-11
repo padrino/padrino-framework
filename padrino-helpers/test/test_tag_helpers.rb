@@ -95,6 +95,35 @@ describe 'TagHelpers' do
       assert_equal '<a href="/x" data-method="post" rel="nofollow" data-remote="true" data-confirm="Sure &amp; certain?" />',
                    tag(:a, href: '/x', method: :post, remote: true, confirm: 'Sure & certain?')
     end
+
+    it 'should write attribute names with each character a name cannot hold replaced by an underscore' do
+      assert_equal '<div ___z="1" />', tag(:div, '"><z' => 1)
+      assert_equal '<div a_b="1" c_d="2" />', tag(:div, 'a b' => 1, 'c=d': 2)
+      assert_equal '<div a_b_c_d_e_f_g_="h" />', tag(:div, "a\tb\nc'd/e\u0000f<g>" => 'h')
+      assert_equal '<input type="text" a_b="1" />', input_tag(:text, 'a b' => 1)
+    end
+
+    it 'should write nested attribute names the same way at every depth' do
+      assert_equal '<div title-___z="1" />', tag(:div, title: { '"><z' => 1 })
+      assert_equal '<div data-a_b="1" />', tag(:div, data: { 'a b' => 1 })
+      assert_equal '<div data-x-y_z-q_r="2" />', tag(:div, data: { x: { 'y"z' => { 'q r': 2 } } })
+      assert_equal '<div a_b-c="1" />', tag(:div, 'a b' => { c: 1 })
+    end
+
+    it 'should replace Unicode controls and noncharacters in attribute names' do
+      assert_equal '<div a_b_c_d="1" />', tag(:div, "a\u0085b\uFDD0c\u{10FFFF}d" => 1)
+    end
+
+    it 'should leave valid attribute names as they are' do
+      names = ['class', 'data-foo', 'aria-label', 'xml:lang', '@click', '@click.prevent', ':class', 'x-on:click',
+               'x-bind:class', 'hx-on::after-request', 'v-on:click', '#default', ':[key]', '[value]', '(click)',
+               '*ngIf', 'données', "\u540D\u524D", "a\u00A0b", 'a&b', '1x']
+      names.each do |name|
+        assert_equal %(<div #{name}="v" />), tag(:div, name => 'v')
+        assert_equal %(<div #{name}="v" />), tag(:div, name.to_sym => 'v')
+      end
+      assert_equal '<div data-foo-bar="1" aria-label="l" />', tag(:div, data: { foo_bar: 1 }, aria: { label: 'l' })
+    end
   end
 
   describe 'for #content_tag method' do
@@ -117,6 +146,11 @@ describe 'TagHelpers' do
     it 'should not escape html-safe content' do
       actual_html = content_tag(:p, class: 'large', id: 'star') { '<>' }
       assert_html_has_tag(actual_html, 'p.large#star', content: '<>')
+    end
+
+    it 'should write attribute names with each character a name cannot hold replaced by an underscore' do
+      assert_equal '<p ___z="1" data-a_b="2">x</p>', content_tag(:p, 'x', '"><z' => 1, data: { 'a b' => 2 })
+      assert_equal '<p a_b="1">x</p>', content_tag(:p, 'a"b': 1) { 'x' }
     end
 
     it 'should convert to a string if the content is not a string' do

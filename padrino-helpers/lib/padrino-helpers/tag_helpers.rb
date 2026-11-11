@@ -20,6 +20,18 @@ module Padrino
       #
       ESCAPE_REGEXP = Regexp.union(*ESCAPE_VALUES.keys).freeze
 
+      ##
+      # Characters that can't appear in an HTML attribute name: controls, space,
+      # quotes, <, >, /, = and Unicode noncharacters. The ASCII ones are kept
+      # apart so ASCII names are checked without the slower Unicode classes,
+      # which +u+ keeps valid when Ruby reads sources in another encoding (-K).
+      #
+      INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER = %r{[\x00-\x20"'<>/=\x7F]}.freeze
+      INVALID_ATTRIBUTE_NAME_CHARACTER = Regexp.union(
+        INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER, /[\p{Cc}\p{Noncharacter_Code_Point}]/u
+      ).freeze
+      private_constant :INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER, :INVALID_ATTRIBUTE_NAME_CHARACTER
+
       BOOLEAN_ATTRIBUTES = %i[
         autoplay
         autofocus
@@ -286,13 +298,14 @@ module Padrino
           next unless value
 
           all << ' ' if all.empty?
+          name = attribute_name(key)
           all <<
             if value.is_a?(Hash)
-              nested_values(key, value)
+              nested_values(name, value)
             elsif BOOLEAN_ATTRIBUTE_LOOKUP.key?(key)
-              %(#{key}="#{key}" )
+              %(#{name}="#{name}" )
             else
-              %(#{key}="#{escape_value(value)}" )
+              %(#{name}="#{escape_value(value)}" )
             end
         end
         all.chomp!(' ')
@@ -312,7 +325,7 @@ module Padrino
       #
       def nested_values(attribute, hash)
         hash.inject(+'') do |all, (key, value)|
-          attribute_with_name = "#{attribute}-#{key.to_s.tr('_', '-')}"
+          attribute_with_name = "#{attribute}-#{attribute_name(key.to_s.tr('_', '-'))}"
           all <<
             if value.is_a?(Hash)
               nested_values(attribute_with_name, value)
@@ -320,6 +333,16 @@ module Padrino
               %(#{attribute_with_name}="#{escape_value(value)}" )
             end
         end
+      end
+
+      ##
+      # Returns the name as an HTML attribute name, with each character an
+      # attribute name can't contain replaced by an underscore.
+      #
+      def attribute_name(name)
+        name = name.to_s
+        invalid = name.ascii_only? ? INVALID_ASCII_ATTRIBUTE_NAME_CHARACTER : INVALID_ATTRIBUTE_NAME_CHARACTER
+        name.match?(invalid) ? name.gsub(invalid, '_') : name
       end
 
       ##
