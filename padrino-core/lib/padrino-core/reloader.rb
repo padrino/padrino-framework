@@ -335,18 +335,21 @@ module Padrino
 
     ##
     # Tells if a constant is defined only outside of Padrino project path.
-    # If a constant has any methods defined inside of the project path it's
-    # considered internal and will be included in further testing.
-    # A constant without methods written in Ruby (an exception class, or a
-    # Struct with only its members, say) is judged by where its name was
-    # defined instead. If that is unknown too, it's external when it has
-    # native methods (written in C or Java) and internal when it has none.
+    # A constant with native methods (written in C or Java, or Struct members)
+    # is judged by where its name was first defined, so a C extension class
+    # that the project reopens is kept; when that is unknown, it's external.
+    # Any other constant is internal if it has a method defined inside the
+    # project path. One without methods (an exception class, say) is judged by
+    # where its name was defined, and is internal when that is unknown.
     #
     def external_constant?(const)
       sources = object_sources(const)
-      native = sources.delete?(nil)
+      if sources.delete?(nil)
+        source = constant_source(const)
+        return source.nil? || !source.start_with?(Padrino.root)
+      end
       sources = [constant_source(const)].compact if sources.empty?
-      return !native.nil? if sources.empty?
+      return false if sources.empty?
       sources.none? { |source| source.start_with?(Padrino.root) }
     end
 
@@ -358,7 +361,7 @@ module Padrino
       return if object.empty?
       base = base.empty? ? Object : Inflections.constantize(base)
       base.const_source_location(object)&.first
-    rescue NameError
+    rescue NameError, ArgumentError # JRuby's Java packages raise ArgumentError
       nil
     end
 
