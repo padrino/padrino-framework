@@ -28,6 +28,8 @@ module Padrino
     # Counts the reloads done, so the requests that saw the same changes reload them once.
     @generation = 0
     @max_wait = 3
+    # The process the gate's state belongs to: a forked child starts with its own (see #at_gate).
+    @gate_pid = Process.pid
     # Thread variables, which every fiber of a thread shares (on JRuby too, where each fiber has
     # its own Thread.current): the number of requests the thread is serving (nested calls, or
     # fibers), the number of its reloads waiting for their turn, and whether one of them runs.
@@ -277,7 +279,7 @@ module Padrino
     # unless the thread already holds a turn.
     #
     def take_serving_turn(thread)
-      @gate.synchronize do
+      at_gate(thread) do
         unless thread.thread_variable_get(SERVING) || thread.thread_variable_get(RELOADING)
           wait_at_gate while @writing || @writers_waiting.positive?
         end
@@ -286,7 +288,7 @@ module Padrino
     end
 
     def give_serving_turn(thread)
-      @gate.synchronize do
+      at_gate(thread) do
         serving = thread.thread_variable_get(SERVING) - 1
         change_turn(thread, SERVING, (serving if serving.positive?))
         @gate_changed.broadcast if @readers.zero?
@@ -300,7 +302,7 @@ module Padrino
     # gives up its own turn while it waits.
     #
     def wait_for_exclusive_turn(thread, generation)
-      @gate.synchronize do
+      at_gate(thread) do
         change_turn(thread, WAITING, thread.thread_variable_get(WAITING).to_i + 1)
         @writers_waiting += 1
         taken = false
@@ -310,7 +312,8 @@ module Padrino
           until @generation != generation
             left = deadline - Process.clock_gettime(Process::CLOCK_MONOTONIC) if deadline
             break taken = true unless @writing || (@readers.positive? && (left.nil? || left.positive?))
-            wait_at_gate(@writing ? nil : left)
+            # ConditionVariable#wait refuses a timeout past Time's range; the loop checks again on waking.
+            wait_at_gate(@writing || left.nil? ? nil : [left, 3600].min)
           end
           if taken
             @writing = true
@@ -330,11 +333,27 @@ module Padrino
     end
 
     def end_exclusive_turn(thread, reloaded)
-      @gate.synchronize do
+      at_gate(thread) do
         @writing = false
         @generation += 1 if reloaded
         change_turn(thread, RELOADING, nil)
         @gate_changed.broadcast
+      end
+    end
+
+    ##
+    # Runs the block holding @gate. In a process forked since the gate was last used, the turns
+    # of the threads that didn't survive the fork are dropped first, keeping the thread's own.
+    #
+    def at_gate(thread)
+      @gate.synchronize do
+        unless @gate_pid == Process.pid
+          @gate_pid = Process.pid
+          @readers = counts_as_reader?(thread) ? 1 : 0
+          @writers_waiting = thread.thread_variable_get(WAITING).to_i
+          @writing = thread.thread_variable_get(RELOADING) || false
+        end
+        yield
       end
     end
 

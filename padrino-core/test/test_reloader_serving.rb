@@ -173,6 +173,32 @@ describe 'Reloader while serving' do
     end
   end
 
+  # Runs the block in a forked process and returns its value's inspect, or its error, failing
+  # if it doesn't finish in time.
+  def in_fork(within: 5)
+    reader, writer = IO.pipe
+    pid = fork do
+      reader.close
+      result = begin
+        yield.inspect
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        "#{e.class}: #{e.message}"
+      end
+      writer.write(result)
+      writer.close
+      exit!(0)
+    end
+    writer.close
+    unless IO.select([reader], nil, nil, within)
+      Process.kill(:KILL, pid)
+      flunk 'the forked process did not finish'
+    end
+    reader.read
+  ensure
+    reader&.close
+    Process.wait(pid) if pid
+  end
+
   # Runs the block with the reload of ServingDemo pausing once its routes are reset, until
   # release is pushed; then it calls resumed, if given.
   def pause_reload_after_reset(entered, release, resumed = nil, &block)
@@ -367,7 +393,8 @@ describe 'Reloader while serving' do
     assert_empty warnings
   end
 
-  [nil, Float::INFINITY].each do |max_wait|
+  # 1e30 seconds is past the range of Time, which ConditionVariable#wait refuses.
+  [nil, Float::INFINITY, 1e30].each do |max_wait|
     it "waits as long as the requests in progress take with max_wait #{max_wait.inspect}" do
       Padrino::Reloader.max_wait = max_wait
       entered = Queue.new
@@ -686,5 +713,135 @@ describe 'Reloader while serving' do
     end
   ensure
     Padrino::Reloader.enabled = enabled
+  end
+
+  it 'holds the requests to an app that reloads during a reload while reloading is disabled' do
+    enabled = Padrino::Reloader.instance_variable_get(:@enabled)
+    entered = Queue.new
+    release = Queue.new
+    reloader = waiting = nil
+    # ServingDemo reloads first, so the other app is as it was while the reload pauses.
+    Padrino.clear!
+    Padrino.mount('serving_demo').to('/demo')
+    Padrino.mount('serving_other_demo').to('/other')
+    Padrino.reload!
+
+    begin
+      # As in development with Padrino::Reloader.enabled = false: only each app's Reloader
+      # middleware takes turns, and it checks for changes once a second at most.
+      Padrino::Reloader.enabled = false
+      @app = Padrino.application
+      assert_equal [200, 'served'], request('/demo')
+      sleep 1.1
+      assert_equal [200, 'other'], request('/other')
+      change_apps!
+
+      pause_reload_after_reset(entered, release) do
+        reloader = Thread.new { request('/demo') }
+        pop_from(entered, reloader)
+        # Too soon after its last request for the other app to check for changes itself.
+        waiting = Thread.new { request('/other') }
+        wait_for_turn(waiting)
+        assert waiting_for_turn?(waiting), 'a request ran during the reload'
+      ensure
+        release << true
+      end
+    ensure
+      Padrino::Reloader.enabled = enabled
+    end
+
+    assert_equal [[200, 'served'], [200, 'other']], values_of(reloader, waiting)
+  end
+
+  it 'reloads the changes again behind a reload that raised' do
+    entered = Queue.new
+    release = Queue.new
+    reloads = count_reloads
+    calls = 0
+    # The first reload fails before it reloads anything, so the changes are still to reload.
+    Padrino.before_load do
+      entered << true
+      release.pop
+      raise 'boom' if (calls += 1) == 1
+    end
+    failing = retrying = nil
+    change_apps!
+
+    begin
+      failing = Thread.new do
+        Padrino.reload!
+      rescue RuntimeError => e
+        e
+      end
+      pop_from(entered, failing)
+      # It sees the same changes, and waits for the reload that will fail.
+      retrying = Thread.new { Padrino.reload! }
+      wait_for_turn(retrying)
+      assert waiting_for_turn?(retrying), 'the reload did not wait for the reload in progress'
+    ensure
+      2.times { release << true }
+    end
+
+    assert_equal 'boom', values_of(failing).first.message
+    assert_equal [true], values_of(retrying), 'the changes were not reloaded again'
+    assert_equal 2, reloads.size
+    assert_equal [200, 'served'], request('/')
+  end
+
+  it 'runs a reload nested in a reload at once' do
+    nested = Queue.new
+    calls = 0
+    Padrino.before_load { nested << Padrino.reload! if (calls += 1) == 1 }
+    change_apps!
+
+    assert_equal [true], values_of(Thread.new { Padrino.reload! })
+    assert nested.pop, 'the nested reload did not reload the changes'
+    assert_equal [200, 'served'], request('/')
+  end
+
+  describe 'in a forked process' do
+    before do
+      skip 'needs fork' unless Process.respond_to?(:fork) && RUBY_ENGINE == 'ruby'
+    end
+
+    it 'reloads without waiting for the requests the parent was serving' do
+      Padrino::Reloader.max_wait = nil
+      entered = Queue.new
+      release = Queue.new
+      hold_requests(entered, release)
+
+      begin
+        holder = Thread.new { request('/hold') }
+        pop_from(entered, holder)
+        result = in_fork do
+          change_apps!
+          [Padrino.reload!, request('/')]
+        end
+        assert_equal [true, [200, 'served']].inspect, result
+      ensure
+        release << true
+      end
+
+      assert_equal [[200, 'held']], values_of(holder)
+    end
+
+    it 'serves without waiting for the reload the parent was running' do
+      entered = Queue.new
+      release = Queue.new
+      reloader = nil
+      change_apps!
+
+      pause_reload_after_reset(entered, release) do
+        reloader = Thread.new { Padrino.reload! }
+        pop_from(entered, reloader)
+        result = in_fork { request('/steady') }
+        assert_equal [200, 'steady'].inspect, result
+      ensure
+        release << true
+      end
+
+      assert_equal [true], values_of(reloader)
+      assert_equal [200, 'served'], request('/')
+    end
   end
 end
