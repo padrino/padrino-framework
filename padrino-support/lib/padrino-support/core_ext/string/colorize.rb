@@ -50,9 +50,10 @@ class String
 
       Padrino.instance_variable_set(:@_string_colorize_warned, true)
       location = caller_locations(2, 1).first
+      where = location ? " (first used at #{location.path}:#{location.lineno})" : ''
       # Warning.warn prints even while $VERBOSE is nil, as it is while the reloader loads app files.
       Warning.warn 'WARNING! String#colorize and String::Colorizer are deprecated and will be removed in Padrino 1.0. ' \
-                   "Use Padrino::Colorizer.colorize(text, color, mode) instead (first used at #{location.path}:#{location.lineno}).\n"
+                   "Use Padrino::Colorizer.colorize(text, color, mode) instead#{where}.\n"
     end
   end
 end

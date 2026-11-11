@@ -25,6 +25,10 @@ describe 'Padrino::Colorizer' do
     assert_equal "\e[0;31mHello world\e[0m", Padrino::Colorizer.colorize('Hello world', :red, :blink)
   end
 
+  it 'should accept a color given as a String' do
+    assert_equal "\e[0;31mx\e[0m", Padrino::Colorizer.colorize('x', 'red')
+  end
+
   it 'should raise for an unknown color' do
     assert_raises(KeyError) { Padrino::Colorizer.colorize('Hello world', :purple) }
   end
@@ -67,6 +71,7 @@ describe 'String#colorize' do
         end
       end
       same &&= String::Colorizer.colors == Padrino::Colorizer::COLORS && String::Colorizer.modes == Padrino::Colorizer::MODES
+      same &&= 'Hi'.colorize(color: 'red') == Padrino::Colorizer.colorize('Hi', :red)
       print same && 'Hi'.colorize('red').nil?
     RUBY
     assert_equal 'true', out
@@ -84,6 +89,15 @@ describe 'String#colorize' do
     RUBY
     assert_equal 1, err.scan(deprecation).size, err
     assert_includes err, '(first used at -e:2)'
+  end
+
+  it 'should warn when first used from a thread with no caller' do
+    out, err = run_script(<<~'RUBY')
+      require 'padrino-support'
+      print Thread.new('Hi', &String::Colorizer.method(:red)).value == Padrino::Colorizer.colorize('Hi', :red)
+    RUBY
+    assert_equal 'true', out
+    assert_includes err, deprecation
   end
 
   it 'should warn while warnings are off, as they are while the reloader loads app files' do

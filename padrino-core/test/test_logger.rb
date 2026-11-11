@@ -450,7 +450,7 @@ describe 'options :colorize_logging' do
       print log.string.include?("\e[1;31m  FATAL\e[0m") && log.string.include?("\e[1;9m200\e[0m OK")
     RUBY
     env = { 'RACK_ENV' => 'test', 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
-    out, err, status = Open3.capture3(env, RbConfig.ruby, '-I', File.expand_path('../lib', __dir__), '-e', script)
+    out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-I', File.expand_path('../lib', __dir__), '-e', script)
     assert status.success?, err
     assert_equal 'true', out.lines.last
     refute_includes err, 'deprecated'

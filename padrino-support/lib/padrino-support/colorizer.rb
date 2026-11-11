@@ -40,10 +40,10 @@ module Padrino
     #
     # @return [String]
     #
-    # @raise [KeyError] when +color+ isn't one of the {COLORS} names.
+    # @raise [KeyError] when +color+ (a Symbol or String) isn't one of the {COLORS} names.
     #
     def colorize(text, color, mode = :default)
-      "\e[#{MODES[mode] || MODES[:default]};#{COLORS.fetch(color)}m#{text}\e[0m"
+      "\e[#{MODES[mode] || MODES[:default]};#{COLORS.fetch(color.is_a?(String) ? color.to_sym : color)}m#{text}\e[0m"
     end
   end
 end
