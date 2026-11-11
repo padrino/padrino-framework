@@ -1,6 +1,7 @@
 require_relative 'helper'
 require 'timeout'
 require 'erb'
+require 'json'
 require 'open3'
 require 'shellwords'
 
@@ -298,13 +299,6 @@ describe 'ProjectGenerator' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       assert_match_in_file(/^\.env$/, "#{@apptmp}/sample_project/.gitignore")
       assert_no_match_in_file(/sass-cache/, "#{@apptmp}/sample_project/.gitignore")
-    end
-
-    it 'should ignore the Sass cache once for sass and scss' do
-      %w[sass scss].each do |stylesheet|
-        capture_io { generate(:project, "#{stylesheet}_project", "--root=#{@apptmp}", "--stylesheet=#{stylesheet}") }
-        assert_equal 1, File.read("#{@apptmp}/#{stylesheet}_project/.gitignore").scan(%r{^\.sass-cache/\*$}).size, stylesheet
-      end
     end
   end
 
@@ -981,21 +975,64 @@ describe 'ProjectGenerator' do
   end
 
   describe 'the generator for stylesheet component' do
-    it 'should properly generate for sass' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=sass') }
-      assert_match_in_file(/gem 'sass'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module SassInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/sass.rb")
-      assert_match_in_file(/register SassInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
+    %w[sass scss].each do |stylesheet|
+      it "should set up Dart Sass with build and watch tasks for #{stylesheet}" do
+        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', "--stylesheet=#{stylesheet}") }
+        project = "#{@apptmp}/sample_project"
+        assert_match_in_file(/^gem 'sass-embedded', '~> 1\.63', require: false$/, "#{project}/Gemfile")
+        assert_no_match_in_file(/^gem 'sass'/, "#{project}/Gemfile")
+        assert_no_match_in_file(/Initializer/, "#{project}/app/app.rb")
+        assert_no_file_exists("#{project}/config/initializers/#{stylesheet}.rb")
+        assert_dir_exists("#{project}/app/stylesheets")
+        assert_equal "web: bundle exec padrino start\ncss: bundle exec rake sass:watch\n", File.read("#{project}/Procfile.dev")
+        assert_match(%r{Run `bundle exec rake sass:build` to compile app/stylesheets into public/stylesheets \(or run Procfile\.dev to rebuild on change\)\.}, out)
+      end
     end
 
-    it 'should properly generate for scss' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=haml', '--script=none', '--stylesheet=scss') }
-      assert_match_in_file(/gem 'haml'/, "#{@apptmp}/sample_project/Gemfile")
-      assert_match_in_file(/module ScssInitializer.*Sass::Plugin::Rack/m, "#{@apptmp}/sample_project/config/initializers/scss.rb")
-      assert_match_in_file(/Sass::Plugin.options\[:syntax\] = :scss/m, "#{@apptmp}/sample_project/config/initializers/scss.rb")
-      assert_match_in_file(/register ScssInitializer/m, "#{@apptmp}/sample_project/app/app.rb")
-      assert_dir_exists("#{@apptmp}/sample_project/app/stylesheets")
+    # Runs tasks/sass.rake in the project with a stand-in for the sass-embedded gem, which isn't in Padrino's bundle:
+    # its sass executable records the directory and arguments it runs with and exits with the given status.
+    def run_sass_task(project, task, status = 0)
+      gems = "#{@apptmp}/gems"
+      exe = "#{gems}/gems/sass-embedded-1.63.1/exe"
+      FileUtils.mkdir_p(["#{gems}/specifications", exe])
+      spec = Gem::Specification.new do |s|
+        s.name = 'sass-embedded'
+        s.version = '1.63.1'
+        s.summary = 'Stand-in'
+        s.bindir = 'exe'
+        s.executables = ['sass']
+      end
+      File.write("#{gems}/specifications/sass-embedded-1.63.1.gemspec", spec.to_ruby)
+      File.write("#{exe}/sass", "require 'json'\nFile.open(ENV['SASS_LOG'], 'a') { |log| log.puts(JSON.generate([Dir.pwd, *ARGV])) }\nexit Integer(ENV['SASS_STATUS'])\n")
+      log = "#{@apptmp}/sass.log"
+      File.write(log, '')
+      rake = Gem.loaded_specs.fetch('rake').full_require_paths.map { |path| "-I#{path}" }
+      env = { 'GEM_HOME' => gems, 'GEM_PATH' => gems, 'SASS_LOG' => log, 'SASS_STATUS' => status.to_s }
+      script = "require 'rake'; Rake.application.run(#{['-f', 'tasks/sass.rake', task].inspect})"
+      out, result = Bundler.with_unbundled_env { Open3.capture2e(env, RbConfig.ruby, *rake, '-e', script, chdir: project) }
+      [File.readlines(log).map { |line| JSON.parse(line) }, result, out]
+    end
+
+    it 'should build and watch app/stylesheets with the sass executable of sass-embedded' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      project = "#{@apptmp}/sample_project"
+      args = %w[--no-source-map --load-path=app/stylesheets app/stylesheets:public/stylesheets]
+      # A clone has no app/stylesheets until a stylesheet is added, since git drops empty directories.
+      FileUtils.rm_rf("#{project}/app/stylesheets")
+      { 'sass:build' => ['--no-error-css', *args], 'assets:precompile' => ['--no-error-css', *args], 'sass:watch' => ['--watch', *args] }.each do |task, expected|
+        runs, result, out = run_sass_task(project, task)
+        assert result.success?, out
+        assert_equal [[File.realpath(project), *expected]], runs, task
+      end
+      assert_dir_exists("#{project}/app/stylesheets")
+    end
+
+    it 'should fail the sass build when Dart Sass reports an error' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=sass') }
+      runs, result, out = run_sass_task("#{@apptmp}/sample_project", 'sass:build', 65)
+      refute result.success?, out
+      assert_match(/Command failed with status \(65\)/, out)
+      assert_equal 1, runs.size
     end
 
     it 'should properly generate for tailwind' do

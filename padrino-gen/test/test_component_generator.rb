@@ -95,7 +95,38 @@ describe 'ComponentGenerator' do
       Readline.stubs(:readline).returns('yes').once
       out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       assert_equal "@import \"tailwindcss\";\n", File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+      assert_includes out, "Switching from scss: tasks/sass.rake also writes public/stylesheets, so delete it, remove gem 'sass-embedded' " \
+                           'from Gemfile and make the css: line in Procfile.dev `css: bundle exec rake tailwind:watch`.'
+    end
+
+    it 'should tell to remove the Ruby Sass initializer when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      # A project from before the scss component used Dart Sass has an initializer instead of tasks/sass.rake.
+      FileUtils.rm_f("#{@apptmp}/sample_project/tasks/sass.rake")
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
+      File.write("#{@apptmp}/sample_project/config/initializers/scss.rb", "require 'sass/plugin/rack'\n")
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       assert_match(%r{Switching from scss: .* remove them from Gemfile, app/app\.rb and config/initializers/scss\.rb\.}, out)
+    end
+
+    it 'should name the scss initializer of a project switched to sass when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=sass') }
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
+      File.write("#{@apptmp}/sample_project/config/initializers/scss.rb", "require 'sass/plugin/rack'\n")
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_match(%r{Switching from sass: its gems and initializer remain .* config/initializers/scss\.rb\.}, out)
+    end
+
+    it 'should name both the Dart Sass task and a Ruby Sass initializer left from before when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
+      File.write("#{@apptmp}/sample_project/config/initializers/scss.rb", "require 'sass/plugin/rack'\n")
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_includes out, 'Switching from scss: tasks/sass.rake also writes public/stylesheets'
+      assert_match(%r{Switching from scss: its gems and initializer remain .* config/initializers/scss\.rb\.}, out)
     end
 
     it 'should move hand-written public styles when switching from scss without a scss source' do
@@ -124,56 +155,12 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{@apptmp}/sample_project/.gitignore").scan(%r{^public/stylesheets/application\.css$}).size
     end
 
-    it 'should ignore the Sass cache once when adding sass or scss' do
-      %w[sass scss].each do |stylesheet|
-        `rm -rf #{@apptmp}/sample_project`
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-        gitignore = "#{@apptmp}/sample_project/.gitignore"
-        File.write(gitignore, '.env')
-        2.times { capture_io { generate(:component, "--stylesheet=#{stylesheet}", "-r=#{@apptmp}/sample_project") } }
-        assert_equal ".env\n.sass-cache/*\n", File.read(gitignore), stylesheet
-      end
-    end
-
-    it 'should keep a Sass cache line a project already has' do
+    it 'should add the sass watcher after a Procfile.dev line that only ends like it' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      gitignore = "#{@apptmp}/sample_project/.gitignore"
-      File.write(gitignore, "log/**/*\n.sass-cache/*\ntmp/**/*\n")
-      capture_io { generate(:component, '--stylesheet=scss', "-r=#{@apptmp}/sample_project") }
-      assert_equal "log/**/*\n.sass-cache/*\ntmp/**/*\n", File.read(gitignore)
-    end
-
-    it 'should add the Sass cache line next to other rules that mention the cache' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      gitignore = "#{@apptmp}/sample_project/.gitignore"
-      File.write(gitignore, ".sass-cache-old/\n")
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec padrino start\nxcss: bundle exec rake sass:watch")
       capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
-      assert_equal ".sass-cache-old/\n.sass-cache/*\n", File.read(gitignore)
-    end
-
-    it 'should add the Sass cache line to a .gitignore that is not valid UTF-8' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      gitignore = "#{@apptmp}/sample_project/.gitignore"
-      File.binwrite(gitignore, "caf\xE9/\n".b)
-      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
-      assert_equal "caf\xE9/\n.sass-cache/*\n".b, File.binread(gitignore)
-      assert_match(/gem 'sass'/, File.read("#{@apptmp}/sample_project/Gemfile"))
-    end
-
-    it 'should not repeat the Sass cache line when the file ends in it without a newline' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      gitignore = "#{@apptmp}/sample_project/.gitignore"
-      File.write(gitignore, "log/**/*\n.sass-cache/*")
-      capture_io { generate(:component, '--stylesheet=scss', "-r=#{@apptmp}/sample_project") }
-      assert_equal "log/**/*\n.sass-cache/*", File.read(gitignore)
-    end
-
-    it 'should add the Sass cache line after a longer line that ends like it' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
-      gitignore = "#{@apptmp}/sample_project/.gitignore"
-      File.write(gitignore, "log/**/*\napp/.sass-cache/*")
-      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
-      assert_equal "log/**/*\napp/.sass-cache/*\n.sass-cache/*\n", File.read(gitignore)
+      assert_equal "web: bundle exec padrino start\nxcss: bundle exec rake sass:watch\ncss: bundle exec rake sass:watch\n", File.read(procfile)
     end
 
     it 'should add the tailwind watcher to a Procfile.dev that is not valid UTF-8' do
@@ -209,6 +196,107 @@ describe 'ComponentGenerator' do
       File.write(procfile, "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n")
       capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       assert_equal "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n", File.read(procfile)
+    end
+
+    describe 'sass and scss' do
+      def project_file(path)
+        "#{@apptmp}/sample_project/#{path}"
+      end
+
+      def apply(stylesheet = 'scss')
+        Readline.stubs(:readline).returns(nil)
+        capture_io { generate(:component, "--stylesheet=#{stylesheet}", "-r=#{@apptmp}/sample_project") }.first
+      end
+
+      it 'should create Procfile.dev with the sass watcher' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        refute File.exist?(project_file('Procfile.dev'))
+        apply
+        assert_equal "web: bundle exec padrino start\ncss: bundle exec rake sass:watch\n", File.read(project_file('Procfile.dev'))
+      end
+
+      it 'should add the sass watcher once, on a new line, when applied again' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        File.write(project_file('Procfile.dev'), 'web: bundle exec puma')
+        outs = Array.new(2) { apply }
+        assert_equal "web: bundle exec puma\ncss: bundle exec rake sass:watch\n", File.read(project_file('Procfile.dev'))
+        assert_equal 1, File.read(project_file('Gemfile')).scan(/^gem 'sass-embedded'/).size
+        outs.each { |out| refute_match(/Procfile\.dev already|Ruby Sass/, out) }
+      end
+
+      it 'should add the sass watcher to a Procfile.dev with CRLF line endings or bytes that are not UTF-8' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        ["web: bundle exec puma\r\n", "web: caf\xE9\n".b].each do |procfile|
+          File.binwrite(project_file('Procfile.dev'), procfile)
+          2.times { apply }
+          assert_equal "#{procfile}css: bundle exec rake sass:watch\n".b, File.binread(project_file('Procfile.dev'))
+        end
+      end
+
+      it 'should keep a css process already in Procfile.dev and say how to watch with sass' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        File.binwrite(project_file('Procfile.dev'), "web: bundle exec puma\r\ncss: bundle exec rake sass:watch\r\n")
+        refute_match(/Procfile\.dev already/, apply)
+        assert_equal "web: bundle exec puma\r\ncss: bundle exec rake sass:watch\r\n", File.binread(project_file('Procfile.dev'))
+
+        File.write(project_file('Procfile.dev'), "web: bundle exec puma\ncss: bundle exec rake tailwind:watch\n")
+        out = apply
+        assert_equal "web: bundle exec puma\ncss: bundle exec rake tailwind:watch\n", File.read(project_file('Procfile.dev'))
+        assert_match(/Procfile\.dev already runs a css: process; to rebuild stylesheets on change, make it `css: bundle exec rake sass:watch`\./, out)
+      end
+
+      it 'should name each Ruby Sass leftover of an earlier sass or scss component and leave them' do
+        %w[sass scss].each do |stylesheet|
+          `rm -rf #{@apptmp}/sample_project`
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+          # As the sass and scss components wrote them before they used Dart Sass.
+          name = stylesheet.capitalize
+          initializer = "config/initializers/#{stylesheet}.rb"
+          ruby_sass = "module #{name}Initializer\n  def self.registered(app)\n    require 'sass/plugin/rack'\n" \
+                      "    Sass::Plugin.options[:template_location] = Padrino.root(\"app/stylesheets\")\n    app.use Sass::Plugin::Rack\n  end\nend\n"
+          FileUtils.mkdir_p(project_file('config/initializers'))
+          File.write(project_file(initializer), ruby_sass)
+          File.write(project_file('app/app.rb'), File.read(project_file('app/app.rb')).sub("Padrino::Application\n", "\\0    register #{name}Initializer\n"))
+          File.write(project_file('Gemfile'), File.read(project_file('Gemfile')).sub("# Component requirements\n", "\\0gem 'sass'\n"))
+          before = %w[Gemfile app/app.rb].to_h { |path| [path, File.read(project_file(path))] }
+
+          out = apply(stylesheet)
+          assert_includes out, "This project still has Ruby Sass. To switch to Dart Sass, remove gem 'sass' from Gemfile and " \
+                               "`register #{name}Initializer` from app/app.rb, delete #{initializer}, then run bundle install."
+          assert_equal ruby_sass, File.read(project_file(initializer))
+          assert_equal before['app/app.rb'], File.read(project_file('app/app.rb'))
+          assert_equal before['Gemfile'].sub("# Component requirements\n", "\\0gem 'sass-embedded', '~> 1.63', require: false\n"), File.read(project_file('Gemfile'))
+
+          File.delete(project_file(initializer))
+          assert_includes apply(stylesheet), "To switch to Dart Sass, remove gem 'sass' from Gemfile and `register #{name}Initializer` from app/app.rb, then run bundle install."
+        end
+      end
+
+      it 'should tell how to remove tailwind when switching from it' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        refute_match(/Switching from tailwind/, apply('sass'))
+        # As the tailwind component leaves it; the switch itself asks first, so write it directly.
+        File.write(project_file('tasks/tailwind.rake'), "# tailwind\n")
+        out = apply('sass')
+        assert_includes out, 'Switching from tailwind: tasks/tailwind.rake also writes public/stylesheets/application.css, and Dart Sass copies'
+        assert_includes out, "remove gem 'tailwindcss-ruby' from Gemfile and make the css: line in Procfile.dev `css: bundle exec rake sass:watch`."
+      end
+
+      it 'should not take the .gitignore line or a commented register line of a project from before for Ruby Sass' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        # Projects generated before Puma became the default have .sass-cache/* in .gitignore, whatever the stylesheet.
+        File.write(project_file('.gitignore'), "#{File.read(project_file('.gitignore'))}.sass-cache/*\n")
+        File.write(project_file('app/app.rb'), File.read(project_file('app/app.rb')).sub("Padrino::Application\n", "\\0    # register SassInitializer\n"))
+        refute_match(/Ruby Sass/, apply('sass'))
+      end
+
+      it 'should not take an initializer that is not Ruby Sass for a leftover' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=sass') }
+        FileUtils.mkdir_p(project_file('config/initializers'))
+        File.write(project_file('config/initializers/sass.rb'), "module SassInitializer\n  def self.registered(app); end\nend\n")
+        File.write(project_file('app/app.rb'), File.read(project_file('app/app.rb')).sub("Padrino::Application\n", "\\0    register SassInitializer\n"))
+        refute_match(/Ruby Sass/, apply('sass'))
+      end
     end
 
     describe 'applied again with the same choice' do
@@ -451,11 +539,11 @@ describe 'ComponentGenerator' do
         files.each { |file| assert_equal "# edited\n", File.read(project_file(file)), file }
       end
 
-      it 'should keep an edited stylesheet initializer and connection pool middleware' do
+      it 'should keep an edited stylesheet rake file and connection pool middleware' do
         %w[sass scss].each do |stylesheet|
           `rm -rf #{@apptmp}/sample_project`
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', "--stylesheet=#{stylesheet}") }
-          files = %W[config/initializers/#{stylesheet}.rb lib/connection_pool_management_middleware.rb]
+          files = %w[tasks/sass.rake lib/connection_pool_management_middleware.rb]
           files.each { |file| File.write(project_file(file), "# edited\n") }
           rerun('--orm=activerecord', "--stylesheet=#{stylesheet}")
           files.each { |file| assert_equal "# edited\n", File.read(project_file(file)), "#{stylesheet}: #{file}" }
