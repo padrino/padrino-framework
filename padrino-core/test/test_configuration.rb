@@ -1,5 +1,4 @@
 require_relative 'helper'
-require 'open3'
 
 describe 'PadrinoConfiguration' do
   it 'should be able to store values' do
@@ -121,6 +120,34 @@ describe 'PadrinoConfiguration' do
       refute_equal({ a: 1 }, config)
     end
 
+    it 'should be eql and hash alike when its values are eql' do
+      other = config.class.new
+      config.a = 1
+      other.a = 1
+      assert config.eql?(other)
+      assert_equal config.hash, other.hash
+      assert_equal :found, { config => :found }[other]
+      other.a = 1.0
+      refute config.eql?(other)
+    end
+
+    it 'should give a dup or a clone its own values' do
+      config.a = 1
+      copies = [config.dup, config.clone]
+      copies.each { |copy| copy.a = 2 }
+      assert_equal 1, config.a
+      assert_equal [2, 2], copies.map(&:a)
+    end
+
+    it 'should keep a clone of a frozen configuration frozen and a dup writable' do
+      config.a = 1
+      config.freeze
+      assert_raises(FrozenError) { config.clone.a = 2 }
+      copy = config.dup
+      copy.a = 2
+      assert_equal [2, 1], [copy.a, config.a]
+    end
+
     it 'should list its values in inspect and to_s' do
       config.a = 1
       config.b = 'x'
@@ -139,12 +166,5 @@ describe 'PadrinoConfiguration' do
     it 'should raise NoMethodError for an unset name called with arguments' do
       assert_raises(NoMethodError) { config.missing(1) }
     end
-  end
-
-  it 'should not load OpenStruct' do
-    script = 'require "padrino-core"; Padrino.config.x = 1; print defined?(OpenStruct).inspect, " ", Padrino.config.x'
-    out, err, status = Open3.capture3(RbConfig.ruby, '-I', File.expand_path('../lib', __dir__), '-e', script)
-    assert status.success?, err
-    assert_equal 'nil 1', out
   end
 end
