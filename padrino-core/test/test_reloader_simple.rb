@@ -184,5 +184,20 @@ describe 'SimpleReloader' do
     ensure
       Object.send(:remove_const, :ReloaderNamespace)
     end
+
+    it 'should remove a class that overrides to_s by the constant it is named after' do
+      module ::ReloaderNamespace
+        class Disguised
+          def self.to_s
+            'SomethingElse'
+          end
+        end
+      end
+
+      Padrino::Reloader.remove_constant(ReloaderNamespace::Disguised)
+      refute ReloaderNamespace.const_defined?(:Disguised, false)
+    ensure
+      Object.send(:remove_const, :ReloaderNamespace)
+    end
   end
 end
