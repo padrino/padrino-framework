@@ -107,16 +107,17 @@ module Padrino
 
       ##
       # Whether a provides condition for +types+ accepts +format+, a Symbol
-      # decoded as route params receive it. :any accepts only a format with a
-      # MIME type, as the route answers with it as its content type.
+      # decoded as route params receive it. :any accepts only the name of a
+      # file extension with a registered MIME type, which the route answers with.
       #
       # @example
       #   Padrino::Routing.provided_format?(%i[html json], :json) # => true
       #   Padrino::Routing.provided_format?([:any], :nosuchext)  # => false
+      #   Padrino::Routing.provided_format?([:any], :'text/plain') # => false
       #
       # @api private
       def provided_format?(types, format)
-        types.include?(format) || (types.include?(:any) && !Sinatra::Base.mime_type(format).nil?)
+        types.include?(format) || (types.include?(:any) && !::Rack::Mime.mime_type(".#{format}", nil).nil?)
       end
 
       ##

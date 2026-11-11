@@ -745,6 +745,71 @@ describe 'Routing' do
     assert_equal 'regexp', body
   end
 
+  it 'should answer only registered formats on a provides: :any route' do
+    mock_app do
+      disable :raise_errors
+      error { env['sinatra.error'].class.name }
+      get(:a, provides: :any) { content_type.to_s }
+      get(:b, provides: %i[html json]) { content_type.to_s }
+    end
+
+    get '/a.nosuchext'
+    unknown = [status, body]
+    ['/a.text%2Fplain', '/a.application%2Fjson', '/a?format=text/plain', '/a?format=a%2Fb'].each do |path|
+      get path
+      assert_equal unknown, [status, body], path
+    end
+    get '/a?format[]=nosuchext'
+    unknown_param = [status, body]
+    get '/a?format[]=text/plain'
+    assert_equal unknown_param, [status, body]
+
+    %w[json xml html js css txt JSON].each do |format|
+      ["/a.#{format}", "/a?format=#{format}"].each do |path|
+        get path
+        assert_equal [200, format], [status, body], path
+        assert_equal Rack::Mime.mime_type(".#{format}"), response.media_type, path
+      end
+    end
+    get '/a'
+    assert_equal [200, 'html'], [status, body]
+    get '/a', {}, { 'HTTP_ACCEPT' => 'application/json' }
+    assert_equal [200, 'json'], [status, body]
+
+    get '/b.json'
+    assert_equal [200, 'json'], [status, body]
+    ['/b.xml', '/b.text%2Fhtml', '/b?format=text/html'].each do |path|
+      get path
+      assert_equal 404, status, path
+    end
+  end
+
+  it 'should pass an unregistered format on a provides: :any route to the next route' do
+    mock_app do
+      get(:a, provides: :any) { content_type.to_s }
+      get('/a.:format') { "next #{params[:format]}" }
+    end
+
+    get '/a.text%2Fplain'
+    assert_equal [200, 'next text/plain'], [status, body]
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
+  it 'should return 406 on an unregistered format on a provides: :any route and flag is set' do
+    mock_app do
+      enable :treat_format_as_accept
+      get(:a, provides: :any) { content_type.to_s }
+    end
+
+    ['/a.text%2Fplain', '/a?format=text/plain'].each do |path|
+      get path
+      assert_equal 406, status, path
+    end
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
   it 'should use padrino url method' do
     mock_app do
     end
