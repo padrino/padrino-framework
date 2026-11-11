@@ -563,6 +563,42 @@ describe 'Routing' do
     assert_equal 'hello IE', body
   end
 
+  it 'should match hosts' do
+    mock_app do
+      get(:index, host: 'admin.example.com') { 'admin' }
+      get(:index) { 'public' }
+      get('/api', host: /\Aapi\./) { 'api' }
+    end
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com'
+    assert_equal 'admin', body
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com:3000'
+    assert_equal 'admin', body
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public', body
+    get '/', {}, 'HTTP_HOST' => 'sub.admin.example.com'
+    assert_equal 'public', body
+    get '/api', {}, 'HTTP_HOST' => 'api.example.com'
+    assert_equal 'api', body
+    get '/api', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 404, status
+  end
+
+  it 'should match hosts given to a controller, without running its filters for other hosts' do
+    mock_app do
+      controller :admin, map: '/', conditions: { host: 'admin.example.com' } do
+        before { response['x-admin'] = 'ran' }
+        get(:index) { 'admin' }
+      end
+      get(:index) { 'public' }
+    end
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com'
+    assert_equal 'admin', body
+    assert_equal 'ran', response['x-admin']
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public', body
+    assert_nil response['x-admin']
+  end
+
   it 'should use regex for parts of a route' do
     mock_app do
       get('/main/:id', id: /\d+/) { "hello #{params[:id]}" }

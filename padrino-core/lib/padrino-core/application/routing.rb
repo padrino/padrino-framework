@@ -630,6 +630,7 @@ module Padrino
       #   get :list, provides: [:js, :json]                # => "/list.{!format,js|json}"
       #   get :list, provides: [:html, :js, :json]         # => "/list(.{!format,js|json})"
       #   get :list, priority: :low                        # Defers route to be last
+      #   get :index, host: 'admin.example.com'            # Only for that host (a String or Regexp)
       #   get /pattern/, name: :foo, generate_with: '/foo' # Generates :foo as /foo
       def route(verb, path, *args, &block)
         options =
@@ -1125,6 +1126,9 @@ module Padrino
         first_time = true
 
         routes = base.compiled_router.call(@request) do |route, params|
+          # ceiling: a route skipped here for its host or agent still counts for the 405 check below;
+          # drop those routes from +routes+ before the check to answer 404 instead.
+          next if route.host && !(route.host === @request.host)
           next if route.user_agent && route.user_agent !~ @request.user_agent
           original_params, parent_layout = @params.dup, @layout
           returned_pass_block = invoke_route(route, params, first_time)
