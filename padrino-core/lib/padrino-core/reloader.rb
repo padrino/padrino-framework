@@ -358,7 +358,9 @@ module Padrino
     # so its edited and added methods apply, but the methods it deletes or renames stay
     # until the app restarts. Ruby records only the first definition of a name, so a class
     # that a tracked file defines before the untracked file that owns it counts as tracked,
-    # and one first defined by eval without a file (outside Padrino.root) counts as untracked.
+    # and a name first defined by eval without a file name, or from a relative path, counts
+    # as untracked wherever it runs. A kept class keeps its superclass, so a project file that
+    # gives it one that was reloaded raises a superclass mismatch until the app restarts.
     #
     # Otherwise a constant with a method that has no Ruby source (Struct and Data members,
     # an alias of a built-in method) is removed, unless its name has no Ruby source line

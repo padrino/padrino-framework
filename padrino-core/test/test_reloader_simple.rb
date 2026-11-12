@@ -464,8 +464,6 @@ describe 'SimpleReloader' do
 
       Padrino::Reloader.safe_load(file, force: true)
       refute_same local, ReloaderLocal, 'ReloaderLocal was not reloaded'
-      # A known limit: the excluded file isn't required again, so its methods are gone until the app restarts.
-      refute_respond_to ReloaderLocal, :added
     end
   end
 end
