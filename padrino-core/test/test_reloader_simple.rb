@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'tmpdir'
 
 require_relative 'fixtures/apps/simple'
 
@@ -133,7 +134,7 @@ describe 'SimpleReloader' do
     after do
       Padrino::Reloader.exclude_constants.delete('ExcludedPrefix')
       Object.send(:remove_const, :ExcludedPrefix)
-      Object.send(:remove_const, :ExcludedPrefixed)
+      Object.send(:remove_const, :ExcludedPrefixed) if Object.const_defined?(:ExcludedPrefixed, false)
     end
 
     it 'should exclude the constant and its namespace but not names sharing its prefix' do
@@ -152,6 +153,25 @@ describe 'SimpleReloader' do
         Padrino::Reloader.exclude_constants.delete(excluded)
       end
     end
+
+    it 'should go by the constant a class is named after when the class overrides name' do
+      ExcludedPrefix::Inner.define_singleton_method(:name) { 'Elsewhere' }
+      ExcludedPrefixed.define_singleton_method(:name) { 'ExcludedPrefix::Inner' }
+      warned = Padrino.instance_variable_defined?(:@_orig_klass_name_warned)
+      Padrino.remove_instance_variable(:@_orig_klass_name_warned) if warned
+      _, err = capture_io do
+        assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix::Inner)
+        Padrino::Reloader.remove_constant(ExcludedPrefixed)
+      end
+      refute Object.const_defined?(:ExcludedPrefixed, false)
+      refute_includes err, '_orig_klass_name'
+    ensure
+      if warned
+        Padrino.instance_variable_set(:@_orig_klass_name_warned, true)
+      elsif Padrino.instance_variable_defined?(:@_orig_klass_name_warned)
+        Padrino.remove_instance_variable(:@_orig_klass_name_warned)
+      end
+    end
   end
 
   describe 'for removing constants' do
@@ -164,6 +184,201 @@ describe 'SimpleReloader' do
       refute ReloaderNamespace.const_defined?(:Inner, false)
     ensure
       Object.send(:remove_const, :ReloaderNamespace)
+    end
+
+    # Requires two classes from <tmp>/<folder>/located.rb and lets Reloader remove them, with the project at
+    # <tmp>/app and <tmp>/<excluded_path> excluded. Returns the names of the ones it kept.
+    def kept_constants_from(folder, excluded_path = nil)
+      names = %i[ReloaderLocatedClass ReloaderLocatedError]
+      tmp = Dir.mktmpdir
+      excluded = File.join(tmp, excluded_path) if excluded_path
+      Padrino::Reloader.exclude << excluded if excluded
+      file = File.join(tmp, folder, 'located.rb')
+      FileUtils.mkdir_p(File.dirname(file))
+      File.write(file, <<-DOC)
+        class ReloaderLocatedClass
+          def self.value; end
+        end
+
+        class ReloaderLocatedError < StandardError
+        end
+      DOC
+      require file
+      Padrino.stub(:root, File.join(tmp, 'app')) do
+        names.each { |name| Padrino::Reloader.remove_constant(Object.const_get(name)) }
+      end
+      names.select { |name| Object.const_defined?(name, false) }
+    ensure
+      Padrino::Reloader.exclude.delete(excluded)
+      $LOADED_FEATURES.delete(file)
+      names.each { |name| Object.send(:remove_const, name) if Object.const_defined?(name, false) }
+      FileUtils.rm_rf(tmp)
+    end
+
+    it 'should keep constants defined in an excluded folder' do
+      assert_equal %i[ReloaderLocatedClass ReloaderLocatedError], kept_constants_from('app/config', 'app/config')
+    end
+
+    it 'should keep constants defined in an excluded file' do
+      assert_equal %i[ReloaderLocatedClass ReloaderLocatedError], kept_constants_from('app/lib', 'app/lib/located.rb')
+    end
+
+    it 'should remove constants defined in a folder whose name only starts with an excluded one' do
+      assert_empty kept_constants_from('app/configuration', 'app/config')
+    end
+
+    it 'should keep constants defined in a folder next to the project that shares its name as a prefix' do
+      assert_equal %i[ReloaderLocatedClass ReloaderLocatedError], kept_constants_from('app-other')
+    end
+
+    it 'should remove constants defined in the project folder' do
+      assert_empty kept_constants_from('app')
+    end
+
+    it 'should not track files in a folder next to the project that shares its name as a prefix' do
+      Padrino.stub(:root, '/srv/app') do
+        assert Padrino::Reloader.send(:feature_excluded?, '/srv/app-gems/lib/located.rb')
+        refute Padrino::Reloader.send(:feature_excluded?, '/srv/app/lib/located.rb')
+      end
+    end
+
+    it 'should remove a class that overrides to_s by the constant it is named after' do
+      module ::ReloaderNamespace
+        class Disguised
+          def self.to_s
+            'SomethingElse'
+          end
+        end
+      end
+
+      Padrino::Reloader.remove_constant(ReloaderNamespace::Disguised)
+      refute ReloaderNamespace.const_defined?(:Disguised, false)
+    ensure
+      Object.send(:remove_const, :ReloaderNamespace)
+    end
+  end
+
+  describe 'for classes with methods not written in Ruby' do
+    before do
+      @dir = Dir.mktmpdir('native', Padrino.root)
+      @constants = []
+    end
+
+    after do
+      Dir.glob("#{@dir}/**/*.rb").each do |file|
+        Padrino::Reloader::Storage.remove(file)
+        Padrino::Reloader::MTIMES.delete(file)
+        $LOADED_FEATURES.delete(file)
+      end
+      @constants.each { |name| Object.send(:remove_const, name) if Object.const_defined?(name, false) }
+      FileUtils.rm_rf(@dir)
+    end
+
+    def write(path, source)
+      file = "#{@dir}/#{path}"
+      FileUtils.mkdir_p(File.dirname(file))
+      File.write(file, source)
+      file
+    end
+
+    it 'should unload the Struct, Data and aliasing classes of a project file it reloads' do
+      @constants.concat(%i[ReloaderPoint ReloaderShape ReloaderLabeled])
+      file = write('models/native.rb', <<-RUBY)
+        ReloaderPoint = Struct.new(:x, :y) do
+          def sum
+            x + y
+          end
+        end
+        ReloaderShape = Data.define(:width) if #{RUBY_VERSION >= '3.2'}
+        class ReloaderLabeled
+          alias label inspect
+          def removed; end
+        end
+      RUBY
+      Padrino::Reloader.safe_load(file)
+      assert_equal 3, ReloaderPoint.new(1, 2).sum
+
+      File.write(file, "class ReloaderLabeled\n  alias label inspect\nend\n")
+      Padrino::Reloader.safe_load(file, force: true)
+      refute Object.const_defined?(:ReloaderPoint, false), 'ReloaderPoint was not removed'
+      refute Object.const_defined?(:ReloaderShape, false), 'ReloaderShape was not removed'
+      refute ReloaderLabeled.method_defined?(:removed), 'ReloaderLabeled was not reloaded'
+    end
+
+    it 'should keep the Struct and aliasing classes of an excluded folder that a reloaded project file requires' do
+      @constants.concat(%i[ReloaderSettings ReloaderSettingsLabel])
+      excluded = write('excluded/settings.rb', <<-RUBY)
+        ReloaderSettings = Struct.new(:name)
+        class ReloaderSettingsLabel
+          alias label inspect
+        end
+      RUBY
+      Padrino::Reloader.exclude << File.dirname(excluded)
+      file = write('models/uses_settings.rb', "require #{excluded.inspect}\n")
+      Padrino::Reloader.safe_load(file)
+      settings = ReloaderSettings
+      label = ReloaderSettingsLabel
+
+      Padrino::Reloader.safe_load(file, force: true)
+      assert_same settings, Object.const_get(:ReloaderSettings, false)
+      assert_same label, Object.const_get(:ReloaderSettingsLabel, false)
+    ensure
+      Padrino::Reloader.exclude.delete(File.dirname(excluded)) if excluded
+    end
+
+    it 'should keep native classes that are defined outside the project, or by a C extension, and reopened in it' do
+      @constants.concat(%i[ReloaderGemStruct ReloaderExtStruct])
+      require 'strscan'
+      Dir.mktmpdir do |gem_dir|
+        File.write("#{gem_dir}/gem_struct.rb", "ReloaderGemStruct = Struct.new(:x)\n")
+        require "#{gem_dir}/gem_struct.rb"
+        $LOADED_FEATURES.delete("#{gem_dir}/gem_struct.rb")
+      end
+      # A C extension installed in the project (in vendor/bundle, say) defines its classes at line 0 of the library.
+      TOPLEVEL_BINDING.eval('ReloaderExtStruct = Struct.new(:x)', "#{@dir}/vendor/ext.so", 0)
+      load write('models/reopen.rb', <<-RUBY)
+        class ReloaderGemStruct
+          def double
+            x * 2
+          end
+        end
+        class StringScanner
+          def reloader_reopened; end
+        end
+      RUBY
+
+      [ReloaderGemStruct, ReloaderExtStruct, StringScanner].each do |klass|
+        Padrino::Reloader.remove_constant(klass)
+        assert_same klass, Object.const_get(klass.name, false), "#{klass} was removed"
+      end
+    ensure
+      StringScanner.send(:remove_method, :reloader_reopened) if StringScanner.method_defined?(:reloader_reopened, false)
+    end
+
+    it 'should reset a project concern with methods not written in Ruby, and only that one' do
+      @constants.concat(%i[ReloaderNativeConcern ReloaderGemConcern])
+      source = "module %s\n  define_method(:label, Kernel.instance_method(:inspect))\nend\n"
+      load write('models/concern.rb', format(source, 'ReloaderNativeConcern'))
+      Dir.mktmpdir do |gem_dir|
+        File.write("#{gem_dir}/concern.rb", format(source, 'ReloaderGemConcern'))
+        load "#{gem_dir}/concern.rb"
+      end
+
+      [ReloaderNativeConcern, ReloaderGemConcern].each do |concern|
+        concern.instance_variable_set(:@_included_block, proc {})
+        Padrino::Reloader.reset_concern(concern)
+      end
+      refute ReloaderNativeConcern.instance_variable_defined?(:@_included_block), 'ReloaderNativeConcern was not reset'
+      assert ReloaderGemConcern.instance_variable_defined?(:@_included_block), 'ReloaderGemConcern was reset'
+    end
+
+    if RUBY_ENGINE == 'jruby'
+      it 'should keep Java classes' do
+        java_class = Java::JavaUtil::ArrayList
+        assert Padrino::Reloader.send(:external_constant?, java_class)
+        Padrino::Reloader.remove_constant(java_class)
+        assert_same java_class, Java::JavaUtil::ArrayList
+      end
     end
   end
 end
