@@ -45,7 +45,7 @@
 
     <footer>
       <div class='footer-wrapper container'>
-        <p class='pull-left'>Copyright &copy; <%= Time.now.year %> Your Site - Powered by Padrino v.<%= Padrino.version %></p>
+        <p class='pull-left'>Copyright &copy; <%%= Time.now.year %> Your Site - Powered by Padrino v.<%= Padrino.version %></p>
         <ul class='pull-right footer-links'>
           <li><%%= link_to tag_icon(:home, 'web'), 'http://www.padrinorb.com', target: :_blank, class: 'footer-links-link' %></li>
           <li><%%= link_to tag_icon(:heart, 'blog'), 'http://www.padrinorb.com/blog', target: :_blank, class: 'footer-links-link' %></li>

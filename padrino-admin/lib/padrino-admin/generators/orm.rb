@@ -17,6 +17,9 @@ module Padrino
           sequel: 'Sequel::Model'
         }.freeze
 
+        # Column types of numbers with a fractional part.
+        FRACTIONAL_TYPES = %i[float decimal bigdecimal].freeze
+
         attr_reader :klass_name, :klass, :name_plural, :name_singular, :orm, :name_param
 
         def initialize(name, orm, columns = nil, column_fields = nil)
@@ -50,7 +53,11 @@ module Padrino
 
         def field_type(type)
           case type_name(type)
-          when :integer, :float, :decimal   then :text_field
+          when :integer, *FRACTIONAL_TYPES  then :number_field
+          when :date                        then :date_field
+          # Mongoid's times keep their offset only in a text field: a datetime-local input drops it.
+          when :datetime, :timestamptz      then orm == :mongoid ? :text_field : :datetime_local_field
+          when :time                        then orm == :mongoid ? :text_field : :time_field
           when :string                      then :text_field
           when :text                        then :text_area
           when :boolean                     then :check_box
@@ -75,7 +82,11 @@ module Padrino
           column_fields    = columns.dup
           column_fields.reject! { |column| excluded_columns.include?(column.name.to_s) }
           @column_fields ||= column_fields.map do |column|
-            { name: column.name, field_type: field_type(column.type) }
+            # An enum reads back as its name, which a number input can't hold.
+            input = enum?(column.name) ? :text_field : field_type(column.type)
+            # A number input takes only whole numbers unless its step allows fractions.
+            step = 'any' if input == :number_field && FRACTIONAL_TYPES.include?(type_name(column.type))
+            { name: column.name, field_type: input, step: step }
           end
         end
 
@@ -149,6 +160,25 @@ module Padrino
         end
 
         private
+
+        # Whether the model maps the column's values to names: an Active Record enum, or a Sequel
+        # enum plugin column whose reader returns the name.
+        # ceiling: Sequel's plugin keeps no public list of its columns, so this reads the module it
+        # defines the readers in; if that changes, enum columns get number inputs again.
+        def enum?(column_name)
+          return false unless @klass
+
+          case orm
+          when :activerecord
+            @klass.respond_to?(:defined_enums) && @klass.defined_enums.key?(column_name.to_s)
+          when :sequel
+            @klass.ancestors.any? do |ancestor|
+              readers = ancestor.instance_variable_get(:@enum_methods) if ancestor.is_a?(Class)
+              readers&.method_defined?(column_name)
+            end
+          else false
+          end
+        end
 
         # A column's type as a lowercase symbol: Active Record and Sequel give a symbol, Mongoid a
         # class (BigDecimal => :bigdecimal, Mongoid::Boolean => :boolean).
