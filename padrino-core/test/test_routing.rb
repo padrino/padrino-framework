@@ -1048,6 +1048,54 @@ describe 'Routing' do
     assert_equal 404, status
   end
 
+  it 'should not provide a format that is not valid UTF-8 or not a string' do
+    mock_app do
+      get(:a, provides: %i[html json]) { content_type.to_s }
+      get(:b, provides: %i[html json]) { content_type.to_s }
+      get('/b.:format') { 'next' }
+    end
+
+    ['/a.%25ff', '/a.%25FF', '/a?format=%ff', '/a?format[]=json', '/a?format[json]=1'].each do |path|
+      get path
+      assert_equal 404, status, path
+    end
+    get '/b.%25ff'
+    assert_equal [200, 'next'], [status, body]
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
+  it 'should return 406 on a format that is not valid UTF-8 and flag is set' do
+    mock_app do
+      enable :treat_format_as_accept
+      get(:a, provides: %i[html json]) { content_type.to_s }
+    end
+
+    ['/a.%25ff', '/a?format=%ff'].each do |path|
+      get path
+      assert_equal 406, status, path
+    end
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
+  it 'should answer a format that is not valid UTF-8 as an unknown format for provides :any' do
+    mock_app do
+      disable :raise_errors
+      error { env['sinatra.error'].class.name }
+      get(:a, provides: :any) { content_type.to_s }
+    end
+
+    get '/a.nosuchext'
+    unknown = [status, body]
+    ['/a.%25ff', '/a?format=%ff'].each do |path|
+      get path
+      assert_equal unknown, [status, body], path
+    end
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
   it 'should generate routes for format simple' do
     mock_app do
       get(:foo, provides: %i[html rss]) { "Test\n" }
