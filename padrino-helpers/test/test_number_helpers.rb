@@ -70,6 +70,12 @@ describe 'NumberHelpers' do
       assert_nil number_with_delimiter(nil)
     end
 
+    it 'should display number_with_delimiter for a BigDecimal' do
+      assert_equal '1,234,567.5', number_with_delimiter(BigDecimal('1234567.5'))
+      assert_equal '-0.0000001', number_with_delimiter(BigDecimal('-0.0000001'))
+      assert_equal '0.1e1000001', number_with_delimiter(BigDecimal('1e1000000'))
+    end
+
     it 'should display number_with_delimiter in linear time' do
       started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       actual = number_with_delimiter('1' * 100_000)

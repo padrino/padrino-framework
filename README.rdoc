@@ -33,7 +33,7 @@ Routing:: Full url named routes, named params, before/after filter support.
 Tag Helpers:: View helpers such as: tag, content_tag, input_tag.
 Asset Helpers:: View helpers such as: link_to, image_tag, javascript_include_tag.
 Form Helpers:: Builder support such as: form_tag, form_for, field_set_tag, text_field.
-Text Helpers:: Useful formatting like: time_ago_in_words, js_escape_html, sanitize_html.
+Text Helpers:: Useful formatting like: time_ago_in_words, js_escape_html, escape_html.
 Mailer:: Fast and simple delivery support for sending emails (akin to ActionMailer).
 Caching:: Simple route and fragment caching to easily speed up your web requests.
 Admin:: Built-in Admin interface (like Django)

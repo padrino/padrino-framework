@@ -26,6 +26,9 @@ module Padrino
         elsif pattern != '/' && pattern.end_with?('/')
           whole_regexp.match(pattern[0..-2])
         end
+      rescue Encoding::CompatibilityError
+        # A Regexp fixed to another encoding doesn't match (see Routing.path_match?).
+        nil
       end
 
       # The handler, anchored to the whole path as PathRouter::Compiler matches routes
