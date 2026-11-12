@@ -213,7 +213,7 @@ module Padrino
           result = namespace && !is_nested ? "#{namespace}_" : +''
           result << field_id_fragment
           result << "_#{field}" if field
-          result << "_#{value}" if value
+          result << "_#{TagHelpers.value_to_s(value)}" if value
           result
         end
 
@@ -246,8 +246,10 @@ module Padrino
           options.update(error_class(field)) { |_, *values| values.compact.join(' ') }
           selected_values = resolve_checked_values(field, options)
           variants_for_group(options).inject(SafeBuffer.new) do |html, (caption, value)|
-            variant_id = "#{options[:id]}_#{value}"
-            attributes = { value: value, id: variant_id, checked: selected_values.include?(value) }
+            text = TagHelpers.value_to_s(value)
+            variant_id = "#{options[:id]}_#{text}"
+            checked = selected_values.any? { |selected| selected == text || TagHelpers.decimal_equal?(selected, value) }
+            attributes = { value: text, id: variant_id, checked: checked }
             caption = yield(attributes) << ' ' << caption
             html << @template.label_tag("#{field_name(field)}[]", for: variant_id, caption: caption)
           end
@@ -256,12 +258,15 @@ module Padrino
         private
 
         def is_checked?(field, options)
-          !options.key?(:checked) && [options[:value].to_s, 'true'].include?(field_value(field).to_s)
+          return false if options.key?(:checked)
+
+          value = field_value(field)
+          [TagHelpers.value_to_s(options[:value]), 'true'].include?(TagHelpers.value_to_s(value)) || TagHelpers.decimal_equal?(value, options[:value])
         end
 
         def variants_for_group(options)
           if (variants = options[:options])
-            variants.map { |caption, value| [caption.to_s, (value || caption).to_s] }
+            variants.map { |caption, value| [TagHelpers.value_to_s(caption), value || caption] }
           elsif (collection = options[:collection])
             collection.map { |variant| field_values(variant, options) }
           else
@@ -274,7 +279,8 @@ module Padrino
           if options[:collection]
             _, id_method = *field_methods(options)
             selected_values.map do |value|
-              (value.respond_to?(id_method) ? value.send(id_method) : value).to_s
+              id = value.respond_to?(id_method) ? value.send(id_method) : value
+              TagHelpers.decimal?(id) ? id : id.to_s
             end
           else
             selected_values
@@ -285,8 +291,10 @@ module Padrino
           options[:fields] || %i[name id]
         end
 
+        # The caption, as text, and the value of a collection's variant.
         def field_values(object, options)
-          field_methods(options).map { |field| object.send(field).to_s }
+          caption, value = field_methods(options).map { |field| object.send(field) }
+          [TagHelpers.value_to_s(caption), value]
         end
 
         def field_name_fragment

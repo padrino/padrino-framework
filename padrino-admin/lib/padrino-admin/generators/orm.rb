@@ -153,6 +153,12 @@ module Padrino
           end
         end
 
+        # Whether the column holds BigDecimal values: Active Record and Sequel report :decimal,
+        # Mongoid the class BigDecimal.
+        def decimal?(type)
+          %i[decimal bigdecimal].include?(type_name(type))
+        end
+
         private
 
         # Whether the model maps the column's values to names: an Active Record enum, or a Sequel
