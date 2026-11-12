@@ -22,13 +22,8 @@ if ENV['AS_VERSION']
   end
 end
 
-##
-# Loads our locale configuration files
-#
-if defined?(I18n) && !defined?(PADRINO_I18N_LOCALE)
-  PADRINO_I18N_LOCALE = true
-  I18n.load_path += Dir["#{__dir__}/padrino-support/locale/*.yml"]
-end
+# padrino-helpers requires this again once it has loaded I18n.
+require 'padrino-support/locale' if defined?(I18n)
 
 ##
 # Make sure we can always use the class name
