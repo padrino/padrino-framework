@@ -316,6 +316,38 @@ describe 'SystemReloader' do
       end
     end
 
+    it 'should redefine an ActiveSupport::Concern that overrides name' do
+      begin
+        require 'active_support/concern'
+      rescue LoadError
+        skip 'ActiveSupport is not available'
+      end
+      concern_file = "#{__dir__}/fixtures/apps/concerned/models/mixins/branded.rb"
+      includer_file = "#{__dir__}/fixtures/apps/concerned/models/branded_item.rb"
+      original = File.read(concern_file)
+      concern_mtime = File.mtime(concern_file)
+      includer_mtime = File.mtime(includer_file)
+      Padrino.clear!
+      require File.expand_path("#{__dir__}/fixtures/apps/concerned/app.rb")
+      @app = SystemConcernedClassDemo
+      Padrino.mount(SystemConcernedClassDemo).to('/')
+      get '/'
+      assert_equal 'b1', BrandedItem.new.brand
+
+      File.write(concern_file, original.sub('  included do', "  # moved\n  included do").sub("'b1'", "'b2'"))
+      FileUtils.touch(concern_file, mtime: Time.now + 2)
+      Padrino.reload!
+      FileUtils.touch(includer_file, mtime: Time.now + 2)
+      Padrino.reload!
+      assert_equal 'b2', BrandedItem.new.brand
+    ensure
+      if original
+        File.write(concern_file, original)
+        File.utime(concern_mtime, concern_mtime, concern_file)
+      end
+      File.utime(includer_mtime, includer_mtime, includer_file) if includer_mtime
+    end
+
     it 'should not call methods on deprecated constant proxies while looking for concerns' do
       begin
         require 'active_support'

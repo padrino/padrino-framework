@@ -134,7 +134,7 @@ describe 'SimpleReloader' do
     after do
       Padrino::Reloader.exclude_constants.delete('ExcludedPrefix')
       Object.send(:remove_const, :ExcludedPrefix)
-      Object.send(:remove_const, :ExcludedPrefixed)
+      Object.send(:remove_const, :ExcludedPrefixed) if Object.const_defined?(:ExcludedPrefixed, false)
     end
 
     it 'should exclude the constant and its namespace but not names sharing its prefix' do
@@ -151,6 +151,25 @@ describe 'SimpleReloader' do
         assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix::Inner)
         refute Padrino::Reloader.send(:constant_excluded?, ExcludedPrefixed)
         Padrino::Reloader.exclude_constants.delete(excluded)
+      end
+    end
+
+    it 'should go by the constant a class is named after when the class overrides name' do
+      ExcludedPrefix::Inner.define_singleton_method(:name) { 'Elsewhere' }
+      ExcludedPrefixed.define_singleton_method(:name) { 'ExcludedPrefix::Inner' }
+      warned = Padrino.instance_variable_defined?(:@_orig_klass_name_warned)
+      Padrino.remove_instance_variable(:@_orig_klass_name_warned) if warned
+      _, err = capture_io do
+        assert Padrino::Reloader.send(:constant_excluded?, ExcludedPrefix::Inner)
+        Padrino::Reloader.remove_constant(ExcludedPrefixed)
+      end
+      refute Object.const_defined?(:ExcludedPrefixed, false)
+      refute_includes err, '_orig_klass_name'
+    ensure
+      if warned
+        Padrino.instance_variable_set(:@_orig_klass_name_warned, true)
+      elsif Padrino.instance_variable_defined?(:@_orig_klass_name_warned)
+        Padrino.remove_instance_variable(:@_orig_klass_name_warned)
       end
     end
   end
@@ -221,6 +240,21 @@ describe 'SimpleReloader' do
         assert Padrino::Reloader.send(:feature_excluded?, '/srv/app-gems/lib/located.rb')
         refute Padrino::Reloader.send(:feature_excluded?, '/srv/app/lib/located.rb')
       end
+    end
+
+    it 'should remove a class that overrides to_s by the constant it is named after' do
+      module ::ReloaderNamespace
+        class Disguised
+          def self.to_s
+            'SomethingElse'
+          end
+        end
+      end
+
+      Padrino::Reloader.remove_constant(ReloaderNamespace::Disguised)
+      refute ReloaderNamespace.const_defined?(:Disguised, false)
+    ensure
+      Object.send(:remove_const, :ReloaderNamespace)
     end
   end
 end
