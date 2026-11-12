@@ -166,4 +166,25 @@ describe 'Padrino::Cli' do
     assert status.success?, err
     assert_includes out.lines.map(&:strip), 'URL /runner/hello'
   end
+
+  it 'should read the migration version from VERSION and warn once that it is removed in Padrino 1.0' do
+    out, err, status = run_in_project(<<~RUBY)
+      require 'rake'
+      load 'padrino-core/cli/rake_tasks.rb'
+      ENV.delete('MIGRATION_VERSION')
+      ENV['VERSION'] = '3'
+      puts "VERSION \#{[env_migration_version, env_migration_version].inspect}"
+      ENV['VERSION'] = 'three'
+      puts "INVALID \#{env_migration_version.inspect}"
+      ENV['MIGRATION_VERSION'] = '4'
+      puts "MIGRATION_VERSION \#{env_migration_version.inspect}"
+    RUBY
+    assert status.success?, err
+    assert_includes out.lines.map(&:strip), 'VERSION [3, 3]'
+    assert_includes out.lines.map(&:strip), 'INVALID nil'
+    assert_includes out.lines.map(&:strip), 'MIGRATION_VERSION 4'
+    assert_equal 1, err.scan('The VERSION environment variable for migrations is deprecated').size, err
+    assert_includes err, 'will be removed in Padrino 1.0. Use MIGRATION_VERSION instead.'
+    assert_includes err, 'Environment variable VERSION=three should be non-existant or Integer'
+  end
 end
