@@ -173,55 +173,6 @@ describe 'Router' do
     assert request_case.call.ok?
   end
 
-  it 'should tell only an app whose response may be cascaded the statuses it cascades on' do
-    key = Padrino::Router::CASCADE_STATUSES_KEY
-    seen = []
-    recorder = ->(status) { ->(env) { seen << env[key]; [status, { 'content-type' => 'text/plain' }, ['']] } }
-    failing = ->(env) { seen << env[key]; raise 'broke' }
-    map = Padrino::Router.new(
-      { path: '/bar', to: recorder.call(404) },
-      { path: '/bar', to: recorder.call(200) },
-      { path: '/baz', to: recorder.call(200) }
-    )
-    env = Rack::MockRequest.env_for('/bar')
-    map.call(env)
-    refute env.key?(key)
-
-    map = Padrino::Router.new({ path: '/bar', to: failing }, { path: '/bar', to: recorder.call(200) })
-    env = Rack::MockRequest.env_for('/bar')
-    assert_raises(RuntimeError) { map.call(env) }
-    refute env.key?(key)
-    assert_equal [[404, 405], nil, [404, 405]], seen
-  end
-
-  it 'should keep the statuses of an outer router for the last app of a router inside it' do
-    key = Padrino::Router::CASCADE_STATUSES_KEY
-    seen = []
-    recorder = ->(status) { ->(env) { seen << env[key]; [status, { 'content-type' => 'text/plain' }, ['']] } }
-    inner = Padrino::Router.new({ path: '/', to: recorder.call(404) }, { path: '/', to: recorder.call(404) })
-    outer = Padrino::Router.new({ path: '/', to: inner }, { path: '/', to: recorder.call(200) })
-    env = Rack::MockRequest.env_for('/page')
-    status, = outer.call(env)
-    assert_equal 200, status
-    assert_equal [[404, 405], [404, 405], nil], seen
-    refute env.key?(key)
-  end
-
-  it 'should take any cascade setting that answers include?' do
-    only_include = Object.new
-    def only_include.include?(status)
-      status == 404
-    end
-    [only_include, ..404, 404.0..404.0].each do |setting|
-      first = ->(_env) { [404, { 'content-type' => 'text/plain' }, ['first']] }
-      first.define_singleton_method(:cascade) { setting }
-      second = ->(_env) { [200, { 'content-type' => 'text/plain' }, ['second']] }
-      map = Padrino::Router.new({ path: '/', to: first }, { path: '/', to: second })
-      _, _, body = map.call(Rack::MockRequest.env_for('/page'))
-      assert_equal ['second'], body, "cascade #{setting.inspect}"
-    end
-  end
-
   it 'should dispatches hosts correctly' do
     app = lambda do |position, env|
       headers = {

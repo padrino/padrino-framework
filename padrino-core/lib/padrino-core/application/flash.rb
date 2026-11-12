@@ -4,11 +4,6 @@ module Padrino
       def registered(app)
         app.helpers Helpers
         app.after do
-          # The router discards a response it cascades to the next app, so leave the flash to that app.
-          # ceiling: an after filter added after this one can still change the status, so the router
-          # sends a response that kept the flash; rotating outside the filters would close that.
-          next if env[Padrino::Router::CASCADE_STATUSES_KEY]&.include?(response.status)
-
           session[:_flash] = @_flash.next if @_flash
         end
       end
