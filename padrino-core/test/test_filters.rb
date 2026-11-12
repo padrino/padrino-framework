@@ -711,7 +711,8 @@ describe 'Filters' do
         assert_equal 500, status
         assert_equal 'oops', body
       end
-      assert_match(/NoMethodError - no touch:\n .*test_filters\.rb/, log.string)
+      assert_match(/NoMethodError - no touch/, log.string)
+      assert_match(/test_filters\.rb:\d+/, log.string)
     ensure
       Padrino.logger = saved_logger
     end
