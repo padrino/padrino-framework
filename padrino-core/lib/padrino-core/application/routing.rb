@@ -896,7 +896,7 @@ module Padrino
 
           accepts = accepts.empty? ? mime_types.slice(0, 1) : (accepts & mime_types)
 
-          type = accepts.first && mime_symbol(accepts.first)
+          type = accepts.first && (mime_symbol(accepts.first) || accepts.first)
           type ||= catch_all && types.first
 
           accept_format = CONTENT_TYPE_ALIASES[type] || type
@@ -923,7 +923,7 @@ module Padrino
         mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           halt 406 unless mime_types.include?(request.media_type)
-          content_type(mime_symbol(request.media_type))
+          content_type(mime_symbol(request.media_type) || request.media_type)
         end
       end
 
@@ -1077,8 +1077,7 @@ module Padrino
       private
 
       def provides_any?(formats)
-        accepted_format = formats.first
-        type = accepted_format ? mime_symbol(accepted_format) : :html
+        type = formats.filter_map { |format| mime_symbol(format) || (:html if ::Rack::Mime.match?('text/html', format)) }.first || :html
         content_type(CONTENT_TYPE_ALIASES[type] || type)
       end
 
@@ -1092,7 +1091,8 @@ module Padrino
       end
 
       def mime_symbol(media_type)
-        ::Rack::Mime::MIME_TYPES.key(media_type).sub(/\./, '').to_sym
+        extension = ::Rack::Mime::MIME_TYPES.key(media_type)
+        extension&.sub(/\./, '')&.to_sym
       end
 
       def filter!(type, base = settings)
