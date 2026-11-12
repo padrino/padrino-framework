@@ -352,6 +352,13 @@ describe 'AssetTagHelpers' do
       assert_equal({ 'srcset' => { 'pic@2x.jpg' => '2x' }, 'alt' => 'A hill' }, options)
     end
 
+    it 'should take options with indifferent access, like params' do
+      self.class.stubs(:asset_stamp).returns(false)
+      options = Sinatra::IndifferentHash[alt: 'A hill', srcset: { 'pic@2x.jpg' => '2x' }]
+      expected = '<img src="/images/pic.jpg" alt="A hill" srcset="/images/pic@2x.jpg 2x" />'
+      assert_equal expected, image_tag('pic.jpg', options)
+    end
+
     it 'should write no srcset for an empty hash or array' do
       assert_equal '<img src="/pic.jpg" alt="Pic" />', image_tag('/pic.jpg', srcset: {})
       assert_equal '<img src="/pic.jpg" alt="Pic" />', image_tag('/pic.jpg', srcset: [])

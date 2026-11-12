@@ -232,7 +232,7 @@ module Padrino
       #   #   /images/large.jpg?1269008689 1080w" sizes="(max-width: 600px) 480px, 1080px" alt="Small" />
       #
       def image_tag(url, options = {})
-        options = { src: image_path(url) }.update(Utils.symbolize_keys(options))
+        options = { src: image_path(url) }.update(Utils.symbolize_keys(options.to_h))
         srcset = options[:srcset]
         if srcset.is_a?(Hash) || srcset.is_a?(Array)
           candidates = srcset.map do |candidate|
