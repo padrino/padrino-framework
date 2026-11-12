@@ -408,6 +408,25 @@ describe 'FormatHelpers' do
       time_tag(@date, options)
       assert_equal({ format: :short, datetime: '2026-11', class: 'date' }, options)
     end
+
+    it 'should take options with String keys' do
+      options = { 'format' => :short, 'datetime' => '2026-11', 'class' => 'date' }.freeze
+      assert_equal '<time datetime="2026-11" class="date">Nov 11</time>', time_tag(@date, options)
+      assert_equal '<time datetime="2026-11">Today</time>', time_tag(@date, 'Today', 'datetime' => '2026-11')
+      assert_equal({ 'format' => :short, 'datetime' => '2026-11', 'class' => 'date' }, options)
+    end
+
+    it 'should take nil options' do
+      assert_equal '<time datetime="2026-11-11">Today</time>', time_tag(@date, 'Today', nil)
+      assert_equal '<time datetime="2026-11-11">November 11, 2026</time>', time_tag(@date, nil, nil)
+    end
+
+    it 'should display nothing for a nil date or time' do
+      assert_equal '', time_tag(nil)
+      assert_equal '', time_tag(nil, 'Draft', class: 'date')
+      assert_equal '', time_tag(nil, datetime: '2026-11', format: :short)
+      assert_equal '', time_tag(nil) { flunk 'the block should not be called' }
+    end
   end
 
   describe 'for #js_escape_html method' do

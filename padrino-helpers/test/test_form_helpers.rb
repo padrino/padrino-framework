@@ -926,6 +926,13 @@ describe 'FormHelpers' do
       assert_equal '<datalist id="tags"></datalist>', datalist_tag(:tags, nil)
     end
 
+    it 'should skip nil values' do
+      actual_html = datalist_tag(:tags, [nil, 'a', nil, ''])
+      assert_html_has_tag(actual_html, 'datalist#tags option', count: 2)
+      assert_html_has_tag(actual_html, 'datalist option', value: 'a', content: 'a')
+      assert_html_has_tag(actual_html, 'datalist option', value: '')
+    end
+
     it 'should display a datalist with an option for each value' do
       actual_html = datalist_tag(:browsers, %w[Firefox Safari])
       assert_html_has_tag(actual_html, 'datalist#browsers option', count: 2)

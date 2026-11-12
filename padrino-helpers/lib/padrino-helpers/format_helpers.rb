@@ -374,16 +374,18 @@ module Padrino
 
       ##
       # Creates a +time+ tag whose +datetime+ attribute holds the date or time in ISO 8601 form.
+      # A nil date or time, such as the publication date of a draft, writes nothing, whatever the
+      # other arguments (the block isn't called).
       #
       # @overload time_tag(date_or_time, content = nil, options = {})
-      #   @param [Date, Time, DateTime] date_or_time
+      #   @param [Date, Time, DateTime, nil] date_or_time
       #     The date or time the tag stands for.
       #   @param [String] content
       #     The text inside the tag. Defaults to +date_or_time+ localized with +format+.
       #   @param [Hash] options
       #     The HTML options to include in this tag.
       # @overload time_tag(date_or_time, options = {}, &block)
-      #   @param [Date, Time, DateTime] date_or_time
+      #   @param [Date, Time, DateTime, nil] date_or_time
       #     The date or time the tag stands for.
       #   @param [Hash] options
       #     The HTML options to include in this tag.
@@ -395,7 +397,7 @@ module Padrino
       # @option options [String] :datetime
       #   The value of the +datetime+ attribute, in place of +date_or_time+ in ISO 8601 form.
       #
-      # @return [String] The HTML time tag.
+      # @return [String] The HTML time tag, or an empty string for a nil +date_or_time+.
       #
       # @example
       #   time_tag Date.new(2026, 11, 11)
@@ -410,9 +412,14 @@ module Padrino
       #   time_tag(Date.new(2026, 11, 11), datetime: '2026-11') { 'This month' }
       #   # => <time datetime="2026-11">This month</time>
       #
+      #   time_tag nil
+      #   # => ""
+      #
       def time_tag(date_or_time, content = nil, options = {}, &block)
+        return SafeBuffer.new if date_or_time.nil?
+
         options, content = content, nil if content.is_a?(Hash)
-        options = options.dup
+        options = Utils.symbolize_keys(options || {})
         format = options.delete(:format) || :long
         datetime = options.delete(:datetime) || date_or_time.iso8601
         content = I18n.localize(date_or_time, format: format) unless content || block_given?

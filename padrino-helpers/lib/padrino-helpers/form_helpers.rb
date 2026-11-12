@@ -499,6 +499,7 @@ module Padrino
       #   The id of the datalist.
       # @param [Array<String, Array>] values
       #   The suggested values. Each is a value, or a [label, value] pair as in +select_tag+'s +:options+.
+      #   nil values are skipped.
       # @param [Hash] options
       #   The html options for the datalist.
       #
@@ -517,7 +518,7 @@ module Padrino
       #   #    </datalist>
       #
       def datalist_tag(id, values, options = {})
-        content_tag(:datalist, options_for_select(Array(values)), { id: id }.update(options))
+        content_tag(:datalist, options_for_select(Array(values).compact), { id: id }.update(options))
       end
 
       ##
