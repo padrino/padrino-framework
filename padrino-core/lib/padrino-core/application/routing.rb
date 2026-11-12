@@ -920,7 +920,7 @@ module Padrino
       # @example
       #   get "/a", accepts: [:html, :js]
       #   # => GET /a CONTENT_TYPE text/html => :html
-      #   # => GET /a CONTENT_TYPE application/javascript => :js
+      #   # => GET /a CONTENT_TYPE text/javascript => :js
       #   # => GET /a CONTENT_TYPE application/xml => 406
       #
       def accepts(*types)
