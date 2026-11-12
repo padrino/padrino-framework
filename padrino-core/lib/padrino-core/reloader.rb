@@ -357,8 +357,8 @@ module Padrino
     # come back without its methods. A tracked file that reopens it runs again on reload,
     # so its edited and added methods apply, but the methods it deletes or renames stay
     # until the app restarts. Ruby records only the first definition of a name, so a class
-    # that a tracked file defines before the untracked file that owns it counts as tracked.
-    # A name defined by eval without a file, or from a relative path, isn't judged by its file.
+    # that a tracked file defines before the untracked file that owns it counts as tracked,
+    # and one first defined by eval without a file (outside Padrino.root) counts as untracked.
     #
     # Otherwise a constant with a method that has no Ruby source (Struct and Data members,
     # an alias of a built-in method) is removed, unless its name has no Ruby source line
@@ -368,7 +368,7 @@ module Padrino
     #
     def external_constant?(const)
       file, line = constant_location(const)
-      return true if file && File.absolute_path?(file) && untracked_source?(file)
+      return true if file && untracked_source?(file)
       sources = object_sources(const)
       # C extensions define their constants at line 0 of the library file.
       return line.to_i < 1 if sources.delete?(nil)
