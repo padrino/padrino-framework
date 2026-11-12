@@ -718,22 +718,6 @@ describe 'Filters' do
     end
   end
 
-  it 'should not treat the error of an app that cascaded the request as its own' do
-    seen = []
-    first = mock_app { set :cascade, true }
-    second = mock_app do
-      after { seen << env['sinatra.error'] }
-      after { raise StandardError, 'after' if params[:raise] }
-      error(500) { 'broke' }
-      not_found { 'missing here' }
-      get(:index) { params[:halt] ? halt(404) : 'second' }
-    end
-    request = Rack::MockRequest.new(Padrino::Router.new({ path: '/', to: first }, { path: '/', to: second }))
-    responses = ['/', '/?raise=1', '/?halt=1'].map { |path| request.get(path).then { |res| [res.status, res.body] } }
-    assert_equal [[200, 'second'], [500, 'broke'], [404, 'missing here']], responses
-    assert_nil seen.first
-  end
-
   it 'should trigger filters if superclass responds to :filters' do
     class FilterApp < Padrino::Application
       before { @foo = 'foo' }

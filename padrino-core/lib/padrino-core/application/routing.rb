@@ -1117,8 +1117,6 @@ module Padrino
       end
 
       def dispatch!
-        # An app that cascaded this request here left its error in the shared env.
-        @env.delete('sinatra.error')
         @_ran_filters = {}.compare_by_identity
         @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
         force_encoding(@params)
