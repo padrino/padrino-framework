@@ -16,11 +16,7 @@ if ENV['AS_VERSION']
   require 'active_support/core_ext/module/aliasing'           # alias_method_chain
   require 'active_support/core_ext/array/extract_options'     # Array#extract_options!
   require 'active_support/core_ext/hash/slice'                # slice
-  begin
-    require 'active_support/core_ext/object/deep_dup' # AS 4.1
-  rescue LoadError
-    require 'active_support/core_ext/hash/deep_dup' # AS >= 3.1
-  end
+  require 'active_support/core_ext/object/deep_dup'
   Padrino::Utils.warn_deprecated('Loading ActiveSupport extensions through AS_VERSION', 'Require the ones your app uses before Padrino instead')
 end
 
