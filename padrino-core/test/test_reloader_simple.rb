@@ -381,4 +381,89 @@ describe 'SimpleReloader' do
       end
     end
   end
+
+  describe 'for classes reopened in a project file' do
+    before do
+      @dir = Dir.mktmpdir('reopened', Padrino.root)
+      @gem_dir = Dir.mktmpdir('reopened-gem')
+      Padrino::Reloader.exclude << "#{@dir}/config"
+    end
+
+    after do
+      Padrino::Reloader.exclude.delete("#{@dir}/config")
+      Dir.glob(["#{@dir}/**/*.rb", "#{@gem_dir}/*.rb"]).each do |file|
+        Padrino::Reloader::Storage.remove(file)
+        Padrino::Reloader::MTIMES.delete(file)
+        $LOADED_FEATURES.delete(file)
+      end
+      %i[ReloaderRemote ReloaderLocal].each { |name| Object.send(:remove_const, name) if Object.const_defined?(name, false) }
+      FileUtils.rm_rf([@dir, @gem_dir])
+    end
+
+    def write(file, source)
+      FileUtils.mkdir_p(File.dirname(file))
+      File.write(file, source)
+      file
+    end
+
+    # Writes a helper in the project that requires <dir>/remote.rb, which names ReloaderRemote, and reopens the class.
+    def write_remote_helper(dir, extra = 'extra')
+      remote = write("#{dir}/remote.rb", "class ReloaderRemote\n  def self.url\n    'url'\n  end\nend\n")
+      write("#{@dir}/helpers/remote_helper.rb", <<-RUBY)
+        require #{remote.inspect}
+        class ReloaderRemote
+          def self.extra
+            #{extra.inspect}
+          end
+          class Error < StandardError; end
+        end
+      RUBY
+    end
+
+    it 'should keep a class named in an excluded file that a project file reopens' do
+      helper = write_remote_helper("#{@dir}/config")
+      Padrino::Reloader.safe_load(helper)
+      remote = ReloaderRemote
+
+      write_remote_helper("#{@dir}/config", 'edited')
+      Padrino::Reloader.safe_load(helper, force: true)
+      assert_equal 'url', ReloaderRemote.url
+      assert_same remote, ReloaderRemote, 'ReloaderRemote was removed'
+      assert_equal 'edited', ReloaderRemote.extra
+    end
+
+    it 'should keep a class named outside the project that a project file reopens' do
+      helper = write_remote_helper(@gem_dir)
+      Padrino::Reloader.safe_load(helper)
+      remote = ReloaderRemote
+
+      write_remote_helper(@gem_dir, 'edited')
+      Padrino::Reloader.safe_load(helper, force: true)
+      assert_equal 'url', ReloaderRemote.url
+      assert_same remote, ReloaderRemote, 'ReloaderRemote was removed'
+      assert_equal 'edited', ReloaderRemote.extra
+    end
+
+    it 'should remove the classes a project file defines inside a kept class' do
+      helper = write_remote_helper("#{@dir}/config")
+      Padrino::Reloader.safe_load(helper)
+      remote = ReloaderRemote
+      error = ReloaderRemote::Error
+
+      Padrino::Reloader.safe_load(helper, force: true)
+      assert_same remote, ReloaderRemote, 'ReloaderRemote was removed'
+      refute_same error, ReloaderRemote::Error, 'ReloaderRemote::Error was not reloaded'
+      assert_operator ReloaderRemote::Error, :<, StandardError
+    end
+
+    it 'should remove a class named in a project file that an excluded file adds methods to' do
+      added = write("#{@dir}/config/local_ext.rb", "class ReloaderLocal\n  def self.added; end\nend\n")
+      file = write("#{@dir}/models/local.rb", "class ReloaderLocal\n  def self.own; end\nend\nrequire #{added.inspect}\n")
+      Padrino::Reloader.safe_load(file)
+      local = ReloaderLocal
+
+      Padrino::Reloader.safe_load(file, force: true)
+      refute_same local, ReloaderLocal, 'ReloaderLocal was not reloaded'
+    end
+  end
 end
