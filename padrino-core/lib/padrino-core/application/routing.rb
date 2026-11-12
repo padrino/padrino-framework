@@ -1117,6 +1117,8 @@ module Padrino
       end
 
       def dispatch!
+        # An app that cascaded this request here left its error in the shared env.
+        @env.delete('sinatra.error')
         @_ran_filters = {}.compare_by_identity
         @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
         force_encoding(@params)
@@ -1131,7 +1133,12 @@ module Padrino
         begin
           filter! :after unless env['sinatra.static_file']
         rescue ::Exception => e
-          invoke { handle_exception!(e) } unless @env['sinatra.error']
+          # The error page is already set, so this error can't replace it; log it instead of losing it.
+          if @env['sinatra.error']
+            logger.exception(e) if logger.respond_to?(:exception)
+          else
+            invoke { handle_exception!(e) }
+          end
         end
       end
 

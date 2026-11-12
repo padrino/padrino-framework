@@ -696,6 +696,41 @@ describe 'Filters' do
       assert_equal [[410, 'gone'], [503, 'unavailable']], responses.first
       assert_equal responses.first, responses.last
     end
+
+    it 'should log an error an after filter raises there and still send the error page' do
+      saved_logger = Padrino.logger
+      log = StringIO.new
+      mock_app do
+        error(500) { 'oops' }
+        get(:index) { raise StandardError, 'now' }
+        after { raise NoMethodError, 'no touch' }
+      end
+      [Logger.new(log), Logger.new(StringIO.new).freeze].each do |logger|
+        capture_io { Padrino.logger = logger }
+        get '/'
+        assert_equal 500, status
+        assert_equal 'oops', body
+      end
+      assert_match(/NoMethodError - no touch:\n .*test_filters\.rb/, log.string)
+    ensure
+      Padrino.logger = saved_logger
+    end
+  end
+
+  it 'should not treat the error of an app that cascaded the request as its own' do
+    seen = []
+    first = mock_app { set :cascade, true }
+    second = mock_app do
+      after { seen << env['sinatra.error'] }
+      after { raise StandardError, 'after' if params[:raise] }
+      error(500) { 'broke' }
+      not_found { 'missing here' }
+      get(:index) { params[:halt] ? halt(404) : 'second' }
+    end
+    request = Rack::MockRequest.new(Padrino::Router.new({ path: '/', to: first }, { path: '/', to: second }))
+    responses = ['/', '/?raise=1', '/?halt=1'].map { |path| request.get(path).then { |res| [res.status, res.body] } }
+    assert_equal [[200, 'second'], [500, 'broke'], [404, 'missing here']], responses
+    assert_nil seen.first
   end
 
   it 'should trigger filters if superclass responds to :filters' do
