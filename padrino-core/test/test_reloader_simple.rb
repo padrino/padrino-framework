@@ -437,9 +437,20 @@ describe 'SimpleReloader' do
       Padrino::Reloader.safe_load(helper)
       remote = ReloaderRemote
 
+      write_remote_helper(@gem_dir, 'edited')
       Padrino::Reloader.safe_load(helper, force: true)
       assert_equal 'url', ReloaderRemote.url
       assert_same remote, ReloaderRemote, 'ReloaderRemote was removed'
+      assert_equal 'edited', ReloaderRemote.extra
+    end
+
+    it 'should judge a class named by eval code without a file by its methods' do
+      file = write("#{@dir}/models/local.rb", "eval 'class ReloaderLocal; end'\nclass ReloaderLocal\n  def self.own; end\nend\n")
+      Padrino::Reloader.safe_load(file)
+      local = ReloaderLocal
+
+      Padrino::Reloader.safe_load(file, force: true)
+      refute_same local, ReloaderLocal, 'ReloaderLocal was not reloaded'
     end
 
     it 'should remove the classes a project file defines inside a kept class' do
