@@ -238,6 +238,37 @@ module Padrino
         "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
 
+      ##
+      # Builds a list of class names from Strings, Symbols, Arrays and Hashes.
+      #
+      # Strings are split on whitespace, Arrays are flattened, a Hash keeps the
+      # keys whose values are truthy, and nil, false and blank names are left out.
+      # Each name appears once, where it first appears. The result is a plain
+      # String: +tag+ and +content_tag+ escape it when they write the attribute.
+      #
+      # @param [Array<String, Symbol, Array, Hash, nil, false>] args
+      #   The class names, and the conditions that select them.
+      #
+      # @return [String]
+      #   The class names, separated by spaces.
+      #
+      # @example
+      #   class_names('btn', :primary)
+      #   # => "btn primary"
+      #
+      #   class_names('card', active: true, disabled: false)
+      #   # => "card active"
+      #
+      #   class_names('btn btn-lg', ['btn', [nil, { 'btn-block' => wide? }]])
+      #   # => "btn btn-lg btn-block" (when wide? is truthy)
+      #
+      #   content_tag(:li, 'Home', class: class_names('nav-item', current: page == 'home'))
+      #   # => <li class="nav-item current">Home</li>
+      #
+      def class_names(*args)
+        class_name_tokens(args).uniq.join(' ')
+      end
+
       SAFE_URI_SCHEMES = %w[http https mailto tel ftp].freeze
 
       ##
@@ -336,6 +367,18 @@ module Padrino
           parsed_options[:rel] = 'nofollow' if key == :method
         end
         parsed_options
+      end
+
+      ##
+      # Returns the class names in a value given to #class_names, in order.
+      #
+      def class_name_tokens(value)
+        case value
+        when Array then value.flat_map { |item| class_name_tokens(item) }
+        when Hash then value.flat_map { |name, condition| condition ? class_name_tokens(name) : [] }
+        when nil, false then []
+        else value.to_s.split(' ')
+        end
       end
     end
   end
