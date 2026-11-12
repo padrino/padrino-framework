@@ -889,7 +889,7 @@ module Padrino
       def provides_format(*types)
         mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
-          return provides_format?(types, params[:format].to_sym) if params[:format]
+          return provides_format?(types, params[:format].to_s.scrub.to_sym) if params[:format]
 
           accepts = request.accept.map(&:to_str)
           # Per rfc2616-sec14:
