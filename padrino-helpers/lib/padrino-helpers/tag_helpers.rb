@@ -61,6 +61,63 @@ module Padrino
       NEWLINE = "\n".html_safe.freeze
 
       ##
+      # The largest exponent, either way, of a BigDecimal written in plain decimal
+      # notation; one beyond it is written in scientific notation ("0.1e1001"),
+      # which writes the exponent as digits instead of writing out every zero.
+      #
+      PLAIN_DECIMAL_EXPONENT_LIMIT = 100
+      private_constant :PLAIN_DECIMAL_EXPONENT_LIMIT
+
+      ##
+      # Whether the value is a BigDecimal.
+      #
+      # @api private
+      def self.decimal?(value)
+        defined?(::BigDecimal) && value.is_a?(::BigDecimal)
+      end
+
+      ##
+      # Returns the text a value is written as in HTML: a finite BigDecimal in
+      # its shortest exact plain decimal form (BigDecimal#to_s gives "0.999e1"
+      # for 9.99, and to_s('F') gives "10.0" for 10), so it matches the text a
+      # form sends back; anything else as its +to_s+.
+      #
+      # @example
+      #   TagHelpers.value_to_s(BigDecimal('9.99')) # => "9.99"
+      #   TagHelpers.value_to_s(BigDecimal('10'))   # => "10"
+      #   TagHelpers.value_to_s(:price)             # => "price"
+      #
+      # @api private
+      def self.value_to_s(value)
+        return value.to_s unless decimal?(value)
+
+        value.finite? && value.exponent.abs <= PLAIN_DECIMAL_EXPONENT_LIMIT ? value.to_s('F').delete_suffix('.0') : value.to_s('E')
+      end
+
+      ##
+      # Whether two values are equal numbers, when either is a BigDecimal: the
+      # other is read as a decimal from its text, so BigDecimal('10') equals
+      # "10", "10.0", "10.00", 10 and 10.0. False for anything else.
+      #
+      # @api private
+      def self.decimal_equal?(value, other)
+        return false unless decimal?(value) || decimal?(other)
+
+        value, other = [value, other].map { |item| decimal?(item) ? item : decimal_from(item.to_s) }
+        value == other
+      end
+
+      ##
+      # Reads the text as a BigDecimal, or returns nil when it is not a number.
+      #
+      def self.decimal_from(text)
+        BigDecimal(text)
+      rescue ArgumentError, TypeError, FloatDomainError
+        nil
+      end
+      private_class_method :decimal_from
+
+      ##
       # Creates an HTML tag with given name, content, and options.
       #
       # @overload content_tag(name, content, options = nil)
@@ -128,11 +185,11 @@ module Padrino
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each do |item|
-            output.concat item
+            output.concat TagHelpers.value_to_s(item)
             output.safe_concat NEWLINE
           end
         else
-          output.concat content.to_s
+          output.concat TagHelpers.value_to_s(content)
         end
         output.safe_concat "</#{name}>"
 
@@ -333,8 +390,8 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
-        string = string.to_s
+        string = string.collect { |item| TagHelpers.value_to_s(item) }.join(' ') if string.is_a?(Array)
+        string = TagHelpers.value_to_s(string)
         string.match?(ESCAPE_REGEXP) ? string.gsub(ESCAPE_REGEXP, ESCAPE_VALUES) : string
       end
 

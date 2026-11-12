@@ -216,7 +216,68 @@ describe 'AdminPageGenerator' do
       end
     end
 
+    it 'should tell decimal column types apart from the others' do
+      orm = Padrino::Admin::Generators::Orm.new('price', :sequel, [])
+      mongoid_decimal = Class.new { def self.to_s; 'Mongoid::BigDecimal'; end }
+      [:decimal, BigDecimal, mongoid_decimal].each { |type| assert orm.decimal?(type), "#{type} holds decimals" }
+      [nil, :string, :integer, :float, :boolean, String, Float].each { |type| refute orm.decimal?(type), "#{type.inspect} doesn't hold decimals" }
+    end
+
     %w[erb haml slim].each do |renderer|
+      # Mongoid reports a decimal field's type as the class BigDecimal, not as :decimal.
+      [false, true].each do |mongoid_types|
+        it "should show decimal columns in the list in plain decimal notation (#{renderer}#{', Mongoid types' if mongoid_types})" do
+          Sequel::Model.db.create_table!(:prices) do
+            primary_key :id
+            BigDecimal :amount, size: [12, 4]
+            Integer :quantity
+          end
+          Object.const_set(:Price, Class.new(Sequel::Model(:prices)))
+          # Built in memory, so every adapter gives the list the same values.
+          rows = [
+            Price.load(id: 1, amount: BigDecimal('9.99'), quantity: 3),
+            Price.load(id: 2, amount: BigDecimal('10'), quantity: nil),
+            Price.load(id: 3, amount: BigDecimal('-0.0001'), quantity: nil),
+            Price.load(id: 4, amount: nil, quantity: nil)
+          ]
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
+          capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+          # A decimal column can hold other values: Active Record reads a decimal with scale 0 as an Integer.
+          types = { quantity: :decimal }
+          types[:amount] = BigDecimal if mongoid_types
+          columns = Price.db_schema.map { |name, info| Padrino::Admin::Generators::Orm::Column.new(name, types.fetch(name, info[:type])) }
+          Padrino::Admin::Generators::Orm.any_instance.stubs(:columns).returns(columns)
+          capture_io { generate(:admin_page, 'price', "--root=#{@apptmp}/sample_project") }
+          views = "#{@apptmp}/sample_project/admin/views"
+          mock_app do
+            set :views, views
+            helpers Padrino::Admin::Helpers::ViewHelpers
+            controllers :prices do
+              get(:index) do
+                @prices = rows
+                render 'prices/index', layout: false
+              end
+              get(:new) {}
+              get(:edit, with: :id) {}
+              delete(:destroy, with: :id) {}
+              delete(:destroy_many) {}
+            end
+          end
+          get '/prices'
+          assert_equal 200, last_response.status
+          page = Nokogiri::HTML(last_response.body)
+          headers = page.css('#list thead th').map { |th| th.text.strip }
+          cells = ->(name) { page.css('#list tbody tr').map { |row| row.css('td')[headers.index(name)] } }
+          texts = ->(name) { cells.call(name).map { |cell| cell.text.strip } }
+          assert_equal ['9.99', '10', '-0.0001', ''], texts.call('Amount')
+          assert_equal ['3', '', '', ''], texts.call('Quantity')
+          assert_equal [%w[list-column]], (cells.call('Amount') + cells.call('Quantity')).map { |cell| cell['class'].split }.uniq
+        ensure
+          Object.send(:remove_const, :Price) if Object.const_defined?(:Price, false)
+          Sequel::Model.db.drop_table?(:prices)
+        end
+      end
+
       it "should render the list menu with the same classes as the stylesheet and script expect (#{renderer})" do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{renderer}") }
         capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
