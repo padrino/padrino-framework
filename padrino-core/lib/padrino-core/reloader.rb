@@ -292,7 +292,7 @@ module Padrino
     def rotation
       files_for_rotation.each do |file|
         file = File.expand_path(file)
-        next if Reloader.exclude.any? { |base| file.start_with?(base) } || !File.file?(file)
+        next if path_excluded?(file) || !File.file?(file)
         yield file
       end
       nil
@@ -318,7 +318,21 @@ module Padrino
     # Tells if a feature should be excluded from Reloader tracking.
     #
     def feature_excluded?(file)
-      !file.start_with?(Padrino.root) || exclude.any? { |excluded_path| file.start_with?(excluded_path) }
+      !path_inside?(file, Padrino.root) || path_excluded?(file)
+    end
+
+    ##
+    # Tells if the file is in one of the excluded paths, or is one of them.
+    #
+    def path_excluded?(file)
+      exclude.any? { |excluded_path| path_inside?(file, excluded_path) }
+    end
+
+    ##
+    # Tells if the file is the path itself or inside it, so /app-gem isn't inside /app.
+    #
+    def path_inside?(file, path)
+      file == path || file.start_with?(File.join(path, ''))
     end
 
     ##
@@ -334,27 +348,37 @@ module Padrino
     end
 
     ##
-    # Tells if a constant is defined only outside of Padrino project path.
-    # If a constant has any methods defined inside of the project path it's
+    # Tells if a constant is defined only outside of the project files the
+    # reloader tracks: outside Padrino.root, or in an excluded file that was
+    # required (a file run with +load+ runs again, so its classes are removed).
+    # If a constant has any methods defined in a tracked file it's
     # considered internal and will be included in further testing.
     # A constant without methods (an exception class, say) is judged by
     # where its name was defined instead.
     # So is a constant with a method that has no Ruby source (Struct and
     # Data members, an alias of a built-in method, a C or Java extension),
     # which is internal only when its name was defined by Ruby code in a
-    # project file outside the excluded folders.
+    # tracked file.
     #
     def external_constant?(const)
       sources = object_sources(const)
       if sources.delete?(nil)
         file, line = constant_location(const)
         # C extensions define their constants at line 0 of the library file.
-        return line.to_i < 1 || feature_excluded?(file)
+        return line.to_i < 1 || untracked_source?(file)
       end
       sources = [constant_source(const)].compact if sources.empty?
       # consider methodless constants of unknown origin not external
       return false if sources.empty?
-      sources.none? { |source| source.start_with?(Padrino.root) }
+      sources.all? { |source| untracked_source?(source) }
+    end
+
+    ##
+    # Tells if a file holds code the reloader doesn't track: it's outside Padrino.root,
+    # or in an excluded path and was required (a file run with +load+ runs again).
+    #
+    def untracked_source?(file)
+      !path_inside?(file, Padrino.root) || (path_excluded?(file) && $LOADED_FEATURES.include?(file))
     end
 
     ##
@@ -413,7 +437,7 @@ module Padrino
     #
     def reloadable_apps
       Padrino.mounted_apps.select do |app|
-        next unless app.app_file.start_with?(Padrino.root)
+        next unless path_inside?(app.app_file, Padrino.root)
         app.app_obj.respond_to?(:reload) && app.app_obj.reload?
       end
     end

@@ -154,6 +154,51 @@ describe 'SystemReloader' do
         FileUtils.rm_rf(gem_dir)
       end
     end
+
+    it 'should keep constants from an excluded folder that an app file requires' do
+      support_dir = File.expand_path("#{__dir__}/fixtures/apps/excluded_constants/support")
+      Padrino::Reloader.exclude << support_dir
+      Padrino.clear!
+      require File.expand_path("#{__dir__}/fixtures/apps/excluded_constants/app.rb")
+      @app = SystemExcludedConstantsDemo
+      Padrino.mount(SystemExcludedConstantsDemo).to('/')
+      get '/'
+      # The excluded file isn't required again, so a removed constant would stay undefined.
+      excluded_constants = -> { %w[ExcludedConstantsSettings ExcludedConstantsError].map { |name| Object.const_get(name) if Object.const_defined?(name) } }
+      kept = excluded_constants.call
+      assert_equal [Class, Class], kept.map(&:class), 'removed by the first reload'
+      app_settings = ExcludedConstantsAppSettings
+      FileUtils.touch File.expand_path("#{__dir__}/fixtures/apps/excluded_constants/helpers/excluded_constants_helpers.rb")
+      Padrino.reload!
+      assert_equal kept, excluded_constants.call, 'removed on reload'
+      assert defined?(ExcludedConstantsAppSettings), 'ExcludedConstantsAppSettings undefined'
+      refute_same app_settings, ExcludedConstantsAppSettings, 'ExcludedConstantsAppSettings was not reloaded'
+    ensure
+      Padrino::Reloader.exclude.delete(support_dir)
+    end
+
+    it 'should redefine classes from an excluded folder that an app file loads' do
+      support_dir = File.expand_path("#{__dir__}/fixtures/apps/loaded_excluded/support")
+      Padrino::Reloader.exclude << support_dir
+      Padrino.clear!
+      require File.expand_path("#{__dir__}/fixtures/apps/loaded_excluded/app.rb")
+      @app = SystemLoadedExcludedDemo
+      Padrino.mount(SystemLoadedExcludedDemo).to('/')
+      get '/'
+      thing = LoadedExcludedThing
+      point = LoadedExcludedPoint
+      label = LoadedExcludedLabel
+      # The app file runs the excluded file again with load, so a kept class would raise superclass mismatch.
+      FileUtils.touch File.expand_path("#{__dir__}/fixtures/apps/loaded_excluded/helpers/loaded_excluded_helpers.rb")
+      Padrino.reload!
+      refute_same thing, LoadedExcludedThing, 'LoadedExcludedThing was not reloaded'
+      assert_same LoadedExcludedBase, LoadedExcludedThing.superclass
+      refute_same point, LoadedExcludedPoint, 'LoadedExcludedPoint was not reloaded'
+      assert_equal 3, LoadedExcludedPoint.new(1, 2).sum
+      refute_same label, LoadedExcludedLabel, 'LoadedExcludedLabel was not reloaded'
+    ensure
+      Padrino::Reloader.exclude.delete(support_dir)
+    end
   end
 
   describe 'reloading custom dependencies' do
@@ -172,6 +217,15 @@ describe 'SystemReloader' do
     it 'should discover changed dependencies' do
       FileUtils.touch(custom_dependency)
       assert Padrino::Reloader.changed?, 'Change to custom dependency has not been recognised'
+    end
+
+    it 'should discover changed dependencies in a folder whose name starts with an excluded one' do
+      excluded = File.join(File.dirname(custom_dependency_path), 'my')
+      Padrino::Reloader.exclude << excluded
+      FileUtils.touch(custom_dependency)
+      assert Padrino::Reloader.changed?, 'Change to custom dependency has not been recognised'
+    ensure
+      Padrino::Reloader.exclude.delete(excluded)
     end
   end
 
