@@ -30,6 +30,16 @@ module Padrino
     }.freeze
 
     ##
+    # Choices whose generated gem requirement needs a newer Ruby than Padrino's own floor, by type, with
+    # the gem and the Ruby it needs. The requirements are in templates/Gemfile.tt (falcon) and
+    # components/stylesheets/tailwind.rb (tailwindcss-ruby).
+    #
+    MINIMUM_RUBY = {
+      server: { 'falcon' => %w[falcon 3.0] },
+      stylesheet: { 'tailwind' => %w[tailwindcss-ruby 3.0] }
+    }.freeze
+
+    ##
     # Common actions needed to support project and component generation.
     #
     module Actions
@@ -60,8 +70,31 @@ module Padrino
       def execute_component_setup(component, choice)
         return say_status(:skipping, "#{component} component...") if choice.to_s == 'none'
         say_status(:applying, "#{choice} (#{component})...")
+        warn_unless_ruby_supports(component, choice)
         apply_component_for(choice, component)
         send("setup_#{component}") if respond_to?("setup_#{component}")
+      end
+
+      ##
+      # Warns when the choice's gem needs a newer Ruby than the one running the generator, as
+      # bundle install will then fail. The project is still generated.
+      #
+      # @example
+      #   warn_unless_ruby_supports(:server, 'falcon')
+      #
+      def warn_unless_ruby_supports(type, choice)
+        gem, minimum = MINIMUM_RUBY.dig(type.to_sym, choice.to_s)
+        return unless gem && Gem::Version.new(running_ruby_version) < Gem::Version.new(minimum)
+
+        say "The #{choice} #{type} uses the #{gem} gem, which needs Ruby #{minimum} or later; " \
+            "bundle install will fail on Ruby #{running_ruby_version}.", :yellow
+      end
+
+      ##
+      # The version of the Ruby running the generator.
+      #
+      def running_ruby_version
+        RUBY_VERSION
       end
 
       ##
@@ -131,14 +164,26 @@ module Padrino
       end
 
       ##
-      # Returns the template engine that layout snippets should be printed for: the renderer this run
-      # applies, which .components only records once it is applied, otherwise the stored one.
+      # Returns the choice this run applies for a component, which .components only records once it is
+      # applied, otherwise the stored one (also when this run declined to switch it).
+      #
+      # @param [Symbol] component
+      #   The type of component module.
+      #
+      # @return [String] Name of the component module.
+      #
+      def applied_component_choice(component)
+        chosen = @_components && @_components[component].to_s
+        chosen.nil? || chosen.empty? ? fetch_component_choice(component).to_s : chosen
+      end
+
+      ##
+      # Returns the template engine that layout snippets should be printed for.
       #
       # @return [String] 'haml', 'slim', or 'erb' for any other renderer.
       #
       def layout_renderer
-        chosen = @_components && @_components[:renderer].to_s
-        renderer = chosen.nil? || chosen.empty? ? fetch_component_choice(:renderer).to_s : chosen
+        renderer = applied_component_choice(:renderer)
         %w[haml slim].include?(renderer) ? renderer : 'erb'
       end
 

@@ -59,9 +59,9 @@ module Padrino
     # gives for it, matches. An :except filter is skipped only if every one of them matches
     # exactly, and none has a newline. +info+ is the path_entry of path_info, when the caller has it.
     def match_path?(argument, request, settings, paths, info = nil)
-      return paths.all? { |path| !path.include?("\n") && argument === path } unless @mode
+      return paths.all? { |path| !path.include?("\n") && Routing.path_match?(argument, path) } unless @mode
 
-      filter_paths(request, settings, paths, info || path_entry(request)).any? { |form| argument === form }
+      filter_paths(request, settings, paths, info || path_entry(request)).any? { |form| Routing.path_match?(argument, form) }
     end
 
     # +paths+ and the forms route_forms gives for each, once per request for each route run and

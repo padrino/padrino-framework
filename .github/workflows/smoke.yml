@@ -34,8 +34,8 @@ jobs:
   smoke:
     needs: list
     name: ${{ matrix.name }}
-    # ubuntu-latest is ubuntu-26.04, which has no Ruby 3.0 build
-    runs-on: ${{ matrix.ruby == '3.0' && 'ubuntu-24.04' || 'ubuntu-latest' }}
+    # ubuntu-latest is ubuntu-26.04, which has no Ruby 2.7 to 3.1 builds
+    runs-on: ${{ contains(fromJSON('["2.7", "3.0", "3.1"]'), matrix.ruby) && 'ubuntu-24.04' || 'ubuntu-latest' }}
     # A generator prompt that loops on closed input would otherwise hold the runner for six hours.
     timeout-minutes: 30
     strategy:

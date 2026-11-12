@@ -296,11 +296,11 @@ module Padrino
       # @see Padrino::Logging::ColorizedLogger::ColoredLevels
       #
       def colorize(string, *colors)
-        string.colorize(color: colors[0], mode: colors[1])
+        Padrino::Colorizer.colorize(string, colors[0], colors[1])
       end
 
       def stylized_level(level)
-        colors = ColoredLevels[level].map { |color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
+        colors = ColoredLevels[level].map { |color| Padrino::Colorizer::MODES[color] || Padrino::Colorizer::COLORS[color] }
         [Kernel.format("\e[%d;%dm", *colors), super, "\e[0m"].join
       end
     end
