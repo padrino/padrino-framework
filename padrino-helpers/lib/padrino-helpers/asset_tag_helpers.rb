@@ -213,8 +213,8 @@ module Padrino
       #   The html options for the image tag.
       # @option options [Hash, Array, String] :srcset
       #   The image candidates for the +srcset+ attribute. A Hash or an Array of pairs maps each source to its
-      #   descriptor (+'2x'+, +'480w'+), and each source is resolved like +url+. A String, or a String in the
-      #   Array, is written as given.
+      #   descriptor (+'2x'+, +'480w'+), and each source is resolved like +url+. A String is written as given, and
+      #   so is a String in the Array, which must carry its descriptor (+'pic@2x.jpg 2x'+).
       # @option options [String] :sizes
       #   The +sizes+ attribute, for +srcset+ with width descriptors.
       #
@@ -232,11 +232,16 @@ module Padrino
       #   #   /images/large.jpg?1269008689 1080w" sizes="(max-width: 600px) 480px, 1080px" alt="Small" />
       #
       def image_tag(url, options = {})
-        options = { src: image_path(url) }.update(options)
+        options = { src: image_path(url) }.update(Utils.symbolize_keys(options))
         srcset = options[:srcset]
         if srcset.is_a?(Hash) || srcset.is_a?(Array)
           candidates = srcset.map do |candidate|
-            next candidate if candidate.is_a?(String)
+            if candidate.is_a?(String)
+              next candidate if candidate.strip.match?(/\s/)
+
+              raise ArgumentError, "srcset entry #{candidate.inspect} has no descriptor; give each image with its descriptor, " \
+                                   "as in srcset: [['pic@2x.jpg', '2x']] or srcset: ['pic@2x.jpg 2x']"
+            end
 
             source, descriptor = candidate
             "#{image_path(source)} #{descriptor}"
@@ -261,6 +266,8 @@ module Padrino
       ##
       # Creates a picture element. Each source but the last becomes a source element, with its +type+ taken
       # from the file extension; the last becomes the img element, which browsers use when no source suits them.
+      # A source other than the last whose extension names no image type raises an ArgumentError, since browsers
+      # would pick a source without a type whether or not they can show it; write such sources in a block.
       # With a block, the block's output is the content of the picture element instead.
       #
       # @overload picture_tag(*sources, options={})
@@ -298,9 +305,14 @@ module Padrino
         fallback = sources.pop
         content = sources.inject(SafeBuffer.new) do |all, source|
           type = ::Rack::Mime.mime_type(File.extname(source.to_s.sub(/[?#].*/m, '')), nil)
-          all << tag(:source, srcset: image_path(source), type: (type if type&.start_with?('image/')))
+          unless type&.start_with?('image/')
+            raise ArgumentError, "picture_tag can't tell the image type of #{source.inspect} from its extension; " \
+                                 'use a file extension such as .avif or .webp, or write the source elements in a block'
+          end
+
+          all << tag(:source, srcset: image_path(source), type: type)
         end
-        content_tag(:picture, content << image_tag(fallback, Utils.symbolize_keys(image_options || {})), options)
+        content_tag(:picture, content << image_tag(fallback, image_options || {}), options)
       end
 
       ##

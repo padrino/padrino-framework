@@ -337,6 +337,21 @@ describe 'AssetTagHelpers' do
       assert_html_has_tag(actual_html, 'img', srcset: 'pic.jpg 1x, /images/pic@2x.jpg 2x, /hd/pic.jpg 3x')
     end
 
+    it 'should refuse a srcset array entry without a descriptor' do
+      error = assert_raises(ArgumentError) { image_tag('pic.jpg', srcset: ['pic@2x.jpg', '2x']) }
+      assert_includes error.message, '"pic@2x.jpg"'
+      assert_includes error.message, "[['pic@2x.jpg', '2x']]"
+      assert_raises(ArgumentError) { image_tag('pic.jpg', srcset: ['pic.jpg 1x', ' pic@2x.jpg ']) }
+    end
+
+    it 'should take string keys like symbol keys' do
+      self.class.stubs(:asset_stamp).returns(false)
+      options = { 'srcset' => { 'pic@2x.jpg' => '2x' }.freeze, 'alt' => 'A hill' }.freeze
+      expected = '<img src="/images/pic.jpg" srcset="/images/pic@2x.jpg 2x" alt="A hill" />'
+      assert_equal expected, image_tag('pic.jpg', options)
+      assert_equal({ 'srcset' => { 'pic@2x.jpg' => '2x' }, 'alt' => 'A hill' }, options)
+    end
+
     it 'should write no srcset for an empty hash or array' do
       assert_equal '<img src="/pic.jpg" alt="Pic" />', image_tag('/pic.jpg', srcset: {})
       assert_equal '<img src="/pic.jpg" alt="Pic" />', image_tag('/pic.jpg', srcset: [])
@@ -365,17 +380,19 @@ describe 'AssetTagHelpers' do
       assert_html_has_tag(actual_html, 'picture source', count: types.size)
     end
 
-    it 'should leave out the type when the extension is unknown or missing' do
-      actual_html = picture_tag('https://cdn.example.com/pic', 'pic.unknown', 'pic.jpg')
-      assert_html_has_tag(actual_html, 'picture source', count: 2)
-      assert_html_has_no_tag(actual_html, 'picture source[type]')
+    it 'should refuse a source other than the last without a known image type' do
+      ['pic.jxl', 'https://cdn.example.com/pic', 'https://img.example.com', 'pic.unknown', 'page.html'].each do |source|
+        error = assert_raises(ArgumentError) { picture_tag(source, 'pic.avif', 'pic.jpg') }
+        assert_includes error.message, source.inspect
+        assert_includes error.message, 'block'
+      end
     end
 
-    it 'should leave out the type when the extension maps to no image type' do
-      actual_html = picture_tag('https://img.example.com', 'page.html', 'data.json', 'pic.jpg')
-      assert_html_has_tag(actual_html, 'picture source', count: 3)
-      assert_html_has_tag(actual_html, 'picture source', srcset: 'https://img.example.com')
-      assert_html_has_no_tag(actual_html, 'picture source[type]')
+    it 'should take a last source without a known image type' do
+      expected = '<picture><source srcset="/images/pic.webp" type="image/webp" />' \
+                 '<img src="https://cdn.example.com/pic" alt="Pic" /></picture>'
+      assert_equal expected, picture_tag('pic.webp', 'https://cdn.example.com/pic')
+      assert_equal '<picture><img src="/images/pic.jxl" alt="Pic" /></picture>', picture_tag('pic.jxl')
     end
 
     it 'should write only an img for one source' do
