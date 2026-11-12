@@ -1,5 +1,6 @@
 require_relative 'helper'
 require_relative 'fixtures/markup_app/app'
+require 'bigdecimal'
 
 describe 'FormBuilder' do
   include Padrino::Helpers::FormHelpers
@@ -437,6 +438,183 @@ describe 'FormBuilder' do
     it 'should display correct range field in slim' do
       get '/slim/form_for'
       assert_response_has_tag '#demo input.slider[type=range]', id: 'markup_user_volume', min: '0', max: '11'
+    end
+  end
+
+  describe 'for a BigDecimal value' do
+    before { @user.stubs(price: BigDecimal('9.99')) }
+
+    # Runs the block with BigDecimal#to_s raising unless given a format. BigDecimal
+    # values are frozen, so it replaces the method where it is defined and puts the
+    # original back afterwards.
+    def with_formatted_decimal_to_s
+      owner = BigDecimal.instance_method(:to_s).owner
+      original = owner.instance_method(:to_s)
+      owner.send(:define_method, :to_s) do |*format|
+        raise ArgumentError, 'BigDecimal#to_s called without a format' if format.empty?
+
+        original.bind(self).call(*format)
+      end
+      yield
+    ensure
+      owner.send(:define_method, :to_s, original) if original
+    end
+
+    %i[text_field number_field hidden_field].each do |field|
+      it "should write the value of a #{field} in plain decimal notation" do
+        assert_html_has_tag(standard_builder.send(field, :price), 'input', value: '9.99', name: 'user[price]')
+      end
+    end
+
+    it 'should write the content of a text_area in plain decimal notation' do
+      assert_html_has_tag(standard_builder.text_area(:price), 'textarea', content: '9.99')
+    end
+
+    it 'should select the option that holds the value' do
+      actual_html = standard_builder.select(:price, options: %w[1.5 9.99])
+      assert_html_has_tag(actual_html, 'option', value: '9.99', selected: 'selected')
+      assert_html_has_tag(actual_html, 'option', value: '1.5')
+      assert_html_has_no_tag(actual_html, 'option[value="1.5"]', selected: 'selected')
+    end
+
+    it 'should check the radio button that holds the value' do
+      actual_html = standard_builder.radio_button(:price, value: '9.99')
+      assert_html_has_tag(actual_html, 'input[type=radio]', value: '9.99', id: 'user_price_9.99', checked: 'checked')
+    end
+
+    it 'should write a BigDecimal radio button value and id in plain decimal notation' do
+      actual_html = standard_builder.radio_button(:price, value: BigDecimal('1.5'))
+      assert_html_has_tag(actual_html, 'input[type=radio]', value: '1.5', id: 'user_price_1.5')
+      assert_html_has_no_tag(actual_html, 'input[checked]')
+    end
+
+    # Active Record reads 10 from a decimal(10, 2) column as BigDecimal('10').
+    describe 'that is a whole number' do
+      before { @user.stubs(price: BigDecimal('10')) }
+
+      it 'should write it without a fraction' do
+        assert_html_has_tag(standard_builder.number_field(:price), 'input[type=number]', value: '10')
+      end
+
+      it 'should select the option written the way a form sends it back' do
+        actual_html = standard_builder.select(:price, options: %w[5 10 20])
+        assert_html_has_tag(actual_html, 'option', value: '10', selected: 'selected')
+        assert_html_has_tag(actual_html, 'option[selected]', count: 1)
+      end
+
+      it 'should check the radio button written the way a form sends it back' do
+        assert_html_has_tag(standard_builder.radio_button(:price, value: '10'), 'input[type=radio]', value: '10', checked: 'checked')
+      end
+    end
+
+    describe 'compared with the value of an option or button' do
+      before { @user.stubs(price: BigDecimal('2')) }
+
+      ['2', '2.0', '2.00', 2, 2.0, BigDecimal('2.0')].each do |two|
+        it "should select an option whose value is the same number, #{two.inspect}" do
+          actual_html = standard_builder.select(:price, options: [['Five', '5'], ['Two', two], ['Other', 'abc'], ['None', '']])
+          assert_html_has_tag(actual_html, 'option[selected]', content: 'Two', count: 1)
+        end
+
+        it "should check a radio button whose value is the same number, #{two.inspect}" do
+          assert_html_has_tag(standard_builder.radio_button(:price, value: two), 'input[type=radio]', checked: 'checked')
+        end
+      end
+
+      it 'should not select an option whose value is another number or not a number' do
+        assert_html_has_no_tag(standard_builder.select(:price, options: %w[2.5 20 abc] + ['']), 'option[selected]')
+      end
+
+      ['2.5', 'abc', nil].each do |other|
+        it "should not check a radio button whose value is #{other.inspect}" do
+          assert_html_has_no_tag(standard_builder.radio_button(:price, value: other), 'input[checked]')
+        end
+      end
+
+      it 'should not raise for an option that is not a finite number when BigDecimal raises on it' do
+        flags = [BigDecimal::EXCEPTION_NaN, BigDecimal::EXCEPTION_INFINITY, BigDecimal::EXCEPTION_OVERFLOW]
+        saved = flags.map { |flag| BigDecimal.mode(BigDecimal::EXCEPTION_ALL).anybits?(flag) }
+        flags.each { |flag| BigDecimal.mode(flag, true) }
+        actual_html = standard_builder.select(:price, options: %w[NaN Infinity 1e99999999999999999999 2])
+        assert_html_has_tag(actual_html, 'option[selected]', content: '2', count: 1)
+      ensure
+        flags.zip(saved).each { |flag, on| BigDecimal.mode(flag, on) }
+      end
+
+      it 'should select an option written with trailing zeros' do
+        @user.stubs(price: BigDecimal('9.5'))
+        assert_html_has_tag(standard_builder.select(:price, options: %w[9.05 9.50]), 'option[selected]', value: '9.50', count: 1)
+      end
+
+      it 'should check the boxes of a group whose values are the same number' do
+        actual_html = standard_builder.check_box_group(:price, options: [%w[Two 2.0], %w[Five 5]])
+        assert_html_has_tag(actual_html, 'input[type=checkbox][checked]', value: '2.0', count: 1)
+      end
+
+      it 'should check the radio button of a collection whose id is the same number' do
+        prices = [mock_model('Price', name: 'Two', id: BigDecimal('2')), mock_model('Price', name: 'Five', id: BigDecimal('5'))]
+        actual_html = standard_builder.radio_button_group(:price, collection: prices, selected: ['2.0'])
+        assert_html_has_tag(actual_html, 'input[type=radio][checked]', value: '2', count: 1)
+      end
+
+      ['2', '2.00', 2].each do |two|
+        it "should check the radio button of a collection whose id is the same number, #{two.inspect}" do
+          prices = [mock_model('Price', name: 'Two', id: two), mock_model('Price', name: 'Five', id: 5)]
+          actual_html = standard_builder.radio_button_group(:price, collection: prices)
+          assert_html_has_tag(actual_html, 'input[type=radio][checked]', value: two.to_s, count: 1)
+        end
+
+        it "should check the box of a collection whose id is the same number, #{two.inspect}" do
+          prices = [mock_model('Price', name: 'Two', id: two), mock_model('Price', name: 'Five', id: 5)]
+          actual_html = standard_builder.check_box_group(:price, collection: prices)
+          assert_html_has_tag(actual_html, 'input[type=checkbox][checked]', value: two.to_s, count: 1)
+        end
+      end
+
+      it 'should not check a box of a collection whose id is another number or not a number' do
+        prices = [mock_model('Price', name: 'Half', id: '2.5'), mock_model('Price', name: 'Other', id: 'abc')]
+        assert_html_has_no_tag(standard_builder.check_box_group(:price, collection: prices), 'input[checked]')
+      end
+
+      describe 'without its to_s text' do
+        it 'should select the option that is the same number' do
+          actual_html = with_formatted_decimal_to_s { standard_builder.select(:price, options: %w[5 2.0]) }
+          assert_html_has_tag(actual_html, 'option[selected]', value: '2.0', count: 1)
+        end
+
+        it 'should check the radio button that is the same number' do
+          actual_html = with_formatted_decimal_to_s { standard_builder.radio_button(:price, value: '2') }
+          assert_html_has_tag(actual_html, 'input[type=radio]', value: '2', checked: 'checked')
+        end
+
+        it 'should check the check box that is the same number' do
+          actual_html = with_formatted_decimal_to_s { standard_builder.check_box(:price, value: '2.00') }
+          assert_html_has_tag(actual_html, 'input[type=checkbox]', value: '2.00', checked: 'checked')
+        end
+
+        it 'should check the radio button of a collection whose id is the same number' do
+          prices = [mock_model('Price', name: 'Two', id: 2), mock_model('Price', name: 'Five', id: 5)]
+          actual_html = with_formatted_decimal_to_s { standard_builder.radio_button_group(:price, collection: prices) }
+          assert_html_has_tag(actual_html, 'input[type=radio][checked]', value: '2', count: 1)
+        end
+      end
+
+      it 'should compare other numbers as text' do
+        @user.stubs(price: 2)
+        assert_html_has_no_tag(standard_builder.select(:price, options: %w[2.0 5]), 'option[selected]')
+      end
+    end
+
+    it 'should write BigDecimal options of a group in plain decimal notation' do
+      actual_html = standard_builder.check_box_group(:price, options: [BigDecimal('1.5')])
+      assert_html_has_tag(actual_html, 'label', content: '1.5', for: 'user_price_1.5')
+    end
+
+    it 'should write BigDecimal values of a collection in plain decimal notation' do
+      prices = [mock_model('Price', name: BigDecimal('1.5'), id: BigDecimal('2'))]
+      actual_html = standard_builder.radio_button_group(:price, collection: prices)
+      assert_html_has_tag(actual_html, 'input[type=radio]', value: '2', id: 'user_price_2')
+      assert_html_has_tag(actual_html, 'label', content: '1.5')
     end
   end
 

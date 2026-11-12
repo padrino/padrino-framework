@@ -1,6 +1,7 @@
 ##
 # This file loads certain extensions required by Padrino.
 #
+require 'padrino-support/colorizer'
 require 'padrino-support/core_ext/string/colorize'
 require 'padrino-support/file_set'
 require 'padrino-support/utils'
@@ -20,15 +21,27 @@ if ENV['AS_VERSION']
   rescue LoadError
     require 'active_support/core_ext/hash/deep_dup' # AS >= 3.1
   end
+  Padrino::Utils.warn_deprecated('Loading ActiveSupport extensions through AS_VERSION', 'Require the ones your app uses before Padrino instead')
 end
 
 # padrino-helpers requires this again once it has loaded I18n.
 require 'padrino-support/locale' if defined?(I18n)
 
 ##
-# Make sure we can always use the class name
-# In reloader for accessing class_name Foo._orig_klass_name
+# Deprecated: Module#_orig_klass_name returns the name Ruby gave a module, even when the module
+# overrides +name+. It is removed in Padrino 1.0.
 #
 class Module
-  alias _orig_klass_name name
+  original_name = instance_method(:name)
+
+  define_method(:_orig_klass_name) do
+    unless Padrino.instance_variable_defined?(:@_orig_klass_name_warned)
+      Padrino.instance_variable_set(:@_orig_klass_name_warned, true)
+      location = caller_locations(1, 1).first
+      Warning.warn 'WARNING! Module#_orig_klass_name is deprecated and will be removed in Padrino 1.0. ' \
+                   'Use Module.instance_method(:name).bind(mod).call (or just name) instead' \
+                   "#{" (called at #{location.path}:#{location.lineno})" if location}.\n"
+    end
+    original_name.bind_call(self)
+  end
 end
