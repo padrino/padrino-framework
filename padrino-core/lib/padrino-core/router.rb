@@ -64,6 +64,10 @@ module Padrino
       @mapping << [host, path, match, app]
     end
 
+    # While a mapped app answers, the statuses on which the router passes its response on to the
+    # next matching app instead of sending it. Set only when such an app exists.
+    CASCADE_STATUSES_KEY = 'padrino.cascade_statuses'.freeze
+
     # The call handler setup to route a request given the mappings specified.
     def call(env)
       began_at = Time.now
@@ -72,20 +76,25 @@ module Padrino
       http_host = env['HTTP_HOST']
       last_result = nil
 
-      @mapping.each do |host, path, match, app|
+      matches = @mapping.filter_map do |host, path, match, app|
         next unless host.nil? || http_host =~ host
         next unless path_info =~ match && (rest = ::Regexp.last_match(1))
         next unless rest.empty? || rest[0] == '/'
 
-        rest = '/' if rest.empty?
+        [path, rest.empty? ? '/' : rest, app]
+      end
 
+      matches.each_with_index do |(path, rest, app), index|
         env['SCRIPT_NAME'] = script_name + path
         env['PATH_INFO'] = rest
-        last_result = app.call(env)
-
-        cascade_setting = app.respond_to?(:cascade) ? app.cascade : true
-        cascade_statuses = cascade_setting.respond_to?(:include?) ? cascade_setting : Mounter::DEFAULT_CASCADE
-        break unless cascade_setting && cascade_statuses.include?(last_result[0])
+        statuses = cascade_statuses(app)
+        begin
+          env[CASCADE_STATUSES_KEY] = statuses if index < matches.size - 1 && statuses.any?
+          last_result = app.call(env)
+        ensure
+          env.delete(CASCADE_STATUSES_KEY)
+        end
+        break unless statuses.include?(last_result[0])
       end
       last_result || begin
         env['SCRIPT_NAME'] = script_name
@@ -93,6 +102,15 @@ module Padrino
         Padrino::Logger::Rack.new(nil, '/').send(:log, env, 404, {}, began_at) if logger.debug?
         [404, { 'content-type' => 'text/plain', 'x-cascade' => 'pass' }, ["Not Found: #{path_info}"]]
       end
+    end
+
+    private
+
+    def cascade_statuses(app)
+      setting = app.respond_to?(:cascade) ? app.cascade : true
+      return [] unless setting
+
+      setting.respond_to?(:include?) ? setting : Mounter::DEFAULT_CASCADE
     end
   end
 end

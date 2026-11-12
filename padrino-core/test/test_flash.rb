@@ -182,4 +182,60 @@ describe Padrino::Flash do
       assert_equal 'Mmm', body
     end
   end
+
+  describe 'padrino application behind a router' do
+    # Two apps mounted at the same path share the session cookie, as in a project.
+    def mock_session_app(&block)
+      mock_app do
+        enable :sessions
+        set :session_secret, 'x' * 64
+        instance_eval(&block)
+      end
+    end
+
+    def mock_first_app(cascade, &block)
+      mock_session_app do
+        set :cascade, cascade
+        get(:lost) { redirect '/show', notice: 'saved' }
+        not_found { "first: #{flash[:notice]}" }
+        instance_eval(&block) if block
+      end
+    end
+
+    def second_app
+      mock_session_app { get(:show) { "second: #{flash[:notice]}" } }
+    end
+
+    def show_twice(*mappings)
+      @app = Padrino::Router.new(*mappings)
+      get '/lost'
+      follow_redirect!
+      shown = [status, body]
+      get '/show'
+      [shown, [status, body]]
+    end
+
+    it 'should leave the flash to the app a not_found page cascades to' do
+      first = mock_first_app([404])
+      assert_equal [[200, 'second: saved'], [200, 'second: ']], show_twice({ path: '/', to: first }, { path: '/', to: second_app })
+    end
+
+    it 'should leave the flash to the app a 405 cascades to' do
+      first = mock_first_app([405]) do
+        post(:show) { 'first' }
+        after { flash[:notice] }
+      end
+      assert_equal [[200, 'second: saved'], [200, 'second: ']], show_twice({ path: '/', to: first }, { path: '/', to: second_app })
+    end
+
+    it 'should use up the flash on a page no later app can replace' do
+      first = mock_first_app([404])
+      assert_equal [[404, 'first: saved'], [404, 'first: ']], show_twice({ path: '/', to: first }, { path: '/other', to: second_app })
+    end
+
+    it 'should use up the flash on a page from an app that does not cascade' do
+      first = mock_first_app([])
+      assert_equal [[404, 'first: saved'], [404, 'first: ']], show_twice({ path: '/', to: first }, { path: '/', to: second_app })
+    end
+  end
 end

@@ -173,6 +173,27 @@ describe 'Router' do
     assert request_case.call.ok?
   end
 
+  it 'should tell only an app whose response may be cascaded the statuses it cascades on' do
+    key = Padrino::Router::CASCADE_STATUSES_KEY
+    seen = []
+    recorder = ->(status) { ->(env) { seen << env[key]; [status, { 'content-type' => 'text/plain' }, ['']] } }
+    failing = ->(env) { seen << env[key]; raise 'broke' }
+    map = Padrino::Router.new(
+      { path: '/bar', to: recorder.call(404) },
+      { path: '/bar', to: recorder.call(200) },
+      { path: '/baz', to: recorder.call(200) }
+    )
+    env = Rack::MockRequest.env_for('/bar')
+    map.call(env)
+    refute env.key?(key)
+
+    map = Padrino::Router.new({ path: '/bar', to: failing }, { path: '/bar', to: recorder.call(200) })
+    env = Rack::MockRequest.env_for('/bar')
+    assert_raises(RuntimeError) { map.call(env) }
+    refute env.key?(key)
+    assert_equal [[404, 405], nil, [404, 405]], seen
+  end
+
   it 'should dispatches hosts correctly' do
     app = lambda do |position, env|
       headers = {
