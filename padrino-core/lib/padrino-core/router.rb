@@ -88,13 +88,15 @@ module Padrino
         env['SCRIPT_NAME'] = script_name + path
         env['PATH_INFO'] = rest
         statuses = cascade_statuses(app)
+        # A router mounted in another keeps the outer router's statuses for an app with no later match.
+        outer = env[CASCADE_STATUSES_KEY]
         begin
-          env[CASCADE_STATUSES_KEY] = statuses if index < matches.size - 1 && statuses.any?
+          env[CASCADE_STATUSES_KEY] = statuses if statuses && index < matches.size - 1
           last_result = app.call(env)
         ensure
-          env.delete(CASCADE_STATUSES_KEY)
+          outer ? env[CASCADE_STATUSES_KEY] = outer : env.delete(CASCADE_STATUSES_KEY)
         end
-        break unless statuses.include?(last_result[0])
+        break unless statuses&.include?(last_result[0])
       end
       last_result || begin
         env['SCRIPT_NAME'] = script_name
@@ -108,7 +110,7 @@ module Padrino
 
     def cascade_statuses(app)
       setting = app.respond_to?(:cascade) ? app.cascade : true
-      return [] unless setting
+      return unless setting
 
       setting.respond_to?(:include?) ? setting : Mounter::DEFAULT_CASCADE
     end
