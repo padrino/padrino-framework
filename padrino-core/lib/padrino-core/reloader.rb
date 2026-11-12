@@ -358,21 +358,27 @@ module Padrino
     # So is a constant with a method that has no Ruby source (Struct and
     # Data members, an alias of a built-in method, a C or Java extension),
     # which is internal only when its name was defined by Ruby code in a
-    # project file outside the excluded folders.
+    # tracked file.
     #
     def external_constant?(const)
       sources = object_sources(const)
       if sources.delete?(nil)
         file, line = constant_location(const)
         # C extensions define their constants at line 0 of the library file.
-        return line.to_i < 1 || feature_excluded?(file)
+        return line.to_i < 1 || untracked_source?(file)
       end
       sources = [constant_source(const)].compact if sources.empty?
       # consider methodless constants of unknown origin not external
       return false if sources.empty?
-      sources.all? do |source|
-        !path_inside?(source, Padrino.root) || (path_excluded?(source) && $LOADED_FEATURES.include?(source))
-      end
+      sources.all? { |source| untracked_source?(source) }
+    end
+
+    ##
+    # Tells if a file holds code the reloader doesn't track: it's outside Padrino.root,
+    # or in an excluded path and was required (a file run with +load+ runs again).
+    #
+    def untracked_source?(file)
+      !path_inside?(file, Padrino.root) || (path_excluded?(file) && $LOADED_FEATURES.include?(file))
     end
 
     ##

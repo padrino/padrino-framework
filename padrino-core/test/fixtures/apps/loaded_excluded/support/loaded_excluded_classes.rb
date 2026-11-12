@@ -9,3 +9,7 @@ class LoadedExcludedPoint < Struct.new(:x, :y)
     x + y
   end
 end
+
+class LoadedExcludedLabel
+  alias label inspect
+end

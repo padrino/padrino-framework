@@ -187,6 +187,7 @@ describe 'SystemReloader' do
       get '/'
       thing = LoadedExcludedThing
       point = LoadedExcludedPoint
+      label = LoadedExcludedLabel
       # The app file runs the excluded file again with load, so a kept class would raise superclass mismatch.
       FileUtils.touch File.expand_path("#{__dir__}/fixtures/apps/loaded_excluded/helpers/loaded_excluded_helpers.rb")
       Padrino.reload!
@@ -194,6 +195,7 @@ describe 'SystemReloader' do
       assert_same LoadedExcludedBase, LoadedExcludedThing.superclass
       refute_same point, LoadedExcludedPoint, 'LoadedExcludedPoint was not reloaded'
       assert_equal 3, LoadedExcludedPoint.new(1, 2).sum
+      refute_same label, LoadedExcludedLabel, 'LoadedExcludedLabel was not reloaded'
     ensure
       Padrino::Reloader.exclude.delete(support_dir)
     end
