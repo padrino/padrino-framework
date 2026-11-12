@@ -257,4 +257,128 @@ describe 'SimpleReloader' do
       Object.send(:remove_const, :ReloaderNamespace)
     end
   end
+
+  describe 'for classes with methods not written in Ruby' do
+    before do
+      @dir = Dir.mktmpdir('native', Padrino.root)
+      @constants = []
+    end
+
+    after do
+      Dir.glob("#{@dir}/**/*.rb").each do |file|
+        Padrino::Reloader::Storage.remove(file)
+        Padrino::Reloader::MTIMES.delete(file)
+        $LOADED_FEATURES.delete(file)
+      end
+      @constants.each { |name| Object.send(:remove_const, name) if Object.const_defined?(name, false) }
+      FileUtils.rm_rf(@dir)
+    end
+
+    def write(path, source)
+      file = "#{@dir}/#{path}"
+      FileUtils.mkdir_p(File.dirname(file))
+      File.write(file, source)
+      file
+    end
+
+    it 'should unload the Struct, Data and aliasing classes of a project file it reloads' do
+      @constants.concat(%i[ReloaderPoint ReloaderShape ReloaderLabeled])
+      file = write('models/native.rb', <<-RUBY)
+        ReloaderPoint = Struct.new(:x, :y) do
+          def sum
+            x + y
+          end
+        end
+        ReloaderShape = Data.define(:width) if #{RUBY_VERSION >= '3.2'}
+        class ReloaderLabeled
+          alias label inspect
+          def removed; end
+        end
+      RUBY
+      Padrino::Reloader.safe_load(file)
+      assert_equal 3, ReloaderPoint.new(1, 2).sum
+
+      File.write(file, "class ReloaderLabeled\n  alias label inspect\nend\n")
+      Padrino::Reloader.safe_load(file, force: true)
+      refute Object.const_defined?(:ReloaderPoint, false), 'ReloaderPoint was not removed'
+      refute Object.const_defined?(:ReloaderShape, false), 'ReloaderShape was not removed'
+      refute ReloaderLabeled.method_defined?(:removed), 'ReloaderLabeled was not reloaded'
+    end
+
+    it 'should keep the Struct and aliasing classes of an excluded folder that a reloaded project file requires' do
+      @constants.concat(%i[ReloaderSettings ReloaderSettingsLabel])
+      excluded = write('excluded/settings.rb', <<-RUBY)
+        ReloaderSettings = Struct.new(:name)
+        class ReloaderSettingsLabel
+          alias label inspect
+        end
+      RUBY
+      Padrino::Reloader.exclude << File.dirname(excluded)
+      file = write('models/uses_settings.rb', "require #{excluded.inspect}\n")
+      Padrino::Reloader.safe_load(file)
+      settings = ReloaderSettings
+      label = ReloaderSettingsLabel
+
+      Padrino::Reloader.safe_load(file, force: true)
+      assert_same settings, Object.const_get(:ReloaderSettings, false)
+      assert_same label, Object.const_get(:ReloaderSettingsLabel, false)
+    ensure
+      Padrino::Reloader.exclude.delete(File.dirname(excluded)) if excluded
+    end
+
+    it 'should keep native classes that are defined outside the project, or by a C extension, and reopened in it' do
+      @constants.concat(%i[ReloaderGemStruct ReloaderExtStruct])
+      require 'strscan'
+      Dir.mktmpdir do |gem_dir|
+        File.write("#{gem_dir}/gem_struct.rb", "ReloaderGemStruct = Struct.new(:x)\n")
+        require "#{gem_dir}/gem_struct.rb"
+        $LOADED_FEATURES.delete("#{gem_dir}/gem_struct.rb")
+      end
+      # A C extension installed in the project (in vendor/bundle, say) defines its classes at line 0 of the library.
+      TOPLEVEL_BINDING.eval('ReloaderExtStruct = Struct.new(:x)', "#{@dir}/vendor/ext.so", 0)
+      load write('models/reopen.rb', <<-RUBY)
+        class ReloaderGemStruct
+          def double
+            x * 2
+          end
+        end
+        class StringScanner
+          def reloader_reopened; end
+        end
+      RUBY
+
+      [ReloaderGemStruct, ReloaderExtStruct, StringScanner].each do |klass|
+        Padrino::Reloader.remove_constant(klass)
+        assert_same klass, Object.const_get(klass.name, false), "#{klass} was removed"
+      end
+    ensure
+      StringScanner.send(:remove_method, :reloader_reopened) if StringScanner.method_defined?(:reloader_reopened, false)
+    end
+
+    it 'should reset a project concern with methods not written in Ruby, and only that one' do
+      @constants.concat(%i[ReloaderNativeConcern ReloaderGemConcern])
+      source = "module %s\n  define_method(:label, Kernel.instance_method(:inspect))\nend\n"
+      load write('models/concern.rb', format(source, 'ReloaderNativeConcern'))
+      Dir.mktmpdir do |gem_dir|
+        File.write("#{gem_dir}/concern.rb", format(source, 'ReloaderGemConcern'))
+        load "#{gem_dir}/concern.rb"
+      end
+
+      [ReloaderNativeConcern, ReloaderGemConcern].each do |concern|
+        concern.instance_variable_set(:@_included_block, proc {})
+        Padrino::Reloader.reset_concern(concern)
+      end
+      refute ReloaderNativeConcern.instance_variable_defined?(:@_included_block), 'ReloaderNativeConcern was not reset'
+      assert ReloaderGemConcern.instance_variable_defined?(:@_included_block), 'ReloaderGemConcern was reset'
+    end
+
+    if RUBY_ENGINE == 'jruby'
+      it 'should keep Java classes' do
+        java_class = Java::JavaUtil::ArrayList
+        assert Padrino::Reloader.send(:external_constant?, java_class)
+        Padrino::Reloader.remove_constant(java_class)
+        assert_same java_class, Java::JavaUtil::ArrayList
+      end
+    end
+  end
 end
