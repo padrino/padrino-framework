@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'tmpdir'
 
 describe 'Padrino::Cache - Moneta store' do
   def setup
@@ -49,5 +50,50 @@ describe 'Padrino::Cache - Moneta store' do
     assert_equal 'test', Padrino.cache[@test_key]
     Padrino.cache.delete(@test_key)
     assert_nil Padrino.cache[@test_key]
+  end
+end
+
+describe 'Padrino::Cache - thread safety' do
+  # Holds the store's lock (if it has one) inside each_key while another thread writes,
+  # and returns whether that write had to wait for the lock.
+  def write_waits_for_lock?(store)
+    store.clear
+    store['held'] = 'x'
+    inside = Queue.new
+    release = Queue.new
+    holder = Thread.new { store.each_key { inside << true; release.pop } }
+    inside.pop
+    writer = Thread.new { store['other'] = 'y' }
+    waited = writer.join(0.2).nil?
+    release << true
+    [holder, writer].each(&:join)
+    assert_equal 'y', store['other']
+    waited
+  ensure
+    release&.push(true)
+  end
+
+  it 'locks the default store' do
+    assert write_waits_for_lock?(Padrino.cache)
+  ensure
+    Padrino.cache.clear
+  end
+
+  it 'locks the in-memory stores' do
+    assert write_waits_for_lock?(Padrino::Cache.new(:LRUHash))
+    assert write_waits_for_lock?(Padrino::Cache.new(:Memory))
+  end
+
+  it 'keeps an explicit threadsafe option' do
+    refute write_waits_for_lock?(Padrino::Cache.new(:LRUHash, threadsafe: false))
+    Dir.mktmpdir do |dir|
+      assert write_waits_for_lock?(Padrino::Cache.new(:File, dir: dir, threadsafe: true))
+    end
+  end
+
+  it 'leaves other stores unlocked' do
+    Dir.mktmpdir do |dir|
+      refute write_waits_for_lock?(Padrino::Cache.new(:File, dir: dir))
+    end
   end
 end
