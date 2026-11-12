@@ -1,5 +1,6 @@
 require_relative 'helper'
 require_relative 'fixtures/markup_app/app'
+require 'bigdecimal'
 
 describe 'NumberHelpers' do
   include Padrino::Helpers::NumberHelpers
@@ -69,6 +70,12 @@ describe 'NumberHelpers' do
       assert_nil number_with_delimiter(nil)
     end
 
+    it 'should display number_with_delimiter for a BigDecimal' do
+      assert_equal '1,234,567.5', number_with_delimiter(BigDecimal('1234567.5'))
+      assert_equal '-0.0000001', number_with_delimiter(BigDecimal('-0.0000001'))
+      assert_equal '0.1e1000001', number_with_delimiter(BigDecimal('1e1000000'))
+    end
+
     it 'should display number_with_delimiter in linear time' do
       started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       actual = number_with_delimiter('1' * 100_000)
@@ -95,6 +102,74 @@ describe 'NumberHelpers' do
       # Return non-numeric params unchanged.
       assert_equal 'x', number_with_precision('x')
       assert_nil number_with_precision(nil)
+    end
+
+    it 'should round a BigDecimal exactly in number_with_precision' do
+      assert_equal '1.01',                  number_with_precision(BigDecimal('1.005'), precision: 2)
+      assert_equal '-1.01',                 number_with_precision(BigDecimal('-1.005'), precision: 2)
+      assert_equal '12345678901234567.89',  number_with_precision(BigDecimal('12345678901234567.89'), precision: 2)
+      assert_equal '0.30000000000000000000', number_with_precision(BigDecimal('0.3'), precision: 20)
+      assert_equal '13.00000',              number_with_precision(BigDecimal('13'), precision: 5)
+      assert_equal '3',                     number_with_precision(BigDecimal('2.5'), precision: 0)
+      assert_equal '-3',                    number_with_precision(BigDecimal('-2.5'), precision: 0)
+      assert_equal '0.00',                  number_with_precision(BigDecimal('-0.001'), precision: 2)
+      assert_equal '0.00',                  number_with_precision(BigDecimal('-0'), precision: 2)
+      assert_equal '12.345.678.901.234.567,89',
+                   number_with_precision(BigDecimal('12345678901234567.885'), precision: 2, separator: ',', delimiter: '.')
+    end
+
+    it 'should round a BigDecimal exactly in number_to_currency and number_to_percentage' do
+      assert_equal '$1.01',                      number_to_currency(BigDecimal('1.005'))
+      assert_equal '$12,345,678,901,234,567.89', number_to_currency(BigDecimal('12345678901234567.89'))
+      assert_equal '4.001%',                     number_to_percentage(BigDecimal('4.0005'))
+    end
+
+    it 'should keep returning a BigDecimal it can not format unchanged' do
+      [BigDecimal('NaN'), BigDecimal('Infinity'), BigDecimal('-Infinity'), BigDecimal('1e400')].each do |number|
+        assert_same number, number_with_precision(number, precision: 2)
+        assert_same number, number_to_currency(number)
+      end
+      [-1, 1.5].each do |precision|
+        number = BigDecimal('12.345')
+        assert_same number, number_with_precision(number, precision: precision)
+      end
+    end
+
+    it 'should round a BigDecimal half away from zero whatever the BigDecimal rounding mode' do
+      mode = BigDecimal.mode(BigDecimal::ROUND_MODE)
+      BigDecimal.mode(BigDecimal::ROUND_MODE, BigDecimal::ROUND_HALF_EVEN)
+      assert_equal '1.01', number_with_precision(BigDecimal('1.005'), precision: 2)
+      assert_equal '3',    number_with_precision(BigDecimal('2.5'), precision: 0)
+    ensure
+      BigDecimal.mode(BigDecimal::ROUND_MODE, mode)
+    end
+
+    it 'should round a BigDecimal exactly whatever the BigDecimal limit' do
+      limit = BigDecimal.limit(3)
+      assert_equal '12345.67', number_with_precision(BigDecimal('12345.67'), precision: 2)
+      assert_equal '$12,345.67', number_to_currency(BigDecimal('12345.67'))
+      assert_equal '-12345.68', number_with_precision(BigDecimal('-12345.678'), precision: 2)
+      assert_equal 3, BigDecimal.limit
+    ensure
+      BigDecimal.limit(limit)
+    end
+
+    it 'should round a BigDecimal with a large negative exponent to zero' do
+      assert_equal '0.00', number_with_precision(BigDecimal('1e-10000000'), precision: 2)
+      assert_equal '$0.00', number_to_currency(BigDecimal('1e-10000000'))
+      assert_equal '0.01', number_with_precision(BigDecimal('5e-3'), precision: 2)
+      assert_equal '0.00', number_with_precision(BigDecimal('4.9e-3'), precision: 2)
+      assert_equal '-0.01', number_with_precision(BigDecimal('-5e-3'), precision: 2)
+    end
+
+    it 'should format a BigDecimal with an exponent up to 309 and return a larger one as given' do
+      assert_equal "1#{'0' * 308}.00", number_with_precision(BigDecimal('1e308'), precision: 2)
+      large = BigDecimal('1e309')
+      assert_same large, number_with_precision(large, precision: 2)
+    end
+
+    it 'should write a rounded BigDecimal in the encoding a Float gets' do
+      assert_equal number_with_precision(1.5, precision: 2).encoding, number_with_precision(BigDecimal('1.5'), precision: 2).encoding
     end
 
     it 'should display number_with_precision with custom delimiter and separator' do

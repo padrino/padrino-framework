@@ -1,0 +1,2 @@
+class DbadminChild < DbadminParent
+end
