@@ -34,6 +34,21 @@ describe 'ComponentGenerator' do
       assert_equal 'activerecord', components_chosen[:orm]
     end
 
+    it 'should warn when adding tailwind on Ruby 2.7' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Padrino::Generators::Component.any_instance.stubs(:running_ruby_version).returns('2.7.8')
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_includes out, 'The tailwind stylesheet uses the tailwindcss-ruby gem, which needs Ruby 3.0 or later; bundle install will fail on Ruby 2.7.8.'
+      assert_match_in_file(/gem 'tailwindcss-ruby', '~> 4.0'$/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should not warn when adding tailwind on Ruby 3.0' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Padrino::Generators::Component.any_instance.stubs(:running_ruby_version).returns('3.0.0')
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      refute_match(/needs Ruby/, out)
+    end
+
     it 'should move existing public styles into the tailwind source' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "body { color: red; }\n")
@@ -188,6 +203,14 @@ describe 'ComponentGenerator' do
       2.times { capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") } }
       assert_equal "web: bundle exec puma\ncss: bundle exec rake tailwind:watch\n", File.read(procfile)
       assert_equal ".env\npublic/stylesheets/application.css\n", File.read(gitignore)
+    end
+
+    it 'should not repeat a tailwind line that ends a file without a trailing newline' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, ".env\npublic/stylesheets/application.css")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal ".env\npublic/stylesheets/application.css", File.read(gitignore)
     end
 
     it 'should keep a css process already in Procfile.dev' do
@@ -817,6 +840,56 @@ describe 'ComponentGenerator' do
           after = Dir["#{project}/{test,spec,features}/**/*"].select { |path| File.file?(path) }.to_h { |path| [path, File.read(path)] }
           assert_equal before, after, test
         end
+      end
+
+      def switch_test_and_mock(answers, from, to, test: 'rspec')
+        project = "#{@apptmp}/project_#{from}_#{to}_#{test}_#{answers.join('_')}"
+        capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", '--test=minitest', "--mock=#{from}", '--script=none') }
+        helper = "#{project}/test/test_config.rb"
+        File.write(helper, "#{File.read(helper)}# edited by the project\n")
+        Readline.stubs(:readline).returns(*answers)
+        out, = capture_io { generate_with_parts(:component, "--test=#{test}", "--mock=#{to}", "-r=#{project}", apps: 'app') }
+        [project, out]
+      end
+
+      it 'should set up the mock for the kept test component when the test switch is declined' do
+        [%w[mocha rr], %w[rr mocha]].each do |from, to|
+          project, = switch_test_and_mock(%w[no yes], from, to)
+          assert_equal 'minitest', YAML.load_file("#{project}/.components")[:test]
+          assert_mock_setup("#{project}/test/test_config.rb", 'minitest', to)
+          assert_no_file_exists("#{project}/spec/spec_helper.rb")
+          assert_no_match_in_file(/gem 'rspec'/, "#{project}/Gemfile")
+        end
+      end
+
+      it 'should set up the mock for the new test component when both switches are accepted' do
+        [%w[mocha rr], %w[rr mocha]].each do |from, to|
+          project, = switch_test_and_mock(%w[yes yes], from, to)
+          assert_equal ['rspec', to], YAML.load_file("#{project}/.components").values_at(:test, :mock)
+          lines = File.read("#{project}/spec/spec_helper.rb").lines.map(&:chomp)
+          mock_setup[to]['rspec'].each { |line| assert_equal 1, lines.count(line), line }
+          mock_setup[from]['rspec'].each { |line| assert_equal 0, lines.count(line), line }
+        end
+      end
+
+      it 'should set up the mock only for minitest when a switch to testunit, which shares its helper, is declined' do
+        [%w[mocha rr], %w[rr mocha], %w[mocha mocha]].each do |from, to|
+          project, = switch_test_and_mock(%w[no yes], from, to, test: 'testunit')
+          helper = "#{project}/test/test_config.rb"
+          assert_equal 'minitest', YAML.load_file("#{project}/.components")[:test]
+          assert_mock_setup(helper, 'minitest', to)
+          lines = File.read(helper).lines.map(&:strip)
+          mock_setup.each_value { |setup| setup['testunit'].each { |line| assert_equal 0, lines.count(line), "#{from} to #{to}: #{line}" } }
+          assert_no_match_in_file(/test-unit/, "#{project}/Gemfile")
+        end
+      end
+
+      it 'should set up the mock for the test component chosen at the prompt for a mistyped one' do
+        project, out = switch_test_and_mock(%w[rspec yes yes], 'mocha', 'rr', test: 'rspecc')
+        assert_match(/Option for --test 'rspecc' is not available/, out)
+        assert_equal %w[rspec rr], YAML.load_file("#{project}/.components").values_at(:test, :mock)
+        lines = File.read("#{project}/spec/spec_helper.rb").lines.map(&:chomp)
+        mock_setup['rr']['rspec'].each { |line| assert_equal 1, lines.count(line), line }
       end
     end
 

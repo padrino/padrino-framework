@@ -397,7 +397,7 @@ module Padrino
       #   text_area_tag :username, class: 'long', value: 'Demo?'
       #
       def text_area_tag(name, options = {})
-        inner_html = TagHelpers::NEWLINE + options.delete(:value).to_s
+        inner_html = TagHelpers::NEWLINE + TagHelpers.value_to_s(options.delete(:value))
         content_tag(:textarea, inner_html, { name: name }.update(options))
       end
 

@@ -8,7 +8,6 @@ module Padrino
       return if base.instance_variable_defined?(:@_load_lock)
       base.instance_variable_set(:@_load_lock, Monitor.new)
       base.instance_variable_set(:@_loaded, false)
-      base.instance_variable_set(:@_loading_thread, nil)
     end
 
     ##
@@ -63,18 +62,13 @@ module Padrino
     #   returns true if Padrino is not already bootstraped otherwise else.
     #
     def load!
-      return false if @_loaded || @_loading_thread == Thread.current
-      begin
-        @_load_lock.mon_enter
-      rescue ThreadError
-        # Another fiber of this thread holds the lock: it is loading. JRuby gives each fiber
-        # its own Thread.current, so the check above doesn't catch that case there.
-        raise unless @_loading_thread
-        return false
-      end
+      # Marked with a thread variable, which every fiber of the thread sees: on JRuby each fiber
+      # has its own Thread.current, and on JRuby 9.4 entering the held lock again blocks.
+      return false if @_loaded || Thread.current.thread_variable_get(:padrino_loading)
+      @_load_lock.mon_enter
       begin
         return false if @_loaded
-        @_loading_thread = Thread.current
+        Thread.current.thread_variable_set(:padrino_loading, true)
         began_at = Time.now
         @_called_from = first_caller
         Padrino.logger
@@ -86,7 +80,7 @@ module Padrino
         precompile_all_routes!
         @_loaded = true
       ensure
-        @_loading_thread = nil
+        Thread.current.thread_variable_set(:padrino_loading, nil)
         @_load_lock.mon_exit
       end
     end
@@ -191,7 +185,7 @@ module Padrino
           files.delete(file)
           loaded = true
         rescue NameError, LoadError => error
-          raise if Reloader.exclude.any? { |path| file.start_with?(path) } || options[:cyclic] == false
+          raise if Reloader.send(:path_excluded?, file) || options[:cyclic] == false
           logger.devel "Cyclic dependency reload for #{error.class}: #{error.message}"
         rescue Exception => fatal
           break

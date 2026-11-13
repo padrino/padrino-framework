@@ -175,7 +175,7 @@ module Padrino
       #   end
       #
       #   content_type :js
-      #   # => set the response with 'application/javascript' Content-Type
+      #   # => set the response with 'text/javascript' Content-Type
       #   content_type 'text/html'
       #
       #   # => set directly the Content-Type to 'text/html'
