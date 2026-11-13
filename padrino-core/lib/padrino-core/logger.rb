@@ -296,11 +296,11 @@ module Padrino
       # @see Padrino::Logging::ColorizedLogger::ColoredLevels
       #
       def colorize(string, *colors)
-        string.colorize(color: colors[0], mode: colors[1])
+        Padrino::Colorizer.colorize(string, colors[0], colors[1])
       end
 
       def stylized_level(level)
-        colors = ColoredLevels[level].map { |color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
+        colors = ColoredLevels[level].map { |color| Padrino::Colorizer::MODES[color] || Padrino::Colorizer::COLORS[color] }
         [Kernel.format("\e[%d;%dm", *colors), super, "\e[0m"].join
       end
     end
@@ -358,8 +358,13 @@ module Padrino
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
+    # Built when this file loads, so threads that log for the first time at once build each
+    # class's mutex one at a time and share it.
+    MUTEX_INIT = Mutex.new # @private
+    private_constant :MUTEX_INIT
+
     def self.mutex
-      @_mutex ||= Mutex.new
+      (@_mutex if defined?(@_mutex)) || MUTEX_INIT.synchronize { @_mutex ||= Mutex.new }
     end
 
     def self.logger

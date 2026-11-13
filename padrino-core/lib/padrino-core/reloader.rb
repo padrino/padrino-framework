@@ -142,13 +142,14 @@ module Padrino
     # Removes the specified class and constant.
     #
     def remove_constant(const)
+      name = constant_name(const) || return
       return if constant_excluded?(const)
-      base, _, object = const.to_s.rpartition('::')
+      base, _, object = name.rpartition('::')
       base = base.empty? ? Object : Inflections.constantize(base)
       return if base.autoload?(object, false) || !base.const_defined?(object, false)
       return unless base.const_get(object, false).equal?(const)
       base.send :remove_const, object
-      logger.devel "Removed constant #{const} from #{base}"
+      logger.devel "Removed constant #{name} from #{constant_name(base)}"
     rescue NameError
       # no const to remove
     end
@@ -162,7 +163,7 @@ module Padrino
       %i[@_included_block @_prepended_block].each do |ivar|
         concern.remove_instance_variable(ivar) if concern.instance_variable_defined?(ivar)
       end
-      logger.devel "Reset concern #{concern}"
+      logger.devel "Reset concern #{constant_name(concern)}"
     end
 
     ##
@@ -291,7 +292,7 @@ module Padrino
     def rotation
       files_for_rotation.each do |file|
         file = File.expand_path(file)
-        next if Reloader.exclude.any? { |base| file.start_with?(base) } || !File.file?(file)
+        next if path_excluded?(file) || !File.file?(file)
         yield file
       end
       nil
@@ -317,7 +318,21 @@ module Padrino
     # Tells if a feature should be excluded from Reloader tracking.
     #
     def feature_excluded?(file)
-      !file.start_with?(Padrino.root) || exclude.any? { |excluded_path| file.start_with?(excluded_path) }
+      !path_inside?(file, Padrino.root) || path_excluded?(file)
+    end
+
+    ##
+    # Tells if the file is in one of the excluded paths, or is one of them.
+    #
+    def path_excluded?(file)
+      exclude.any? { |excluded_path| path_inside?(file, excluded_path) }
+    end
+
+    ##
+    # Tells if the file is the path itself or inside it, so /app-gem isn't inside /app.
+    #
+    def path_inside?(file, path)
+      file == path || file.start_with?(File.join(path, ''))
     end
 
     ##
@@ -333,34 +348,61 @@ module Padrino
     end
 
     ##
-    # Tells if a constant is defined only outside of Padrino project path.
-    # If a constant has any methods defined inside of the project path it's
+    # Tells if a constant is defined only outside of the project files the
+    # reloader tracks: outside Padrino.root, or in an excluded file that was
+    # required (a file run with +load+ runs again, so its classes are removed).
+    # If a constant has any methods defined in a tracked file it's
     # considered internal and will be included in further testing.
     # A constant without methods (an exception class, say) is judged by
     # where its name was defined instead.
+    # So is a constant with a method that has no Ruby source (Struct and
+    # Data members, an alias of a built-in method, a C or Java extension),
+    # which is internal only when its name was defined by Ruby code in a
+    # tracked file.
     #
     def external_constant?(const)
       sources = object_sources(const)
+      if sources.delete?(nil)
+        file, line = constant_location(const)
+        # C extensions define their constants at line 0 of the library file.
+        return line.to_i < 1 || untracked_source?(file)
+      end
       sources = [constant_source(const)].compact if sources.empty?
       # consider methodless constants of unknown origin not external
       return false if sources.empty?
-      sources.none? { |source| source.start_with?(Padrino.root) }
+      sources.all? { |source| untracked_source?(source) }
+    end
+
+    ##
+    # Tells if a file holds code the reloader doesn't track: it's outside Padrino.root,
+    # or in an excluded path and was required (a file run with +load+ runs again).
+    #
+    def untracked_source?(file)
+      !path_inside?(file, Padrino.root) || (path_excluded?(file) && $LOADED_FEATURES.include?(file))
     end
 
     ##
     # Returns the file in which the constant's name was defined, if known.
     #
     def constant_source(const)
+      constant_location(const)&.first
+    end
+
+    ##
+    # Returns the file and line where the constant's name was defined, if known.
+    #
+    def constant_location(const)
       base, _, object = constant_name(const).to_s.rpartition('::')
       return if object.empty?
       base = base.empty? ? Object : Inflections.constantize(base)
-      base.const_source_location(object)&.first
-    rescue NameError
+      base.const_source_location(object)
+    rescue NameError, ArgumentError # JRuby's Java packages raise ArgumentError
       nil
     end
 
     ##
-    # Gets all the sources in which target class is defined.
+    # Gets all the sources in which target class is defined, with nil for
+    # a method that has no Ruby source.
     #
     # Note: Method#source_location is for Ruby 1.9.3+ only.
     #
@@ -370,14 +412,14 @@ module Padrino
         next unless method_name.is_a?(Symbol)
 
         method_object = target.method(method_name)
-        sources << method_object.source_location.first if method_object.owner == target.singleton_class
+        sources << method_object.source_location&.first if method_object.owner == target.singleton_class
       end
 
       target.instance_methods.each do |method_name|
         next unless method_name.is_a?(Symbol)
 
         method_object = target.instance_method(method_name)
-        sources << method_object.source_location.first if method_object.owner == target
+        sources << method_object.source_location&.first if method_object.owner == target
       end
       sources
     end
@@ -395,7 +437,7 @@ module Padrino
     #
     def reloadable_apps
       Padrino.mounted_apps.select do |app|
-        next unless app.app_file.start_with?(Padrino.root)
+        next unless path_inside?(app.app_file, Padrino.root)
         app.app_obj.respond_to?(:reload) && app.app_obj.reload?
       end
     end
@@ -410,10 +452,12 @@ module Padrino
       $-v = verbosity_level
     end
 
+    # Module#name as Ruby defines it, so a class that overrides +name+ is still found by its constant.
+    MODULE_NAME = ::Module.instance_method(:name)
+    private_constant :MODULE_NAME
+
     def constant_name(constant)
-      constant._orig_klass_name
-    rescue NoMethodError
-      constant.name
+      MODULE_NAME.bind_call(constant)
     end
   end
 end

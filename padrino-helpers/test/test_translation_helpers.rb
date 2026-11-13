@@ -57,6 +57,11 @@ describe 'TranslationHelpers' do
       it 'should accept an options hash' do
         assert_equal '05.03', send(name, @date, { format: :short })
       end
+
+      it 'should use the date and time formats padrino-support provides' do
+        assert_equal 'March 05, 2024', send(name, @date, locale: :en, format: :long)
+        assert_equal 'Di, 05. Mär 2024 14:07:09 +0000', send(name, @time, locale: :de)
+      end
     end
   end
 end

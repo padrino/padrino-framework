@@ -12,8 +12,7 @@ end
 def setup_mock
   require_dependencies 'mocha', group: 'test', require: false
 
-  test = options[:test].to_s
-  test = fetch_component_choice(:test).to_s if test.empty?
+  test = applied_component_choice(:test)
   if (setup = mock_setup_lines(test))
     inject_into_file setup[:path], setup[:text], after: setup[:after]
     # After the insert, so a helper Thor fails to read keeps the previous mock.

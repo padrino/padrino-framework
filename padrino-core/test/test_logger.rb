@@ -1,6 +1,7 @@
 # coding:utf-8
 require_relative 'helper'
 require 'logger'
+require 'open3'
 require 'tempfile'
 
 describe 'PadrinoLogger' do
@@ -100,6 +101,45 @@ describe 'PadrinoLogger' do
       assert_match(/logged anyways/, @log.string)
       @logger.write 'log via alias'
       assert_match(/log via alias/, @log.string)
+    end
+
+    it 'should give threads that log for the first time the same mutex' do
+      logger_class = Class.new(Padrino::Logger)
+      release = Queue.new
+      new_mutex = Mutex.method(:new)
+      # Holds every thread that builds a Mutex until both threads have started, so that
+      # each one would build its own if the mutex were built on first use.
+      held_new = lambda do |*_args|
+        release.pop
+        new_mutex.call
+      end
+      mutexes = Mutex.stub(:new, held_new) do
+        threads = Array.new(2) { Thread.new { logger_class.mutex } }
+        Thread.pass until threads.all?(&:stop?)
+        threads.size.times { release << true }
+        threads.map(&:value)
+      end
+      assert_same mutexes[0], mutexes[1]
+      assert_instance_of Thread::Mutex, mutexes[0]
+    end
+
+    it 'should give a logger subclass its own mutex when its parent overrides inherited' do
+      parent = Class.new(Padrino::Logger) { def self.inherited(_subclass); end }
+      child = Class.new(parent)
+      assert_instance_of Thread::Mutex, child.mutex
+      refute_same parent.mutex, child.mutex
+      stream = StringIO.new
+      child.new(log_level: :debug, stream: stream, colorize_logging: false) << 'logged'
+      assert_match(/logged/, stream.string)
+    end
+
+    it 'should not warn when a logger class builds its mutex' do
+      verbose = $VERBOSE
+      $VERBOSE = true
+      _, err = capture_io { Class.new(Padrino::Logger).mutex }
+      assert_empty err
+    ensure
+      $VERBOSE = verbose
     end
 
     it 'should not warn about an empty datetime format' do
@@ -433,6 +473,26 @@ describe 'options :colorize_logging' do
       access_to_mock_app
       assert_match(/200 OK/, Padrino.logger.log.string)
     end
+  end
+
+  it 'should colorize without the deprecated String#colorize' do
+    # A new process, since the deprecation warns only once per process.
+    script = <<~'RUBY'
+      require 'padrino-core'
+      log = StringIO.new
+      Padrino.logger = Padrino::Logger.new(log_level: :devel, stream: log, colorize_logging: true)
+      %i[fatal error warn info debug devel].each { |level| Padrino.logger.public_send(level, level) }
+      Padrino.logger.bench 'GET', Time.now, '/bench'
+      Padrino.logger.exception RuntimeError.new('boom')
+      app = Sinatra.new(Padrino::Application) { get('/') { 'Foo' } }
+      Rack::MockRequest.new(Padrino::Logger::Rack.new(app, '/')).get('/')
+      print log.string.include?("\e[1;31m  FATAL\e[0m") && log.string.include?("\e[1;9m200\e[0m OK")
+    RUBY
+    env = { 'RACK_ENV' => 'test', 'BUNDLE_GEMFILE' => File.expand_path('../../Gemfile', __dir__) }
+    out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-I', File.expand_path('../lib', __dir__), '-e', script)
+    assert status.success?, err
+    assert_equal 'true', out.lines.last
+    refute_includes err, 'deprecated'
   end
 end
 
