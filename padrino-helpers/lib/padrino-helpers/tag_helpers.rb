@@ -94,6 +94,63 @@ module Padrino
       NEWLINE = "\n".html_safe.freeze
 
       ##
+      # The largest exponent, either way, of a BigDecimal written in plain decimal
+      # notation; one beyond it is written in scientific notation ("0.1e1001"),
+      # which writes the exponent as digits instead of writing out every zero.
+      #
+      PLAIN_DECIMAL_EXPONENT_LIMIT = 100
+      private_constant :PLAIN_DECIMAL_EXPONENT_LIMIT
+
+      ##
+      # Whether the value is a BigDecimal.
+      #
+      # @api private
+      def self.decimal?(value)
+        defined?(::BigDecimal) && value.is_a?(::BigDecimal)
+      end
+
+      ##
+      # Returns the text a value is written as in HTML: a finite BigDecimal in
+      # its shortest exact plain decimal form (BigDecimal#to_s gives "0.999e1"
+      # for 9.99, and to_s('F') gives "10.0" for 10), so it matches the text a
+      # form sends back; anything else as its +to_s+.
+      #
+      # @example
+      #   TagHelpers.value_to_s(BigDecimal('9.99')) # => "9.99"
+      #   TagHelpers.value_to_s(BigDecimal('10'))   # => "10"
+      #   TagHelpers.value_to_s(:price)             # => "price"
+      #
+      # @api private
+      def self.value_to_s(value)
+        return value.to_s unless decimal?(value)
+
+        value.finite? && value.exponent.abs <= PLAIN_DECIMAL_EXPONENT_LIMIT ? value.to_s('F').delete_suffix('.0') : value.to_s('E')
+      end
+
+      ##
+      # Whether two values are equal numbers, when either is a BigDecimal: the
+      # other is read as a decimal from its text, so BigDecimal('10') equals
+      # "10", "10.0", "10.00", 10 and 10.0. False for anything else.
+      #
+      # @api private
+      def self.decimal_equal?(value, other)
+        return false unless decimal?(value) || decimal?(other)
+
+        value, other = [value, other].map { |item| decimal?(item) ? item : decimal_from(item.to_s) }
+        value == other
+      end
+
+      ##
+      # Reads the text as a BigDecimal, or returns nil when it is not a number.
+      #
+      def self.decimal_from(text)
+        BigDecimal(text)
+      rescue ArgumentError, TypeError, FloatDomainError
+        nil
+      end
+      private_class_method :decimal_from
+
+      ##
       # Creates an HTML tag with given name, content, and options.
       #
       # @overload content_tag(name, content, options = nil)
@@ -161,11 +218,11 @@ module Padrino
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each do |item|
-            output.concat item
+            output.concat TagHelpers.value_to_s(item)
             output.safe_concat NEWLINE
           end
         else
-          output.concat content.to_s
+          output.concat TagHelpers.value_to_s(content)
         end
         output.safe_concat "</#{name}>"
 
@@ -274,6 +331,37 @@ module Padrino
         "<#{name}#{attributes}#{open ? '>' : ' />'}".html_safe
       end
 
+      ##
+      # Builds a list of class names from Strings, Symbols, Arrays and Hashes.
+      #
+      # Strings are split on whitespace, Arrays are flattened, a Hash keeps the
+      # keys whose values are truthy, and nil, false and blank names are left out.
+      # Each name appears once, where it first appears. The result is a plain
+      # String: +tag+ and +content_tag+ escape it when they write the attribute.
+      #
+      # @param [Array<String, Symbol, Array, Hash, nil, false>] args
+      #   The class names, and the conditions that select them.
+      #
+      # @return [String]
+      #   The class names, separated by spaces.
+      #
+      # @example
+      #   class_names('btn', :primary)
+      #   # => "btn primary"
+      #
+      #   class_names('card', active: true, disabled: false)
+      #   # => "card active"
+      #
+      #   class_names('btn btn-lg', ['btn', [nil, { 'btn-block' => wide? }]])
+      #   # => "btn btn-lg btn-block" (when wide? is truthy)
+      #
+      #   content_tag(:li, 'Home', class: class_names('nav-item', current: page == 'home'))
+      #   # => <li class="nav-item current">Home</li>
+      #
+      def class_names(*args)
+        class_name_tokens(args).uniq.join(' ')
+      end
+
       SAFE_URI_SCHEMES = %w[http https mailto tel ftp].freeze
 
       ##
@@ -361,8 +449,8 @@ module Padrino
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
-        string = string.to_s
+        string = string.collect { |item| TagHelpers.value_to_s(item) }.join(' ') if string.is_a?(Array)
+        string = TagHelpers.value_to_s(string)
         string.match?(ESCAPE_REGEXP) ? string.gsub(ESCAPE_REGEXP, ESCAPE_VALUES) : string
       end
 
@@ -395,6 +483,18 @@ module Padrino
           parsed_options[:rel] = 'nofollow' if key == :method
         end
         parsed_options
+      end
+
+      ##
+      # Returns the class names in a value given to #class_names, in order.
+      #
+      def class_name_tokens(value)
+        case value
+        when Array then value.flat_map { |item| class_name_tokens(item) }
+        when Hash then value.flat_map { |name, condition| condition ? class_name_tokens(name) : [] }
+        when nil, false then []
+        else value.to_s.split(' ')
+        end
       end
     end
   end

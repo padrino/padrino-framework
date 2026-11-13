@@ -68,9 +68,9 @@ module Padrino
 
         ObjectSpace.each_object(::Module) do |mod|
           # Module#=== doesn't call mod, which can be a DeprecatedConstantProxy that warns on any call.
-          next unless ::ActiveSupport::Concern === mod && mod.name
-          next unless Object.const_source_location(mod.name)&.first == file
-          Reloader.reset_concern(mod) if Object.const_get(mod.name).equal?(mod)
+          next unless ::ActiveSupport::Concern === mod && (name = Reloader.send(:constant_name, mod))
+          next unless Object.const_source_location(name)&.first == file
+          Reloader.reset_concern(mod) if Object.const_get(name).equal?(mod)
         rescue NameError
           next
         end

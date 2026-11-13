@@ -514,4 +514,218 @@ describe 'AssetTagHelpers' do
       assert_match(%r{\A/images/javascript:}, asset_path(:images, "javascript:alert(1)//\nhttp://x"))
     end
   end
+
+  describe 'for #preload_link_tag method' do
+    it 'should resolve scripts, stylesheets and images like their tags' do
+      time = stop_time_for_test
+      actual_html = preload_link_tag('app.css')
+      assert_html_has_tag(actual_html, 'link', rel: 'preload', as: 'style', href: "/stylesheets/app.css?#{time.to_i}")
+      assert_equal stylesheet_link_tag('app')[/href="[^"]*"/], actual_html[/href="[^"]*"/]
+      assert_equal javascript_include_tag('app')[/src="([^"]*)"/, 1], preload_link_tag('app.js')[/href="([^"]*)"/, 1]
+      assert_equal image_tag('logo.PNG')[/src="([^"]*)"/, 1], preload_link_tag('logo.PNG')[/href="([^"]*)"/, 1]
+    end
+
+    it 'should resolve other sources from the public folder without the asset stamp' do
+      assert_equal '<link rel="preload" href="/captions/en.vtt" as="track" crossorigin="anonymous" />', preload_link_tag('captions/en.vtt')
+      assert_equal '<link rel="preload" href="/fonts/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('fonts/a.woff2')
+      assert_equal '<link rel="preload" href="/api/items" as="fetch" crossorigin="anonymous" />', preload_link_tag('api/items', as: :fetch)
+      assert_equal '<link rel="preload" href="/data/my%20file.json" />', preload_link_tag('data/my file.json')
+    end
+
+    it 'should resolve unstamped sources under the uri root and keep absolute ones' do
+      self.class.stubs(:uri_root).returns('/blog')
+      assert_equal '<link rel="preload" href="/blog/fonts/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('fonts/a.woff2')
+      assert_equal '<link rel="preload" href="/fonts/my%20a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('/fonts/my a.woff2')
+      assert_equal '<link rel="preload" href="//cdn.example.com/a.vtt" as="track" crossorigin="anonymous" />',
+                   preload_link_tag('//cdn.example.com/a.vtt')
+    end
+
+    it 'should keep absolute paths and urls' do
+      self.class.stubs(:uri_root).returns('/blog')
+      assert_equal '<link rel="preload" href="/fonts/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('/fonts/a.woff2')
+      assert_equal '<link rel="preload" href="https://cdn.example.com/a.png?v=1" as="image" />', preload_link_tag('https://cdn.example.com/a.png?v=1')
+    end
+
+    it 'should resolve under the uri root' do
+      self.class.stubs(:uri_root).returns('/blog')
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<link rel="preload" href="/blog/stylesheets/app.css" as="style" />', preload_link_tag('app.css')
+    end
+
+    it 'should infer the destination from the extension' do
+      { 'a.js' => 'script', 'a.css' => 'style', 'a.vtt' => 'track', 'a.otf' => 'font', 'a.ttf' => 'font',
+        'a.woff' => 'font', 'a.WOFF2' => 'font', 'a.avif' => 'image', 'a.gif' => 'image', 'a.ico' => 'image',
+        'a.jpeg' => 'image', 'a.jpg' => 'image', 'a.png' => 'image', 'a.svg' => 'image', 'a.webp' => 'image',
+        'a.css?v=1#x' => 'style' }.each do |source, as|
+        assert_equal %(rel="preload" href="/#{source}" as="#{as}"), preload_link_tag("/#{source}")[/rel=.*as="[^"]*"/]
+      end
+    end
+
+    it 'should write no destination it cannot infer' do
+      assert_equal '<link rel="preload" href="/data.json" />', preload_link_tag('/data.json')
+    end
+
+    it 'should infer the destination for a false or blank one' do
+      assert_equal '<link rel="preload" href="/a.css" as="style" />', preload_link_tag('/a.css', as: false)
+      assert_equal '<link rel="preload" href="/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('/a.woff2', as: '')
+      assert_equal '<link rel="preload" href="/data.json" />', preload_link_tag('/data.json', as: ' ')
+    end
+
+    it 'should write crossorigin for fonts, tracks and fetches unless told otherwise' do
+      assert_equal '<link rel="preload" href="/a.vtt" as="track" crossorigin="anonymous" />', preload_link_tag('/a.vtt')
+      assert_equal '<link rel="preload" href="/a.vtt" as="track" />', preload_link_tag('/a.vtt', crossorigin: false)
+      assert_equal 'crossorigin="use-credentials"', preload_link_tag('/a.woff2', crossorigin: 'use-credentials')[/crossorigin="[^"]*"/]
+      assert_equal '<link rel="preload" href="/a.woff2" as="font" />', preload_link_tag('/a.woff2', crossorigin: false)
+      assert_equal '<link rel="preload" href="/a.css" as="style" />', preload_link_tag('/a.css')
+      assert_equal '<link rel="preload" href="/a.css" as="style" crossorigin="anonymous" />', preload_link_tag('/a.css', crossorigin: true)
+    end
+
+    it 'should take explicit options' do
+      assert_equal '<link rel="preload" href="/data" as="fetch" type="application/json" crossorigin="anonymous" fetchpriority="high" />',
+                   preload_link_tag('/data', as: :fetch, type: 'application/json', crossorigin: true, fetchpriority: :high)
+      assert_equal '<link rel="preload" href="/a.js" as="fetch" crossorigin="anonymous" />', preload_link_tag('/a.js', 'as' => 'fetch')
+      assert_equal '<link rel="preload" href="/data" as="fetch" />', preload_link_tag('/data', as: :fetch, crossorigin: false)
+      assert_equal '<link rel="preload" href="/a.woff2" as="font" type="font/woff2" crossorigin="anonymous" />',
+                   preload_link_tag('/a.woff2', type: 'font/woff2')
+    end
+
+    it 'should match the destination case-insensitively' do
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<link rel="preload" href="/a" as="font" crossorigin="anonymous" />', preload_link_tag('/a', as: 'Font')
+      assert_equal '<link rel="preload" href="/stylesheets/a.css" as="style" />', preload_link_tag('a', as: 'Style')
+      assert_equal '<link rel="modulepreload" href="/javascripts/a.js" />', preload_link_tag('a', as: :Module)
+    end
+
+    it 'should write a modulepreload link for modules' do
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<link rel="modulepreload" href="/javascripts/app.js" />', preload_link_tag('app', as: :module)
+      assert_equal '<link rel="modulepreload" href="https://cdn.example.com/app.mjs" />', preload_link_tag('https://cdn.example.com/app.mjs')
+      assert_equal '<link rel="preload" href="https://cdn.example.com/app.mjs" as="script" />',
+                   preload_link_tag('https://cdn.example.com/app.mjs', as: :script)
+    end
+
+    it 'should escape attribute values' do
+      actual_html = preload_link_tag('https://example.com/a.css?a=1&b="2"', title: '<b>"x"</b>')
+      assert_equal '<link rel="preload" href="https://example.com/a.css?a=1&amp;b=&quot;2&quot;" as="style" ' \
+                   'title="&lt;b&gt;&quot;x&quot;&lt;/b&gt;" />', actual_html
+      assert actual_html.html_safe?
+    end
+  end
+
+  describe 'for #javascript_importmap_tag method' do
+    def importmap_of(html)
+      JSON.parse(html[%r{<script type="importmap"[^>]*>(.*?)</script>}m, 1])
+    end
+
+    it 'should map module names to javascript sources without the asset stamp' do
+      actual_html = javascript_importmap_tag(imports: { 'app' => 'app', lib: 'vendor/lib.js', 'spaced' => 'my lib' })
+      assert_equal({ 'imports' => { 'app' => '/javascripts/app.js', 'lib' => '/javascripts/vendor/lib.js',
+                                    'spaced' => '/javascripts/my%20lib.js' } }, importmap_of(actual_html))
+      assert_html_has_tag(actual_html, 'script', type: 'importmap', count: 1)
+      assert_html_has_no_tag(actual_html, 'script[type=module]')
+      assert_html_has_no_tag(actual_html, 'link')
+    end
+
+    it 'should keep sources with a scheme or a leading slash as given' do
+      self.class.stubs(:uri_root).returns('/blog')
+      sources = { 'cdn' => 'https://cdn.example.com/x', 'rel' => '//cdn.example.com/p', 'root' => '/js/y',
+                  'lodash/' => '/vendor/lodash/', 'data' => 'data:text/javascript,export%20default%201', 'blob' => 'BLOB:x' }
+      assert_equal({ 'imports' => sources }, importmap_of(javascript_importmap_tag(imports: sources)))
+      assert_equal({ 'imports' => { 'a' => '/my%20a.js' } }, importmap_of(javascript_importmap_tag(imports: { 'a' => '/my a.js' })))
+    end
+
+    it 'should map a name ending in a slash as a prefix' do
+      assert_equal({ 'imports' => { 'lib/' => '/javascripts/lib/', 'vendor/' => '/vendor/', 'cdn/' => 'https://cdn.example.com/x/' } },
+                   importmap_of(javascript_importmap_tag(imports: { 'lib/' => 'lib', 'vendor/' => '/vendor', 'cdn/' => 'https://cdn.example.com/x' })))
+    end
+
+    it 'should raise for an import without a source' do
+      [nil, '', '  '].each do |source|
+        error = assert_raises(ArgumentError) { javascript_importmap_tag(imports: { 'app' => '/app.js', 'chart' => source }) }
+        assert_includes error.message, '"chart"'
+      end
+    end
+
+    it 'should take the options as a second hash' do
+      assert_equal '<script type="importmap" nonce="n">{"imports":{"app":"/app.js"}}</script>',
+                   javascript_importmap_tag({ imports: { 'app' => '/app.js' } }, { nonce: 'n' })
+    end
+
+    it 'should leave nil scopes and integrity out of the import map' do
+      actual_html = javascript_importmap_tag(imports: { 'a' => '/a.js' }, scopes: nil, integrity: nil)
+      assert_equal({ 'imports' => { 'a' => '/a.js' } }, importmap_of(actual_html))
+      assert_html_has_no_tag(actual_html, 'script[scopes]')
+    end
+
+    it 'should write scopes and integrity into the import map' do
+      scopes = { '/admin/' => { 'chart' => '/javascripts/chart-2.js' } }
+      integrity = { '/javascripts/app.js' => 'sha384-</script>' }
+      actual_html = javascript_importmap_tag(imports: { 'app' => 'app' }, scopes: scopes, integrity: integrity)
+      assert_equal({ 'imports' => { 'app' => '/javascripts/app.js' }, 'scopes' => scopes, 'integrity' => integrity }, importmap_of(actual_html))
+      assert_equal 1, actual_html.scan('</script').size
+      assert_html_has_no_tag(actual_html, 'script[scopes]')
+      assert_html_has_no_tag(actual_html, 'script[integrity]')
+    end
+
+    it 'should resolve a relative prefix to the javascripts folder' do
+      self.class.stubs(:uri_root).returns('/blog')
+      assert_equal({ 'imports' => { 'lib/' => '/blog/javascripts/lib/', 'app' => '/blog/javascripts/app.js' } },
+                   importmap_of(javascript_importmap_tag(imports: { 'lib/' => 'lib/', 'app' => 'app' })))
+    end
+
+    it 'should write an empty import map without imports' do
+      assert_equal '<script type="importmap">{"imports":{}}</script>', javascript_importmap_tag
+    end
+
+    it 'should import the entry from a module script' do
+      actual_html = javascript_importmap_tag('application', 'imports' => { 'application' => '/application.js' })
+      assert_equal '<script type="importmap">{"imports":{"application":"/application.js"}}</script>' \
+                   '<script type="module">import "application"</script>', actual_html
+      assert actual_html.html_safe?
+    end
+
+    it 'should write no module script for a blank entry' do
+      assert_equal '<script type="importmap">{"imports":{}}</script>', javascript_importmap_tag('')
+      assert_equal '<script type="importmap">{"imports":{}}</script>', javascript_importmap_tag(" \n", imports: {})
+    end
+
+    it 'should write a modulepreload link for each import when asked' do
+      actual_html = javascript_importmap_tag('app', imports: { 'app' => '/app.js', 'cdn' => 'https://cdn.example.com/x.js' }, preload: true)
+      assert_equal '<script type="importmap">{"imports":{"app":"/app.js","cdn":"https://cdn.example.com/x.js"}}</script>' \
+                   '<link rel="modulepreload" href="/app.js" />' \
+                   '<link rel="modulepreload" href="https://cdn.example.com/x.js" />' \
+                   '<script type="module">import "app"</script>', actual_html
+    end
+
+    it 'should preload each address once' do
+      actual_html = javascript_importmap_tag(imports: { 'app' => 'app', 'main' => 'app', 'x' => '/javascripts/app.js' }, preload: true)
+      assert_equal 1, actual_html.scan('<link rel="modulepreload" href="/javascripts/app.js" />').size
+    end
+
+    it 'should not preload prefixes' do
+      actual_html = javascript_importmap_tag(imports: { 'lib/' => 'lib/', 'app' => '/app.js' }, preload: true)
+      assert_equal '<script type="importmap">{"imports":{"lib/":"/javascripts/lib/","app":"/app.js"}}</script>' \
+                   '<link rel="modulepreload" href="/app.js" />', actual_html
+    end
+
+    it 'should write the nonce on each tag and other html options on the import map only' do
+      actual_html = javascript_importmap_tag('app', imports: { 'app' => '/app.js' }, preload: true, nonce: 'r4nd"om',
+                                                    id: 'map', 'data-turbo-track' => 'reload', type: 'text/plain')
+      assert_equal '<script type="importmap" nonce="r4nd&quot;om" id="map" data-turbo-track="reload">{"imports":{"app":"/app.js"}}</script>' \
+                   '<link rel="modulepreload" href="/app.js" nonce="r4nd&quot;om" />' \
+                   '<script type="module" nonce="r4nd&quot;om">import "app"</script>', actual_html
+    end
+
+    it 'should escape import names and sources so they cannot end the script' do
+      name = '</script><script>alert(1)</script><!--'
+      source = 'https://cdn.example.com/x.js?a=1&b=</script>'
+      actual_html = javascript_importmap_tag(name, imports: { name => source, "\u2028" => "/\u2029.js" })
+      assert_equal 2, actual_html.scan(%r{</script}i).size
+      refute_includes actual_html, '<!--'
+      refute_match(/[\u2028\u2029]/, actual_html)
+      assert_equal({ 'imports' => { name => source, "\u2028" => "/\u2029.js" } }, importmap_of(actual_html))
+      entry = actual_html[%r{<script type="module">import (.*)</script>}m, 1]
+      assert_equal name, JSON.parse("[#{entry}]").first
+    end
+  end
 end
