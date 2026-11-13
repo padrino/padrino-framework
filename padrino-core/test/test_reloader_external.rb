@@ -18,5 +18,14 @@ describe 'ExternalReloader' do
       end
       assert_equal 'Hello External App', body
     end
+
+    it 'should keep serving an app in a folder next to Padrino.root that shares its name as a prefix' do
+      @app = Padrino.application
+      Padrino.stub(:root, File.expand_path("#{__dir__}/fixtures/reloadable_apps/ext")) do
+        Padrino.reload!
+        get '/reloadable/external/base'
+      end
+      assert_equal 'Hello External App', body
+    end
   end
 end
