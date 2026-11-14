@@ -1118,7 +1118,7 @@ module Padrino
 
       def dispatch!
         @_ran_filters = {}.compare_by_identity
-        @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
+        @params = Sinatra::IndifferentHash[@request.params]
         force_encoding(@params)
         invoke do
           static! if settings.static? && (request.get? || request.head?)
