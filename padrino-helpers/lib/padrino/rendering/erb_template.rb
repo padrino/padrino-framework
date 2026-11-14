@@ -30,20 +30,11 @@ module Padrino
         super
       end
 
-      if ERB.instance_method(:initialize).parameters.assoc(:key) # Ruby 2.6+
-        def prepare
-          @outvar = options[:outvar] || self.class.default_output_variable
-          options[:trim] = '<>' if options[:trim] != false && (options[:trim].nil? || options[:trim] == true)
+      def prepare
+        @outvar = options[:outvar] || self.class.default_output_variable
+        options[:trim] = '<>' if options[:trim] != false && (options[:trim].nil? || options[:trim] == true)
 
-          @engine = SafeERB.new(data, trim_mode: options[:trim], eoutvar: @outvar)
-        end
-      else
-        def prepare
-          @outvar = options[:outvar] || self.class.default_output_variable
-          options[:trim] = '<>' if options[:trim] != false && (options[:trim].nil? || options[:trim] == true)
-
-          @engine = SafeERB.new(data, options[:safe], options[:trim], @outvar)
-        end
+        @engine = SafeERB.new(data, trim_mode: options[:trim], eoutvar: @outvar)
       end
 
       def precompiled_preamble(locals)
