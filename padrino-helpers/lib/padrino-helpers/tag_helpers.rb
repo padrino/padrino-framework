@@ -39,10 +39,43 @@ module Padrino
         itemscope
         noresize
         novalidate
+        allowfullscreen
+        alpha
+        async
+        controls
+        default
+        headingreset
+        inert
+        nomodule
+        open
+        playsinline
+        reversed
+        shadowrootclonable
+        shadowrootcustomelementregistry
+        shadowrootdelegatesfocus
+        shadowrootserializable
       ].freeze
 
-      BOOLEAN_ATTRIBUTE_LOOKUP = BOOLEAN_ATTRIBUTES.to_h { |attribute| [attribute, true] }.freeze
-      private_constant :BOOLEAN_ATTRIBUTE_LOOKUP
+      attribute_rules = ->(rule, names) { (names + names.map(&:to_s)).to_h { |name| [name, rule] } }
+      false_value_attributes = %i[
+        contenteditable draggable spellcheck writingsuggestions
+        aria-atomic aria-busy aria-checked aria-current aria-disabled aria-expanded aria-grabbed aria-haspopup
+        aria-hidden aria-invalid aria-modal aria-multiline aria-multiselectable aria-pressed aria-readonly
+        aria-required aria-selected
+      ]
+
+      # How +tag_attributes+ writes a value, for the attributes that need more than escaping:
+      # * boolean: +true+ writes the name (checked="checked"); a String or Symbol is kept (hidden="until-found").
+      # * empty_value: enumerated attributes whose empty value is a state, so +true+ writes "" (popover="" is auto).
+      # * false_value: attributes with a "false" keyword (HTML, and the WAI-ARIA true/false, tristate and
+      #   token states), so +false+ is written rather than dropped.
+      ATTRIBUTE_RULES = {
+        **attribute_rules.call(:boolean, BOOLEAN_ATTRIBUTES),
+        **attribute_rules.call(:class, %i[class]),
+        **attribute_rules.call(:empty_value, %i[autocorrect crossorigin popover preload translate]),
+        **attribute_rules.call(:false_value, false_value_attributes)
+      }.freeze
+      private_constant :ATTRIBUTE_RULES
 
       ##
       # Custom data attributes,
@@ -289,6 +322,9 @@ module Padrino
       #   tag :img, src: 'sinatra.jpg', data: { nsfw: false, geo: [34.087, -118.407] }
       #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407" />
       #
+      #   tag :div, class: ['card', { active: true, hidden: false }], 'aria-hidden': false
+      #   # => <div class="card active" aria-hidden="false" />
+      #
       def tag(name, options = nil, open = false)
         options = parse_data_options(name, options)
         attributes = tag_attributes(options)
@@ -371,19 +407,42 @@ module Padrino
 
         all = +''
         options.each do |key, value|
+          rule = ATTRIBUTE_RULES[key]
+          case rule
+          when :class then value = class_value(value) if value.is_a?(Array) || value.is_a?(Hash)
+          when :empty_value then value = '' if value == true
+          when :false_value then value = 'false' if value == false
+          end
           next unless value
 
           all << ' ' if all.empty?
           all <<
             if value.is_a?(Hash)
               nested_values(key, value)
-            elsif BOOLEAN_ATTRIBUTE_LOOKUP.key?(key)
+            elsif rule == :boolean && !value.is_a?(String) && !value.is_a?(Symbol)
               %(#{key}="#{key}" )
             else
               %(#{key}="#{escape_value(value)}" )
             end
         end
         all.chomp!(' ')
+      end
+
+      ##
+      # Returns the class names in an Array, or a Hash of names to conditions,
+      # leaving out blank names and those whose condition is false; nil if none are left.
+      #
+      def class_value(value)
+        names = class_names_in(value)
+        names unless names.empty?
+      end
+
+      def class_names_in(value)
+        case value
+        when Array then value.flat_map { |item| class_names_in(item) }
+        when Hash then value.flat_map { |name, condition| condition ? class_names_in(name) : [] }
+        else value && !value.to_s.empty? ? [value] : []
+        end
       end
 
       ##
