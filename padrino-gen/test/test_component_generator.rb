@@ -863,8 +863,43 @@ describe 'ComponentGenerator' do
           out, = switch_mock(project, 'rr')
           assert_equal before, File.read(helper), test
           assert_includes out, "#{path} has no line like `#{line}` to add these lines after", test
-          assert_includes out, "add them there by hand:\n#{setup}", test
+          assert_includes out, "add them there by hand and remove mocha's lines, which are still there:\n#{setup}", test
         end
+      end
+
+      it 'should remove the previous mock wherever its lines are and skip a commented configure line' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
+        helper = "#{project}/spec/spec_helper.rb"
+        # A commented example and the project's own block above Padrino's; the rr lines stay in Padrino's |conf| block.
+        File.write(helper, File.read(helper).sub("RSpec.configure do |conf|\n",
+                                                 "# RSpec.configure do |example|\nRSpec.configure do |config|\nend\n\nRSpec.configure do |conf|\n"))
+        switch_mock(project, 'mocha')
+        content = File.read(helper)
+        assert_match(/^RSpec\.configure do \|config\|\n  config\.mock_with :mocha\nend\n/, content)
+        refute_match(/example\.mock_with/, content)
+        refute_match(/:rr|RR::DSL|On ExampleGroup/, content)
+      end
+
+      it 'should remove the rr comment when a rename of the block variable left it alone' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
+        helper = "#{project}/spec/spec_helper.rb"
+        File.write(helper, File.read(helper).gsub('|conf|', '|config|').gsub(/^  conf\./, '  config.'))
+        assert_match(/not conf\.include/, File.read(helper))
+        switch_mock(project, 'mocha')
+        content = File.read(helper)
+        assert_match(/^  config\.mock_with :mocha\n/, content)
+        refute_match(/:rr|RR::DSL|On ExampleGroup/, content)
+      end
+
+      it 'should say the previous mock is still set up when the new one cannot be added' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=mocha', '--script=none') }
+        helper = "#{project}/spec/spec_helper.rb"
+        File.write(helper, File.read(helper).sub("RSpec.configure do |conf|\n", "RSpec.configure { |conf|\n"))
+        out, = switch_mock(project, 'rr')
+        assert_includes out, "add them there by hand and remove mocha's lines, which are still there:\n"
       end
 
       it 'should never leave the project with neither mock when the helper cannot be read' do

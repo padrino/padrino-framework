@@ -314,10 +314,13 @@ module Padrino
         return unless setup && File.exist?(destination_root(setup[:path]))
 
         # The mocks insert after the same line; if the project edited it, the new mock can't be added, so keep the old one.
-        return unless (setup = resolve_mock_setup(setup))
+        return unless resolve_mock_setup(setup)
 
+        # A %<name>s matches any name, so the lines go whichever configure block holds them, and so does a comment
+        # an editor's rename of the block variable left alone.
         lines = setup[:text].each_line.map(&:strip).reject(&:empty?).uniq
-        pattern = /^[ \t]*(?:#{lines.map { |line| Regexp.escape(line) }.join('|')})[ \t]*(?:\n|\z)/
+        lines = lines.map { |line| Regexp.escape(line).gsub(MOCK_SETUP_NAME) { '\w+' } }
+        pattern = /^[ \t]*(?:#{lines.join('|')})[ \t]*(?:\n|\z)/
         gsub_file(setup[:path], pattern, '') if File.binread(destination_root(setup[:path])).match?(pattern)
       end
 
@@ -334,13 +337,15 @@ module Padrino
       #
       def insert_mock_setup(mock, test, setup)
         if (resolved = resolve_mock_setup(setup))
-          inject_into_file resolved[:path], resolved[:text], after: resolved[:after]
+          inject_into_file resolved[:path], resolved[:text], after: /^#{Regexp.escape(resolved[:after])}/
           # After the insert, so a helper Thor fails to read keeps the previous mock.
           remove_previous_mock_setup(test)
         else
           shown = fill_mock_setup(setup) { |name| name }
+          previous = @_stored_components && @_stored_components[:mock].to_s
+          kept = " and remove #{previous}'s lines, which are still there" unless ['', 'none', mock.downcase].include?(previous.to_s)
           say "#{mock} is in the Gemfile but not set up: #{setup[:path]} has no line like `#{shown[:after].chomp}` " \
-              "to add these lines after. To use #{mock}, add them there by hand:\n#{shown[:text]}", :yellow
+              "to add these lines after. To use #{mock}, add them there by hand#{kept}:\n#{shown[:text]}", :yellow
         end
       end
 
@@ -357,7 +362,7 @@ module Padrino
         return setup unless File.exist?(path)
 
         pattern = Regexp.escape(setup[:after].b).gsub(MOCK_SETUP_NAME) { "(?<#{Regexp.last_match(1)}>\\w+)" }
-        match = File.binread(path).match(Regexp.new(pattern))
+        match = File.binread(path).match(Regexp.new("^#{pattern}"))
         match && fill_mock_setup(setup) { |name| match[name] }
       end
 
