@@ -863,7 +863,7 @@ describe 'ComponentGenerator' do
           out, = switch_mock(project, 'rr')
           assert_equal before, File.read(helper), test
           assert_includes out, "#{path} has no line like `#{line}` to add these lines after", test
-          assert_includes out, "add them there by hand and remove mocha's lines, which are still there:\n#{setup}", test
+          assert_includes out, "add them there by hand and remove mocha's lines if they are still there:\n#{setup}", test
         end
       end
 
@@ -873,11 +873,11 @@ describe 'ComponentGenerator' do
         helper = "#{project}/spec/spec_helper.rb"
         # A commented example and the project's own block above Padrino's; the rr lines stay in Padrino's |conf| block.
         File.write(helper, File.read(helper).sub("RSpec.configure do |conf|\n",
-                                                 "# RSpec.configure do |example|\nRSpec.configure do |config|\nend\n\nRSpec.configure do |conf|\n"))
+                                                 "# RSpec.configure do |config|\nRSpec.configure do |config|\nend\n\nRSpec.configure do |conf|\n"))
         switch_mock(project, 'mocha')
         content = File.read(helper)
         assert_match(/^RSpec\.configure do \|config\|\n  config\.mock_with :mocha\nend\n/, content)
-        refute_match(/example\.mock_with/, content)
+        assert_equal 1, content.scan('config.mock_with :mocha').size
         refute_match(/:rr|RR::DSL|On ExampleGroup/, content)
       end
 
@@ -899,7 +899,22 @@ describe 'ComponentGenerator' do
         helper = "#{project}/spec/spec_helper.rb"
         File.write(helper, File.read(helper).sub("RSpec.configure do |conf|\n", "RSpec.configure { |conf|\n"))
         out, = switch_mock(project, 'rr')
-        assert_includes out, "add them there by hand and remove mocha's lines, which are still there:\n"
+        assert_includes out, "add them there by hand and remove mocha's lines if they are still there:\n"
+      end
+
+      it 'should set up the mock after an indented line to follow, as before' do
+        { 'rspec' => ['spec/spec_helper.rb', "RSpec.configure do |conf|\n", /^  RSpec\.configure do \|conf\|\n  conf\.mock_with :rr\n/],
+          'minitest' => ['test/test_config.rb', "require_relative '../config/boot'\n", %r{^  require_relative '\.\./config/boot'\nrequire 'rr'\n}] }
+          .each do |test, (path, line, expected)|
+          project = "#{@apptmp}/project_#{test}"
+          capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
+          helper = "#{project}/#{path}"
+          File.write(helper, File.read(helper).sub(line, "  #{line}"))
+          switch_mock(project, 'rr')
+          content = File.read(helper)
+          assert_match expected, content, test
+          refute_match(/mocha/, content, test)
+        end
       end
 
       it 'should never leave the project with neither mock when the helper cannot be read' do

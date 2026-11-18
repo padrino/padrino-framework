@@ -297,7 +297,7 @@ module Padrino
       # Removes the lines the project's mock component added to the test helper, when `padrino g component`
       # switches to another mock. Each mock file defines mock_setup_lines(test), the lines its setup_mock adds;
       # the previous mock's file is evaluated on a separate object, so its methods don't replace the new mock's.
-      # Only lines that are still exactly as written (indentation aside) are removed; other edits stay.
+      # Only lines that are still as written (indentation aside, any name for the block variable) are removed; other edits stay.
       #
       # @param [String] test
       #   The test component the new mock is set up for.
@@ -313,7 +313,7 @@ module Padrino
         setup = probe.respond_to?(:mock_setup_lines) && probe.mock_setup_lines(test)
         return unless setup && File.exist?(destination_root(setup[:path]))
 
-        # The mocks insert after the same line; if the project edited it, the new mock can't be added, so keep the old one.
+        # Only after the new mock's line resolved (insert_mock_setup); kept so a helper without it never loses the old mock.
         return unless resolve_mock_setup(setup)
 
         # A %<name>s matches any name, so the lines go whichever configure block holds them, and so does a comment
@@ -337,13 +337,13 @@ module Padrino
       #
       def insert_mock_setup(mock, test, setup)
         if (resolved = resolve_mock_setup(setup))
-          inject_into_file resolved[:path], resolved[:text], after: /^#{Regexp.escape(resolved[:after])}/
+          inject_into_file resolved[:path], resolved[:text], after: /^[ \t]*#{Regexp.escape(resolved[:after])}/
           # After the insert, so a helper Thor fails to read keeps the previous mock.
           remove_previous_mock_setup(test)
         else
           shown = fill_mock_setup(setup) { |name| name }
           previous = @_stored_components && @_stored_components[:mock].to_s
-          kept = " and remove #{previous}'s lines, which are still there" unless ['', 'none', mock.downcase].include?(previous.to_s)
+          kept = " and remove #{previous}'s lines if they are still there" unless ['', 'none', mock.downcase].include?(previous.to_s)
           say "#{mock} is in the Gemfile but not set up: #{setup[:path]} has no line like `#{shown[:after].chomp}` " \
               "to add these lines after. To use #{mock}, add them there by hand#{kept}:\n#{shown[:text]}", :yellow
         end
@@ -362,7 +362,7 @@ module Padrino
         return setup unless File.exist?(path)
 
         pattern = Regexp.escape(setup[:after].b).gsub(MOCK_SETUP_NAME) { "(?<#{Regexp.last_match(1)}>\\w+)" }
-        match = File.binread(path).match(Regexp.new("^#{pattern}"))
+        match = File.binread(path).match(Regexp.new("^[ \\t]*#{pattern}"))
         match && fill_mock_setup(setup) { |name| match[name] }
       end
 
