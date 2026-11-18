@@ -313,13 +313,59 @@ module Padrino
         setup = probe.respond_to?(:mock_setup_lines) && probe.mock_setup_lines(test)
         return unless setup && File.exist?(destination_root(setup[:path]))
 
-        content = File.binread(destination_root(setup[:path]))
         # The mocks insert after the same line; if the project edited it, the new mock can't be added, so keep the old one.
-        return unless content.include?(setup[:after].b)
+        return unless (setup = resolve_mock_setup(setup))
 
         lines = setup[:text].each_line.map(&:strip).reject(&:empty?).uniq
         pattern = /^[ \t]*(?:#{lines.map { |line| Regexp.escape(line) }.join('|')})[ \t]*(?:\n|\z)/
-        gsub_file(setup[:path], pattern, '') if content.match?(pattern)
+        gsub_file(setup[:path], pattern, '') if File.binread(destination_root(setup[:path])).match?(pattern)
+      end
+
+      ##
+      # Adds a mock's setup to the project's test helper, after the line it follows, then removes the previous
+      # mock's. When the helper has no such line (the project edited it), it adds nothing and says which lines to add.
+      #
+      # @param [String] mock
+      #   The name of the mock library, for the message.
+      # @param [String] test
+      #   The test component the mock is set up for.
+      # @param [Hash] setup
+      #   The mock's mock_setup_lines(test).
+      #
+      def insert_mock_setup(mock, test, setup)
+        if (resolved = resolve_mock_setup(setup))
+          inject_into_file resolved[:path], resolved[:text], after: resolved[:after]
+          # After the insert, so a helper Thor fails to read keeps the previous mock.
+          remove_previous_mock_setup(test)
+        else
+          shown = fill_mock_setup(setup) { |name| name }
+          say "#{mock} is in the Gemfile but not set up: #{setup[:path]} has no line like `#{shown[:after].chomp}` " \
+              "to add these lines after. To use #{mock}, add them there by hand:\n#{shown[:text]}", :yellow
+        end
+      end
+
+      # In a mock setup's :after and :text, a %<name>s stands for a name the project chose, such as the
+      # RSpec.configure block variable: any word in the helper's line, and the same word in the lines.
+      MOCK_SETUP_NAME = /%<(\w+)>s/.freeze
+
+      ##
+      # Returns a mock setup with the line it follows and its lines as they apply to the project's test helper,
+      # or nil when the helper has no such line. A helper that doesn't exist is left for inject_into_file to report.
+      #
+      def resolve_mock_setup(setup)
+        path = destination_root(setup[:path])
+        return setup unless File.exist?(path)
+
+        pattern = Regexp.escape(setup[:after].b).gsub(MOCK_SETUP_NAME) { "(?<#{Regexp.last_match(1)}>\\w+)" }
+        match = File.binread(path).match(Regexp.new(pattern))
+        match && fill_mock_setup(setup) { |name| match[name] }
+      end
+
+      ##
+      # Returns the mock setup with each %<name>s in its :after and :text replaced by the block's value for name.
+      #
+      def fill_mock_setup(setup)
+        setup.merge(%i[after text].to_h { |key| [key, setup[key].gsub(MOCK_SETUP_NAME) { yield Regexp.last_match(1) }] })
       end
 
       ##

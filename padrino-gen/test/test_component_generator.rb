@@ -809,6 +809,64 @@ describe 'ComponentGenerator' do
         assert_match_in_file(%r{^require 'mocha/minitest'\n}, helper)
       end
 
+      # Renames the RSpec.configure block variable of the project's spec_helper.rb from conf to var.
+      def rename_rspec_variable(project, var)
+        helper = "#{project}/spec/spec_helper.rb"
+        File.write(helper, File.read(helper).gsub('|conf|', "|#{var}|").gsub(/^  conf\./, "  #{var}."))
+        helper
+      end
+
+      def assert_rspec_mock_setup(helper, var, mock)
+        other = (mock_setup.keys - [mock]).first
+        content = File.read(helper)
+        lines = content.lines.map(&:chomp)
+        mock_setup[mock]['rspec'].each { |line| assert_equal 1, lines.count(line.gsub('conf.', "#{var}.")), "#{var}: #{line}" }
+        mock_setup[other]['rspec'].each { |line| assert_equal 0, lines.count { |l| l.strip == line.gsub('conf.', "#{var}.").strip }, "#{var}: #{line}" }
+        assert_match(/^RSpec\.configure do \|#{var}\|\n  #{var}\.mock_with :#{mock}\n/, content)
+        refute_match(/\bconf\./, content)
+        assert_equal 1, lines.count("  #{var}.include Rack::Test::Methods"), var
+      end
+
+      it 'should switch the rspec mock whatever the RSpec.configure block variable is called' do
+        %w[config c].each do |var|
+          project = "#{@apptmp}/project_#{var}"
+          capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", '--test=rspec', '--mock=mocha', '--script=none') }
+          helper = rename_rspec_variable(project, var)
+          switch_mock(project, 'rr')
+          assert_rspec_mock_setup(helper, var, 'rr')
+          assert_equal 'rr', YAML.load_file("#{project}/.components")[:mock], var
+          switch_mock(project, 'mocha')
+          assert_rspec_mock_setup(helper, var, 'mocha')
+          assert_equal 'mocha', YAML.load_file("#{project}/.components")[:mock], var
+        end
+      end
+
+      it 'should set up a first mock whatever the RSpec.configure block variable is called' do
+        %w[mocha rr].product(%w[config c]).each do |mock, var|
+          project = "#{@apptmp}/project_#{mock}_#{var}"
+          capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", '--test=rspec', '--script=none') }
+          helper = rename_rspec_variable(project, var)
+          capture_io { generate(:component, "--mock=#{mock}", "-r=#{project}") }
+          assert_rspec_mock_setup(helper, var, mock)
+        end
+      end
+
+      it 'should say which lines to add and keep the previous mock when the helper has no line to follow' do
+        { 'rspec' => ['spec/spec_helper.rb', 'RSpec.configure do |conf|', 'RSpec.configure { |config|', "  conf.mock_with :rr\n"],
+          'minitest' => ['test/test_config.rb', "require_relative '../config/boot'", "require_relative '../config/boot' # boot", "require 'rr'\n"] }
+          .each do |test, (path, line, edited, setup)|
+          project = "#{@apptmp}/project_#{test}"
+          capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
+          helper = "#{project}/#{path}"
+          File.write(helper, File.read(helper).sub("#{line}\n", "#{edited}\n"))
+          before = File.read(helper)
+          out, = switch_mock(project, 'rr')
+          assert_equal before, File.read(helper), test
+          assert_includes out, "#{path} has no line like `#{line}` to add these lines after", test
+          assert_includes out, "add them there by hand:\n#{setup}", test
+        end
+      end
+
       it 'should never leave the project with neither mock when the helper cannot be read' do
         project = "#{@apptmp}/sample_project"
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
