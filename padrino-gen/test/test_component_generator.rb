@@ -867,17 +867,33 @@ describe 'ComponentGenerator' do
         end
       end
 
-      it 'should remove the previous mock wherever its lines are and skip a commented configure line' do
+      it "should keep the mock in Padrino's |conf| block when the helper has other configure blocks" do
         project = "#{@apptmp}/sample_project"
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
         helper = "#{project}/spec/spec_helper.rb"
-        # A commented example and the project's own block above Padrino's; the rr lines stay in Padrino's |conf| block.
+        # Blocks above Padrino's that don't always run, and a commented example; the mock stays in |conf| as before.
         File.write(helper, File.read(helper).sub("RSpec.configure do |conf|\n",
-                                                 "# RSpec.configure do |config|\nRSpec.configure do |config|\nend\n\nRSpec.configure do |conf|\n"))
+                                                 "# RSpec.configure do |config|\nif ENV['CI']\n  RSpec.configure do |config|\n  end\nend\n" \
+                                                 "RSpec.configure do |c|\nend unless ENV['SLOW']\n\nRSpec.configure do |conf|\n"))
         switch_mock(project, 'mocha')
         content = File.read(helper)
-        assert_match(/^RSpec\.configure do \|config\|\n  config\.mock_with :mocha\nend\n/, content)
-        assert_equal 1, content.scan('config.mock_with :mocha').size
+        assert_match(/^RSpec\.configure do \|conf\|\n  conf\.mock_with :mocha\n/, content)
+        assert_equal 1, content.scan('mock_with :mocha').size
+        refute_match(/:rr|RR::DSL|On ExampleGroup/, content)
+      end
+
+      it 'should remove the previous mock from another configure block' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
+        helper = "#{project}/spec/spec_helper.rb"
+        # The project moved the rr lines to its own block and renamed Padrino's.
+        content = File.read(helper)
+        rr = content[/^  conf\.mock_with :rr\n.*RR::DSL\n/m]
+        File.write(helper, content.sub(rr, '').sub("RSpec.configure do |conf|\n", "RSpec.configure do |config|\n") +
+                           "\nRSpec.configure do |c|\n#{rr.gsub('conf.', 'c.')}end\n")
+        switch_mock(project, 'mocha')
+        content = File.read(helper)
+        assert_match(/^RSpec\.configure do \|config\|\n  config\.mock_with :mocha\n/, content)
         refute_match(/:rr|RR::DSL|On ExampleGroup/, content)
       end
 
@@ -902,14 +918,17 @@ describe 'ComponentGenerator' do
         assert_includes out, "add them there by hand and remove mocha's lines if they are still there:\n"
       end
 
-      it 'should set up the mock after an indented line to follow, as before' do
-        { 'rspec' => ['spec/spec_helper.rb', "RSpec.configure do |conf|\n", /^  RSpec\.configure do \|conf\|\n  conf\.mock_with :rr\n/],
-          'minitest' => ['test/test_config.rb', "require_relative '../config/boot'\n", %r{^  require_relative '\.\./config/boot'\nrequire 'rr'\n}] }
-          .each do |test, (path, line, expected)|
-          project = "#{@apptmp}/project_#{test}"
+      it 'should set up the mock after an indented or prefixed line to follow, as before' do
+        [['rspec', 'spec/spec_helper.rb', "RSpec.configure do |conf|\n", '  ', /^  RSpec\.configure do \|conf\|\n  conf\.mock_with :rr\n/],
+         ['rspec', 'spec/spec_helper.rb', "RSpec.configure do |conf|\n", '::', /^::RSpec\.configure do \|conf\|\n  conf\.mock_with :rr\n/],
+         ['minitest', 'test/test_config.rb', "require_relative '../config/boot'\n", '  ', %r{^  require_relative '\.\./config/boot'\nrequire 'rr'\n}],
+         ['minitest', 'test/test_config.rb', "require_relative '../config/boot'\n", '$LOAD_PATH.unshift(__dir__); ',
+          %r{^\$LOAD_PATH\.unshift\(__dir__\); require_relative '\.\./config/boot'\nrequire 'rr'\n}]]
+          .each_with_index do |(test, path, line, prefix, expected), i|
+          project = "#{@apptmp}/project_#{i}"
           capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", "--test=#{test}", '--mock=mocha', '--script=none') }
           helper = "#{project}/#{path}"
-          File.write(helper, File.read(helper).sub(line, "  #{line}"))
+          File.write(helper, File.read(helper).sub(line, "#{prefix}#{line}"))
           switch_mock(project, 'rr')
           content = File.read(helper)
           assert_match expected, content, test
