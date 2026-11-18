@@ -336,16 +336,18 @@ module Padrino
       #   The mock's mock_setup_lines(test).
       #
       def insert_mock_setup(mock, test, setup)
+        stock = fill_mock_setup(setup) { |name| name }
         if (resolved = resolve_mock_setup(setup))
-          inject_into_file resolved[:path], resolved[:text], after: resolved[:after]
+          # A line found by any name (the fallback) skips commented ones, here as in resolve_mock_setup.
+          after = resolved[:after] == stock[:after] ? stock[:after] : /^[^#\n]*#{Regexp.escape(resolved[:after])}/
+          inject_into_file resolved[:path], resolved[:text], after: after
           # After the insert, so a helper Thor fails to read keeps the previous mock.
           remove_previous_mock_setup(test)
         else
-          shown = fill_mock_setup(setup) { |name| name }
           previous = @_stored_components && @_stored_components[:mock].to_s
           kept = " and remove #{previous}'s lines if they are still there" unless ['', 'none', mock.downcase].include?(previous.to_s)
-          say "#{mock} is in the Gemfile but not set up: #{setup[:path]} has no line like `#{shown[:after].chomp}` " \
-              "to add these lines after. To use #{mock}, add them there by hand#{kept}:\n#{shown[:text]}", :yellow
+          say "#{mock} is in the Gemfile but not set up: #{setup[:path]} has no line like `#{stock[:after].chomp}` " \
+              "to add these lines after. To use #{mock}, add them there by hand#{kept}:\n#{stock[:text]}", :yellow
         end
       end
 
@@ -363,12 +365,12 @@ module Padrino
 
         content = File.binread(path)
         # The line as Padrino writes it comes first, found as before, so a helper that worked keeps the same setup;
-        # only without it does any name do, from the first such line.
+        # only without it does any name do, from the first such line that isn't commented out.
         stock = fill_mock_setup(setup) { |name| name }
         return stock if content.include?(stock[:after].b)
 
         pattern = Regexp.escape(setup[:after].b).gsub(MOCK_SETUP_NAME) { "(?<#{Regexp.last_match(1)}>\\w+)" }
-        match = content.match(Regexp.new(pattern))
+        match = content.match(Regexp.new("^[^#\\n]*#{pattern}"))
         match && fill_mock_setup(setup) { |name| match[name] }
       end
 

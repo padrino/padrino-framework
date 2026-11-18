@@ -882,6 +882,34 @@ describe 'ComponentGenerator' do
         refute_match(/:rr|RR::DSL|On ExampleGroup/, content)
       end
 
+      it 'should skip a commented configure line when the helper has no |conf| block' do
+        { 'above' => ->(c) { c.sub("RSpec.configure do |conf|\n", "# RSpec.configure do |c|\n  # RSpec.configure do |config|\nRSpec.configure do |config|\n") },
+          'below' => ->(c) { "#{c.sub("RSpec.configure do |conf|\n", "RSpec.configure do |config|\n")}# RSpec.configure do |config|\n# end\n" } }
+          .each do |where, edit|
+          project = "#{@apptmp}/project_#{where}"
+          capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", '--test=rspec', '--mock=mocha', '--script=none') }
+          helper = "#{project}/spec/spec_helper.rb"
+          File.write(helper, edit.call(File.read(helper)).gsub(/^  conf\./, '  config.'))
+          switch_mock(project, 'rr')
+          content = File.read(helper)
+          assert_match(/^RSpec\.configure do \|config\|\n  config\.mock_with :rr\n/, content, where)
+          assert_equal 1, content.scan('mock_with :rr').size, where
+          refute_match(/^(?:# )?RSpec\.configure do \|(?:c|config)\|\n *\w+\.mock_with/, content.sub(/^RSpec\.configure do \|config\|\n/, ''), where)
+          refute_match(/mocha/, content, where)
+        end
+      end
+
+      it 'should say which lines to add when the only configure block is commented out' do
+        project = "#{@apptmp}/sample_project"
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--script=none') }
+        helper = "#{project}/spec/spec_helper.rb"
+        File.write(helper, File.read(helper).gsub(/^(RSpec\.configure do \|conf\||  conf\.include .*|end)$/) { "# #{Regexp.last_match(1).sub(/\bconf\b/, 'config')}" })
+        before = File.read(helper)
+        out, = capture_io { generate(:component, '--mock=rr', "-r=#{project}") }
+        assert_equal before, File.read(helper)
+        assert_includes out, 'spec/spec_helper.rb has no line like `RSpec.configure do |conf|`'
+      end
+
       it 'should remove the previous mock from another configure block' do
         project = "#{@apptmp}/sample_project"
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
@@ -889,7 +917,7 @@ describe 'ComponentGenerator' do
         # The project moved the rr lines to its own block and renamed Padrino's.
         content = File.read(helper)
         rr = content[/^  conf\.mock_with :rr\n.*RR::DSL\n/m]
-        File.write(helper, content.sub(rr, '').sub("RSpec.configure do |conf|\n", "RSpec.configure do |config|\n") +
+        File.write(helper, content.sub(rr, '').sub("RSpec.configure do |conf|\n", "RSpec.configure do |config|\n").gsub(/^  conf\./, '  config.') +
                            "\nRSpec.configure do |c|\n#{rr.gsub('conf.', 'c.')}end\n")
         switch_mock(project, 'mocha')
         content = File.read(helper)
