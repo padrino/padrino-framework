@@ -25,13 +25,7 @@ TAILWIND_RAKE = <<~RAKE unless defined?(TAILWIND_RAKE)
 RAKE
 
 def setup_stylesheet
-  # Start on a new line so a file without a trailing newline keeps its last line intact.
-  append_line = lambda do |path, text|
-    content = File.read(path)
-    append_file path, content.empty? || content.end_with?("\n") ? text : "\n#{text}"
-  end
-
-  require_dependencies 'tailwindcss-ruby', version: '~> 4.0'
+  require_dependencies 'tailwindcss-ruby', version: '~> 4.0' # The Ruby it needs is in MINIMUM_RUBY (actions.rb).
   previous = fetch_component_choice(:stylesheet).to_s
   preprocessed = %w[sass scss less].include?(previous)
   # Tailwind writes its build to public/stylesheets/application.css, so carry
@@ -56,17 +50,27 @@ def setup_stylesheet
 
   procfile = destination_root('Procfile.dev')
   if File.exist?(procfile)
-    append_line.call(procfile, "css: bundle exec rake tailwind:watch\n") unless File.read(procfile).match?(/^css:/)
+    append_line(procfile, "css: bundle exec rake tailwind:watch\n") unless File.binread(procfile).match?(/^css:/n)
   else
     create_file procfile, "web: bundle exec padrino start\ncss: bundle exec rake tailwind:watch\n"
   end
 
   gitignore = destination_root('.gitignore')
-  append_line.call(gitignore, "public/stylesheets/application.css\n") if File.exist?(gitignore)
+  append_line(gitignore, "public/stylesheets/application.css\n") if File.exist?(gitignore)
 
   if preprocessed
-    say "Switching from #{previous}: its gems and initializer remain and also write public/stylesheets/application.css, " \
-        "so remove them from Gemfile, app/app.rb and config/initializers/#{previous}.rb.", :yellow
+    dart_sass = File.exist?(destination_root('tasks/sass.rake'))
+    if dart_sass
+      say "Switching from #{previous}: tasks/sass.rake also writes public/stylesheets, so delete it, remove gem 'sass-embedded' " \
+          'from Gemfile and make the css: line in Procfile.dev `css: bundle exec rake tailwind:watch`.', :yellow
+    end
+    # A project switched between sass and scss can still hold the other one's initializer.
+    names = previous == 'less' ? %w[less] : %w[sass scss]
+    initializers = names.map { |name| "config/initializers/#{name}.rb" }.select { |path| File.exist?(destination_root(path)) }
+    unless initializers.empty?
+      say "Switching from #{previous}: its gems and initializer remain and also write public/stylesheets/application.css, " \
+          "so remove them from Gemfile, app/app.rb and #{initializers.join(' and ')}.", :yellow
+    end
   end
 
   renderer = fetch_component_choice(:renderer).to_s

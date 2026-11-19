@@ -113,6 +113,53 @@ describe 'FormatHelpers' do
       actual_text = highlight('Lorem ipsum dolor sit amet', 'dolor', highlighter: '<span class="custom">\1</span>')
       assert_equal 'Lorem ipsum <span class="custom">dolor</span> sit amet', actual_text
     end
+
+    it 'should leave words inside html tags alone' do
+      actual_text = highlight('<b class="b">bold</b> <a href="/b">b</a>', 'b')
+      assert_equal '<b class="b"><strong class="highlight">b</strong>old</b> <a href="/b"><strong class="highlight">b</strong></a>', actual_text
+    end
+
+    it 'should leave a quoted attribute alone when it holds a >' do
+      actual_text = highlight('<a title="x > y">y</a>', 'y')
+      assert_equal '<a title="x > y"><strong class="highlight">y</strong></a>', actual_text
+    end
+
+    it 'should leave a quoted attribute alone when it holds a <' do
+      actual_text = highlight(%(<a title="x < y" data-y='y < x'>y</a>), 'y')
+      assert_equal %(<a title="x < y" data-y='y < x'><strong class="highlight">y</strong></a>), actual_text
+    end
+
+    it 'should highlight text around a < that does not start a tag' do
+      assert_equal 'if a < b then <strong class="highlight">y</strong>', highlight('if a < b then y', 'y')
+      assert_equal 'if <strong class="highlight">a < b</strong> then y', highlight('if a < b then y', 'a < b')
+      assert_equal "<\u212A <strong class=\"highlight\">b</strong>", highlight("<\u212A b", 'b')
+    end
+
+    it 'should read a quote in a tag as a value only after =' do
+      actual_text = highlight("<img alt=it's> Ruby isn't", 'ruby')
+      assert_equal %(<img alt=it's> <strong class="highlight">Ruby</strong> isn't), actual_text
+    end
+
+    it 'should not split a tag at its closing >' do
+      assert_equal '<b>x</b>', highlight('<b>x</b>', '>x')
+    end
+
+    it 'should highlight long text in linear time' do
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      actual_text = highlight('word ' * 20_000, 'word')
+      assert_operator Process.clock_gettime(Process::CLOCK_MONOTONIC) - started, :<, 2
+      assert_equal '<strong class="highlight">word</strong> ' * 20_000, actual_text
+    end
+
+    it 'should highlight html safe text' do
+      actual_text = highlight('<p>Lorem</p><p>ipsum dolor</p>'.html_safe, %w[lorem dolor])
+      assert_equal '<p><strong class="highlight">Lorem</strong></p><p>ipsum <strong class="highlight">dolor</strong></p>', actual_text
+    end
+
+    it 'should highlight several words across tags' do
+      actual_text = highlight('<p>Lorem</p><p>ipsum lorem</p>', %w[lorem ipsum])
+      assert_equal '<p><strong class="highlight">Lorem</strong></p><p><strong class="highlight">ipsum</strong> <strong class="highlight">lorem</strong></p>', actual_text
+    end
   end
 
   describe 'for #truncate method' do
@@ -127,6 +174,10 @@ describe 'FormatHelpers' do
     it 'should support specifying omission text' do
       actual_text = truncate('And they found that many people were sleeping better.', length: 25, omission: '(clipped)')
       assert_equal 'And they found t(clipped)', actual_text
+    end
+    it 'should not return more text when the length is shorter than the omission' do
+      assert_equal '...', truncate('hello world', length: 2)
+      assert_equal '(cut)', truncate('hello world', length: 3, omission: '(cut)')
     end
   end
 
@@ -145,6 +196,9 @@ describe 'FormatHelpers' do
     it 'should support specifying omission text' do
       actual_text = truncate_words('And they found that many people were sleeping better.', length: 4, omission: '(clipped)')
       assert_equal 'And they found that(clipped)', actual_text
+    end
+    it 'should keep no words for a length of zero' do
+      assert_equal '...', truncate_words('one two three', length: 0)
     end
   end
 
@@ -167,6 +221,68 @@ describe 'FormatHelpers' do
       refute '<h1>hello</h1>'.html_safe?
       assert h('<h1>hello</h1>').html_safe?
       assert h!('', 'default').html_safe?
+    end
+  end
+
+  describe 'for the deprecated #sanitize_html method' do
+    # The deprecation warns once per process: forget an earlier warning, and restore it after.
+    def setup
+      super
+      @warned = Padrino.instance_variable_defined?(:@_sanitize_html_warned)
+      Padrino.remove_instance_variable(:@_sanitize_html_warned) if @warned
+    end
+
+    def teardown
+      if @warned
+        Padrino.instance_variable_set(:@_sanitize_html_warned, true)
+      elsif Padrino.instance_variable_defined?(:@_sanitize_html_warned)
+        Padrino.remove_instance_variable(:@_sanitize_html_warned)
+      end
+      super
+    end
+
+    it 'should still escape the html and mark it as safe' do
+      capture_io do
+        actual = sanitize_html('<h1>"Me" & Bob</h1>')
+        assert_equal '&lt;h1&gt;&quot;Me&quot; &amp; Bob&lt;/h1&gt;', actual
+        assert actual.html_safe?
+      end
+    end
+
+    it 'should warn once, naming escape_html and the line of the first call' do
+      line = __LINE__ + 2
+      _out, err = capture_io do
+        sanitize_html('<b>')
+        sanitize_html('<i>')
+      end
+      assert_equal 1, err.scan('sanitize_html is deprecated').size, err
+      assert_includes err, 'Padrino 1.0'
+      assert_includes err, "Use escape_html (or h) instead (first called at #{__FILE__}:#{line})"
+    end
+
+    it 'should escape and warn when it is the first frame of a fiber' do
+      actual = nil
+      _out, err = capture_io { actual = Fiber.new(&method(:sanitize_html)).resume('<b>') }
+      assert_equal '&lt;b&gt;', actual
+      assert_includes err, "Use escape_html (or h) instead.\n"
+    end
+
+    it 'should warn while warnings are off, as they are while the reloader loads app files' do
+      verbose = $VERBOSE
+      $VERBOSE = nil
+      _out, err = capture_io { sanitize_html('<b>') }
+      assert_includes err, 'sanitize_html is deprecated'
+    ensure
+      $VERBOSE = verbose
+    end
+
+    it 'should not warn from escape_html, h or h!' do
+      _out, err = capture_io do
+        escape_html('<b>')
+        h('<b>')
+        h!('<b>')
+      end
+      assert_empty err
     end
   end
 
@@ -238,26 +354,101 @@ describe 'FormatHelpers' do
     end
   end
 
+  describe 'for #time_tag method' do
+    before do
+      @locale = I18n.locale
+      I18n.locale = :en
+      @date = Date.new(2026, 11, 11)
+      @time = Time.utc(2026, 11, 11, 9, 30, 15)
+    end
+
+    after { I18n.locale = @locale }
+
+    it 'should display a date with an ISO 8601 datetime and the long format' do
+      assert_equal '<time datetime="2026-11-11">November 11, 2026</time>', time_tag(@date)
+    end
+
+    it 'should display a time and a datetime with their offset' do
+      assert_equal '<time datetime="2026-11-11T09:30:15Z">November 11, 2026 09:30</time>', time_tag(@time)
+      assert_equal '<time datetime="2026-11-11T09:30:15+05:30">09:30</time>',
+                   time_tag(Time.new(2026, 11, 11, 9, 30, 15, '+05:30'), format: '%H:%M')
+      assert_equal '<time datetime="2026-11-11T09:30:15+00:00">09:30</time>',
+                   time_tag(DateTime.new(2026, 11, 11, 9, 30, 15), format: '%H:%M')
+    end
+
+    it 'should localize the content with a format and the current locale' do
+      assert_equal '<time datetime="2026-11-11">Nov 11</time>', time_tag(@date, format: :short)
+      assert_equal '<time datetime="2026-11-11T09:30:15Z">11 Nov 09:30</time>', time_tag(@time, format: :short)
+      I18n.locale = :de
+      assert_equal '<time datetime="2026-11-11">11. November 2026</time>', time_tag(@date)
+    end
+
+    it 'should take content and html options' do
+      assert_equal '<time datetime="2026-11-11" class="date">Release day</time>', time_tag(@date, 'Release day', class: 'date')
+      assert_equal '<time datetime="2026-11-11" id="day">November 11, 2026</time>', time_tag(@date, id: 'day')
+    end
+
+    it 'should take the datetime attribute from the :datetime option' do
+      assert_equal '<time datetime="2026-11">November 11, 2026</time>', time_tag(@date, datetime: '2026-11')
+    end
+
+    it 'should take the content from a block' do
+      assert_equal '<time datetime="2026-11-11" class="day">Today</time>', time_tag(@date, class: 'day') { 'Today' }
+      assert_equal '<time datetime="2026-11-11">Today</time>', time_tag(@date) { 'Today' }
+    end
+
+    it 'should escape the content and the attributes' do
+      actual_html = time_tag(@date, '<script>x</script>', datetime: '"><b>', title: '"')
+      assert_equal '<time datetime="&quot;&gt;&lt;b&gt;" title="&quot;">&lt;script&gt;x&lt;/script&gt;</time>', actual_html
+      assert_equal '<time datetime="2026-11-11">&lt;11&gt;</time>', time_tag(@date, format: '<%d>')
+    end
+
+    it 'should not change the options passed in' do
+      options = { format: :short, datetime: '2026-11', class: 'date' }.freeze
+      time_tag(@date, options)
+      assert_equal({ format: :short, datetime: '2026-11', class: 'date' }, options)
+    end
+
+    it 'should take options with String keys' do
+      options = { 'format' => :short, 'datetime' => '2026-11', 'class' => 'date' }.freeze
+      assert_equal '<time datetime="2026-11" class="date">Nov 11</time>', time_tag(@date, options)
+      assert_equal '<time datetime="2026-11">Today</time>', time_tag(@date, 'Today', 'datetime' => '2026-11')
+      assert_equal({ 'format' => :short, 'datetime' => '2026-11', 'class' => 'date' }, options)
+    end
+
+    it 'should take nil options' do
+      assert_equal '<time datetime="2026-11-11">Today</time>', time_tag(@date, 'Today', nil)
+      assert_equal '<time datetime="2026-11-11">November 11, 2026</time>', time_tag(@date, nil, nil)
+    end
+
+    it 'should display nothing for a nil date or time' do
+      assert_equal '', time_tag(nil)
+      assert_equal '', time_tag(nil, 'Draft', class: 'date')
+      assert_equal '', time_tag(nil, datetime: '2026-11', format: :short)
+      assert_equal '', time_tag(nil) { flunk 'the block should not be called' }
+    end
+  end
+
   describe 'for #js_escape_html method' do
     it 'should escape double quotes' do
       assert_equal '\"hello\"', js_escape_html('"hello"')
-      assert_equal '\"hello\"', js_escape_html(SafeBuffer.new('"hello"'))
+      assert_equal '\"hello\"', js_escape_html(Padrino::SafeBuffer.new('"hello"'))
     end
     it 'should escape single quotes' do
       assert_equal "\\'hello\\'", js_escape_html("'hello'")
-      assert_equal "\\'hello\\'", js_escape_html(SafeBuffer.new("'hello'"))
+      assert_equal "\\'hello\\'", js_escape_html(Padrino::SafeBuffer.new("'hello'"))
     end
     it 'should escape html tags and breaks' do
       assert_equal '\\n\\n<p>hello<\\/p>\\n', js_escape_html("\n\r<p>hello</p>\r\n")
-      assert_equal '\\n\\n<p>hello<\\/p>\\n', js_escape_html(SafeBuffer.new("\n\r<p>hello</p>\r\n"))
+      assert_equal '\\n\\n<p>hello<\\/p>\\n', js_escape_html(Padrino::SafeBuffer.new("\n\r<p>hello</p>\r\n"))
     end
     it 'should escape data-confirm attribute' do
       assert_equal '<data-confirm=\"are you sure\">', js_escape_html('<data-confirm="are you sure">')
-      assert_equal '<data-confirm=\"are you sure\">', js_escape_html(SafeBuffer.new('<data-confirm="are you sure">'))
+      assert_equal '<data-confirm=\"are you sure\">', js_escape_html(Padrino::SafeBuffer.new('<data-confirm="are you sure">'))
     end
     it 'should keep html_safe content html_safe' do
       refute js_escape_html('"hello"').html_safe?
-      assert js_escape_html(SafeBuffer.new('"hello"')).html_safe?
+      assert js_escape_html(Padrino::SafeBuffer.new('"hello"')).html_safe?
     end
   end
 end

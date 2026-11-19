@@ -186,5 +186,35 @@ describe 'Application' do
         assert_includes InheritanceTest.prerequisites, 'my_prerequisites'
       end
     end
+
+    describe 'prototype' do
+      it 'should build one prototype for concurrent first requests' do
+        mock_app { get('/') { 'ok' } }
+        builds = Queue.new
+        @app.define_singleton_method(:new) do |*args, &block|
+          builds << true
+          sleep 0.2
+          super(*args, &block)
+        end
+        threads = Array.new(4) { Thread.new { @app.call(Rack::MockRequest.env_for('/'))[0] } }
+        assert_equal [200] * 4, threads.map(&:value)
+        assert_equal 1, builds.size
+        assert_equal 1, @app.filters[:after].size
+      end
+
+      it 'should keep one flash filter when the prototype is built again' do
+        mock_app do
+          enable :sessions
+          get('/write') { flash[:notice] = 'saved' }
+          get('/read') { flash[:notice].to_s }
+        end
+        get '/write'
+        @app.use Rack::Head
+        @app.new
+        get '/read'
+        assert_equal 'saved', body
+        assert_equal 1, @app.filters[:after].size
+      end
+    end
   end # application functionality
 end

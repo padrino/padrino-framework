@@ -38,6 +38,7 @@ module Padrino
 
       def initialize(value, options = {})
         super(value.to_s)
+        options   = options.dup
         @map      = options.delete(:map)
         @optional = options.delete(:optional)
         @options  = options
@@ -105,15 +106,30 @@ module Padrino
       end
 
       ##
+      # Whether +pattern+ (a Regexp, String or anything with ===) matches +path+, a
+      # decoded form of a request path. A Regexp fixed to an encoding the path can't be
+      # read in (/n with non-ASCII bytes) doesn't match it, as in Sinatra.
+      #
+      # @api private
+      def path_match?(pattern, path)
+        pattern === path
+      rescue Encoding::CompatibilityError
+        false
+      end
+
+      ##
       # Whether a provides condition for +types+ accepts +format+, a Symbol
-      # decoded as route params receive it.
+      # decoded as route params receive it. :any accepts only the name of a
+      # file extension with a registered MIME type, which the route answers with.
       #
       # @example
       #   Padrino::Routing.provided_format?(%i[html json], :json) # => true
+      #   Padrino::Routing.provided_format?([:any], :nosuchext)  # => false
+      #   Padrino::Routing.provided_format?([:any], :'text/plain') # => false
       #
       # @api private
       def provided_format?(types, format)
-        !([:any, format] & types).empty?
+        types.include?(format) || (types.include?(:any) && !::Rack::Mime.mime_type(".#{format}", nil).nil?)
       end
 
       ##
@@ -342,10 +358,10 @@ module Padrino
       # @see http://padrinorb.com/guides/controllers/route-filters/
       #
       def construct_filter(*args, &block)
-        options = args.last.is_a?(Hash) ? args.pop : {}
+        options = args.last.is_a?(Hash) ? args.pop.dup : {}
         if (except = options.delete(:except))
           raise 'You cannot use :except with other options specified' unless args.empty? && options.empty?
-          except = Array(except)
+          except = Array(except).dup
           options = except.last.is_a?(Hash) ? except.pop : {}
         end
         Filter.new(!except, @_controller, options, Array(except || args), &block)
@@ -379,8 +395,7 @@ module Padrino
         return super() unless name
         defaults = { optional: false, map: name.to_s }
         options = defaults.merge(options)
-        @_parent = Array(@_parent) unless @_parent.is_a?(Array)
-        @_parent << Parent.new(name, options)
+        @_parent = Array(@_parent) + [Parent.new(name, options)]
       end
 
       ##
@@ -425,10 +440,10 @@ module Padrino
       # Recognize a given path.
       #
       # @param [String] path
-      #   Path+Query to parse
+      #   The path to recognize, percent-encoded or not, without a query string.
       #
-      # @return [Symbol, Hash]
-      #   Returns controller and query params.
+      # @return [Array(Symbol, Hash), nil]
+      #   Returns controller and query params, or nil when no route matches the path.
       #
       # @example Giving a controller like:
       #   controller :foo do
@@ -444,8 +459,7 @@ module Padrino
       #   # => [:foo_bar, { id: :mine }]
       #
       def recognize_path(path)
-        responses = @router.recognize_path(path)
-        [responses[0], responses[1]]
+        @router.recognize_path(path)
       end
 
       ##
@@ -465,7 +479,7 @@ module Padrino
       #   url(:index, fragment: 'comments')
       #
       def url(*args)
-        params = args.last.is_a?(Hash) ? args.pop : {}
+        params = args.last.is_a?(Hash) ? args.pop.dup : {}
         fragment = params.delete(:fragment) || params.delete(:anchor)
         path = make_path_with_params(args, value_to_param(params))
         rebase_url(fragment ? "#{path}##{fragment}" : path)
@@ -500,8 +514,8 @@ module Padrino
       def rebase_url(url)
         if url.start_with?('/')
           new_url = String.new
-          new_url << conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
-          new_url << conform_uri(uri_root) if defined?(uri_root)
+          new_url << conformed_uri(:@_conformed_base_uri, ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
+          new_url << conformed_uri(:@_conformed_uri_root, uri_root) if defined?(uri_root)
           new_url << url
         else
           url.empty? ? '/' : url
@@ -545,7 +559,7 @@ module Padrino
       # Saves controller options, yields the block, restores controller options.
       def with_new_options(*args)
         original = {}
-        options = args.last.is_a?(Hash) ? args.pop : {}
+        options = args.last.is_a?(Hash) ? args.pop.dup : {}
         options[:conditions] = @_conditions.merge(options[:conditions] || {}) if @_conditions
 
         CONTROLLER_OPTIONS.each { |key| replace_instance_variable(original, "@_#{key}", options.delete(key)) }
@@ -598,6 +612,17 @@ module Padrino
         uri_string.gsub(%r{^(?!/)(.*)}, '/\1').gsub(%r{/+$}, '')
       end
 
+      # conform_uri, remembered in +ivar+ for the last value it was given (the base URI and
+      # uri_root rarely change). The memo is a frozen [value, result] pair, replaced whole.
+      def conformed_uri(ivar, uri_string)
+        memo = instance_variable_get(ivar)
+        return memo[1] if memo && memo[0] == uri_string
+
+        memo = [uri_string.dup.freeze, conform_uri(uri_string).freeze].freeze
+        instance_variable_set(ivar, memo)
+        memo[1]
+      end
+
       ##
       # Rewrite default routes.
       #
@@ -619,6 +644,7 @@ module Padrino
       #   get :list, provides: [:js, :json]                # => "/list.{!format,js|json}"
       #   get :list, provides: [:html, :js, :json]         # => "/list(.{!format,js|json})"
       #   get :list, priority: :low                        # Defers route to be last
+      #   get :index, host: 'admin.example.com'            # Only for that host (a String, Regexp or Array)
       #   get /pattern/, name: :foo, generate_with: '/foo' # Generates :foo as /foo
       def route(verb, path, *args, &block)
         options =
@@ -863,7 +889,7 @@ module Padrino
       def provides_format(*types)
         mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
-          return provides_format?(types, params[:format].to_sym) if params[:format]
+          return provides_format?(types, params[:format].to_s.scrub.to_sym) if params[:format]
 
           accepts = request.accept.map(&:to_str)
           # Per rfc2616-sec14:
@@ -874,7 +900,7 @@ module Padrino
 
           accepts = accepts.empty? ? mime_types.slice(0, 1) : (accepts & mime_types)
 
-          type = accepts.first && mime_symbol(accepts.first)
+          type = accepts.first && (mime_symbol(accepts.first) || accepts.first)
           type ||= catch_all && types.first
 
           accept_format = CONTENT_TYPE_ALIASES[type] || type
@@ -894,14 +920,14 @@ module Padrino
       # @example
       #   get "/a", accepts: [:html, :js]
       #   # => GET /a CONTENT_TYPE text/html => :html
-      #   # => GET /a CONTENT_TYPE application/javascript => :js
+      #   # => GET /a CONTENT_TYPE text/javascript => :js
       #   # => GET /a CONTENT_TYPE application/xml => 406
       #
       def accepts(*types)
         mime_types = types.map { |type| mime_type(CONTENT_TYPE_ALIASES[type] || type) }
         condition do
           halt 406 unless mime_types.include?(request.media_type)
-          content_type(mime_symbol(request.media_type))
+          content_type(mime_symbol(request.media_type) || request.media_type)
         end
       end
 
@@ -1055,8 +1081,7 @@ module Padrino
       private
 
       def provides_any?(formats)
-        accepted_format = formats.first
-        type = accepted_format ? mime_symbol(accepted_format) : :html
+        type = formats.filter_map { |format| mime_symbol(format) || (:html if ::Rack::Mime.match?('text/html', format)) }.first || :html
         content_type(CONTENT_TYPE_ALIASES[type] || type)
       end
 
@@ -1070,7 +1095,8 @@ module Padrino
       end
 
       def mime_symbol(media_type)
-        ::Rack::Mime::MIME_TYPES.key(media_type).sub(/\./, '').to_sym
+        extension = ::Rack::Mime::MIME_TYPES.key(media_type)
+        extension&.sub(/\./, '')&.to_sym
       end
 
       def filter!(type, base = settings)
@@ -1092,7 +1118,7 @@ module Padrino
 
       def dispatch!
         @_ran_filters = {}.compare_by_identity
-        @params = defined?(Sinatra::IndifferentHash) ? Sinatra::IndifferentHash[@request.params] : indifferent_params(@request.params)
+        @params = Sinatra::IndifferentHash[@request.params]
         force_encoding(@params)
         invoke do
           static! if settings.static? && (request.get? || request.head?)
@@ -1114,7 +1140,10 @@ module Padrino
         first_time = true
 
         routes = base.compiled_router.call(@request) do |route, params|
-          next if route.user_agent && route.user_agent !~ @request.user_agent
+          # ceiling: a route skipped here for its host or agent still counts for the 405 check below;
+          # drop those routes from +routes+ before the check to answer 404 instead.
+          next if route.host && !host_matches?(route.host)
+          next if route.user_agent && !(route.user_agent === @request.user_agent)
           original_params, parent_layout = @params.dup, @layout
           returned_pass_block = invoke_route(route, params, first_time)
           pass_block = returned_pass_block if returned_pass_block
@@ -1173,6 +1202,12 @@ module Padrino
         ensure
           (route.after_filters - settings.filters[:after]).each { |block| instance_eval(&block) }
         end
+      end
+
+      # A route's +host:+ is a String (compared ignoring case), a Regexp or an Array of them.
+      def host_matches?(hosts)
+        host = @request.host.to_s
+        Array(hosts).any? { |pattern| pattern.is_a?(String) ? pattern.casecmp?(host) : pattern === host }
       end
 
       def captures_from_params(params)

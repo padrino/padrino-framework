@@ -75,5 +75,8 @@ end
 # Add our generators to Padrino::Generators.
 Padrino::Generators.load_paths << Dir["#{__dir__}/padrino-gen/generators/{project,app,mailer,controller,helper,model,migration,plugin,component,task}.rb"]
 
+# padrino-admin, when loaded first, leaves its generators for padrino-gen to add.
+Padrino::Generators.load_paths << Padrino::Admin::GENERATORS if defined?(Padrino::Admin::GENERATORS)
+
 # Add our tasks to padrino-core.
 Padrino::Tasks.files << Dir["#{__dir__}/padrino-gen/padrino-tasks/**/*.rb"]

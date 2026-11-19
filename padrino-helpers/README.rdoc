@@ -66,6 +66,11 @@ the tag contains 'content' within then <tt>content_tag</tt> is used. For example
   tag(:br, style: 'clear:both') => <br style="clear:both" />
   content_tag(:p, "demo", class: 'light') => <p class="light">demo</p>
 
+To build a class list from conditions, use <tt>class_names</tt>. It takes Strings, Symbols, Arrays and
+Hashes, and a Hash keeps the names whose values are not nil or false:
+
+  content_tag(:li, "Home", class: class_names('nav-item', active: true, disabled: false)) => <li class="nav-item active">Home</li>
+
 The input_tag is used to build tags that are related to accepting input from the user:
 
   input_tag :text, class: "demo" => <input type='text' class='demo' />
@@ -79,14 +84,16 @@ For more information on using tag helpers, check out the guide for
 === Asset Helpers
 
 Asset helpers are intended to help insert useful html onto a view template such as 'flash' notices,
-hyperlinks, mail_to links, images, stylesheets and javascript. An example of their uses would be on a
-simple view template:
+hyperlinks, mail_to links, images, stylesheets, javascript, import maps and preload links. An example
+of their uses would be on a simple view template:
 
   # app/views/example.haml
   ...
   %head
     = stylesheet_link_tag 'layout'
     = javascript_include_tag 'application'
+    = preload_link_tag '/fonts/inter.woff2'
+    = javascript_importmap_tag 'app', imports: { 'app' => 'app', 'chart' => 'https://cdn.example.com/chart.js' }
   %body
     ...
     = flash_tag :notice

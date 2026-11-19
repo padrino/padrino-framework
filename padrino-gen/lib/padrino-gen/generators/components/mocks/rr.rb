@@ -16,8 +16,7 @@ def setup_mock
       "Use mocha (-m mocha) or your test framework's own mocks instead.", :yellow
   require_dependencies 'rr', require: false, group: 'test'
 
-  test = options[:test].to_s
-  test = fetch_component_choice(:test).to_s if test.empty?
+  test = applied_component_choice(:test)
   require_dependencies 'test-unit-rr', require: false, group: 'test' if test == 'testunit'
   if (setup = mock_setup_lines(test))
     inject_into_file setup[:path], setup[:text], after: setup[:after]

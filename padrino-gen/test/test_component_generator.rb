@@ -34,6 +34,21 @@ describe 'ComponentGenerator' do
       assert_equal 'activerecord', components_chosen[:orm]
     end
 
+    it 'should warn when adding tailwind on Ruby 2.7' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Padrino::Generators::Component.any_instance.stubs(:running_ruby_version).returns('2.7.8')
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_includes out, 'The tailwind stylesheet uses the tailwindcss-ruby gem, which needs Ruby 3.0 or later; bundle install will fail on Ruby 2.7.8.'
+      assert_match_in_file(/gem 'tailwindcss-ruby', '~> 4.0'$/, "#{@apptmp}/sample_project/Gemfile")
+    end
+
+    it 'should not warn when adding tailwind on Ruby 3.0' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      Padrino::Generators::Component.any_instance.stubs(:running_ruby_version).returns('3.0.0')
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      refute_match(/needs Ruby/, out)
+    end
+
     it 'should move existing public styles into the tailwind source' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       File.write("#{@apptmp}/sample_project/public/stylesheets/application.css", "body { color: red; }\n")
@@ -95,7 +110,38 @@ describe 'ComponentGenerator' do
       Readline.stubs(:readline).returns('yes').once
       out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       assert_equal "@import \"tailwindcss\";\n", File.read("#{@apptmp}/sample_project/app/stylesheets/application.css")
+      assert_includes out, "Switching from scss: tasks/sass.rake also writes public/stylesheets, so delete it, remove gem 'sass-embedded' " \
+                           'from Gemfile and make the css: line in Procfile.dev `css: bundle exec rake tailwind:watch`.'
+    end
+
+    it 'should tell to remove the Ruby Sass initializer when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      # A project from before the scss component used Dart Sass has an initializer instead of tasks/sass.rake.
+      FileUtils.rm_f("#{@apptmp}/sample_project/tasks/sass.rake")
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
+      File.write("#{@apptmp}/sample_project/config/initializers/scss.rb", "require 'sass/plugin/rack'\n")
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       assert_match(%r{Switching from scss: .* remove them from Gemfile, app/app\.rb and config/initializers/scss\.rb\.}, out)
+    end
+
+    it 'should name the scss initializer of a project switched to sass when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=sass') }
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
+      File.write("#{@apptmp}/sample_project/config/initializers/scss.rb", "require 'sass/plugin/rack'\n")
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_match(%r{Switching from sass: its gems and initializer remain .* config/initializers/scss\.rb\.}, out)
+    end
+
+    it 'should name both the Dart Sass task and a Ruby Sass initializer left from before when switching to tailwind' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=scss') }
+      FileUtils.mkdir_p("#{@apptmp}/sample_project/config/initializers")
+      File.write("#{@apptmp}/sample_project/config/initializers/scss.rb", "require 'sass/plugin/rack'\n")
+      Readline.stubs(:readline).returns('yes').once
+      out, = capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_includes out, 'Switching from scss: tasks/sass.rake also writes public/stylesheets'
+      assert_match(%r{Switching from scss: its gems and initializer remain .* config/initializers/scss\.rb\.}, out)
     end
 
     it 'should move hand-written public styles when switching from scss without a scss source' do
@@ -124,6 +170,30 @@ describe 'ComponentGenerator' do
       assert_equal 1, File.read("#{@apptmp}/sample_project/.gitignore").scan(%r{^public/stylesheets/application\.css$}).size
     end
 
+    it 'should add the sass watcher after a Procfile.dev line that only ends like it' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.write(procfile, "web: bundle exec padrino start\nxcss: bundle exec rake sass:watch")
+      capture_io { generate(:component, '--stylesheet=sass', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: bundle exec padrino start\nxcss: bundle exec rake sass:watch\ncss: bundle exec rake sass:watch\n", File.read(procfile)
+    end
+
+    it 'should add the tailwind watcher to a Procfile.dev that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.binwrite(procfile, "web: caf\xE9\n".b)
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: caf\xE9\ncss: bundle exec rake tailwind:watch\n".b, File.binread(procfile)
+    end
+
+    it 'should add the vite dev server to a Procfile.dev that is not valid UTF-8' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      procfile = "#{@apptmp}/sample_project/Procfile.dev"
+      File.binwrite(procfile, "web: caf\xE9\n".b)
+      capture_io { generate(:component, '--script=vite', "-r=#{@apptmp}/sample_project") }
+      assert_equal "web: caf\xE9\nvite: bundle exec vite dev\n".b, File.binread(procfile)
+    end
+
     it 'should start the tailwind lines on a new line' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"
@@ -135,12 +205,121 @@ describe 'ComponentGenerator' do
       assert_equal ".env\npublic/stylesheets/application.css\n", File.read(gitignore)
     end
 
+    it 'should not repeat a tailwind line that ends a file without a trailing newline' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+      gitignore = "#{@apptmp}/sample_project/.gitignore"
+      File.write(gitignore, ".env\npublic/stylesheets/application.css")
+      capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
+      assert_equal ".env\npublic/stylesheets/application.css", File.read(gitignore)
+    end
+
     it 'should keep a css process already in Procfile.dev' do
       capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
       procfile = "#{@apptmp}/sample_project/Procfile.dev"
       File.write(procfile, "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n")
       capture_io { generate(:component, '--stylesheet=tailwind', "-r=#{@apptmp}/sample_project") }
       assert_equal "web: bundle exec puma\ncss: bin/rails tailwindcss:watch\n", File.read(procfile)
+    end
+
+    describe 'sass and scss' do
+      def project_file(path)
+        "#{@apptmp}/sample_project/#{path}"
+      end
+
+      def apply(stylesheet = 'scss')
+        Readline.stubs(:readline).returns(nil)
+        capture_io { generate(:component, "--stylesheet=#{stylesheet}", "-r=#{@apptmp}/sample_project") }.first
+      end
+
+      it 'should create Procfile.dev with the sass watcher' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        refute File.exist?(project_file('Procfile.dev'))
+        apply
+        assert_equal "web: bundle exec padrino start\ncss: bundle exec rake sass:watch\n", File.read(project_file('Procfile.dev'))
+      end
+
+      it 'should add the sass watcher once, on a new line, when applied again' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        File.write(project_file('Procfile.dev'), 'web: bundle exec puma')
+        outs = Array.new(2) { apply }
+        assert_equal "web: bundle exec puma\ncss: bundle exec rake sass:watch\n", File.read(project_file('Procfile.dev'))
+        assert_equal 1, File.read(project_file('Gemfile')).scan(/^gem 'sass-embedded'/).size
+        outs.each { |out| refute_match(/Procfile\.dev already|Ruby Sass/, out) }
+      end
+
+      it 'should add the sass watcher to a Procfile.dev with CRLF line endings or bytes that are not UTF-8' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        ["web: bundle exec puma\r\n", "web: caf\xE9\n".b].each do |procfile|
+          File.binwrite(project_file('Procfile.dev'), procfile)
+          2.times { apply }
+          assert_equal "#{procfile}css: bundle exec rake sass:watch\n".b, File.binread(project_file('Procfile.dev'))
+        end
+      end
+
+      it 'should keep a css process already in Procfile.dev and say how to watch with sass' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        File.binwrite(project_file('Procfile.dev'), "web: bundle exec puma\r\ncss: bundle exec rake sass:watch\r\n")
+        refute_match(/Procfile\.dev already/, apply)
+        assert_equal "web: bundle exec puma\r\ncss: bundle exec rake sass:watch\r\n", File.binread(project_file('Procfile.dev'))
+
+        File.write(project_file('Procfile.dev'), "web: bundle exec puma\ncss: bundle exec rake tailwind:watch\n")
+        out = apply
+        assert_equal "web: bundle exec puma\ncss: bundle exec rake tailwind:watch\n", File.read(project_file('Procfile.dev'))
+        assert_match(/Procfile\.dev already runs a css: process; to rebuild stylesheets on change, make it `css: bundle exec rake sass:watch`\./, out)
+      end
+
+      it 'should name each Ruby Sass leftover of an earlier sass or scss component and leave them' do
+        %w[sass scss].each do |stylesheet|
+          `rm -rf #{@apptmp}/sample_project`
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+          # As the sass and scss components wrote them before they used Dart Sass.
+          name = stylesheet.capitalize
+          initializer = "config/initializers/#{stylesheet}.rb"
+          ruby_sass = "module #{name}Initializer\n  def self.registered(app)\n    require 'sass/plugin/rack'\n" \
+                      "    Sass::Plugin.options[:template_location] = Padrino.root(\"app/stylesheets\")\n    app.use Sass::Plugin::Rack\n  end\nend\n"
+          FileUtils.mkdir_p(project_file('config/initializers'))
+          File.write(project_file(initializer), ruby_sass)
+          File.write(project_file('app/app.rb'), File.read(project_file('app/app.rb')).sub("Padrino::Application\n", "\\0    register #{name}Initializer\n"))
+          File.write(project_file('Gemfile'), File.read(project_file('Gemfile')).sub("# Component requirements\n", "\\0gem 'sass'\n"))
+          before = %w[Gemfile app/app.rb].to_h { |path| [path, File.read(project_file(path))] }
+
+          out = apply(stylesheet)
+          assert_includes out, "This project still has Ruby Sass. To switch to Dart Sass, remove gem 'sass' from Gemfile and " \
+                               "`register #{name}Initializer` from app/app.rb, delete #{initializer}, then run bundle install."
+          assert_equal ruby_sass, File.read(project_file(initializer))
+          assert_equal before['app/app.rb'], File.read(project_file('app/app.rb'))
+          assert_equal before['Gemfile'].sub("# Component requirements\n", "\\0gem 'sass-embedded', '~> 1.63', require: false\n"), File.read(project_file('Gemfile'))
+
+          File.delete(project_file(initializer))
+          assert_includes apply(stylesheet), "To switch to Dart Sass, remove gem 'sass' from Gemfile and `register #{name}Initializer` from app/app.rb, then run bundle install."
+        end
+      end
+
+      it 'should tell how to remove tailwind when switching from it' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        refute_match(/Switching from tailwind/, apply('sass'))
+        # As the tailwind component leaves it; the switch itself asks first, so write it directly.
+        File.write(project_file('tasks/tailwind.rake'), "# tailwind\n")
+        out = apply('sass')
+        assert_includes out, 'Switching from tailwind: tasks/tailwind.rake also writes public/stylesheets/application.css, and Dart Sass copies'
+        assert_includes out, "remove gem 'tailwindcss-ruby' from Gemfile and make the css: line in Procfile.dev `css: bundle exec rake sass:watch`."
+      end
+
+      it 'should not take the .gitignore line or a commented register line of a project from before for Ruby Sass' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
+        # Projects generated before Puma became the default have .sass-cache/* in .gitignore, whatever the stylesheet.
+        File.write(project_file('.gitignore'), "#{File.read(project_file('.gitignore'))}.sass-cache/*\n")
+        File.write(project_file('app/app.rb'), File.read(project_file('app/app.rb')).sub("Padrino::Application\n", "\\0    # register SassInitializer\n"))
+        refute_match(/Ruby Sass/, apply('sass'))
+      end
+
+      it 'should not take an initializer that is not Ruby Sass for a leftover' do
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--stylesheet=sass') }
+        FileUtils.mkdir_p(project_file('config/initializers'))
+        File.write(project_file('config/initializers/sass.rb'), "module SassInitializer\n  def self.registered(app); end\nend\n")
+        File.write(project_file('app/app.rb'), File.read(project_file('app/app.rb')).sub("Padrino::Application\n", "\\0    register SassInitializer\n"))
+        refute_match(/Ruby Sass/, apply('sass'))
+      end
     end
 
     describe 'applied again with the same choice' do
@@ -383,11 +562,11 @@ describe 'ComponentGenerator' do
         files.each { |file| assert_equal "# edited\n", File.read(project_file(file)), file }
       end
 
-      it 'should keep an edited stylesheet initializer and connection pool middleware' do
+      it 'should keep an edited stylesheet rake file and connection pool middleware' do
         %w[sass scss].each do |stylesheet|
           `rm -rf #{@apptmp}/sample_project`
           capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', "--stylesheet=#{stylesheet}") }
-          files = %W[config/initializers/#{stylesheet}.rb lib/connection_pool_management_middleware.rb]
+          files = %w[tasks/sass.rake lib/connection_pool_management_middleware.rb]
           files.each { |file| File.write(project_file(file), "# edited\n") }
           rerun('--orm=activerecord', "--stylesheet=#{stylesheet}")
           files.each { |file| assert_equal "# edited\n", File.read(project_file(file)), "#{stylesheet}: #{file}" }
@@ -730,6 +909,56 @@ describe 'ComponentGenerator' do
           after = Dir["#{project}/{test,spec,features}/**/*"].select { |path| File.file?(path) }.to_h { |path| [path, File.read(path)] }
           assert_equal before, after, test
         end
+      end
+
+      def switch_test_and_mock(answers, from, to, test: 'rspec')
+        project = "#{@apptmp}/project_#{from}_#{to}_#{test}_#{answers.join('_')}"
+        capture_io { generate(:project, File.basename(project), "--root=#{@apptmp}", '--test=minitest', "--mock=#{from}", '--script=none') }
+        helper = "#{project}/test/test_config.rb"
+        File.write(helper, "#{File.read(helper)}# edited by the project\n")
+        Readline.stubs(:readline).returns(*answers)
+        out, = capture_io { generate_with_parts(:component, "--test=#{test}", "--mock=#{to}", "-r=#{project}", apps: 'app') }
+        [project, out]
+      end
+
+      it 'should set up the mock for the kept test component when the test switch is declined' do
+        [%w[mocha rr], %w[rr mocha]].each do |from, to|
+          project, = switch_test_and_mock(%w[no yes], from, to)
+          assert_equal 'minitest', YAML.load_file("#{project}/.components")[:test]
+          assert_mock_setup("#{project}/test/test_config.rb", 'minitest', to)
+          assert_no_file_exists("#{project}/spec/spec_helper.rb")
+          assert_no_match_in_file(/gem 'rspec'/, "#{project}/Gemfile")
+        end
+      end
+
+      it 'should set up the mock for the new test component when both switches are accepted' do
+        [%w[mocha rr], %w[rr mocha]].each do |from, to|
+          project, = switch_test_and_mock(%w[yes yes], from, to)
+          assert_equal ['rspec', to], YAML.load_file("#{project}/.components").values_at(:test, :mock)
+          lines = File.read("#{project}/spec/spec_helper.rb").lines.map(&:chomp)
+          mock_setup[to]['rspec'].each { |line| assert_equal 1, lines.count(line), line }
+          mock_setup[from]['rspec'].each { |line| assert_equal 0, lines.count(line), line }
+        end
+      end
+
+      it 'should set up the mock only for minitest when a switch to testunit, which shares its helper, is declined' do
+        [%w[mocha rr], %w[rr mocha], %w[mocha mocha]].each do |from, to|
+          project, = switch_test_and_mock(%w[no yes], from, to, test: 'testunit')
+          helper = "#{project}/test/test_config.rb"
+          assert_equal 'minitest', YAML.load_file("#{project}/.components")[:test]
+          assert_mock_setup(helper, 'minitest', to)
+          lines = File.read(helper).lines.map(&:strip)
+          mock_setup.each_value { |setup| setup['testunit'].each { |line| assert_equal 0, lines.count(line), "#{from} to #{to}: #{line}" } }
+          assert_no_match_in_file(/test-unit/, "#{project}/Gemfile")
+        end
+      end
+
+      it 'should set up the mock for the test component chosen at the prompt for a mistyped one' do
+        project, out = switch_test_and_mock(%w[rspec yes yes], 'mocha', 'rr', test: 'rspecc')
+        assert_match(/Option for --test 'rspecc' is not available/, out)
+        assert_equal %w[rspec rr], YAML.load_file("#{project}/.components").values_at(:test, :mock)
+        lines = File.read("#{project}/spec/spec_helper.rb").lines.map(&:chomp)
+        mock_setup['rr']['rspec'].each { |line| assert_equal 1, lines.count(line), line }
       end
     end
 
