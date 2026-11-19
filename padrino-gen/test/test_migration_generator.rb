@@ -24,7 +24,7 @@ describe 'MigrationGenerator' do
     end
 
     it 'should fail if we do not use an adapter' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/You need an ORM adapter/, out)
     end
@@ -34,7 +34,7 @@ describe 'MigrationGenerator' do
       'ohm' => /The ohm orm component is no longer available in Padrino \(available: .*\bsequel\b/
     }.each do |removed_orm, message|
       it "should fail with a message if the orm in .components is no longer available (#{removed_orm})" do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
         components = "#{@apptmp}/sample_project/.components"
         File.write(components, File.read(components).sub(':orm: activerecord', ":orm: #{removed_orm}"))
         out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }.status }
@@ -44,21 +44,21 @@ describe 'MigrationGenerator' do
     end
 
     it 'should generate migration inside app root' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:migration, 'AddEmailToUsers', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb"
       assert_match_in_file(/class AddEmailToUser/m, migration_file_path)
     end
 
     it 'should generate migration inside app root with lowercase migration argument' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:migration, 'add_email_to_users', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_users.rb"
       assert_match_in_file(/class AddEmailToUsers/m, migration_file_path)
     end
 
     it 'should generate migration inside app root with singular table' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
       capture_io { generate(:migration, 'add_email_to_user', 'email:string', "-r=#{@apptmp}/sample_project") }
       migration_file_path = "#{@apptmp}/sample_project/db/migrate/001_add_email_to_user.rb"
       assert_match_in_file(/class AddEmailToUser/m, migration_file_path)
@@ -68,7 +68,7 @@ describe 'MigrationGenerator' do
 
     describe 'the default migration numbering' do
       it 'should properly calculate version number' do
-        capture_io { generate(:project, 'sample_project', '--migration_format=number', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        capture_io { generate(:project, 'sample_project', '--migration_format=number', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
         capture_io { generate(:migration, 'add_email_to_person', 'email:string', "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'add_name_to_person', 'email:string', "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'add_age_to_user', 'email:string', "-r=#{@apptmp}/sample_project") }
@@ -80,7 +80,7 @@ describe 'MigrationGenerator' do
 
     describe 'the timestamped migration numbering' do
       it 'should properly calculate version number' do
-        capture_io { generate(:project, 'sample_project', '--migration_format=timestamp', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+        capture_io { generate(:project, 'sample_project', '--migration_format=timestamp', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
 
         time = stop_time_for_test.utc.strftime('%Y%m%d%H%M%S')
 
@@ -91,7 +91,7 @@ describe 'MigrationGenerator' do
 
     describe 'the migration argument' do
       it 'should properly extract a table name from argument' do
-        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+        capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
         capture_io { generate(:migration, 'AddAuthenticityTokenFieldsToUsers', 'authentity_token:string', "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'AddEmailToTokyo', 'email:string', "-r=#{@apptmp}/sample_project") }
         capture_io { generate(:migration, 'AddLocationTofoo', 'location:string', "-r=#{@apptmp}/sample_project") }
@@ -107,7 +107,7 @@ describe 'MigrationGenerator' do
 
   describe 'the migration generator for activerecord' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=activerecord') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=activerecord') }
     end
 
     it 'should generate migration for generic needs' do
@@ -204,7 +204,7 @@ describe 'MigrationGenerator' do
 
   describe 'the migration generator for sequel' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
     end
 
     it 'should generate migration for generic needs' do
@@ -318,7 +318,7 @@ describe 'MigrationGenerator' do
 
   describe 'the migration destroy option' do
     before do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon', '-d=sequel') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest', '-d=sequel') }
       @migration_params = ['RemoveEmailFromUsers', 'email:string', 'age:integer', "-r=#{@apptmp}/sample_project"]
     end
 

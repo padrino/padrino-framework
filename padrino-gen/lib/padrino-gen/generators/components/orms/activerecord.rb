@@ -61,18 +61,6 @@ AR = <<~AR unless defined?(AR)
   end
 AR
 
-MYSQL = <<-MYSQL.chomp unless defined?(MYSQL)
-    adapter:   'mysql',
-    encoding:  'utf8',
-    reconnect: true,
-    database:  !DB_NAME!,
-    pool:      5,
-    username:  'root',
-    password:  '',
-    host:      'localhost',
-    socket:    '/tmp/mysql.sock'
-MYSQL
-
 MYSQL2 = <<-MYSQL2.chomp unless defined?(MYSQL2)
     adapter:   'mysql2',
     encoding:  'utf8',
@@ -152,11 +140,6 @@ def setup_orm
 
   adapter = (resolve_valid_adapter unless adapter_unknown?)
   case adapter
-  when 'mysql-gem'
-    ar.sub!(/!DB_DEVELOPMENT!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_development'"))
-    ar.sub!(/!DB_PRODUCTION!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_production'"))
-    ar.sub!(/!DB_TEST!/, MYSQL.sub(/!DB_NAME!/, "'#{db}_test'"))
-    require_dependencies 'mysql', version: '~> 2.8.1'
   when 'mysql', 'mysql2'
     ar.sub!(/!DB_DEVELOPMENT!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_development'"))
     ar.sub!(/!DB_PRODUCTION!/, MYSQL2.sub(/!DB_NAME!/, "'#{db}_production'"))
