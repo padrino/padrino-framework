@@ -326,7 +326,10 @@ module Padrino
           { value: field_value(field), id: field_id(field) }
             .update(defaults)
             .update(options)
-            .update(error_class(field)) { |_, *values| values.compact.join(' ') }
+            .update(error_class(field)) do |_, given, error|
+              # An Array or Hash class goes to the tag's class rule as is; a String stays a String.
+              given.is_a?(Array) || given.is_a?(Hash) ? [given, error] : [given, error].compact.join(' ')
+            end
         end
       end
     end

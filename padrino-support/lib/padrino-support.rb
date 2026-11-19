@@ -24,13 +24,8 @@ if ENV['AS_VERSION']
   Padrino::Utils.warn_deprecated('Loading ActiveSupport extensions through AS_VERSION', 'Require the ones your app uses before Padrino instead')
 end
 
-##
-# Loads our locale configuration files
-#
-if defined?(I18n) && !defined?(PADRINO_I18N_LOCALE)
-  PADRINO_I18N_LOCALE = true
-  I18n.load_path += Dir["#{__dir__}/padrino-support/locale/*.yml"]
-end
+# padrino-helpers requires this again once it has loaded I18n.
+require 'padrino-support/locale' if defined?(I18n)
 
 ##
 # Deprecated: Module#_orig_klass_name returns the name Ruby gave a module, even when the module
