@@ -1,5 +1,6 @@
 require_relative 'helper'
 require_relative 'fixtures/markup_app/app'
+require 'bigdecimal'
 
 describe 'FormHelpers' do
   include Padrino::Helpers::FormHelpers
@@ -523,6 +524,10 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, :textarea, content: 'a test', name: 'about', rows: '5', cols: '6')
     end
 
+    it 'should display a BigDecimal content in plain decimal notation' do
+      assert_html_has_tag(text_area_tag(:price, value: BigDecimal('9.99')), :textarea, content: '9.99')
+    end
+
     it 'should insert newline to before of content' do
       actual_html = text_area_tag(:about, value: "\na test&".html_safe)
       assert_html_has_tag(actual_html, :textarea, content: "\na test&".html_safe, name: 'about')
@@ -692,6 +697,22 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, 'select option', content: '1', value: '1')
       assert_html_has_tag(actual_html, 'select option', content: '2', value: '2')
       assert_html_has_tag(actual_html, 'select option', content: '3', value: '3')
+    end
+
+    it 'should write BigDecimal options in plain decimal notation and select by value' do
+      actual_html = select_tag(:price, options: [['Low', BigDecimal('1.5')], ['High', BigDecimal('1e20')]], selected: '1.5')
+      assert_html_has_tag(actual_html, 'option', value: '1.5', content: 'Low', selected: 'selected')
+      assert_html_has_tag(actual_html, 'option', value: '100000000000000000000', content: 'High')
+    end
+
+    it 'should select the option whose value is the same number as a BigDecimal' do
+      actual_html = select_tag(:price, options: [['Two', '2.0'], ['Five', BigDecimal('5')]], selected: [BigDecimal('2'), '5.00'])
+      assert_html_has_tag(actual_html, 'option[selected]', count: 2)
+    end
+
+    it 'should select the option that holds a BigDecimal selected value' do
+      actual_html = select_tag(:price, options: %w[1.5 9.99], selected: BigDecimal('9.99'))
+      assert_html_has_tag(actual_html, 'option', value: '9.99', selected: 'selected')
     end
 
     it 'should include blank for grouped options' do
@@ -918,6 +939,52 @@ describe 'FormHelpers' do
       assert_response_has_tag('select optgroup option', content: 'Obiwan', value: '1')
       assert_response_has_tag('select optgroup option', content: 'Palpatine', value: 'Palpatine')
       assert_response_has_tag('select optgroup option', content: 'Darth Vader', value: '3')
+    end
+  end
+
+  describe 'for #datalist_tag method' do
+    it 'should display an empty datalist for nil values' do
+      assert_equal '<datalist id="tags"></datalist>', datalist_tag(:tags, nil)
+    end
+
+    it 'should skip nil values' do
+      actual_html = datalist_tag(:tags, [nil, 'a', nil, ''])
+      assert_html_has_tag(actual_html, 'datalist#tags option', count: 2)
+      assert_html_has_tag(actual_html, 'datalist option', value: 'a', content: 'a')
+      assert_html_has_tag(actual_html, 'datalist option', value: '')
+    end
+
+    it 'should display a datalist with an option for each value' do
+      actual_html = datalist_tag(:browsers, %w[Firefox Safari])
+      assert_html_has_tag(actual_html, 'datalist#browsers option', count: 2)
+      assert_html_has_tag(actual_html, 'datalist option', value: 'Firefox', content: 'Firefox')
+      assert_html_has_tag(actual_html, 'datalist option', value: 'Safari', content: 'Safari')
+    end
+
+    it 'should take label and value pairs and option attributes' do
+      actual_html = datalist_tag('sizes', [%w[Small s], ['Large', 'l', { disabled: true }]])
+      assert_html_has_tag(actual_html, 'datalist#sizes option', value: 's', content: 'Small')
+      assert_html_has_tag(actual_html, 'datalist option[disabled]', value: 'l', content: 'Large')
+    end
+
+    it 'should take html options and an empty list' do
+      actual_html = datalist_tag(:none, [], class: 'suggestions')
+      assert_equal '<datalist id="none" class="suggestions"></datalist>', actual_html
+    end
+
+    it 'should escape values, labels and the id' do
+      actual_html = datalist_tag('a"b', ['"><script>x</script>', ['<b>', '"&']])
+      assert_equal <<~HTML, "#{actual_html}\n"
+        <datalist id="a&quot;b"><option value="&quot;&gt;&lt;script&gt;x&lt;/script&gt;">&quot;&gt;&lt;script&gt;x&lt;/script&gt;</option>
+        <option value="&quot;&amp;">&lt;b&gt;</option>
+        </datalist>
+      HTML
+    end
+
+    it 'should pair with the list option of an input' do
+      actual_html = text_field_tag(:browser, list: 'browsers') + datalist_tag(:browsers, %w[Firefox])
+      assert_html_has_tag(actual_html, 'input[type=text]', name: 'browser', list: 'browsers')
+      assert_html_has_tag(actual_html, 'datalist#browsers option', value: 'Firefox')
     end
   end
 

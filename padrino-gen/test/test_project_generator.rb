@@ -1,4 +1,5 @@
 require_relative 'helper'
+require 'rb-readline'
 require 'timeout'
 require 'erb'
 require 'json'
@@ -170,6 +171,13 @@ describe 'ProjectGenerator' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
       assert_no_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/app/app.rb")
       assert_match_in_file(/^\s*set :protect_from_csrf, proc \{ sessions\? && Padrino\.env != :test \}$/, "#{@apptmp}/sample_project/config/apps.rb")
+    end
+
+    it 'should take padrino-support from the checkout in a --dev api project' do
+      capture_io { generate(:project, 'sample_project', '--api', '--dev', "--root=#{@apptmp}") }
+      %w[core support gen].each do |name|
+        assert_match_in_file(%r{^gem 'padrino-#{name}', path: '[^']+/padrino-#{name}'$}, "#{@apptmp}/sample_project/Gemfile")
+      end
     end
 
     it 'should generate a tiny api project without mailers' do
@@ -425,6 +433,15 @@ describe 'ProjectGenerator' do
         assert_match_in_file(/gem 'mocha'/, "#{@apptmp}/project_#{test}/Gemfile")
       end
       assert_no_match_in_file(/mocha|Mocha/, "#{@apptmp}/project_bacon/test/test_config.rb")
+    end
+
+    it 'should set up the mock for the test component it applies when generated again over a project whose .components is kept' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      Readline.stubs(:readline).returns('n')
+      out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=rspec', '--mock=rr', '--script=none') }
+      assert_match(/skip\s+\.components/, out)
+      assert_match_in_file(/^  conf\.mock_with :rr\n/, "#{@apptmp}/sample_project/spec/spec_helper.rb")
+      assert_no_match_in_file(/require 'rr'/, "#{@apptmp}/sample_project/test/test_config.rb")
     end
   end
 
@@ -1050,6 +1067,34 @@ describe 'ProjectGenerator' do
     it 'should print an erb link tag for tailwind with erb' do
       out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--renderer=erb', '--stylesheet=tailwind') }
       assert_match(%r{layouts/application\.erb\):\n\s*<%= stylesheet_link_tag 'application' %>$}, out)
+    end
+  end
+
+  describe 'choices that need a newer Ruby' do
+    {
+      '--server=falcon' => 'The falcon server uses the falcon gem, which needs Ruby 3.0 or later; bundle install will fail on Ruby 2.7.8.',
+      '--stylesheet=tailwind' => 'The tailwind stylesheet uses the tailwindcss-ruby gem, which needs Ruby 3.0 or later; bundle install will fail on Ruby 2.7.8.'
+    }.each do |option, warning|
+      it "should warn on Ruby 2.7 for #{option} and still generate the project" do
+        Padrino::Generators::Project.any_instance.stubs(:running_ruby_version).returns('2.7.8')
+        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", option) }
+        assert_includes out, warning
+        assert_match(/is ready for development!/, out)
+      end
+
+      it "should not warn on Ruby 3.0 for #{option}" do
+        Padrino::Generators::Project.any_instance.stubs(:running_ruby_version).returns('3.0.0')
+        out, = capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", option) }
+        refute_match(/needs Ruby/, out)
+      end
+    end
+
+    it 'should not warn on Ruby 2.7 for choices that support it' do
+      Padrino::Generators::Project.any_instance.stubs(:running_ruby_version).returns('2.7.8')
+      out, = capture_io do
+        generate(:project, 'sample_project', "--root=#{@apptmp}", '--server=puma', '--stylesheet=sass', '--orm=sequel', '--renderer=haml', '--script=vite', '--test=rspec', '--mock=mocha')
+      end
+      refute_match(/needs Ruby/, out)
     end
   end
 

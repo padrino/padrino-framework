@@ -79,12 +79,12 @@ module Padrino
       end
 
       ##
-      # Recognizes route and expanded params from a path.
+      # Recognizes route and expanded params from a path, or returns nil when no route matches it.
       #
       def recognize_path(path_info)
         prepare! unless prepared?
-        route = @engine.find_by_pattern(path_info).first
-        [route.name, route.params_for(path_info, {})]
+        route, params = @engine.recognize_path(path_info)
+        [route.name, params] if route
       end
 
       ##

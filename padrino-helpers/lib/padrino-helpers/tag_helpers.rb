@@ -53,10 +53,43 @@ module Padrino
         itemscope
         noresize
         novalidate
+        allowfullscreen
+        alpha
+        async
+        controls
+        default
+        headingreset
+        inert
+        nomodule
+        open
+        playsinline
+        reversed
+        shadowrootclonable
+        shadowrootcustomelementregistry
+        shadowrootdelegatesfocus
+        shadowrootserializable
       ].freeze
 
-      BOOLEAN_ATTRIBUTE_LOOKUP = BOOLEAN_ATTRIBUTES.to_h { |attribute| [attribute, true] }.freeze
-      private_constant :BOOLEAN_ATTRIBUTE_LOOKUP
+      attribute_rules = ->(rule, names) { (names + names.map(&:to_s)).to_h { |name| [name, rule] } }
+      false_value_attributes = %i[
+        contenteditable draggable spellcheck writingsuggestions
+        aria-atomic aria-busy aria-checked aria-current aria-disabled aria-expanded aria-grabbed aria-haspopup
+        aria-hidden aria-invalid aria-modal aria-multiline aria-multiselectable aria-pressed aria-readonly
+        aria-required aria-selected
+      ]
+
+      # How +tag_attributes+ writes a value, for the attributes that need more than escaping:
+      # * boolean: +true+ writes the name (checked="checked"); a String or Symbol is kept (hidden="until-found").
+      # * empty_value: enumerated attributes whose empty value is a state, so +true+ writes "" (popover="" is auto).
+      # * false_value: attributes with a "false" keyword (HTML, and the WAI-ARIA true/false, tristate and
+      #   token states), so +false+ is written rather than dropped.
+      ATTRIBUTE_RULES = {
+        **attribute_rules.call(:boolean, BOOLEAN_ATTRIBUTES),
+        **attribute_rules.call(:class, %i[class]),
+        **attribute_rules.call(:empty_value, %i[autocorrect crossorigin popover preload translate]),
+        **attribute_rules.call(:false_value, false_value_attributes)
+      }.freeze
+      private_constant :ATTRIBUTE_RULES
 
       ##
       # Custom data attributes,
@@ -73,6 +106,63 @@ module Padrino
       # concatenation.
       #
       NEWLINE = "\n".html_safe.freeze
+
+      ##
+      # The largest exponent, either way, of a BigDecimal written in plain decimal
+      # notation; one beyond it is written in scientific notation ("0.1e1001"),
+      # which writes the exponent as digits instead of writing out every zero.
+      #
+      PLAIN_DECIMAL_EXPONENT_LIMIT = 100
+      private_constant :PLAIN_DECIMAL_EXPONENT_LIMIT
+
+      ##
+      # Whether the value is a BigDecimal.
+      #
+      # @api private
+      def self.decimal?(value)
+        defined?(::BigDecimal) && value.is_a?(::BigDecimal)
+      end
+
+      ##
+      # Returns the text a value is written as in HTML: a finite BigDecimal in
+      # its shortest exact plain decimal form (BigDecimal#to_s gives "0.999e1"
+      # for 9.99, and to_s('F') gives "10.0" for 10), so it matches the text a
+      # form sends back; anything else as its +to_s+.
+      #
+      # @example
+      #   TagHelpers.value_to_s(BigDecimal('9.99')) # => "9.99"
+      #   TagHelpers.value_to_s(BigDecimal('10'))   # => "10"
+      #   TagHelpers.value_to_s(:price)             # => "price"
+      #
+      # @api private
+      def self.value_to_s(value)
+        return value.to_s unless decimal?(value)
+
+        value.finite? && value.exponent.abs <= PLAIN_DECIMAL_EXPONENT_LIMIT ? value.to_s('F').delete_suffix('.0') : value.to_s('E')
+      end
+
+      ##
+      # Whether two values are equal numbers, when either is a BigDecimal: the
+      # other is read as a decimal from its text, so BigDecimal('10') equals
+      # "10", "10.0", "10.00", 10 and 10.0. False for anything else.
+      #
+      # @api private
+      def self.decimal_equal?(value, other)
+        return false unless decimal?(value) || decimal?(other)
+
+        value, other = [value, other].map { |item| decimal?(item) ? item : decimal_from(item.to_s) }
+        value == other
+      end
+
+      ##
+      # Reads the text as a BigDecimal, or returns nil when it is not a number.
+      #
+      def self.decimal_from(text)
+        BigDecimal(text)
+      rescue ArgumentError, TypeError, FloatDomainError
+        nil
+      end
+      private_class_method :decimal_from
 
       ##
       # Creates an HTML tag with given name, content, and options.
@@ -143,11 +233,11 @@ module Padrino
         output.safe_concat "<#{name}#{attributes}>"
         if content.respond_to?(:each) && !content.is_a?(String)
           content.each do |item|
-            output.concat item
+            output.concat TagHelpers.value_to_s(item)
             output.safe_concat NEWLINE
           end
         else
-          output.concat content.to_s
+          output.concat TagHelpers.value_to_s(content)
         end
         output.safe_concat "</#{name}>"
 
@@ -247,6 +337,9 @@ module Padrino
       #   tag :img, src: 'sinatra.jpg', data: { nsfw: false, geo: [34.087, -118.407] }
       #   # => <img src="sinatra.jpg" data-nsfw="false" data-geo="34.087 -118.407" />
       #
+      #   tag :div, class: ['card', { active: true, hidden: false }], 'aria-hidden': false
+      #   # => <div class="card active" aria-hidden="false" />
+      #
       def tag(name, options = nil, open = false)
         options = parse_data_options(name, options)
         attributes = tag_attributes(options)
@@ -298,6 +391,37 @@ module Padrino
         text.valid_encoding? ? text : text.scrub
       end
 
+      ##
+      # Builds a list of class names from Strings, Symbols, Arrays and Hashes.
+      #
+      # Strings are split on whitespace, Arrays are flattened, a Hash keeps the
+      # keys whose values are truthy, and nil, false and blank names are left out.
+      # Each name appears once, where it first appears. The result is a plain
+      # String: +tag+ and +content_tag+ escape it when they write the attribute.
+      #
+      # @param [Array<String, Symbol, Array, Hash, nil, false>] args
+      #   The class names, and the conditions that select them.
+      #
+      # @return [String]
+      #   The class names, separated by spaces.
+      #
+      # @example
+      #   class_names('btn', :primary)
+      #   # => "btn primary"
+      #
+      #   class_names('card', active: true, disabled: false)
+      #   # => "card active"
+      #
+      #   class_names('btn btn-lg', ['btn', [nil, { 'btn-block' => wide? }]])
+      #   # => "btn btn-lg btn-block" (when wide? is truthy)
+      #
+      #   content_tag(:li, 'Home', class: class_names('nav-item', current: page == 'home'))
+      #   # => <li class="nav-item current">Home</li>
+      #
+      def class_names(*args)
+        class_name_tokens(args).uniq.join(' ')
+      end
+
       SAFE_URI_SCHEMES = %w[http https mailto tel ftp].freeze
 
       ##
@@ -343,6 +467,12 @@ module Padrino
 
         all = +''
         options.each do |key, value|
+          rule = ATTRIBUTE_RULES[key]
+          case rule
+          when :class then value = class_value(value) if value.is_a?(Array) || value.is_a?(Hash)
+          when :empty_value then value = '' if value == true
+          when :false_value then value = 'false' if value == false
+          end
           next unless value
 
           all << ' ' if all.empty?
@@ -351,7 +481,7 @@ module Padrino
           all <<
             if value.is_a?(Hash)
               nested_values(name, value)
-            elsif BOOLEAN_ATTRIBUTE_LOOKUP.key?(key)
+            elsif rule == :boolean && !value.is_a?(String) && !value.is_a?(Symbol)
               %(#{name}="#{name}" )
             else
               %(#{name}="#{escape_value(value)}" )
@@ -361,11 +491,28 @@ module Padrino
       end
 
       ##
+      # Returns the class names in an Array, or a Hash of names to conditions,
+      # leaving out blank names and those whose condition is false; nil if none are left.
+      #
+      def class_value(value)
+        names = class_names_in(value)
+        names unless names.empty?
+      end
+
+      def class_names_in(value)
+        case value
+        when Array then value.flat_map { |item| class_names_in(item) }
+        when Hash then value.flat_map { |name, condition| condition ? class_names_in(name) : [] }
+        else value && !value.to_s.empty? ? [value] : []
+        end
+      end
+
+      ##
       # Escape tag values to their HTML/XML entities.
       #
       def escape_value(string)
-        string = string.collect(&:to_s).join(' ') if string.is_a?(Array)
-        string = TagHelpers.valid_text(string)
+        string = string.collect { |item| TagHelpers.value_to_s(item) }.join(' ') if string.is_a?(Array)
+        string = TagHelpers.valid_text(TagHelpers.value_to_s(string))
         string.match?(ESCAPE_REGEXP) ? string.gsub(ESCAPE_REGEXP, ESCAPE_VALUES) : string
       end
 
@@ -398,6 +545,18 @@ module Padrino
           parsed_options[:rel] = 'nofollow' if key == :method
         end
         parsed_options
+      end
+
+      ##
+      # Returns the class names in a value given to #class_names, in order.
+      #
+      def class_name_tokens(value)
+        case value
+        when Array then value.flat_map { |item| class_name_tokens(item) }
+        when Hash then value.flat_map { |name, condition| condition ? class_name_tokens(name) : [] }
+        when nil, false then []
+        else value.to_s.split(' ')
+        end
       end
     end
   end

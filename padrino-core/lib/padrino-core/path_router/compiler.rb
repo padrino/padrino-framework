@@ -20,7 +20,7 @@ module Padrino
         return if compiled?
         @routes.each_with_index do |route, index|
           route.index = index
-          route.regexp = /\A(?<_#{index}>#{route.matcher.to_regexp})\z/
+          route.regexp = /\A(?:#{route.matcher.to_regexp})\z/
         end
         index_by_prefix!
         @compiled = true
@@ -69,6 +69,17 @@ module Padrino
         rotation { |offset| match?(offset, pattern) }
       end
 
+      ##
+      # Finds the first route that matches PATH_INFO, and returns it with its params, read from
+      # the path as the route matched it. Returns nil when no route matches.
+      #
+      def recognize_path(path_info)
+        compile! unless compiled?
+        pattern = decode_pattern(path_info)
+        route = match?(0, pattern)
+        [route, route.params_for(pattern, {})] if route
+      end
+
       private
 
       ##
@@ -92,13 +103,20 @@ module Padrino
             route = routes[candidates[at]]
             regexp = route.regexp
             return route if regexp.match?(path) || (trimmed && regexp.match?(trimmed))
+          rescue Encoding::CompatibilityError
+            # A Regexp fixed to another encoding (/n with non-ASCII bytes) matches no path it can't
+            # read, as in Sinatra (see Routing.path_match?). The same holds in the loop below.
           end
           return
         end
         while (route = routes[offset])
           regexp = route.regexp
-          # A route added after compiling has no regexp and matches nothing.
-          return route if regexp && (regexp.match?(path) || (trimmed && regexp.match?(trimmed)))
+          begin
+            # A route added after compiling has no regexp and matches nothing.
+            return route if regexp && (regexp.match?(path) || (trimmed && regexp.match?(trimmed)))
+          rescue Encoding::CompatibilityError
+            nil
+          end
           offset += 1
         end
       end

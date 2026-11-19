@@ -13,8 +13,9 @@ at the {Moneta documentation}[http://rubydoc.info/gems/moneta] for a list of all
 Padrino-cache can reduce the processing load on your site very effectively
 with minimal configuration.
 
-By default, the component caches pages in a file store at <tt>tmp/cache</tt>
-within your project root. Entries in this store correspond directly
+By default, the component caches pages in a file store at <tt>tmp/<app_name>/cache</tt>
+within your project root (for a Sinatra class, its underscored class name; a class without a name
+caches in memory). Entries in this store correspond directly
 to the request issued to your server. In other words, responses are
 cached based on request URL, with one cache entry per URL.
 
@@ -339,7 +340,8 @@ but it will do so immediately if any tweets have been deleted.
 ==== Page-level expiration
 
 Page-level expiration works exactly like the example above--by using
-<tt>expire</tt> in your controller. The key is typically <tt>env['PATH_INFO']</tt>.
+<tt>expire</tt> in your controller. The key is typically <tt>env['PATH_INFO']</tt>; for a route given <tt>host:</tt> it is the
+lowercased host followed by the path (<tt>admin.example.com/</tt>).
 
 == Copyright
 

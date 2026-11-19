@@ -245,6 +245,68 @@ describe 'FormatHelpers' do
     end
   end
 
+  describe 'for the deprecated #sanitize_html method' do
+    # The deprecation warns once per process: forget an earlier warning, and restore it after.
+    def setup
+      super
+      @warned = Padrino.instance_variable_defined?(:@_sanitize_html_warned)
+      Padrino.remove_instance_variable(:@_sanitize_html_warned) if @warned
+    end
+
+    def teardown
+      if @warned
+        Padrino.instance_variable_set(:@_sanitize_html_warned, true)
+      elsif Padrino.instance_variable_defined?(:@_sanitize_html_warned)
+        Padrino.remove_instance_variable(:@_sanitize_html_warned)
+      end
+      super
+    end
+
+    it 'should still escape the html and mark it as safe' do
+      capture_io do
+        actual = sanitize_html('<h1>"Me" & Bob</h1>')
+        assert_equal '&lt;h1&gt;&quot;Me&quot; &amp; Bob&lt;/h1&gt;', actual
+        assert actual.html_safe?
+      end
+    end
+
+    it 'should warn once, naming escape_html and the line of the first call' do
+      line = __LINE__ + 2
+      _out, err = capture_io do
+        sanitize_html('<b>')
+        sanitize_html('<i>')
+      end
+      assert_equal 1, err.scan('sanitize_html is deprecated').size, err
+      assert_includes err, 'Padrino 1.0'
+      assert_includes err, "Use escape_html (or h) instead (first called at #{__FILE__}:#{line})"
+    end
+
+    it 'should escape and warn when it is the first frame of a fiber' do
+      actual = nil
+      _out, err = capture_io { actual = Fiber.new(&method(:sanitize_html)).resume('<b>') }
+      assert_equal '&lt;b&gt;', actual
+      assert_includes err, "Use escape_html (or h) instead.\n"
+    end
+
+    it 'should warn while warnings are off, as they are while the reloader loads app files' do
+      verbose = $VERBOSE
+      $VERBOSE = nil
+      _out, err = capture_io { sanitize_html('<b>') }
+      assert_includes err, 'sanitize_html is deprecated'
+    ensure
+      $VERBOSE = verbose
+    end
+
+    it 'should not warn from escape_html, h or h!' do
+      _out, err = capture_io do
+        escape_html('<b>')
+        h('<b>')
+        h!('<b>')
+      end
+      assert_empty err
+    end
+  end
+
   describe 'for #time_ago_in_words method' do
     A_DAY = 24 * 60 * 60
 
@@ -310,6 +372,81 @@ describe 'FormatHelpers' do
     end
     it 'should display a few years ago' do
       assert_equal 'over 7 years', time_ago_in_words(Time.now - 2800 * A_DAY - 5 * 60)
+    end
+  end
+
+  describe 'for #time_tag method' do
+    before do
+      @locale = I18n.locale
+      I18n.locale = :en
+      @date = Date.new(2026, 11, 11)
+      @time = Time.utc(2026, 11, 11, 9, 30, 15)
+    end
+
+    after { I18n.locale = @locale }
+
+    it 'should display a date with an ISO 8601 datetime and the long format' do
+      assert_equal '<time datetime="2026-11-11">November 11, 2026</time>', time_tag(@date)
+    end
+
+    it 'should display a time and a datetime with their offset' do
+      assert_equal '<time datetime="2026-11-11T09:30:15Z">November 11, 2026 09:30</time>', time_tag(@time)
+      assert_equal '<time datetime="2026-11-11T09:30:15+05:30">09:30</time>',
+                   time_tag(Time.new(2026, 11, 11, 9, 30, 15, '+05:30'), format: '%H:%M')
+      assert_equal '<time datetime="2026-11-11T09:30:15+00:00">09:30</time>',
+                   time_tag(DateTime.new(2026, 11, 11, 9, 30, 15), format: '%H:%M')
+    end
+
+    it 'should localize the content with a format and the current locale' do
+      assert_equal '<time datetime="2026-11-11">Nov 11</time>', time_tag(@date, format: :short)
+      assert_equal '<time datetime="2026-11-11T09:30:15Z">11 Nov 09:30</time>', time_tag(@time, format: :short)
+      I18n.locale = :de
+      assert_equal '<time datetime="2026-11-11">11. November 2026</time>', time_tag(@date)
+    end
+
+    it 'should take content and html options' do
+      assert_equal '<time datetime="2026-11-11" class="date">Release day</time>', time_tag(@date, 'Release day', class: 'date')
+      assert_equal '<time datetime="2026-11-11" id="day">November 11, 2026</time>', time_tag(@date, id: 'day')
+    end
+
+    it 'should take the datetime attribute from the :datetime option' do
+      assert_equal '<time datetime="2026-11">November 11, 2026</time>', time_tag(@date, datetime: '2026-11')
+    end
+
+    it 'should take the content from a block' do
+      assert_equal '<time datetime="2026-11-11" class="day">Today</time>', time_tag(@date, class: 'day') { 'Today' }
+      assert_equal '<time datetime="2026-11-11">Today</time>', time_tag(@date) { 'Today' }
+    end
+
+    it 'should escape the content and the attributes' do
+      actual_html = time_tag(@date, '<script>x</script>', datetime: '"><b>', title: '"')
+      assert_equal '<time datetime="&quot;&gt;&lt;b&gt;" title="&quot;">&lt;script&gt;x&lt;/script&gt;</time>', actual_html
+      assert_equal '<time datetime="2026-11-11">&lt;11&gt;</time>', time_tag(@date, format: '<%d>')
+    end
+
+    it 'should not change the options passed in' do
+      options = { format: :short, datetime: '2026-11', class: 'date' }.freeze
+      time_tag(@date, options)
+      assert_equal({ format: :short, datetime: '2026-11', class: 'date' }, options)
+    end
+
+    it 'should take options with String keys' do
+      options = { 'format' => :short, 'datetime' => '2026-11', 'class' => 'date' }.freeze
+      assert_equal '<time datetime="2026-11" class="date">Nov 11</time>', time_tag(@date, options)
+      assert_equal '<time datetime="2026-11">Today</time>', time_tag(@date, 'Today', 'datetime' => '2026-11')
+      assert_equal({ 'format' => :short, 'datetime' => '2026-11', 'class' => 'date' }, options)
+    end
+
+    it 'should take nil options' do
+      assert_equal '<time datetime="2026-11-11">Today</time>', time_tag(@date, 'Today', nil)
+      assert_equal '<time datetime="2026-11-11">November 11, 2026</time>', time_tag(@date, nil, nil)
+    end
+
+    it 'should display nothing for a nil date or time' do
+      assert_equal '', time_tag(nil)
+      assert_equal '', time_tag(nil, 'Draft', class: 'date')
+      assert_equal '', time_tag(nil, datetime: '2026-11', format: :short)
+      assert_equal '', time_tag(nil) { flunk 'the block should not be called' }
     end
   end
 

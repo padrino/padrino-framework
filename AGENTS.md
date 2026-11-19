@@ -75,7 +75,7 @@ So, in code you add:
   `gsub!`, `encode!`, `force_encoding` on a caller's string). Build a new
   string (`+''`, `dup`, `encode`) instead.
 - **JRuby** runs the same suite; avoid MRI-only APIs.
-- **Rack 3 and Sinatra 4** only.
+- **Rack 3.1 or later and Sinatra 4** only.
 
 ## Every fix or behaviour change
 

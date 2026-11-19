@@ -66,6 +66,22 @@ describe 'Dependencies' do
       end
     end
 
+    it 'should resolve dependency problems in a folder whose name only starts with an excluded one' do
+      folder = Padrino.root('fixtures/dependencies/dbadmin')
+      files = [File.join(folder, 'child.rb'), File.join(folder, 'parent.rb')]
+      capture_io do
+        Padrino::Reloader.exclude << folder
+        assert_raises(NameError) { Padrino.require_dependencies(files) }
+        Padrino::Reloader.exclude.delete(folder)
+        Padrino::Reloader.exclude << Padrino.root('fixtures/dependencies/db')
+        Padrino.require_dependencies(files)
+      end
+      assert_equal DbadminParent, DbadminChild.superclass
+    ensure
+      Padrino::Reloader.exclude.delete(folder)
+      Padrino::Reloader.exclude.delete(Padrino.root('fixtures/dependencies/db'))
+    end
+
     it 'should not remove constants that are newly commited in nested require_dependencies' do
       capture_io do
         Padrino.require_dependencies(
