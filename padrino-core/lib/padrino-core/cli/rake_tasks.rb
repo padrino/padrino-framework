@@ -49,7 +49,9 @@ def env_migration_version
   version = ENV['MIGRATION_VERSION']
   if version.nil? && ENV['VERSION']
     deprecated = true
-    warn 'Environment variable VERSION is deprecated, use MIGRATION_VERSION'
+    # A task that calls this without loading Padrino first (no :skeleton) has no padrino-support yet.
+    require 'padrino-support/utils'
+    Padrino::Utils.warn_deprecated('The VERSION environment variable for migrations', 'Use MIGRATION_VERSION instead')
     version = ENV['VERSION']
   end
   version ? Integer(version) : nil

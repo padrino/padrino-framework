@@ -200,6 +200,19 @@ describe 'Application' do
         assert_empty seen
       end
 
+      it 'should stay on for a non-ASCII path a Regexp fixed to another encoding can not read' do
+        mock_app do
+          enable :sessions
+          set :protect_from_csrf, except: [%r{\A/caf\xC3\xA9}n, %r{\A/api/}]
+          post('/:name') { 'name' }
+          post('/api/:id') { 'api' }
+        end
+        post '/caf%C3%A9'
+        assert_equal 403, status
+        post '/api/x'
+        assert_equal 200, status
+      end
+
       it 'should not raise without a path' do
         env = Rack::MockRequest.env_for('/')
         env.delete('PATH_INFO')

@@ -1,13 +1,13 @@
 if defined?(ActiveSupport::SafeBuffer)
-  SafeBuffer = ActiveSupport::SafeBuffer
+  module Padrino
+    SafeBuffer = ActiveSupport::SafeBuffer
+  end
 else
   require 'padrino/safe_buffer'
 
-  SafeBuffer = Padrino::SafeBuffer
-
   class String
     def html_safe
-      SafeBuffer.new(self)
+      Padrino::SafeBuffer.new(self)
     end
   end
 
@@ -23,3 +23,6 @@ else
     end
   end
 end
+
+# The top-level SafeBuffer is deprecated: the file warns on first use, then defines it.
+Object.autoload(:SafeBuffer, File.expand_path('top_level_safe_buffer.rb', __dir__)) unless Object.const_defined?(:SafeBuffer, false)

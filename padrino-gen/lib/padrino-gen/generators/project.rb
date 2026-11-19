@@ -33,7 +33,7 @@ module Padrino
       class_option :gem,              desc: 'Generate project as a gem',                                        aliases: '-g', default: false,       type: :boolean
       class_option :migration_format, desc: 'Filename format for migrations (number, timestamp)',                              default: 'number',    type: :string
       class_option :adapter,          desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, trilogy, postgres)', aliases: '-a', default: 'sqlite', type: :string
-      class_option :server,           desc: "HTTP server to use (#{Padrino::SERVERS.join(', ')})", default: 'webrick', type: :string
+      class_option :server,           desc: "HTTP server to use (#{Padrino::SERVERS.join(', ')})", default: 'puma', type: :string
 
       # Definitions for the available customizable components.
       defines_component_options
@@ -76,6 +76,7 @@ module Padrino
             append_file destination_root('config/apps.rb'), "Padrino.mount('#{@project_name}::#{@app_name}', app_file: Padrino.root('app/app.rb')).to('/')\n"
           end
           template 'templates/Gemfile.tt', destination_root('Gemfile')
+          warn_unless_ruby_supports(:server, options[:server])
           template 'templates/Rakefile.tt', destination_root('Rakefile')
           template 'templates/project_bin.tt', destination_root("exe/#{name}")
           File.chmod(0o755, destination_root("exe/#{name}"))

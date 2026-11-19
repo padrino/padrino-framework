@@ -296,11 +296,11 @@ module Padrino
       # @see Padrino::Logging::ColorizedLogger::ColoredLevels
       #
       def colorize(string, *colors)
-        string.colorize(color: colors[0], mode: colors[1])
+        Padrino::Colorizer.colorize(string, colors[0], colors[1])
       end
 
       def stylized_level(level)
-        colors = ColoredLevels[level].map { |color| String::Colorizer.modes[color] || String::Colorizer.colors[color] }
+        colors = ColoredLevels[level].map { |color| Padrino::Colorizer::MODES[color] || Padrino::Colorizer::COLORS[color] }
         [Kernel.format("\e[%d;%dm", *colors), super, "\e[0m"].join
       end
     end
@@ -358,8 +358,13 @@ module Padrino
     }
     Config.merge!(PADRINO_LOGGER) if PADRINO_LOGGER
 
+    # Built when this file loads, so threads that log for the first time at once build each
+    # class's mutex one at a time and share it.
+    MUTEX_INIT = Mutex.new # @private
+    private_constant :MUTEX_INIT
+
     def self.mutex
-      @_mutex ||= Mutex.new
+      (@_mutex if defined?(@_mutex)) || MUTEX_INIT.synchronize { @_mutex ||= Mutex.new }
     end
 
     def self.logger
@@ -585,6 +590,12 @@ end
 module Kernel
   ##
   # Define a logger available every where in our app
+  #
+  # @deprecated Calling it with a receiver, such as +some_object.logger+, +settings.logger+ or
+  #   +MyApp.logger+. In Padrino 1.0 this method becomes private: +logger+ without a receiver
+  #   keeps working, while calling it on an object that doesn't define its own +logger+ raises
+  #   NoMethodError (or reaches that object's +method_missing+), and +respond_to?(:logger)+ is
+  #   false for such objects. Use +Padrino.logger+ there.
   #
   def logger
     Padrino.logger

@@ -397,7 +397,7 @@ module Padrino
       #   text_area_tag :username, class: 'long', value: 'Demo?'
       #
       def text_area_tag(name, options = {})
-        inner_html = TagHelpers::NEWLINE + options.delete(:value).to_s
+        inner_html = TagHelpers::NEWLINE + TagHelpers.value_to_s(options.delete(:value))
         content_tag(:textarea, inner_html, { name: name }.update(options))
       end
 
@@ -490,6 +490,35 @@ module Padrino
         options = { name: name }.merge(options)
         options[:name] = "#{options[:name]}[]" if options[:multiple]
         content_tag(:select, extract_option_tags!(options), options)
+      end
+
+      ##
+      # Constructs a datalist of suggested values for inputs whose +list+ option names its id.
+      #
+      # @param [String, Symbol] id
+      #   The id of the datalist.
+      # @param [Array<String, Array>] values
+      #   The suggested values. Each is a value, or a [label, value] pair as in +select_tag+'s +:options+.
+      #   nil values are skipped.
+      # @param [Hash] options
+      #   The html options for the datalist.
+      #
+      # @return [String] The html datalist with an option for each value.
+      #
+      # @example
+      #   text_field_tag :browser, list: 'browsers'
+      #   datalist_tag :browsers, ['Firefox', 'Safari']
+      #   # => <datalist id="browsers"><option value="Firefox">Firefox</option>
+      #   #    <option value="Safari">Safari</option>
+      #   #    </datalist>
+      #
+      #   datalist_tag :sizes, [['Small', 's'], ['Large', 'l']]
+      #   # => <datalist id="sizes"><option value="s">Small</option>
+      #   #    <option value="l">Large</option>
+      #   #    </datalist>
+      #
+      def datalist_tag(id, values, options = {})
+        content_tag(:datalist, options_for_select(Array(values).compact), { id: id }.update(options))
       end
 
       ##

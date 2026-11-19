@@ -116,3 +116,39 @@ describe 'Padrino::Utils.symbolize_keys' do
     assert_equal({ Object => 1, true => 2 }, Padrino::Utils.symbolize_keys(Object => 1, true => 2))
   end
 end
+
+describe 'Padrino::Utils.warn_deprecated' do
+  def setup
+    @warned = Padrino::Utils.instance_variable_get(:@warned_deprecations)
+    Padrino::Utils.instance_variable_set(:@warned_deprecations, nil)
+  end
+
+  def teardown
+    Padrino::Utils.instance_variable_set(:@warned_deprecations, @warned)
+  end
+
+  it 'should warn once per subject, naming Padrino 1.0, the advice and the first use' do
+    _out, err = capture_io do
+      2.times { Padrino::Utils.warn_deprecated('Thing', 'Use Other instead', caller_locations(0, 1).first) }
+      Padrino::Utils.warn_deprecated('Other thing', 'Use Third instead')
+    end
+    assert_equal "WARNING! Thing is deprecated and will be removed in Padrino 1.0. Use Other instead (first used at #{__FILE__}:#{__LINE__ - 3}).\n" \
+                 "WARNING! Other thing is deprecated and will be removed in Padrino 1.0. Use Third instead.\n", err
+  end
+
+  it 'should warn while warnings are off, as they are while the reloader loads app files' do
+    verbose = $VERBOSE
+    $VERBOSE = nil
+    _out, err = capture_io { Padrino::Utils.warn_deprecated('Thing', 'Use Other instead') }
+    assert_includes err, 'Thing is deprecated'
+  ensure
+    $VERBOSE = verbose
+  end
+
+  it 'should warn once even when the warning raises, as with warnings turned into errors' do
+    Warning.stub(:warn, ->(message, *) { raise message }) do
+      assert_raises(RuntimeError) { Padrino::Utils.warn_deprecated('Thing', 'Use Other instead') }
+      Padrino::Utils.warn_deprecated('Thing', 'Use Other instead')
+    end
+  end
+end

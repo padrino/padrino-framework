@@ -297,6 +297,156 @@ describe 'AssetTagHelpers' do
     it 'should have xhtml convention tag' do
       assert_equal image_tag('/absolute/pic.gif'), '<img src="/absolute/pic.gif" alt="Pic" />'
     end
+
+    it 'should resolve each source of a srcset hash like src' do
+      time = stop_time_for_test
+      self.class.stubs(:uri_root).returns('/blog')
+      actual_html = image_tag('pic.jpg', srcset: { 'pic.jpg' => '1x', 'hd/pic@2x.jpg' => '2x' })
+      srcset = "/blog/images/pic.jpg?#{time.to_i} 1x, /blog/images/hd/pic@2x.jpg?#{time.to_i} 2x"
+      assert_equal %(<img src="/blog/images/pic.jpg?#{time.to_i}" srcset="#{srcset}" alt="Pic" />), actual_html
+    end
+
+    it 'should write a srcset array of pairs with sizes' do
+      self.class.stubs(:asset_stamp).returns(false)
+      actual_html = image_tag('small.jpg', srcset: [['small.jpg', '480w'], ['large.jpg', '1080w']], sizes: '(max-width: 600px) 480px, 1080px')
+      expected = '<img src="/images/small.jpg" srcset="/images/small.jpg 480w, /images/large.jpg 1080w" ' \
+                 'sizes="(max-width: 600px) 480px, 1080px" alt="Small" />'
+      assert_equal expected, actual_html
+    end
+
+    it 'should keep absolute urls and paths in a srcset' do
+      self.class.stubs(:asset_stamp).returns(false)
+      actual_html = image_tag('pic.jpg', srcset: { '/static/pic.jpg' => '1x', 'https://cdn.example.com/pic@2x.jpg' => '2x' })
+      assert_html_has_tag(actual_html, 'img', srcset: '/static/pic.jpg 1x, https://cdn.example.com/pic@2x.jpg 2x')
+    end
+
+    it 'should write a srcset string as given' do
+      actual_html = image_tag('/pic.jpg', srcset: 'pic@2x.jpg 2x, pic&3x.jpg 3x')
+      assert_equal '<img src="/pic.jpg" srcset="pic@2x.jpg 2x, pic&amp;3x.jpg 3x" alt="Pic" />', actual_html
+    end
+
+    it 'should escape the sources and descriptors of a srcset' do
+      self.class.stubs(:asset_stamp).returns(false)
+      actual_html = image_tag('/pic.jpg', srcset: { 'pic.jpg?w=1&h=2' => '2x', 'a"b.jpg' => '<3x>' })
+      assert_includes actual_html, 'srcset="/images/pic.jpg?w=1&amp;h=2 2x, /images/a&quot;b.jpg &lt;3x&gt;"'
+    end
+
+    it 'should write the string candidates of a srcset array as given' do
+      self.class.stubs(:asset_stamp).returns(false)
+      actual_html = image_tag('/pic.jpg', srcset: ['pic.jpg 1x', ['pic@2x.jpg', '2x'], '/hd/pic.jpg 3x'])
+      assert_html_has_tag(actual_html, 'img', srcset: 'pic.jpg 1x, /images/pic@2x.jpg 2x, /hd/pic.jpg 3x')
+    end
+
+    it 'should refuse a srcset array entry without a descriptor' do
+      error = assert_raises(ArgumentError) { image_tag('pic.jpg', srcset: ['pic@2x.jpg', '2x']) }
+      assert_includes error.message, '"pic@2x.jpg"'
+      assert_includes error.message, "[['pic@2x.jpg', '2x']]"
+      assert_raises(ArgumentError) { image_tag('pic.jpg', srcset: ['pic.jpg 1x', ' pic@2x.jpg ']) }
+    end
+
+    it 'should take string keys like symbol keys' do
+      self.class.stubs(:asset_stamp).returns(false)
+      options = { 'srcset' => { 'pic@2x.jpg' => '2x' }.freeze, 'alt' => 'A hill' }.freeze
+      expected = '<img src="/images/pic.jpg" srcset="/images/pic@2x.jpg 2x" alt="A hill" />'
+      assert_equal expected, image_tag('pic.jpg', options)
+      assert_equal({ 'srcset' => { 'pic@2x.jpg' => '2x' }, 'alt' => 'A hill' }, options)
+    end
+
+    it 'should take options with indifferent access, like params' do
+      self.class.stubs(:asset_stamp).returns(false)
+      options = Sinatra::IndifferentHash[alt: 'A hill', srcset: { 'pic@2x.jpg' => '2x' }]
+      expected = '<img src="/images/pic.jpg" alt="A hill" srcset="/images/pic@2x.jpg 2x" />'
+      assert_equal expected, image_tag('pic.jpg', options)
+    end
+
+    it 'should write no srcset for an empty hash or array' do
+      assert_equal '<img src="/pic.jpg" alt="Pic" />', image_tag('/pic.jpg', srcset: {})
+      assert_equal '<img src="/pic.jpg" alt="Pic" />', image_tag('/pic.jpg', srcset: [])
+    end
+  end
+
+  describe 'for #picture_tag method' do
+    before { self.class.stubs(:asset_stamp).returns(false) }
+
+    it 'should write a source for each source but the last and an img for the last' do
+      expected = '<picture><source srcset="/images/pic.webp" type="image/webp" />' \
+                 '<img src="/images/pic.jpg" alt="Pic" /></picture>'
+      assert_equal expected, picture_tag('pic.webp', 'pic.jpg')
+    end
+
+    it 'should infer the type of each source from its extension' do
+      types = {
+        'a.avif' => 'image/avif', 'a.webp' => 'image/webp', 'a.png' => 'image/png', 'a.gif' => 'image/gif',
+        'a.svg' => 'image/svg+xml', 'a.jpeg' => 'image/jpeg', 'a.jpg' => 'image/jpeg', 'b.JPG' => 'image/jpeg',
+        'https://cdn.example.com/c.webp?w=300&q=80' => 'image/webp', 'd.avif#frag' => 'image/avif'
+      }
+      actual_html = picture_tag(*types.keys, 'fallback.jpg')
+      types.each do |source, type|
+        assert_html_has_tag(actual_html, 'picture source', srcset: asset_path(:images, source), type: type)
+      end
+      assert_html_has_tag(actual_html, 'picture source', count: types.size)
+    end
+
+    it 'should refuse a source other than the last without a known image type' do
+      ['pic.jxl', 'https://cdn.example.com/pic', 'https://img.example.com', 'pic.unknown', 'page.html'].each do |source|
+        error = assert_raises(ArgumentError) { picture_tag(source, 'pic.avif', 'pic.jpg') }
+        assert_includes error.message, source.inspect
+        assert_includes error.message, 'block'
+      end
+    end
+
+    it 'should take a last source without a known image type' do
+      expected = '<picture><source srcset="/images/pic.webp" type="image/webp" />' \
+                 '<img src="https://cdn.example.com/pic" alt="Pic" /></picture>'
+      assert_equal expected, picture_tag('pic.webp', 'https://cdn.example.com/pic')
+      assert_equal '<picture><img src="/images/pic.jxl" alt="Pic" /></picture>', picture_tag('pic.jxl')
+    end
+
+    it 'should write only an img for one source' do
+      assert_equal '<picture><img src="/images/pic.jpg" alt="Pic" /></picture>', picture_tag('pic.jpg')
+      assert_equal '<picture><img src="/images/pic.jpg" alt="Pic" /></picture>', picture_tag(['pic.jpg'])
+    end
+
+    it 'should pass options to the picture and the image option to the img' do
+      options = { 'class' => 'hero', image: { alt: 'A hill', class: 'photo', srcset: { 'pic@2x.jpg' => '2x' } } }
+      actual_html = picture_tag('pic.webp', 'pic.jpg', options)
+      expected = '<picture class="hero"><source srcset="/images/pic.webp" type="image/webp" />' \
+                 '<img src="/images/pic.jpg" alt="A hill" class="photo" srcset="/images/pic@2x.jpg 2x" /></picture>'
+      assert_equal expected, actual_html
+      assert_equal %w[class image], options.keys.map(&:to_s)
+    end
+
+    it 'should take string keys in the image option' do
+      symbol_keys = picture_tag('pic.webp', 'pic.jpg', image: { alt: 'A hill', srcset: { 'pic@2x.jpg' => '2x' } })
+      string_keys = picture_tag('pic.webp', 'pic.jpg', 'image' => { 'alt' => 'A hill', 'srcset' => { 'pic@2x.jpg' => '2x' } })
+      assert_equal symbol_keys, string_keys
+    end
+
+    it 'should escape attribute values' do
+      actual_html = picture_tag('a"b.webp', 'pic&.jpg', title: '<x>', image: { alt: '"y"' })
+      expected = '<picture title="&lt;x&gt;"><source srcset="/images/a&quot;b.webp" type="image/webp" />' \
+                 '<img src="/images/pic&amp;.jpg" alt="&quot;y&quot;" /></picture>'
+      assert_equal expected, actual_html
+    end
+
+    it 'should write the block as the content of the picture' do
+      actual_html = picture_tag(class: 'hero') do
+        tag(:source, srcset: image_path('wide.jpg'), media: '(min-width: 800px)') + image_tag('narrow.jpg')
+      end
+      expected = '<picture class="hero"><source srcset="/images/wide.jpg" media="(min-width: 800px)" />' \
+                 '<img src="/images/narrow.jpg" alt="Narrow" /></picture>'
+      assert_equal expected, actual_html
+    end
+
+    it 'should refuse both sources and a block, or neither' do
+      assert_raises(ArgumentError) { picture_tag('pic.jpg') { image_tag('pic.jpg') } }
+      assert_raises(ArgumentError) { picture_tag }
+      assert_raises(ArgumentError) { picture_tag(class: 'hero') }
+    end
+
+    it 'should refuse the image option with a block' do
+      assert_raises(ArgumentError) { picture_tag(image: { alt: 'A hill' }) { image_tag('pic.jpg') } }
+    end
   end
 
   describe 'for #stylesheet_link_tag method' do
@@ -439,6 +589,20 @@ describe 'AssetTagHelpers' do
       actual_html = javascript_include_tag('application', 'base', type: 'module')
       assert_html_has_tag(actual_html, 'script', type: 'module', count: 2)
     end
+
+    it 'should keep the extension of .mjs and .cjs scripts' do
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<script src="/javascripts/app.mjs" type="module"></script>', javascript_include_tag('app.mjs', type: 'module')
+      assert_equal '<script src="/javascripts/lib/app.cjs"></script>', javascript_include_tag('lib/app.cjs')
+      assert_equal '<script src="/javascripts/app.mjs?v=2"></script>', javascript_include_tag('app.mjs?v=2')
+      assert_equal '<script src="/javascripts/app.js"></script>', javascript_include_tag('app')
+    end
+
+    it 'should add .js to a source that only contains .mjs or .cjs' do
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<script src="/javascripts/vendor.mjs-shim/app.js"></script>', javascript_include_tag('vendor.mjs-shim/app')
+      assert_equal '<script src="/javascripts/lib.cjsx.js"></script>', javascript_include_tag('lib.cjsx')
+    end
   end
 
   describe 'for #favicon_tag method' do
@@ -498,6 +662,220 @@ describe 'AssetTagHelpers' do
     it 'should prefix sources whose later lines look absolute' do
       assert_match(%r{\A/javascripts/data:}, asset_path(:js, "data:text/javascript,alert(1)//\n/x"))
       assert_match(%r{\A/images/javascript:}, asset_path(:images, "javascript:alert(1)//\nhttp://x"))
+    end
+  end
+
+  describe 'for #preload_link_tag method' do
+    it 'should resolve scripts, stylesheets and images like their tags' do
+      time = stop_time_for_test
+      actual_html = preload_link_tag('app.css')
+      assert_html_has_tag(actual_html, 'link', rel: 'preload', as: 'style', href: "/stylesheets/app.css?#{time.to_i}")
+      assert_equal stylesheet_link_tag('app')[/href="[^"]*"/], actual_html[/href="[^"]*"/]
+      assert_equal javascript_include_tag('app')[/src="([^"]*)"/, 1], preload_link_tag('app.js')[/href="([^"]*)"/, 1]
+      assert_equal image_tag('logo.PNG')[/src="([^"]*)"/, 1], preload_link_tag('logo.PNG')[/href="([^"]*)"/, 1]
+    end
+
+    it 'should resolve other sources from the public folder without the asset stamp' do
+      assert_equal '<link rel="preload" href="/captions/en.vtt" as="track" crossorigin="anonymous" />', preload_link_tag('captions/en.vtt')
+      assert_equal '<link rel="preload" href="/fonts/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('fonts/a.woff2')
+      assert_equal '<link rel="preload" href="/api/items" as="fetch" crossorigin="anonymous" />', preload_link_tag('api/items', as: :fetch)
+      assert_equal '<link rel="preload" href="/data/my%20file.json" />', preload_link_tag('data/my file.json')
+    end
+
+    it 'should resolve unstamped sources under the uri root and keep absolute ones' do
+      self.class.stubs(:uri_root).returns('/blog')
+      assert_equal '<link rel="preload" href="/blog/fonts/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('fonts/a.woff2')
+      assert_equal '<link rel="preload" href="/fonts/my%20a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('/fonts/my a.woff2')
+      assert_equal '<link rel="preload" href="//cdn.example.com/a.vtt" as="track" crossorigin="anonymous" />',
+                   preload_link_tag('//cdn.example.com/a.vtt')
+    end
+
+    it 'should keep absolute paths and urls' do
+      self.class.stubs(:uri_root).returns('/blog')
+      assert_equal '<link rel="preload" href="/fonts/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('/fonts/a.woff2')
+      assert_equal '<link rel="preload" href="https://cdn.example.com/a.png?v=1" as="image" />', preload_link_tag('https://cdn.example.com/a.png?v=1')
+    end
+
+    it 'should resolve under the uri root' do
+      self.class.stubs(:uri_root).returns('/blog')
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<link rel="preload" href="/blog/stylesheets/app.css" as="style" />', preload_link_tag('app.css')
+    end
+
+    it 'should infer the destination from the extension' do
+      { 'a.js' => 'script', 'a.css' => 'style', 'a.vtt' => 'track', 'a.otf' => 'font', 'a.ttf' => 'font',
+        'a.woff' => 'font', 'a.WOFF2' => 'font', 'a.avif' => 'image', 'a.gif' => 'image', 'a.ico' => 'image',
+        'a.jpeg' => 'image', 'a.jpg' => 'image', 'a.png' => 'image', 'a.svg' => 'image', 'a.webp' => 'image',
+        'a.css?v=1#x' => 'style' }.each do |source, as|
+        assert_equal %(rel="preload" href="/#{source}" as="#{as}"), preload_link_tag("/#{source}")[/rel=.*as="[^"]*"/]
+      end
+    end
+
+    it 'should write no destination it cannot infer' do
+      assert_equal '<link rel="preload" href="/data.json" />', preload_link_tag('/data.json')
+    end
+
+    it 'should infer the destination for a false or blank one' do
+      assert_equal '<link rel="preload" href="/a.css" as="style" />', preload_link_tag('/a.css', as: false)
+      assert_equal '<link rel="preload" href="/a.woff2" as="font" crossorigin="anonymous" />', preload_link_tag('/a.woff2', as: '')
+      assert_equal '<link rel="preload" href="/data.json" />', preload_link_tag('/data.json', as: ' ')
+    end
+
+    it 'should write crossorigin for fonts, tracks and fetches unless told otherwise' do
+      assert_equal '<link rel="preload" href="/a.vtt" as="track" crossorigin="anonymous" />', preload_link_tag('/a.vtt')
+      assert_equal '<link rel="preload" href="/a.vtt" as="track" />', preload_link_tag('/a.vtt', crossorigin: false)
+      assert_equal 'crossorigin="use-credentials"', preload_link_tag('/a.woff2', crossorigin: 'use-credentials')[/crossorigin="[^"]*"/]
+      assert_equal '<link rel="preload" href="/a.woff2" as="font" />', preload_link_tag('/a.woff2', crossorigin: false)
+      assert_equal '<link rel="preload" href="/a.css" as="style" />', preload_link_tag('/a.css')
+      assert_equal '<link rel="preload" href="/a.css" as="style" crossorigin="anonymous" />', preload_link_tag('/a.css', crossorigin: true)
+    end
+
+    it 'should take explicit options' do
+      assert_equal '<link rel="preload" href="/data" as="fetch" type="application/json" crossorigin="anonymous" fetchpriority="high" />',
+                   preload_link_tag('/data', as: :fetch, type: 'application/json', crossorigin: true, fetchpriority: :high)
+      assert_equal '<link rel="preload" href="/a.js" as="fetch" crossorigin="anonymous" />', preload_link_tag('/a.js', 'as' => 'fetch')
+      assert_equal '<link rel="preload" href="/data" as="fetch" />', preload_link_tag('/data', as: :fetch, crossorigin: false)
+      assert_equal '<link rel="preload" href="/a.woff2" as="font" type="font/woff2" crossorigin="anonymous" />',
+                   preload_link_tag('/a.woff2', type: 'font/woff2')
+    end
+
+    it 'should match the destination case-insensitively' do
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<link rel="preload" href="/a" as="font" crossorigin="anonymous" />', preload_link_tag('/a', as: 'Font')
+      assert_equal '<link rel="preload" href="/stylesheets/a.css" as="style" />', preload_link_tag('a', as: 'Style')
+      assert_equal '<link rel="modulepreload" href="/javascripts/a.js" />', preload_link_tag('a', as: :Module)
+    end
+
+    it 'should write a modulepreload link for modules' do
+      self.class.stubs(:asset_stamp).returns(false)
+      assert_equal '<link rel="modulepreload" href="/javascripts/app.js" />', preload_link_tag('app', as: :module)
+      assert_equal '<link rel="modulepreload" href="https://cdn.example.com/app.mjs" />', preload_link_tag('https://cdn.example.com/app.mjs')
+      assert_equal '<link rel="preload" href="https://cdn.example.com/app.mjs" as="script" />',
+                   preload_link_tag('https://cdn.example.com/app.mjs', as: :script)
+    end
+
+    it 'should escape attribute values' do
+      actual_html = preload_link_tag('https://example.com/a.css?a=1&b="2"', title: '<b>"x"</b>')
+      assert_equal '<link rel="preload" href="https://example.com/a.css?a=1&amp;b=&quot;2&quot;" as="style" ' \
+                   'title="&lt;b&gt;&quot;x&quot;&lt;/b&gt;" />', actual_html
+      assert actual_html.html_safe?
+    end
+  end
+
+  describe 'for #javascript_importmap_tag method' do
+    def importmap_of(html)
+      JSON.parse(html[%r{<script type="importmap"[^>]*>(.*?)</script>}m, 1])
+    end
+
+    it 'should map module names to javascript sources without the asset stamp' do
+      actual_html = javascript_importmap_tag(imports: { 'app' => 'app', lib: 'vendor/lib.js', 'spaced' => 'my lib' })
+      assert_equal({ 'imports' => { 'app' => '/javascripts/app.js', 'lib' => '/javascripts/vendor/lib.js',
+                                    'spaced' => '/javascripts/my%20lib.js' } }, importmap_of(actual_html))
+      assert_html_has_tag(actual_html, 'script', type: 'importmap', count: 1)
+      assert_html_has_no_tag(actual_html, 'script[type=module]')
+      assert_html_has_no_tag(actual_html, 'link')
+    end
+
+    it 'should keep sources with a scheme or a leading slash as given' do
+      self.class.stubs(:uri_root).returns('/blog')
+      sources = { 'cdn' => 'https://cdn.example.com/x', 'rel' => '//cdn.example.com/p', 'root' => '/js/y',
+                  'lodash/' => '/vendor/lodash/', 'data' => 'data:text/javascript,export%20default%201', 'blob' => 'BLOB:x' }
+      assert_equal({ 'imports' => sources }, importmap_of(javascript_importmap_tag(imports: sources)))
+      assert_equal({ 'imports' => { 'a' => '/my%20a.js' } }, importmap_of(javascript_importmap_tag(imports: { 'a' => '/my a.js' })))
+    end
+
+    it 'should map a name ending in a slash as a prefix' do
+      assert_equal({ 'imports' => { 'lib/' => '/javascripts/lib/', 'vendor/' => '/vendor/', 'cdn/' => 'https://cdn.example.com/x/' } },
+                   importmap_of(javascript_importmap_tag(imports: { 'lib/' => 'lib', 'vendor/' => '/vendor', 'cdn/' => 'https://cdn.example.com/x' })))
+    end
+
+    it 'should raise for an import without a source' do
+      [nil, '', '  '].each do |source|
+        error = assert_raises(ArgumentError) { javascript_importmap_tag(imports: { 'app' => '/app.js', 'chart' => source }) }
+        assert_includes error.message, '"chart"'
+      end
+    end
+
+    it 'should take the options as a second hash' do
+      assert_equal '<script type="importmap" nonce="n">{"imports":{"app":"/app.js"}}</script>',
+                   javascript_importmap_tag({ imports: { 'app' => '/app.js' } }, { nonce: 'n' })
+    end
+
+    it 'should leave nil scopes and integrity out of the import map' do
+      actual_html = javascript_importmap_tag(imports: { 'a' => '/a.js' }, scopes: nil, integrity: nil)
+      assert_equal({ 'imports' => { 'a' => '/a.js' } }, importmap_of(actual_html))
+      assert_html_has_no_tag(actual_html, 'script[scopes]')
+    end
+
+    it 'should write scopes and integrity into the import map' do
+      scopes = { '/admin/' => { 'chart' => '/javascripts/chart-2.js' } }
+      integrity = { '/javascripts/app.js' => 'sha384-</script>' }
+      actual_html = javascript_importmap_tag(imports: { 'app' => 'app' }, scopes: scopes, integrity: integrity)
+      assert_equal({ 'imports' => { 'app' => '/javascripts/app.js' }, 'scopes' => scopes, 'integrity' => integrity }, importmap_of(actual_html))
+      assert_equal 1, actual_html.scan('</script').size
+      assert_html_has_no_tag(actual_html, 'script[scopes]')
+      assert_html_has_no_tag(actual_html, 'script[integrity]')
+    end
+
+    it 'should resolve a relative prefix to the javascripts folder' do
+      self.class.stubs(:uri_root).returns('/blog')
+      assert_equal({ 'imports' => { 'lib/' => '/blog/javascripts/lib/', 'app' => '/blog/javascripts/app.js' } },
+                   importmap_of(javascript_importmap_tag(imports: { 'lib/' => 'lib/', 'app' => 'app' })))
+    end
+
+    it 'should write an empty import map without imports' do
+      assert_equal '<script type="importmap">{"imports":{}}</script>', javascript_importmap_tag
+    end
+
+    it 'should import the entry from a module script' do
+      actual_html = javascript_importmap_tag('application', 'imports' => { 'application' => '/application.js' })
+      assert_equal '<script type="importmap">{"imports":{"application":"/application.js"}}</script>' \
+                   '<script type="module">import "application"</script>', actual_html
+      assert actual_html.html_safe?
+    end
+
+    it 'should write no module script for a blank entry' do
+      assert_equal '<script type="importmap">{"imports":{}}</script>', javascript_importmap_tag('')
+      assert_equal '<script type="importmap">{"imports":{}}</script>', javascript_importmap_tag(" \n", imports: {})
+    end
+
+    it 'should write a modulepreload link for each import when asked' do
+      actual_html = javascript_importmap_tag('app', imports: { 'app' => '/app.js', 'cdn' => 'https://cdn.example.com/x.js' }, preload: true)
+      assert_equal '<script type="importmap">{"imports":{"app":"/app.js","cdn":"https://cdn.example.com/x.js"}}</script>' \
+                   '<link rel="modulepreload" href="/app.js" />' \
+                   '<link rel="modulepreload" href="https://cdn.example.com/x.js" />' \
+                   '<script type="module">import "app"</script>', actual_html
+    end
+
+    it 'should preload each address once' do
+      actual_html = javascript_importmap_tag(imports: { 'app' => 'app', 'main' => 'app', 'x' => '/javascripts/app.js' }, preload: true)
+      assert_equal 1, actual_html.scan('<link rel="modulepreload" href="/javascripts/app.js" />').size
+    end
+
+    it 'should not preload prefixes' do
+      actual_html = javascript_importmap_tag(imports: { 'lib/' => 'lib/', 'app' => '/app.js' }, preload: true)
+      assert_equal '<script type="importmap">{"imports":{"lib/":"/javascripts/lib/","app":"/app.js"}}</script>' \
+                   '<link rel="modulepreload" href="/app.js" />', actual_html
+    end
+
+    it 'should write the nonce on each tag and other html options on the import map only' do
+      actual_html = javascript_importmap_tag('app', imports: { 'app' => '/app.js' }, preload: true, nonce: 'r4nd"om',
+                                                    id: 'map', 'data-turbo-track' => 'reload', type: 'text/plain')
+      assert_equal '<script type="importmap" nonce="r4nd&quot;om" id="map" data-turbo-track="reload">{"imports":{"app":"/app.js"}}</script>' \
+                   '<link rel="modulepreload" href="/app.js" nonce="r4nd&quot;om" />' \
+                   '<script type="module" nonce="r4nd&quot;om">import "app"</script>', actual_html
+    end
+
+    it 'should escape import names and sources so they cannot end the script' do
+      name = '</script><script>alert(1)</script><!--'
+      source = 'https://cdn.example.com/x.js?a=1&b=</script>'
+      actual_html = javascript_importmap_tag(name, imports: { name => source, "\u2028" => "/\u2029.js" })
+      assert_equal 2, actual_html.scan(%r{</script}i).size
+      refute_includes actual_html, '<!--'
+      refute_match(/[\u2028\u2029]/, actual_html)
+      assert_equal({ 'imports' => { name => source, "\u2028" => "/\u2029.js" } }, importmap_of(actual_html))
+      entry = actual_html[%r{<script type="module">import (.*)</script>}m, 1]
+      assert_equal name, JSON.parse("[#{entry}]").first
     end
   end
 end

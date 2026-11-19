@@ -36,7 +36,7 @@ module Padrino
     private
 
     def excepted?(form)
-      @except.any? { |path| path.is_a?(Regexp) ? path.match?(form) : path == form }
+      @except.any? { |path| path.is_a?(Regexp) ? Routing.path_match?(path, form) : path == form }
     end
   end
 end

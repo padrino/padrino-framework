@@ -53,9 +53,9 @@ module Padrino
       #   capture_html(object_for_block, &block) => "...html..."
       #
       # @example
-      #   SafeBuffer.new + capture_html { "<foo>" }
+      #   Padrino::SafeBuffer.new + capture_html { "<foo>" }
       #   # => "&lt;foo&gt;"
-      #   SafeBuffer.new.safe_concat(capture_html { "<foo>" })
+      #   Padrino::SafeBuffer.new.safe_concat(capture_html { "<foo>" })
       #   # => "<foo>"
       #
       def capture_html(*args, &block)
