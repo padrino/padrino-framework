@@ -111,6 +111,52 @@ describe 'TagHelpers' do
       assert_equal '<td class="a &amp; b c" id="cell" colspan="2" />', tag(:td, class: ['a & b', :c], id: :cell, colspan: 2)
     end
 
+    it 'should write the boolean attributes of the HTML standard by name' do
+      assert_equal '<details open="open" />', tag(:details, open: true)
+      assert_equal '<script async="async" nomodule="nomodule" />', tag(:script, async: true, nomodule: true)
+      assert_equal '<video controls="controls" playsinline="playsinline" />', tag(:video, controls: true, playsinline: true)
+      assert_equal '<div inert="inert" />', tag(:div, inert: true)
+      assert_equal '<input disabled="disabled" />', tag(:input, 'disabled' => true)
+      assert_equal '<details />', tag(:details, open: false)
+    end
+
+    it 'should keep a String given to a boolean attribute' do
+      assert_equal '<div hidden="until-found" />', tag(:div, hidden: 'until-found')
+      assert_equal '<div hidden="hidden" />', tag(:div, hidden: true)
+      assert_equal '<div />', tag(:div, hidden: false)
+      assert_equal '<div hidden="until-found" />', tag(:div, hidden: :'until-found')
+      assert_equal '<input disabled="disabled" />', tag(:input, disabled: 1)
+    end
+
+    it 'should write popover as empty when true and keep its keyword otherwise' do
+      assert_equal '<div popover="" />', tag(:div, popover: true)
+      assert_equal '<div popover="manual" />', tag(:div, popover: 'manual')
+      assert_equal '<div />', tag(:div, popover: false)
+    end
+
+    it 'should write false for aria attributes and the true/false enumerated attributes' do
+      assert_equal '<div aria-hidden="false" spellcheck="false" draggable="false" contenteditable="false" />',
+                   tag(:div, 'aria-hidden': false, spellcheck: false, draggable: false, contenteditable: false)
+      assert_equal '<div aria-expanded="false" aria-current="false" />', tag(:div, 'aria-expanded' => false, 'aria-current': false)
+      assert_equal '<div aria-hidden="false" />', tag(:div, aria: { hidden: false })
+      assert_equal '<div spellcheck="true" />', tag(:div, spellcheck: true)
+      assert_equal '<div />', tag(:div, 'aria-hidden': nil, spellcheck: nil, title: false)
+    end
+
+    it 'should drop false for ARIA attributes whose values are not true/false states' do
+      assert_equal '<td />', tag(:td, 'aria-label': false, 'aria-describedby': false, 'aria-labelledby' => false)
+    end
+
+    it 'should build class from Arrays and Hashes of names' do
+      assert_equal '<div class="a b" />', tag(:div, class: ['a', nil, '', 'b'])
+      assert_equal '<div class="active" />', tag(:div, class: { active: true, off: false })
+      assert_equal '<div class="btn &amp; active" />', tag(:div, class: ['btn &', [{ active: 1, off: nil }], false])
+      assert_equal '<div class="x" />', tag(:div, 'class' => { x: true })
+      assert_equal '<div id="a" />', tag(:div, class: { off: false }, id: 'a')
+      assert_equal '<div />', tag(:div, class: [])
+      assert_equal '<p class="on">x</p>', content_tag(:p, 'x', class: { on: true })
+    end
+
     it 'should write data attributes only for the options that ask for them' do
       assert_equal '<a href="/x" class="link" />', tag(:a, href: '/x', class: 'link')
       assert_equal '<a href="/x" data-method="post" rel="nofollow" data-remote="true" data-confirm="Sure &amp; certain?" />',

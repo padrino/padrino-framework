@@ -1,8 +1,4 @@
-begin
-  require 'tilt'
-rescue LoadError
-  require 'sinatra/tilt'
-end
+require 'tilt'
 
 module Padrino
   ##
