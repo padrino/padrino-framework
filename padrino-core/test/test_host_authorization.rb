@@ -82,7 +82,7 @@ describe 'Host authorization' do
     end
 
     after do
-      Object.send(:remove_const, :HostAuthApp)
+      Object.send(:remove_const, :HostAuthApp) if defined?(::HostAuthApp)
       Padrino.clear!
     end
 
