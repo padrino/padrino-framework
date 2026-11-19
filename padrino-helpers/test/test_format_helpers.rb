@@ -13,6 +13,27 @@ describe 'FormatHelpers' do
   end
 
   describe 'for #simple_format method' do
+    it 'should format text and attribute values in another encoding' do
+      text = "caf\xE9".dup.force_encoding(Encoding::ISO_8859_1)
+      actual_html = simple_format(text, class: text)
+      assert_equal %(<p class="#{text}">#{text}</p>), actual_html
+      assert_equal Encoding::ISO_8859_1, actual_html.encoding
+    end
+
+    it 'should close each paragraph with the tag name it opens it with' do
+      assert_equal "<p_x>a</p_x>\n\n<p_x>b</p_x>", simple_format("a\n\nb", tag: 'p x')
+    end
+
+    it 'should start each paragraph tag name with a letter' do
+      assert_equal "<_!-->a</_!-->\n\n<_!-->b</_!-->", simple_format("a\n\nb", tag: '!--')
+    end
+
+    it 'should write names and values with a backslash the same in every paragraph' do
+      assert_equal "<p data-\\`=\"1\">x y=z</p>\n\n<p data-\\`=\"1\">w</p>", simple_format("x y=z\n\nw", data: { '\`' => 1 })
+      assert_equal "<p class=\"x\\0\">a</p>\n\n<p class=\"x\\0\">b</p>", simple_format("a\n\nb", class: 'x\0')
+      assert_equal "<p\\&>a</p\\&>\n\n<p\\&>b</p\\&>", simple_format("a\n\nb", tag: 'p\&')
+    end
+
     it 'should format simple text into html format' do
       actual_text = simple_format("Here is some basic text...\n...with a line break.")
       assert actual_text.html_safe?
