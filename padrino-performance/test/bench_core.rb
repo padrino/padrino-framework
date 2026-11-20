@@ -5,9 +5,11 @@ require 'padrino-core'
 require 'minitest/autorun'
 require 'minitest/benchmark'
 require 'rack/test'
+require_relative 'best_of_runs'
 
 module MockBenchmark
   include Rack::Test::Methods
+  include BestOfRuns
 
   module Settings
     def bench_range
