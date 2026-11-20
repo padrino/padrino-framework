@@ -28,17 +28,7 @@ module Padrino
       # model whose body references another constant with the same short name isn't "missing".
       #
       def missing_constant?(error, name)
-        return false unless error.instance_of?(NameError)
-
-        segments = name.to_s.sub(/\A::/, '').split('::')
-        return false unless error.receiver.is_a?(::Module)
-
-        segments.each_index.any? do |index|
-          parent = index.zero? ? 'Object' : segments.first(index).join('::')
-          segments[index] == error.name.to_s && error.receiver.name == parent
-        end
-      rescue ArgumentError
-        false
+        Padrino::Auth.missing_constant?(error, name)
       end
     end
   end
