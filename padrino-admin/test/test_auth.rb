@@ -123,6 +123,19 @@ describe 'register Padrino::Auth' do
     Object.send(:remove_const, :RolelessAdmin) if defined?(RolelessAdmin)
   end
 
+  it 'finds an account a route writes into the session after a nil lookup' do
+    auth_app do
+      access_control.roles_for(:any) { |a| a.allow '/' }
+      get('/') do
+        before = current_account&.id.inspect
+        session[settings.session_id] = Account.first.id
+        "#{before} #{current_account&.id.inspect} #{logged_in?}"
+      end
+    end
+    get '/'
+    assert_equal "nil #{Account.first.id.inspect} true", last_response.body
+  end
+
   it 'stores a mounted location' do
     auth_app do
       set :uri_root, '/api'
@@ -304,6 +317,40 @@ describe 'registering Padrino::Auth and AccessControl' do
   end
 
   [Padrino::Auth, Padrino::Admin::AccessControl].each do |extension|
+    it "is a no-op registered twice in one call with #{extension}" do
+      file = proc do
+        register extension, extension
+        enable :sessions
+        access_control.roles_for(:any) { |a| a.protect '/' }
+        get('/') { 'home' }
+      end
+      @app = Sinatra.new(Padrino::Application) { instance_eval(&file) }
+      get '/'
+      assert_equal 401, last_response.status
+      assert_equal 1, @app.filters[:before].size
+      # What Padrino::Application#reload! does before it loads the app file again.
+      @app.reset!
+      @app.reset_router!
+      @app.instance_eval(&file)
+      get '/'
+      assert_equal 401, last_response.status
+      assert_equal 1, @app.filters[:before].size
+      assert_equal 1, any_authorizations(@app)
+    end
+
+    it "keeps a current_account_from hook when #{extension} is registered again" do
+      @app = Sinatra.new(Padrino::Application) do
+        register extension
+        current_account_from { Account.first if env['HTTP_AUTHORIZATION'] == 'Bearer t' }
+        register extension
+        access_control.roles_for(:any) { |a| a.protect '/' }
+        access_control.roles_for(:admin) { |a| a.allow '/' }
+        get('/') { 'home' }
+      end
+      get '/', {}, 'HTTP_AUTHORIZATION' => 'Bearer t'
+      assert_equal 200, last_response.status
+    end
+
     it "protects again after a reload with #{extension}" do
       file = proc do
         register extension

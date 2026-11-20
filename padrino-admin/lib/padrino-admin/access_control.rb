@@ -14,6 +14,7 @@ module Padrino
         #
         def registered(app)
           raise Padrino::Auth::Error, 'Register Padrino::Admin::AccessControl instead of Padrino::Auth, not both' if app.extensions.include?(Padrino::Auth)
+          return if Padrino::Auth.set_up?(app)
 
           app.register Padrino::Admin unless app.extensions.include?(Padrino::Admin)
           app.set :admin_model, 'Account' unless app.respond_to?(:admin_model)

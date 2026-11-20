@@ -194,14 +194,15 @@ module Padrino
       end
 
       ##
-      # Returns the current_account, it's an instance of Account model, or nil. It is looked up
-      # once per request: with the block given to +current_account_from+ if the app has one,
-      # else from the session.
+      # Returns the current_account, it's an instance of Account model, or nil. With a
+      # +current_account_from+ block it is looked up once per request. From the session, an
+      # account is kept for the request, and a nil result is looked up again on the next call, so
+      # a route that writes the session's account id itself then gets the account.
       #
       def current_account
-        return @current_account if defined?(@current_account)
-
         hook = self.class.respond_to?(:current_account_hook) && self.class.current_account_hook
+        return @current_account if @current_account || (hook && defined?(@current_account))
+
         account = (hook ? instance_exec(&hook) : login_from_session) || nil
         if hook && account && !account.respond_to?(:role)
           raise Padrino::Auth::Error, "current_account_from must return an account (responding to role) or nil, got #{account.class}"
@@ -386,12 +387,11 @@ module Padrino
       # Method used by Padrino::Application when we register the extension.
       #
       # A no-op when an extension that includes Auth (+includes_auth?+) is registered, or when the
-      # app already registered Auth. Both checks read the extension list, which +reset!+ clears,
-      # so a reloaded app sets up its rules and +before+ filter again.
+      # app is already set up (+set_up?+), so that registering it twice keeps the first rules.
       #
       def registered(app)
         return if app.extensions.any? { |e| e.respond_to?(:includes_auth?) && e.includes_auth? }
-        return if app.instance_variable_get(:@extensions).count(Padrino::Auth) > 1
+        return if set_up?(app)
 
         setup(app, Padrino::Auth::Rules.new)
       end
@@ -409,7 +409,9 @@ module Padrino
         app.set :account_model, 'Account' unless app.respond_to?(:account_model)
         app.helpers Padrino::Auth::Helpers
         app.extend Padrino::Auth::ClassMethods
-        app.before { login_required }
+        filter = proc { login_required }
+        app.before(&filter)
+        app.instance_variable_set(:@_auth_filter, filter)
         app.class_eval do
           class << self
             attr_accessor :access_control
@@ -420,6 +422,15 @@ module Padrino
           end
         end
         app.send(:access_control=, rules)
+      end
+
+      ##
+      # Whether +setup+ already ran on +app+: its +before+ filter is still in the app's filters.
+      # +reset!+ replaces the filters, so a reloaded app is set up again.
+      #
+      def set_up?(app)
+        filter = app.instance_variable_get(:@_auth_filter)
+        !filter.nil? && app.filters[:before].include?(filter)
       end
 
       ##
