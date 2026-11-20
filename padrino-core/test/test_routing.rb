@@ -434,6 +434,17 @@ describe 'Routing' do
     end
   end
 
+  it 'should give 404 for a path with a raw newline' do
+    mock_app do
+      get('/names/:name') { 'name' }
+    end
+    ["/names/a\nb", "/names/a\n"].each do |path|
+      env = Rack::MockRequest.env_for('/')
+      env['PATH_INFO'] = path
+      assert_equal 404, @app.call(env)[0], path.inspect
+    end
+  end
+
   it 'should cascade a path with a control character to the next app at the same mount' do
     first = mock_app do
       before('/admin') { halt 401, 'first' }
@@ -550,6 +561,71 @@ describe 'Routing' do
     assert_equal 'hello', body
     get '/main', {}, { 'HTTP_USER_AGENT' => 'This is IE' }
     assert_equal 'hello IE', body
+  end
+
+  it 'should match a user agent given as a String exactly' do
+    mock_app do
+      get('/main', agent: 'Exact Agent') { 'exact' }
+      get('/main') { 'hello' }
+    end
+    get '/main', {}, { 'HTTP_USER_AGENT' => 'Exact Agent' }
+    assert_equal 'exact', body
+    get '/main', {}, { 'HTTP_USER_AGENT' => 'Exact Agent 2' }
+    assert_equal 'hello', body
+    get '/main'
+    assert_equal 'hello', body
+  end
+
+  it 'should match hosts' do
+    mock_app do
+      get(:index, host: 'admin.example.com') { 'admin' }
+      get(:index) { 'public' }
+      get('/api', host: /\Aapi\./) { 'api' }
+    end
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com'
+    assert_equal 'admin', body
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com:3000'
+    assert_equal 'admin', body
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public', body
+    get '/', {}, 'HTTP_HOST' => 'sub.admin.example.com'
+    assert_equal 'public', body
+    get '/api', {}, 'HTTP_HOST' => 'api.example.com'
+    assert_equal 'api', body
+    get '/api', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 404, status
+  end
+
+  it 'should match a host given in any case, or one of an Array of hosts' do
+    mock_app do
+      get(:index, host: 'admin.example.com') { 'admin' }
+      get('/api', host: ['api.example.com', /\Aapi\d\./]) { 'api' }
+      get(:index) { 'public' }
+    end
+    get '/', {}, 'HTTP_HOST' => 'Admin.Example.COM'
+    assert_equal 'admin', body
+    get '/api', {}, 'HTTP_HOST' => 'api.example.com'
+    assert_equal 'api', body
+    get '/api', {}, 'HTTP_HOST' => 'api2.example.com'
+    assert_equal 'api', body
+    get '/api', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 404, status
+  end
+
+  it 'should match hosts given to a controller, without running its filters for other hosts' do
+    mock_app do
+      controller :admin, map: '/', conditions: { host: 'admin.example.com' } do
+        before { response['x-admin'] = 'ran' }
+        get(:index) { 'admin' }
+      end
+      get(:index) { 'public' }
+    end
+    get '/', {}, 'HTTP_HOST' => 'admin.example.com'
+    assert_equal 'admin', body
+    assert_equal 'ran', response['x-admin']
+    get '/', {}, 'HTTP_HOST' => 'www.example.com'
+    assert_equal 'public', body
+    assert_nil response['x-admin']
   end
 
   it 'should use regex for parts of a route' do
@@ -734,6 +810,67 @@ describe 'Routing' do
     assert_equal 'regexp', body
   end
 
+  it 'should answer only registered formats on a provides: :any route' do
+    mock_app do
+      disable :raise_errors
+      error { env['sinatra.error'].class.name }
+      get(:a, provides: :any) { content_type.to_s }
+      get(:b, provides: %i[html json]) { content_type.to_s }
+    end
+
+    get '/a.nosuchext'
+    unknown = [status, body]
+    ['/a.text%2Fplain', '/a.application%2Fjson', '/a?format=text/plain', '/a?format=a%2Fb', '/a?format=.json'].each do |path|
+      get path
+      assert_equal unknown, [status, body], path
+    end
+
+    %w[json xml html js css txt JSON].each do |format|
+      ["/a.#{format}", "/a?format=#{format}"].each do |path|
+        get path
+        assert_equal [200, format], [status, body], path
+        assert_equal Rack::Mime.mime_type(".#{format}"), response.media_type, path
+      end
+    end
+    get '/a'
+    assert_equal [200, 'html'], [status, body]
+    get '/a', {}, { 'HTTP_ACCEPT' => 'application/json' }
+    assert_equal [200, 'json'], [status, body]
+
+    get '/b.json'
+    assert_equal [200, 'json'], [status, body]
+    ['/b.xml', '/b.text%2Fhtml', '/b?format=text/html'].each do |path|
+      get path
+      assert_equal 404, status, path
+    end
+  end
+
+  it 'should pass an unregistered format on a provides: :any route to the next route' do
+    mock_app do
+      get(:a, provides: :any) { content_type.to_s }
+      get('/a.:format') { "next #{params[:format]}" }
+    end
+
+    get '/a.text%2Fplain'
+    assert_equal [200, 'next text/plain'], [status, body]
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
+  it 'should return 406 on an unregistered format on a provides: :any route and flag is set' do
+    mock_app do
+      enable :treat_format_as_accept
+      get(:a, provides: :any) { content_type.to_s }
+    end
+
+    ['/a.text%2Fplain', '/a?format=text/plain'].each do |path|
+      get path
+      assert_equal 406, status, path
+    end
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
   it 'should use padrino url method' do
     mock_app do
     end
@@ -793,6 +930,33 @@ describe 'Routing' do
 
     get '/a.xml', {}, {}
     assert_equal 404, status
+  end
+
+  it 'should not provide a file extension with no MIME type for provides :any' do
+    mock_app do
+      get(:a, provides: :any) { content_type.to_s }
+      get('/a.:format') { "next #{params[:format]}" }
+      get(:b, provides: :any) { content_type.to_s }
+    end
+
+    get '/a.nosuchext'
+    assert_equal [200, 'next nosuchext'], [status, body]
+    get '/b.nosuchext'
+    assert_equal 404, status
+    get '/b.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
+  it 'should return 406 on a file extension with no MIME type for provides :any and flag is set' do
+    mock_app do
+      enable :treat_format_as_accept
+      get(:a, provides: :any) { content_type.to_s }
+    end
+
+    get '/a.nosuchext'
+    assert_equal 406, status
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
   end
 
   it 'should not set content_type to :html if Accept */* and html not in provides' do
@@ -882,6 +1046,54 @@ describe 'Routing' do
 
     get '/a.xml', {}, { 'HTTP_ACCEPT' => 'text/html' }
     assert_equal 404, status
+  end
+
+  it 'should not provide a format that is not valid UTF-8 or not a string' do
+    mock_app do
+      get(:a, provides: %i[html json]) { content_type.to_s }
+      get(:b, provides: %i[html json]) { content_type.to_s }
+      get('/b.:format') { 'next' }
+    end
+
+    ['/a.%25ff', '/a.%25FF', '/a?format=%ff', '/a?format[]=json', '/a?format[json]=1'].each do |path|
+      get path
+      assert_equal 404, status, path
+    end
+    get '/b.%25ff'
+    assert_equal [200, 'next'], [status, body]
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
+  it 'should return 406 on a format that is not valid UTF-8 and flag is set' do
+    mock_app do
+      enable :treat_format_as_accept
+      get(:a, provides: %i[html json]) { content_type.to_s }
+    end
+
+    ['/a.%25ff', '/a?format=%ff'].each do |path|
+      get path
+      assert_equal 406, status, path
+    end
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
+  end
+
+  it 'should answer a format that is not valid UTF-8 as an unknown format for provides :any' do
+    mock_app do
+      disable :raise_errors
+      error { env['sinatra.error'].class.name }
+      get(:a, provides: :any) { content_type.to_s }
+    end
+
+    get '/a.nosuchext'
+    unknown = [status, body]
+    ['/a.%25ff', '/a?format=%ff'].each do |path|
+      get path
+      assert_equal unknown, [status, body], path
+    end
+    get '/a.json'
+    assert_equal [200, 'json'], [status, body]
   end
 
   it 'should generate routes for format simple' do
@@ -1082,8 +1294,8 @@ describe 'Routing' do
     assert_equal 'js', body
     get '/b'
     assert_equal 'any', body
-    # TODO: randomly fails in minitest :(
-    # assert_raises(RuntimeError) { get "/b.foo" }
+    get '/b.nosuchext'
+    assert_equal 404, status
     get '/c'
     assert_equal 200, status
     assert_equal 'js,json', body
@@ -1784,6 +1996,19 @@ describe 'Routing' do
     assert_equal 'text/javascript', body
   end
 
+  it 'should filters by a media type that has no format name' do
+    mock_app do
+      post('/foo', accepts: [:json, 'application/vnd.api+json']) { content_type.to_s }
+    end
+
+    post '/foo', {}, { 'CONTENT_TYPE' => 'application/vnd.api+json' }
+    assert ok?
+    assert_equal 'application/vnd.api+json', body
+    assert_equal 'application/vnd.api+json', response['Content-Type']
+    post '/foo', {}, { 'CONTENT_TYPE' => 'application/json' }
+    assert_equal 'json', body
+  end
+
   it 'should filters by accept header' do
     mock_app do
       get '/foo', provides: %i[xml js] do
@@ -1912,6 +2137,50 @@ describe 'Routing' do
 
     get '/foo', {}, { 'HTTP_ACCEPT' => 'text/javascript, */*;q=0.5' }
     assert_equal 'js', body
+  end
+
+  it 'should set content_type to :html if Accept has no type with a format name and provides of :any' do
+    mock_app do
+      get('/foo', provides: :any) { content_type.to_s }
+    end
+
+    ['application/x-unknown', 'foo/bar', 'text/*', 'application/*', 'application/x-unknown, */*;q=0.1'].each do |accept|
+      get '/foo', {}, { 'HTTP_ACCEPT' => accept }
+      assert_equal 200, status, accept
+      assert_equal 'html', body, accept
+      assert_equal 'text/html;charset=utf-8', response['Content-Type'], accept
+    end
+  end
+
+  it 'should set content_type to the first accepted type with a format name and provides of :any' do
+    mock_app do
+      get('/foo', provides: :any) { content_type.to_s }
+    end
+
+    {
+      'application/json' => 'json',
+      'application/x-unknown, application/json;q=0.9' => 'json',
+      'application/x-unknown, text/html;q=0.9' => 'html',
+      'foo/bar, application/*;q=0.9, application/xml;q=0.8' => 'xml',
+      'text/*, application/json;q=0.5' => 'html'
+    }.each do |accept, format|
+      get '/foo', {}, { 'HTTP_ACCEPT' => accept }
+      assert_equal 200, status, accept
+      assert_equal format, body, accept
+    end
+  end
+
+  it 'should set content_type to a provided media type that has no format name' do
+    mock_app do
+      get('/foo', provides: [:html, 'application/vnd.api+json']) { content_type.to_s }
+    end
+
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'application/vnd.api+json' }
+    assert_equal 200, status
+    assert_equal 'application/vnd.api+json', body
+    assert_equal 'application/vnd.api+json', response['Content-Type']
+    get '/foo', {}, { 'HTTP_ACCEPT' => 'text/html' }
+    assert_equal 'html', body
   end
 
   it 'should allows custom route-conditions to be set via route options and halt' do
@@ -2442,6 +2711,89 @@ describe 'Routing' do
     assert_equal 1, counter
   end
 
+  describe 'with options hashes and lists reused or frozen' do
+    def mock_app_needing_ok(&block)
+      mock_app do
+        set(:needs_ok) { |on| condition { halt 403, 'no ok' unless params[:ok] } if on }
+        instance_eval(&block)
+      end
+    end
+
+    it 'should apply the options to each controller and leave the hash unchanged' do
+      opts = { conditions: { needs_ok: true }, map: '/area' }
+      mock_app_needing_ok do
+        controller(:a, opts) { get(:one) { 'one' } }
+        controllers(:b, opts) { get(:two) { 'two' } }
+      end
+      %w[one two].each do |name|
+        get "/area/#{name}"
+        assert_equal 'no ok', body
+        get "/area/#{name}", ok: 1
+        assert_equal name, body
+      end
+      assert_equal({ conditions: { needs_ok: true }, map: '/area' }, opts)
+    end
+
+    it 'should accept a frozen options hash' do
+      opts = { conditions: { needs_ok: true } }.freeze
+      mock_app_needing_ok do
+        controller(:a, opts) { get(:index) { 'a' } }
+        controller(:b, opts) { get(:index) { 'b' } }
+      end
+      %w[a b].each do |name|
+        get "/#{name}"
+        assert_equal 'no ok', body
+        get "/#{name}", ok: 1
+        assert_equal name, body
+      end
+    end
+
+    it 'should accept a frozen parent list and a parent declared inside the controller' do
+      mock_app do
+        controller(:product, parent: [:shop].freeze) do
+          parent :category
+          get(:show) { 'product' }
+        end
+      end
+      get '/shop/1/category/2/product/show'
+      assert_equal 'product', body
+    end
+
+    it 'should leave the options given to a parent unchanged' do
+      opts = { map: 'store', optional: true }.freeze
+      first = Padrino::Routing::Parent.new(:a, opts)
+      second = Padrino::Routing::Parent.new(:b, opts)
+      assert_equal ['store', true], [first.map, first.optional]
+      assert_equal ['store', true], [second.map, second.optional]
+    end
+
+    it 'should keep the fragment of a params hash used for several urls' do
+      mock_app { get(:show, with: :id) { 'show' } }
+      params = { id: 1, fragment: 'top' }
+      assert_equal '/show/1#top', @app.url(:show, params)
+      assert_equal '/show/1#top', @app.url(:show, params)
+      assert_equal '/show/1', @app.url(:show, { id: 1 }.freeze)
+    end
+
+    it 'should not add a parent declared in a controller to the parents it was given' do
+      parents = [:shop]
+      mock_app do
+        controller(:product, parent: parents) do
+          parent :category
+          get(:show) { 'product' }
+        end
+        controller(:item, parent: parents) { get(:show) { 'item' } }
+      end
+      get '/shop/1/category/2/product/show'
+      assert_equal 'product', body
+      get '/shop/1/item/show'
+      assert_equal 'item', body
+      get '/shop/1/category/2/item/show'
+      assert_equal 404, status
+      assert_equal [:shop], parents
+    end
+  end
+
   describe 'nested controller conditions' do
     def mock_protected_app(&block)
       mock_app do
@@ -2713,6 +3065,58 @@ describe 'Routing' do
     assert_equal [:with_format, { 'id' => 'bar', 'format' => 'js' }], @app.recognize_path(@app.url(:with_format, id: 'bar', format: :js))
     assert_equal [:with_format, { 'id' => 'true', 'format' => 'js' }], @app.recognize_path(@app.url(:with_format, id: true, format: 'js'))
     assert_equal [:with_format, { 'id' => '9', 'format' => 'js' }], @app.recognize_path(@app.url(:with_format, id: 9, format: :js))
+  end
+
+  it 'should recognize an encoded path as a request to it is routed' do
+    mock_app do
+      get(:show, map: '/:name/q') { params[:name] }
+      get(:cafe, map: "/caf\u00e9/x") { 'cafe' }
+    end
+    get '/caf%C3%A9/x'
+    assert_equal 'cafe', body
+    assert_equal [:cafe, {}], @app.recognize_path('/caf%C3%A9/x')
+    get '/a%2520b/q'
+    assert_equal 'a b', body
+    assert_equal [:show, { 'name' => 'a b' }], @app.recognize_path('/a%2520b/q')
+    assert_equal [:show, { 'name' => "caf\u00e9" }], @app.recognize_path(@app.url(:show, name: "caf\u00e9"))
+  end
+
+  it 'should recognize no route for a path no route matches' do
+    mock_app { get(:show, map: '/:name/q') {} }
+    assert_nil @app.recognize_path('/o')
+    assert_nil @app.recognize_path('/%ff/q')
+  end
+
+  it 'should not route a non-ASCII path to a Regexp route fixed to another encoding' do
+    mock_app do
+      get(%r{/caf\xC3\xA9}n) { 'bytes' }
+      get('/:name') { "name #{params[:name]}" }
+    end
+    get '/caf%C3%A9'
+    assert_equal [200, "name caf\u00e9"], [status, body]
+    get '/cafe'
+    assert_equal [200, 'name cafe'], [status, body]
+  end
+
+  it 'should not route a short non-ASCII path to a Regexp route fixed to another encoding' do
+    mock_app do
+      get(%r{/\xC3\xA9}n) { 'bytes' }
+      get(:show, map: '/:name') { "name #{params[:name]}" }
+    end
+    get '/%C3%A9'
+    assert_equal [200, "name \u00e9"], [status, body]
+    assert_equal [:show, { 'name' => "\u00e9" }], @app.recognize_path('/%C3%A9')
+  end
+
+  it 'should keep a numbered backreference in a Regexp route' do
+    mock_app do
+      get(%r{/(\w)\1}) { "double #{params[:captures].first}" }
+      get('/:name') { "name #{params[:name]}" }
+    end
+    get '/aa'
+    assert_equal 'double a', body
+    get '/ab'
+    assert_equal 'name ab', body
   end
 
   it 'should have current_path' do
@@ -3212,6 +3616,282 @@ describe 'Routing' do
       assert_equal 'GET /posts/:id', Rack::MockRequest.new(outer).get('/posts/1').body
       assert_equal 'GET /posts/:id', Rack::MockRequest.new(outer).get('/blog/posts/1').body
       assert_equal 'GET /posts/:id', outer_env['sinatra.route']
+    end
+  end
+
+  describe 'route matching' do
+    it 'matches the path a route rewrote before passing' do
+      mock_app do
+        get(:rewrite, map: '/rewrite/:id') do
+          request.path_info = '/target'
+          pass
+        end
+        get(:in_place, map: '/in_place/:id') do
+          request.path_info.replace('/target')
+          pass
+        end
+        get(:target, map: '/target') { 'target' }
+      end
+      get '/rewrite/1'
+      assert_equal 200, status
+      assert_equal 'target', body
+      get '/in_place/1'
+      assert_equal 200, status
+      assert_equal 'target', body
+    end
+
+    it 'keeps serving its routes when a route is added after a request' do
+      mock_app do
+        get('/first') { 'first' }
+      end
+      get '/first'
+      @app.get('/second') { 'second' }
+      get '/first'
+      assert_equal 'first', body
+      get '/m'
+      assert_equal 404, status
+      get '/missing'
+      assert_equal 404, status
+    end
+
+    it 'keeps serving its routes when routes are removed or inserted after a request' do
+      mock_app do
+        get(:gone, map: '/gone') { 'gone' }
+        get(:abc, map: '/abc') { 'abc' }
+        get(:cap, map: '/:x') { 'cap' }
+      end
+      get '/abc'
+      @app.router.routes.reject! { |route| route.name == :gone }
+      get '/abc'
+      assert_equal 'abc', body
+      get '/zz'
+      assert_equal 'cap', body
+      @app.router.routes.unshift(Padrino::PathRouter::Route.new('/new', :get))
+      get '/abc'
+      assert_equal 'abc', body
+      get '/gone'
+      assert_equal 'cap', body
+    end
+
+    it 'keeps serving its routes when routes are reordered after a request' do
+      mock_app do
+        get('/abc') { 'abc' }
+        get('/abd') { 'abd' }
+        get('/zzz') { 'zzz' }
+      end
+      get '/abc'
+      routes = @app.router.routes
+      first = routes.index { |route| route.original_path == '/abc' && route.verb == 'GET' }
+      last = routes.rindex { |route| route.original_path == '/zzz' && route.verb == 'GET' }
+      routes[first], routes[last] = routes[last], routes[first]
+      get '/abc'
+      assert_equal 200, status
+      assert_equal 'abc', body
+      get '/zzz'
+      assert_equal 'zzz', body
+    end
+
+    it 'matches routes whose pattern starts with an optional or variable part' do
+      mock_app do
+        get('/colou?r') { 'color' }
+        get('/xy?z') { 'optional' }
+        get('/one|/two') { 'union' }
+        get('/:lang/start') { 'capture' }
+        get('/*/files') { 'splat' }
+        get('/ab') { 'short' }
+        get(%r{/rx[0-9]+}) { 'regexp' }
+      end
+      { '/color' => 'color', '/colour' => 'color', '/xz' => 'optional', '/xyz' => 'optional', '/two' => 'union', '/de/start' => 'capture',
+        '/a/b/files' => 'splat', '/ab' => 'short', '/ab/' => 'short', '/rx12' => 'regexp' }.each do |path, expected|
+        get path
+        assert_equal expected, body, path
+      end
+    end
+
+    it 'picks the routes to try by the decoded path' do
+      mock_app do
+        get('/abc/first') { 'first' }
+        get('/ABC/x') { 'upper' }
+        get('/a/') { 'slash' }
+      end
+      get '/%61bc/first'
+      assert_equal 200, status
+      assert_equal 'first', body
+      get '/ABC/x'
+      assert_equal 200, status
+      assert_equal 'upper', body
+      get '/a/'
+      assert_equal 200, status
+      assert_equal 'slash', body
+    end
+
+    it 'lets a StopIteration raised in a route reach the error handlers' do
+      mock_app do
+        set :raise_errors, false
+        set :show_exceptions, false
+        get('/boom') { [].each.next }
+        error(StopIteration) { 'handled' }
+      end
+      get '/boom'
+      assert_equal 500, status
+      assert_equal 'handled', body
+    end
+
+    it 'serves a route when an earlier route for another verb matches the path' do
+      mock_app do
+        set :raise_errors, false
+        set :show_exceptions, false
+        post('(/:lang)?') { 'post' }
+        get('/') { 'root' }
+      end
+      get '/'
+      assert_equal 200, status
+      assert_equal 'root', body
+    end
+
+    it 'tries routes in the order they were defined, whatever their pattern starts with' do
+      mock_app do
+        get('/abc/first') { 'literal' }
+        get('/:name/first') { 'capture' }
+        get('/:name/second') { 'capture' }
+        get('/abc/second') { 'literal' }
+      end
+      get '/abc/first'
+      assert_equal 'literal', body
+      get '/abc/second'
+      assert_equal 'capture', body
+    end
+  end
+
+  describe 'url generation after routes change' do
+    it 'finds a renamed route by its new name' do
+      mock_app do
+        get(:old, map: '/page') { 'page' }
+      end
+      assert_equal '/page', @app.url(:old)
+      @app.routes.each { |route| route.name = :new if route.name == :old }
+      assert_equal '/page', @app.url(:new)
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:old) }
+    end
+
+    it 'uses the routes defined after reset_routes!' do
+      mock_app do
+        get(:page, map: '/old') { 'old' }
+      end
+      assert_equal '/old', @app.url(:page)
+      @app.reset_routes!
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:page) }
+      @app.get(:page, map: '/new') { 'new' }
+      assert_equal '/new', @app.url(:page)
+    end
+
+    it 'finds no route deleted from the routes' do
+      mock_app do
+        get(:gone, map: '/gone') { 'gone' }
+      end
+      assert_equal '/gone', @app.url(:gone)
+      @app.router.routes.reject! { |route| route.name == :gone }
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:gone) }
+    end
+
+    it 'finds a route pushed onto the routes by its new name after a rename' do
+      mock_app do
+        get(:index) { 'index' }
+      end
+      route = Padrino::PathRouter::Route.new('/page', :get, name: :old)
+      @app.router.routes << route
+      assert_equal '/page', @app.url(:old)
+      route.name = :new
+      assert_equal '/page', @app.url(:new)
+      assert_raises(Padrino::Routing::UnrecognizedException) { @app.url(:old) }
+    end
+
+    it 'keeps the router a route was added to when another router indexes it' do
+      owner = Padrino::PathRouter.new
+      route = owner.add(:get, '/shared', name: :old)
+      owner.path(:old)
+      other = Padrino::PathRouter.new
+      other.routes << route
+      other.path(:old)
+      route.name = :new
+      assert_equal '/shared', owner.path(:new)
+    end
+
+    it 'finds a route added to the router with a name' do
+      router = Padrino::PathRouter.new
+      router.add(:get, '/one', name: :one)
+      assert_equal '/one', router.path(:one)
+      router.add(:get, '/two', name: :two)
+      assert_equal '/two', router.path(:two)
+      router.routes.pop
+      router.add(:get, '/three', name: :three)
+      assert_equal '/three', router.path(:three)
+    end
+
+    it 'finds the routes added to the router after reset!' do
+      router = Padrino::PathRouter.new
+      router.add(:get, '/old', name: :page)
+      assert_equal '/old', router.path(:page)
+      router.reset!
+      router.routes << Padrino::PathRouter::Route.new('/new', :get, name: :page)
+      assert_equal '/new', router.path(:page)
+    end
+
+    it 'picks the first route of a name in the order requests try them' do
+      mock_app do
+        get(:page, map: '/low', priority: :low) { 'low' }
+        get(:page, map: '/normal') { 'normal' }
+      end
+      @app.url(:page)
+      get '/normal'
+      assert_equal '/normal', @app.url(:page)
+    end
+
+    it 'picks the route of a name that takes the params given' do
+      mock_app do
+        get(:show, map: '/show/:id') { 'id' }
+        get(:show, map: '/show/:id/:slug') { 'slug' }
+      end
+      2.times do
+        assert_equal '/show/1', @app.url(:show, id: 1)
+        assert_equal '/show/1/x', @app.url(:show, id: 1, slug: 'x')
+        assert_equal '/show/1?ref=a', @app.url(:show, id: 1, ref: 'a')
+      end
+    end
+
+    it 'expands the same url for each form of the params' do
+      mock_app do
+        get(:item, map: '/item/:id(.:format)?') { 'item' }
+        get(:opt, map: '/opt(/:a(/:b))?') { 'opt' }
+      end
+      2.times do
+        assert_equal '/item/7', @app.url(:item, id: 7)
+        assert_equal '/item/7', @app.url(:item, 'id' => 7)
+        assert_equal '/item/-7', @app.url(:item, id: -7)
+        assert_equal '/item/7.json', @app.url(:item, id: '7', format: :json)
+        assert_equal '/item/a%20b', @app.url(:item, id: 'a b')
+        assert_equal '/opt/1/2', @app.url(:opt, a: 1, b: 2)
+        assert_equal '/opt?b=2', @app.url(:opt, b: 2)
+        assert_equal '/opt?b=2', @app.url(:opt, a: nil, b: 2)
+        assert_equal '/opt/1/2', @app.routes.find { |route| route.name == :opt }.path(a: 1, b: 2)
+        assert_equal '/opt?b=2', @app.routes.find { |route| route.name == :opt }.path(a: nil, b: 2)
+      end
+    end
+
+    it 'expands values other than Strings, Symbols and Integers as before' do
+      list = Class.new(Array)
+      value = Class.new { def to_s; 'v1'; end }.new
+      mock_app do
+        get(:files, map: '/files/*') { 'files' }
+        get(:opt, map: '/opt(/:a(/:b))?') { 'opt' }
+      end
+      2.times do
+        assert_equal '/files/x', @app.url(:files, splat: 'x')
+        assert_equal '/files/x', @app.url(:files, splat: list['x'])
+        assert_equal '/opt/1/2', @app.url(:opt, a: 1, b: 2)
+        assert_equal '/opt/v1/2', @app.url(:opt, a: value, b: 2)
+        assert_equal '/opt/false/2', @app.url(:opt, a: false, b: 2)
+      end
     end
   end
 end
