@@ -185,7 +185,7 @@ module Padrino
           files.delete(file)
           loaded = true
         rescue NameError, LoadError => error
-          raise if Reloader.exclude.any? { |path| file.start_with?(path) } || options[:cyclic] == false
+          raise if Reloader.send(:path_excluded?, file) || options[:cyclic] == false
           logger.devel "Cyclic dependency reload for #{error.class}: #{error.message}"
         rescue Exception => fatal
           break

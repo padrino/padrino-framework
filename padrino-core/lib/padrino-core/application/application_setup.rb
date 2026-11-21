@@ -64,7 +64,17 @@ module Padrino
           app_public = Padrino.root('public', uri_root)
           File.exist?(app_public) ? app_public : Padrino.root('public')
         }
-        set :images_path,   proc { File.join(public_folder, 'images') }
+        images_path_warned = false
+        set :images_path, proc {
+          # Padrino doesn't read it, so only this default warns: an app's own setting keeps working in 1.0.
+          unless images_path_warned
+            images_path_warned = true
+            # images_path? calls images_path: name its caller.
+            use = caller_locations(1, 2).find { |location| location.base_label != 'images_path?' }
+            Padrino::Utils.warn_deprecated('The images_path setting', "Use File.join(settings.public_folder, 'images') instead, or set :images_path yourself", use)
+          end
+          File.join(public_folder, 'images')
+        }
         set :base_url,      'http://localhost'
       end
 
@@ -112,7 +122,8 @@ module Padrino
         builder.use Padrino::Reloader::Rack         if reload?
         builder.use Rack::MethodOverride            if method_override?
         builder.use Rack::Head
-        register Padrino::Flash
+        # Only once per reset!, which clears both the filters and @extensions.
+        register Padrino::Flash unless @extensions.include?(Padrino::Flash)
         setup_protection builder
         setup_host_authorization builder if host_authorization_set?
         setup_csrf_protection builder

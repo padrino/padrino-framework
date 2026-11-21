@@ -73,6 +73,7 @@ module Padrino
             append_file destination_root('config/apps.rb'), "Padrino.mount('#{@project_name}::#{@app_name}', app_file: Padrino.root('app/app.rb')).to('/')\n"
           end
           template 'templates/Gemfile.tt', destination_root('Gemfile')
+          warn_unless_ruby_supports(:server, options[:server])
           template 'templates/Rakefile.tt', destination_root('Rakefile')
           template 'templates/project_bin.tt', destination_root("exe/#{name}")
           File.chmod(0o755, destination_root("exe/#{name}"))

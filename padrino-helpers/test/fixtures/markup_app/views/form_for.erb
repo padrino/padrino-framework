@@ -14,6 +14,10 @@
     <%= f.number_field :age, class: 'numeric '%>
   </p>
   <p>
+    <%= f.label :volume %>
+    <%= f.range_field :volume, class: 'slider', min: 0, max: 11 %>
+  </p>
+  <p>
     <%= f.label :telephone %>
     <%= f.telephone_field :telephone, class: 'numeric' %>
   </p>

@@ -20,8 +20,7 @@ module Padrino
     return [Padrino.application, options] unless config_file
 
     raise "Rack config file `#{config_file}` must have `.ru` extension" unless config_file =~ /\.ru$/
-    rack_app, rack_options = Rack::Builder.parse_file(config_file)
-    [rack_app, (rack_options || {}).merge(options)]
+    [Rack::Builder.parse_file(config_file), options]
   end
 
   ##
