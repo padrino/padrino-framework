@@ -321,6 +321,32 @@ describe 'AdminAppGenerator' do
           end
           assert_empty out.lines.grep(/\ACOMMENT .*\[if /)
         end
+
+        it "should show the year of the request, not of the generation, in the #{engine} admin footer" do
+          skip 'the sqlite3 gem is only bundled on MRI' if RUBY_ENGINE == 'jruby'
+          capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '-d=sequel', "-e=#{engine}") }
+          Time.stubs(:now).returns(Time.new(2001, 2, 3))
+          capture_io { generate(:admin_app, "--root=#{@apptmp}/sample_project") }
+          Time.unstub(:now)
+          script = <<~'RUBY'
+            ENV['RACK_ENV'] = 'test'
+            %w[sequel haml slim erubi nokogiri rack/test].each { |lib| require lib }
+            Sequel.extension :migration
+            Sequel.sqlite('db/sample_project_test.db') { |db| Sequel::Migrator.run(db, 'db/migrate') }
+            require File.expand_path('config/boot')
+            account_id = Account.dataset.insert(email: 'admin@example.com', role: 'admin', crypted_password: 'unused')
+            browser = Rack::Test::Session.new(Padrino.application)
+            browser.env('rack.session', SampleProject::Admin.session_id => account_id)
+            browser.get('/admin/')
+            puts "YEAR #{Time.now.year}"
+            puts "FOOTER #{Nokogiri::HTML(browser.last_response.body).at_css('footer p')&.text.to_s.split.join(' ')}"
+          RUBY
+          env = { 'BUNDLE_GEMFILE' => File.expand_path('../../../Gemfile', __dir__) }
+          out, err, status = Open3.capture3(env, RbConfig.ruby, '-rbundler/setup', '-e', script, chdir: "#{@apptmp}/sample_project")
+          assert status.success?, err
+          footer = out[/^FOOTER (.*)$/, 1]
+          assert_includes footer, "Copyright \u00A9 #{out[/^YEAR (\d+)$/, 1]} "
+        end
       end
     end
 

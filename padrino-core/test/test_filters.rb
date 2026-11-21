@@ -150,6 +150,28 @@ describe 'Filters' do
     assert_equal 'page report/x', body
   end
 
+  it 'should not filter a non-ASCII path by a Regexp fixed to another encoding' do
+    mock_app do
+      before(%r{\A/caf\xC3\xA9}n) { halt 403, 'filtered' }
+      before('/other') { halt 403, 'filtered' }
+      get(%r{/a.*|/caf\xC3\xA9}n) { 'bytes' }
+      get('/:name') { "name #{params[:name]}" }
+    end
+    get '/caf%C3%A9'
+    assert_equal [200, "name caf\u00e9"], [status, body]
+    get '/a%25C3%25A9'
+    assert_equal [200, 'bytes'], [status, body]
+  end
+
+  it 'should run a filter that excepts a Regexp fixed to another encoding for a non-ASCII path' do
+    mock_app do
+      before(except: %r{\A/caf\xC3\xA9}n) { @filtered = true }
+      get('/:name') { "#{params[:name]} #{@filtered.inspect}" }
+    end
+    get '/caf%C3%A9'
+    assert_equal [200, "caf\u00e9 true"], [status, body]
+  end
+
   it 'should filter by path a request the router serves with a trailing slash' do
     mock_app do
       before('/report') { halt 403, 'filtered' }
@@ -414,6 +436,49 @@ describe 'Filters' do
     assert_equal '', body
     get '/main'
     assert_equal 'before', body
+  end
+
+  it 'should apply one except options hash to each filter it is passed to' do
+    opts = { except: :index }
+    mock_app do
+      before(opts) { @first = 'first' }
+      before(opts) { @second = 'second' }
+      get(:index) { "#{@first}#{@second}" }
+      get(:main) { "#{@first}#{@second}" }
+    end
+    get '/'
+    assert_equal '', body
+    get '/main'
+    assert_equal 'firstsecond', body
+    assert_equal({ except: :index }, opts)
+  end
+
+  it 'should apply one except list with options to each filter it is passed to' do
+    except = [:index, { agent: /IE/ }]
+    mock_app do
+      before(except: except) { @first = 'first' }
+      before(except: except) { @second = 'second' }
+      get(:index) { "#{@first}#{@second}" }
+      get(:main) { "#{@first}#{@second}" }
+    end
+    get '/main', {}, { 'HTTP_USER_AGENT' => 'IE' }
+    assert_equal '', body
+    get '/main'
+    assert_equal 'firstsecond', body
+    assert_equal [:index, { agent: /IE/ }], except
+  end
+
+  it 'should accept frozen except options' do
+    mock_app do
+      before({ except: :index }.freeze) { @first = 'first' }
+      before(except: [:index, { agent: /IE/ }.freeze].freeze) { @second = 'second' }
+      get(:index) { "#{@first}#{@second}" }
+      get(:main) { "#{@first}#{@second}" }
+    end
+    get '/'
+    assert_equal '', body
+    get '/main'
+    assert_equal 'firstsecond', body
   end
 
   it 'should be able to filter excluding based on a symbol when specify the multiple routes and use nested controller' do
@@ -702,6 +767,19 @@ describe 'Filters' do
       end
     end
 
+    it 'should not run a filter for the path with a slash for an unregistered format on a provides :any route' do
+      mock_app do
+        before('/any/') { @public = true }
+        before { halt 401, 'login' unless @public }
+        get('/any', provides: :any) { 'any' }
+        get('/any.:format') { "member #{params[:format]}" }
+      end
+      get '/any.text%2Fplain'
+      assert_equal [401, 'login'], [status, body]
+      get '/any.json'
+      assert_equal [200, 'any'], [status, body]
+    end
+
     { 'a path' => ['/list', 401], 'the path_info option' => [{ path_info: '/list' }, 402] }.each do |label, (filter, code)|
       it "should decide a provided format as route params receive it, for #{label}" do
         mock_app do
@@ -728,6 +806,19 @@ describe 'Filters' do
         get path
         assert_equal [401, 'login'], [status, body], path
       end
+    end
+
+    it 'should not run a filter for the path with a slash for a format with no MIME type on a provides :any route' do
+      mock_app do
+        before('/any/') { @public = true }
+        before { halt 401, 'login' unless @public }
+        get('/any', provides: :any) { 'any' }
+        get('/any.:format') { "member #{params[:format]}" }
+      end
+      get '/any.nosuchext'
+      assert_equal [401, 'login'], [status, body]
+      get '/any.json'
+      assert_equal [200, 'any'], [status, body]
     end
 
     it 'should run a filter for a format the route answers itself with treat_format_as_accept' do

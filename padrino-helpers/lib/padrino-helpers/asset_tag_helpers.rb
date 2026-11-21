@@ -1,3 +1,5 @@
+require 'json'
+
 module Padrino
   module Helpers
     ###
@@ -10,6 +12,13 @@ module Padrino
         js: 'javascripts',
         css: 'stylesheets'
       }
+      PRELOAD_DESTINATIONS = { 'js' => 'script', 'mjs' => 'module', 'css' => 'style', 'vtt' => 'track' }
+                             .merge(%w[otf ttf woff woff2].to_h { |extension| [extension, 'font'] })
+                             .merge(%w[avif gif ico jpeg jpg png svg webp].to_h { |extension| [extension, 'image'] })
+                             .freeze
+      PRELOAD_ASSET_KINDS = { 'script' => :js, 'module' => :js, 'style' => :css, 'image' => :images }.freeze
+      JSON_ESCAPE = { '<' => '\u003c', '>' => '\u003e', '&' => '\u0026', "\u2028" => '\u2028', "\u2029" => '\u2029' }.freeze
+      private_constant :PRELOAD_DESTINATIONS, :PRELOAD_ASSET_KINDS, :JSON_ESCAPE
 
       ##
       # Creates a div to display the flash of given type if it exists.
@@ -202,14 +211,43 @@ module Padrino
       #   The source path for the image tag.
       # @param [Hash] options
       #   The html options for the image tag.
+      # @option options [Hash, Array, String] :srcset
+      #   The image candidates for the +srcset+ attribute. A Hash or an Array of pairs maps each source to its
+      #   descriptor (+'2x'+, +'480w'+), and each source is resolved like +url+. A String is written as given, and
+      #   so is a String in the Array, which must carry its descriptor (+'pic@2x.jpg 2x'+).
+      # @option options [String] :sizes
+      #   The +sizes+ attribute, for +srcset+ with width descriptors.
       #
       # @return [String] Image html tag with +url+ and specified +options+.
       #
       # @example
       #   image_tag('icons/avatar.png')
       #
+      #   image_tag('pic.jpg', srcset: { 'pic.jpg' => '1x', 'pic@2x.jpg' => '2x' })
+      #   # Generates: <img src="/images/pic.jpg?1269008689" srcset="/images/pic.jpg?1269008689 1x,
+      #   #   /images/pic@2x.jpg?1269008689 2x" alt="Pic" />
+      #
+      #   image_tag('small.jpg', srcset: [['small.jpg', '480w'], ['large.jpg', '1080w']], sizes: '(max-width: 600px) 480px, 1080px')
+      #   # Generates: <img src="/images/small.jpg?1269008689" srcset="/images/small.jpg?1269008689 480w,
+      #   #   /images/large.jpg?1269008689 1080w" sizes="(max-width: 600px) 480px, 1080px" alt="Small" />
+      #
       def image_tag(url, options = {})
-        options = { src: image_path(url) }.update(options)
+        options = { src: image_path(url) }.update(Utils.symbolize_keys(options.to_h))
+        srcset = options[:srcset]
+        if srcset.is_a?(Hash) || srcset.is_a?(Array)
+          candidates = srcset.map do |candidate|
+            if candidate.is_a?(String)
+              next candidate if candidate.strip.match?(/\s/)
+
+              raise ArgumentError, "srcset entry #{candidate.inspect} has no descriptor; give each image with its descriptor, " \
+                                   "as in srcset: [['pic@2x.jpg', '2x']] or srcset: ['pic@2x.jpg 2x']"
+            end
+
+            source, descriptor = candidate
+            "#{image_path(source)} #{descriptor}"
+          end
+          options[:srcset] = (candidates.join(', ') unless candidates.empty?)
+        end
         options[:alt] ||= image_alt(url) unless url.to_s =~ /\A(?:cid|data):|\A\Z/
         tag(:img, options)
       end
@@ -223,6 +261,58 @@ module Padrino
       #
       def image_alt(src)
         File.basename(src, '.*').sub(/-[[:xdigit:]]{32,64}\z/, '').tr('-_', ' ').capitalize
+      end
+
+      ##
+      # Creates a picture element. Each source but the last becomes a source element, with its +type+ taken
+      # from the file extension; the last becomes the img element, which browsers use when no source suits them.
+      # A source other than the last whose extension names no image type raises an ArgumentError, since browsers
+      # would pick a source without a type whether or not they can show it; write such sources in a block.
+      # With a block, the block's output is the content of the picture element instead.
+      #
+      # @overload picture_tag(*sources, options={})
+      #   @param [Array<String>] sources   Splat of image source paths, in order of preference
+      #   @param [Hash]          options   The html options for the picture tag
+      #   @option options [Hash] :image    The html options for the img tag, as for {#image_tag}
+      # @overload picture_tag(options={}, &block)
+      #   @param [Hash] options   The html options for the picture tag
+      #   @param [Proc] block     The content of the picture tag
+      #
+      # @return [String] Picture html tag for +sources+ with specified +options+.
+      #
+      # @example
+      #   picture_tag('pic.avif', 'pic.webp', 'pic.jpg', image: { alt: 'A picture' })
+      #   # Generates: <picture><source srcset="/images/pic.avif?1269008689" type="image/avif" />
+      #   #   <source srcset="/images/pic.webp?1269008689" type="image/webp" />
+      #   #   <img src="/images/pic.jpg?1269008689" alt="A picture" /></picture>
+      #
+      #   picture_tag(class: 'hero') do
+      #     tag(:source, srcset: image_path('wide.jpg'), media: '(min-width: 800px)') +
+      #       image_tag('narrow.jpg')
+      #   end
+      #
+      def picture_tag(*sources, &block)
+        options = sources.last.is_a?(Hash) ? Utils.symbolize_keys(sources.pop) : {}
+        sources = sources.flatten
+        image_options = options.delete(:image)
+        if block_given?
+          raise ArgumentError, 'picture_tag takes image sources and image: options, or a block, not both' unless sources.empty? && image_options.nil?
+
+          return content_tag(:picture, options, &block)
+        end
+        raise ArgumentError, 'picture_tag needs at least one image source' if sources.empty?
+
+        fallback = sources.pop
+        content = sources.inject(SafeBuffer.new) do |all, source|
+          type = ::Rack::Mime.mime_type(File.extname(source.to_s.sub(/[?#].*/m, '')), nil)
+          unless type&.start_with?('image/')
+            raise ArgumentError, "picture_tag can't tell the image type of #{source.inspect} from its extension; " \
+                                 'use a file extension such as .avif or .webp, or write the source elements in a block'
+          end
+
+          all << tag(:source, srcset: image_path(source), type: type)
+        end
+        content_tag(:picture, content << image_tag(fallback, image_options || {}), options)
       end
 
       ##
@@ -267,6 +357,130 @@ module Padrino
         sources.flatten.inject(SafeBuffer.new) do |all, source|
           all << content_tag(:script, nil, { src: asset_path(:js, source) }.update(options))
         end
+      end
+
+      ##
+      # Returns an import map script tag, which maps the module names that scripts import to the files
+      # that hold them, then a module script tag that imports +entry+, if given.
+      #
+      # A relative source in +imports+ resolves in the javascripts folder like a +javascript_include_tag+
+      # source, but without the asset stamp: a module the page imports both by its name and by a relative
+      # path from another module is then one module, not two. Since the addresses carry no stamp, serve
+      # the javascripts folder with revalidation (no long-lived immutable Cache-Control), so browsers pick
+      # up changed modules after a deploy. A name ending in "/" maps a prefix ('lib/' => 'lib' maps
+      # "lib/chart" to /javascripts/lib/chart). A source with a scheme (https:, data:), or starting with
+      # "/" or "//", is written as given, with spaces escaped.
+      #
+      # @overload javascript_importmap_tag(entry = nil, options = {})
+      #   @param [String] entry
+      #     The module to import from the page, usually a name in +imports+. A blank one imports nothing.
+      #   @param [Hash] options
+      #     The html options for the import map tag. A +nonce+ goes on every tag this writes, for a
+      #     Content Security Policy; +type+ is ignored.
+      #   @option options [Hash] :imports
+      #     The module names, each with the javascript source or URL it maps to (a blank one raises
+      #     ArgumentError).
+      #   @option options [Hash] :scopes
+      #     Written as the import map's "scopes", as given; nil leaves it out.
+      #   @option options [Hash] :integrity
+      #     Written as the import map's "integrity" (URLs to their integrity metadata), as given; nil leaves it out.
+      #   @option options [Boolean] :preload
+      #     If true, a modulepreload link is written for each import (but not for prefixes), so browsers
+      #     fetch them all at once instead of one import at a time.
+      #
+      # @return [String] Import map, modulepreload and module script html tags.
+      #
+      # @example
+      #   javascript_importmap_tag 'application', imports: {
+      #     'application' => 'application',
+      #     '@hotwired/stimulus' => 'https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm'
+      #   }
+      #   # Generates: <script type="importmap">{"imports":{"application":"/javascripts/application.js",
+      #   #   "@hotwired/stimulus":"https://cdn.jsdelivr.net/npm/@hotwired/stimulus@3.2.2/+esm"}}</script>
+      #   #   <script type="module">import "application"</script>
+      #
+      #   javascript_importmap_tag imports: { 'app' => 'app', 'lodash/' => '/vendor/lodash/' }, preload: true
+      #   # Generates: <script type="importmap">{"imports":{"app":"/javascripts/app.js","lodash/":"/vendor/lodash/"}}</script>
+      #   #   <link rel="modulepreload" href="/javascripts/app.js" />
+      #
+      def javascript_importmap_tag(entry = nil, options = {})
+        entry, options = nil, entry.merge(options) if entry.is_a?(Hash)
+        options = Utils.symbolize_keys(options)
+        imports = (options.delete(:imports) || {}).each_with_object({}) do |(name, source), all|
+          all[name.to_s] = importmap_address(name.to_s, source)
+        end
+        importmap = { 'imports' => imports }
+        %i[scopes integrity].each do |key|
+          value = options.delete(key)
+          importmap[key.to_s] = value if value
+        end
+        preload = options.delete(:preload)
+        options.delete(:type)
+        nonce = options[:nonce]
+        html = SafeBuffer.new
+        html << content_tag(:script, script_safe_json(importmap), { type: 'importmap' }.update(options))
+        if preload
+          imports.values.uniq.each do |href|
+            html << tag(:link, rel: 'modulepreload', href: href, nonce: nonce) unless href.end_with?('/')
+          end
+        end
+        unless entry.to_s.strip.empty?
+          html << content_tag(:script, "import #{script_safe_json(entry.to_s)}".html_safe, type: 'module', nonce: nonce)
+        end
+        html
+      end
+
+      ##
+      # Returns a link tag that tells browsers to fetch +source+ early, before the page asks for it.
+      # Browsers only use a preload for a request to the same URL, so +source+ resolves the way the
+      # page will ask for it. A relative script, module, stylesheet or image source resolves like
+      # +javascript_include_tag+, +stylesheet_link_tag+ and +image_tag+ sources, asset stamp included;
+      # pass an absolute path ('/images/hero.jpg') to preload an image a stylesheet's url() loads.
+      # Any other relative source (a font a stylesheet refers to, a track, a file for fetch()) resolves
+      # from the public folder without the asset stamp ('fonts/a.woff2' is /fonts/a.woff2). Preload
+      # the modules an import map maps with +javascript_importmap_tag+'s +preload+ option, whose links
+      # use the map's unstamped addresses.
+      #
+      # @param [String] source
+      #   The path or URL of the file to preload.
+      # @param [Hash] options
+      #   The html options for the link tag.
+      # @option options [String, Symbol] :as
+      #   What the file is for: +:script+, +:style+, +:font+, +:image+, +:track+, +:fetch+, or +:module+
+      #   for a module script (written as +rel="modulepreload"+). Defaults from the extension:
+      #   js, mjs (module), css, vtt, otf, ttf, woff, woff2, avif, gif, ico, jpeg, jpg, png, svg and webp;
+      #   pass it for any other file, since browsers skip a preload without it.
+      # @option options [String] :type
+      #   The MIME type, so browsers skip a file they can't use.
+      # @option options [String, Boolean] :crossorigin
+      #   The CORS mode; +true+ writes "anonymous", +false+ leaves it out. Fonts, tracks and +:fetch+ default
+      #   to "anonymous": browsers only use a preload fetched the way the page fetches the file, which for
+      #   those is in CORS mode. A track preload is used only when its media element has
+      #   crossorigin="anonymous" too.
+      #
+      # @return [String] Link tag html for +source+ with specified +options+.
+      #
+      # @example
+      #   preload_link_tag 'application.css'
+      #   # Generates: <link rel="preload" href="/stylesheets/application.css?1269008689" as="style" />
+      #
+      #   preload_link_tag 'fonts/inter.woff2', type: 'font/woff2'
+      #   # Generates: <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+      #
+      #   preload_link_tag 'application', as: :module
+      #   # Generates: <link rel="modulepreload" href="/javascripts/application.js?1269008689" />
+      #
+      def preload_link_tag(source, options = {})
+        options = Utils.symbolize_keys(options)
+        as = (options.delete(:as) || '').to_s.strip.downcase
+        as = PRELOAD_DESTINATIONS[File.extname(source.to_s.sub(/[?#].*/m, '')).downcase.delete('.')] if as.empty?
+        crossorigin = options.delete(:crossorigin)
+        crossorigin = 'anonymous' if crossorigin == true || (crossorigin.nil? && %w[fetch font track].include?(as))
+        rel = as == 'module' ? 'modulepreload' : 'preload'
+        kind = PRELOAD_ASSET_KINDS[as]
+        href = kind ? asset_path(kind, source) : unstamped_asset_path(nil, source)
+        defaults = { rel: rel, href: href, as: (as if rel == 'preload'), type: options.delete(:type), crossorigin: crossorigin }
+        tag(:link, defaults.update(options))
       end
 
       ##
@@ -321,6 +535,37 @@ module Padrino
       end
 
       private
+
+      ##
+      # Returns +value+ as JSON that can't end or change the script element it's written in.
+      #
+      def script_safe_json(value)
+        JSON.generate(value).gsub(/[<>&\u2028\u2029]/, JSON_ESCAPE).html_safe
+      end
+
+      ##
+      # Returns the import map address for the import +name+: its +source+ without the asset stamp,
+      # ending in "/" for a prefix (a +name+ ending in "/").
+      #
+      def importmap_address(name, source)
+        raise ArgumentError, "import #{name.inspect} has no source" if source.to_s.strip.empty?
+
+        source = source.to_s
+        source = "#{source}/" if name.end_with?('/') && !source.end_with?('/')
+        unstamped_asset_path(:js, source)
+      end
+
+      ##
+      # Returns the path to +source+ like +asset_path+, but without the asset stamp. A source with
+      # a scheme or a leading "/" is kept, and one ending in "/" gets no extension.
+      #
+      def unstamped_asset_path(kind, source)
+        source = source.to_s.gsub(' ', '%20')
+        return source if source.match?(%r{\A(?:[a-z][a-z0-9+.-]*:|/)}i)
+
+        source = asset_normalize_extension(kind, source) unless source.end_with?('/')
+        uri_root_path(asset_folder_name(kind), source)
+      end
 
       ##
       # Returns the URI root of the application with optional paths appended.
@@ -383,7 +628,8 @@ module Padrino
       #
       def asset_normalize_extension(kind, source)
         ignore_extension = !APPEND_ASSET_EXTENSIONS.include?(kind.to_s)
-        source << ".#{kind}" unless ignore_extension || source =~ /\.#{kind}/ || source =~ ABSOLUTE_URL_PATTERN
+        module_script = kind.to_s == 'js' && source =~ /\.[cm]js(?:[?#]|\z)/
+        source << ".#{kind}" unless ignore_extension || module_script || source =~ /\.#{kind}/ || source =~ ABSOLUTE_URL_PATTERN
         source
       end
 
