@@ -348,27 +348,33 @@ module Padrino
     end
 
     ##
-    # Tells if a constant is defined only outside of the project files the
-    # reloader tracks: outside Padrino.root, or in an excluded file that was
-    # required (a file run with +load+ runs again, so its classes are removed).
-    # If a constant has any methods defined in a tracked file it's
-    # considered internal and will be included in further testing.
-    # A constant without methods (an exception class, say) is judged by
-    # where its name was defined instead.
-    # So is a constant with a method that has no Ruby source (Struct and
-    # Data members, an alias of a built-in method, a C or Java extension),
-    # which is internal only when its name was defined by Ruby code in a
-    # tracked file.
+    # Tells if a constant belongs to code the reloader doesn't track, so it's kept on reload.
+    # Tracked code is in Padrino.root, outside the excluded paths or in an excluded file
+    # that was run with +load+ (which runs it again, so its classes are removed).
+    #
+    # A constant whose name was first defined in untracked code is kept, even when tracked
+    # files add methods to it: the untracked file isn't run again, so a removed class would
+    # come back without its methods. A tracked file that reopens it runs again on reload,
+    # so its edited and added methods apply, but the methods it deletes or renames stay
+    # until the app restarts. Ruby records only the first definition of a name, so a class
+    # that a tracked file defines before the untracked file that owns it counts as tracked,
+    # and a name first defined by eval without a file name, or from a relative path, counts
+    # as untracked wherever it runs. A kept class keeps its superclass, so a project file that
+    # gives it one that was reloaded raises a superclass mismatch until the app restarts.
+    #
+    # Otherwise a constant with a method that has no Ruby source (Struct and Data members,
+    # an alias of a built-in method) is removed, unless its name has no Ruby source line
+    # (C or Java code defined it).
+    # Any other constant is kept only when it has methods and all of them were defined in
+    # untracked code.
     #
     def external_constant?(const)
+      file, line = constant_location(const)
+      return true if file && untracked_source?(file)
       sources = object_sources(const)
-      if sources.delete?(nil)
-        file, line = constant_location(const)
-        # C extensions define their constants at line 0 of the library file.
-        return line.to_i < 1 || untracked_source?(file)
-      end
-      sources = [constant_source(const)].compact if sources.empty?
-      # consider methodless constants of unknown origin not external
+      # C extensions define their constants at line 0 of the library file.
+      return line.to_i < 1 if sources.delete?(nil)
+      # consider methodless constants named in tracked code, or of unknown origin, not external
       return false if sources.empty?
       sources.all? { |source| untracked_source?(source) }
     end
@@ -379,13 +385,6 @@ module Padrino
     #
     def untracked_source?(file)
       !path_inside?(file, Padrino.root) || (path_excluded?(file) && $LOADED_FEATURES.include?(file))
-    end
-
-    ##
-    # Returns the file in which the constant's name was defined, if known.
-    #
-    def constant_source(const)
-      constant_location(const)&.first
     end
 
     ##
