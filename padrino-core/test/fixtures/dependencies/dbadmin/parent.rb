@@ -1,0 +1,2 @@
+class DbadminParent
+end

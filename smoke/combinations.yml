@@ -274,6 +274,32 @@
   server: falcon
   add_component:
     mock: rr
+# The Ruby floor (gemspecs: >= 2.7.8). No falcon or tailwind: the falcon (>= 0.43) and tailwindcss-ruby releases
+# the generator asks for need Ruby 3.0.
+- name: sequel-sqlite-haml-rspec-ruby2.7
+  orm: sequel
+  adapter: sqlite
+  renderer: haml
+  test: rspec
+  mock: rr
+  script: ujs
+  stylesheet: sass
+  server: puma
+  add_component:
+    stylesheet: scss
+  ruby: '2.7'
+- name: activerecord-sqlite-slim-minitest-ruby2.7
+  orm: activerecord
+  adapter: sqlite
+  renderer: slim
+  test: minitest
+  mock: mocha
+  script: htmx
+  stylesheet: scss
+  server: thin
+  add_component:
+    mock: rr
+  ruby: '2.7'
 - name: sequel-sqlite-erb-testunit-tiny
   orm: sequel
   adapter: sqlite

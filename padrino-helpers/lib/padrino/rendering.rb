@@ -48,6 +48,14 @@ module Padrino
     #
     DEFAULT_RENDERING_OPTIONS = { strict_format: false, raise_exceptions: true } unless defined?(DEFAULT_RENDERING_OPTIONS)
 
+    ##
+    # Guards every app's layout and template path caches: requests render from several threads
+    # at once, and on JRuby a Hash used from two threads at once can lose entries or raise.
+    # Finding a path that isn't cached runs outside it.
+    # ceiling: one lock for every app; give each class its own if it shows up as contention.
+    #
+    CACHE_LOCK = Mutex.new unless defined?(CACHE_LOCK) # @private
+
     class << self
       ##
       # Default engine configurations for Padrino::Rendering.
@@ -122,22 +130,22 @@ module Padrino
       end
 
       def cache_layout_path(name)
-        @_cached_layout ||= {}
-        if !reload_templates? && (path = @_cached_layout[name])
+        if !reload_templates? && (path = CACHE_LOCK.synchronize { (@_cached_layout ||= {})[name] })
           path
         else
-          @_cached_layout[name] = yield(name)
+          path = yield(name)
+          CACHE_LOCK.synchronize { (@_cached_layout ||= {})[name] = path }
         end
       end
 
       def cache_template_path(options)
         began_at = Time.now
-        @_cached_templates ||= {}
         logging = defined?(settings) && settings.logging? && defined?(logger) && logger.respond_to?(:bench) && logger.debug?
-        if !reload_templates? && (path = @_cached_templates[options])
+        if !reload_templates? && (path = CACHE_LOCK.synchronize { (@_cached_templates ||= {})[options] })
           logger.bench :cached, began_at, path[0] if logging
         else
-          path = @_cached_templates[options] = yield
+          path = yield
+          CACHE_LOCK.synchronize { (@_cached_templates ||= {})[options] = path }
           logger.bench :template, began_at, path[0] if path && logging
         end
         path
@@ -167,7 +175,7 @@ module Padrino
       #   end
       #
       #   content_type :js
-      #   # => set the response with 'application/javascript' Content-Type
+      #   # => set the response with 'text/javascript' Content-Type
       #   content_type 'text/html'
       #
       #   # => set directly the Content-Type to 'text/html'
