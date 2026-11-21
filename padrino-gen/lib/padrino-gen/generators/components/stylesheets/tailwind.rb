@@ -25,7 +25,7 @@ TAILWIND_RAKE = <<~RAKE unless defined?(TAILWIND_RAKE)
 RAKE
 
 def setup_stylesheet
-  require_dependencies 'tailwindcss-ruby', version: '~> 4.0'
+  require_dependencies 'tailwindcss-ruby', version: '~> 4.0' # The Ruby it needs is in MINIMUM_RUBY (actions.rb).
   previous = fetch_component_choice(:stylesheet).to_s
   preprocessed = %w[sass scss less].include?(previous)
   # Tailwind writes its build to public/stylesheets/application.css, so carry

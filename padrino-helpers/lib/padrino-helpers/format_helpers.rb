@@ -1,3 +1,5 @@
+require 'time' # Time#iso8601 before Ruby 3.4
+
 module Padrino
   module Helpers
     ###
@@ -20,7 +22,28 @@ module Padrino
         Rack::Utils.escape_html(text).html_safe
       end
       alias h escape_html
-      alias sanitize_html escape_html
+
+      ##
+      # Returns escaped text, as {#escape_html} does.
+      #
+      # @deprecated It escapes all HTML rather than sanitizing it. Use {#escape_html} or {#h} instead.
+      #   It will be removed in Padrino 1.0; until then, the first call in a process prints a warning
+      #   naming the file and line of the call.
+      #
+      # @param (see #escape_html)
+      # @return (see #escape_html)
+      #
+      def sanitize_html(text)
+        unless Padrino.instance_variable_defined?(:@_sanitize_html_warned)
+          # Set before warning, so a Warning.warn that raises (warnings as errors) warns only once.
+          # ceiling: two threads making the first call at the same moment may both warn; a Mutex would make it exact.
+          Padrino.instance_variable_set(:@_sanitize_html_warned, true)
+          location = caller_locations(1, 1).first
+          Warning.warn 'WARNING! sanitize_html is deprecated and will be removed in Padrino 1.0. It escapes all HTML rather than sanitizing it. ' \
+                       "Use escape_html (or h) instead#{" (first called at #{location.path}:#{location.lineno})" if location}.\n"
+        end
+        escape_html(text)
+      end
 
       ##
       # Returns escaped text to protect against malicious content.
@@ -347,6 +370,60 @@ module Padrino
       #
       def time_ago_in_words(from_time, include_seconds = false)
         distance_of_time_in_words(from_time, Time.now, include_seconds)
+      end
+
+      ##
+      # Creates a +time+ tag whose +datetime+ attribute holds the date or time in ISO 8601 form.
+      # A nil date or time, such as the publication date of a draft, writes nothing, whatever the
+      # other arguments (the block isn't called).
+      #
+      # @overload time_tag(date_or_time, content = nil, options = {})
+      #   @param [Date, Time, DateTime, nil] date_or_time
+      #     The date or time the tag stands for.
+      #   @param [String] content
+      #     The text inside the tag. Defaults to +date_or_time+ localized with +format+.
+      #   @param [Hash] options
+      #     The HTML options to include in this tag.
+      # @overload time_tag(date_or_time, options = {}, &block)
+      #   @param [Date, Time, DateTime, nil] date_or_time
+      #     The date or time the tag stands for.
+      #   @param [Hash] options
+      #     The HTML options to include in this tag.
+      #   @param [Proc] block
+      #     The block returning the content of the tag.
+      #
+      # @option options [Symbol, String] :format (:long)
+      #   The I18n date or time format, or a strftime string, used for the default content.
+      # @option options [String] :datetime
+      #   The value of the +datetime+ attribute, in place of +date_or_time+ in ISO 8601 form.
+      #
+      # @return [String] The HTML time tag, or an empty string for a nil +date_or_time+.
+      #
+      # @example
+      #   time_tag Date.new(2026, 11, 11)
+      #   # => <time datetime="2026-11-11">November 11, 2026</time>
+      #
+      #   time_tag Time.utc(2026, 11, 11, 9, 30), format: :short
+      #   # => <time datetime="2026-11-11T09:30:00Z">11 Nov 09:30</time>
+      #
+      #   time_tag Date.new(2026, 11, 11), 'Release day', class: 'date'
+      #   # => <time datetime="2026-11-11" class="date">Release day</time>
+      #
+      #   time_tag(Date.new(2026, 11, 11), datetime: '2026-11') { 'This month' }
+      #   # => <time datetime="2026-11">This month</time>
+      #
+      #   time_tag nil
+      #   # => ""
+      #
+      def time_tag(date_or_time, content = nil, options = {}, &block)
+        return SafeBuffer.new if date_or_time.nil?
+
+        options, content = content, nil if content.is_a?(Hash)
+        options = Utils.symbolize_keys(options || {})
+        format = options.delete(:format) || :long
+        datetime = options.delete(:datetime) || date_or_time.iso8601
+        content = I18n.localize(date_or_time, format: format) unless content || block_given?
+        content_tag(:time, content, { datetime: datetime }.update(options), &block)
       end
 
       ##
