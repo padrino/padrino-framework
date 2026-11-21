@@ -267,6 +267,16 @@ describe 'TagHelpers' do
       assert_equal '<div _="v">c</div>', content_tag(:div, 'c', '': 'v')
     end
 
+    it 'should write an empty nested attribute name as an underscore' do
+      assert_equal '<div data-_="1"></div>', content_tag(:div, '', data: { '' => 1 })
+      assert_equal '<div data-_="1" />', tag(:div, data: { nil => 1 })
+      assert_equal '<div data-_="1" />', tag(:div, data: { '': 1 })
+      assert_equal '<div aria-_="x" />', tag(:div, aria: { '' => 'x' })
+      assert_equal '<div hx-_="1" />', tag(:div, hx: { '' => 1 })
+      assert_equal '<div data-_-_="1" />', tag(:div, data: { '' => { '' => 1 } })
+      assert_equal '<div _-_="1" />', tag(:div, '' => { '' => 1 })
+    end
+
     it 'should replace characters a tag name cannot contain' do
       assert_equal '<p_onclick_x>c</p_onclick_x>', content_tag(:'p onclick=x', 'c')
       assert_equal '<br_x />', tag(:'br/x')

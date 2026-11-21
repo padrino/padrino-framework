@@ -521,7 +521,9 @@ module Padrino
       #
       def nested_values(attribute, hash)
         hash.inject(+'') do |all, (key, value)|
-          attribute_with_name = "#{attribute}-#{TagHelpers.html_attribute_name(TagHelpers.html_name_text(key).tr('_', '-'))}"
+          name = TagHelpers.html_attribute_name(TagHelpers.html_name_text(key).tr('_', '-'))
+          name = '_' if name.empty?
+          attribute_with_name = "#{attribute}-#{name}"
           all <<
             if value.is_a?(Hash)
               nested_values(attribute_with_name, value)
