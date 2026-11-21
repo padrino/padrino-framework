@@ -59,8 +59,8 @@ module Padrino
       # https://github.com/rack/rack/blob/master/lib/rack/server.rb\#L100
       def server_options(options)
         info = []
-        name = effective_server(options)
-        server = Rackup::Handler.get(name) || Rackup::Handler.default
+        server_name = effective_server(options)
+        server = Rackup::Handler.get(server_name) || Rackup::Handler.default
         if server.respond_to?(:valid_options)
           info << ''
           info << "Server-specific options for #{server.name}:"
@@ -75,7 +75,7 @@ module Padrino
         end
         info.join("\n")
       rescue NameError, LoadError
-        "Warning: Could not find handler specified (#{name || 'default'}) to determine handler-specific options"
+        "Warning: Could not find handler specified (#{server_name || 'default'}) to determine handler-specific options"
       end
 
       protected
