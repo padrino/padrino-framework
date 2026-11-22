@@ -706,6 +706,32 @@ describe 'ComponentGenerator' do
       assert_equal before, File.read("#{@apptmp}/sample_project/config/database.rb")
     end
 
+    it 'should stop before asking to switch the orm when the stored adapter was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':adapter: sqlite', ':adapter: mysql-gem'))
+      snapshot = -> { Dir["#{@apptmp}/sample_project/**/*", components].to_h { |path| [path, File.file?(path) && File.read(path)] } }
+      before = snapshot.call
+      Thor::LineEditor.stubs(:readline).raises(RuntimeError, 'asked to switch the orm')
+      _, err = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--orm=sequel', "-r=#{@apptmp}/sample_project") }.status }
+      assert_equal 'The mysql-gem adapter was removed from Padrino; use mysql2 or trilogy instead.', err.strip
+      assert_equal before, snapshot.call
+    end
+
+    it 'should still switch to a non-sql orm or with a valid adapter when the stored adapter was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--orm=activerecord', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':adapter: sqlite', ':adapter: mysql-gem'))
+      Readline.stubs(:readline).returns('yes')
+      capture_io { generate(:component, '--orm=sequel', '--adapter=mysql2', "-r=#{@apptmp}/sample_project") }
+      assert_equal 'sequel', YAML.load_file(components)[:orm]
+      assert_equal 'mysql2', YAML.load_file(components)[:adapter]
+
+      File.write(components, File.read(components).sub(':adapter: mysql2', ':adapter: mysql-gem'))
+      capture_io { generate(:component, '--orm=mongoid', "-r=#{@apptmp}/sample_project") }
+      assert_equal 'mongoid', YAML.load_file(components)[:orm]
+    end
+
     %w[--renderer=bogus --adapter=bogus].each do |option|
       it "should change nothing when #{option} has no valid answer at the end of input" do
         capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}") }
@@ -802,6 +828,18 @@ describe 'ComponentGenerator' do
       Readline.stubs(:readline).returns('no').once
       out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--test=minitest', '--mock=rr', "-r=#{@apptmp}/sample_project") }.status }
       assert_match(/The bacon test component was removed from Padrino; use minitest or rspec instead\./, out)
+      assert_equal before, snapshot.call
+    end
+
+    it 'should stop before asking to switch the mock when the test switch is declined in a project whose test component was removed' do
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--test=minitest', '--mock=mocha', '--script=none') }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':test: minitest', ':test: shoulda'))
+      snapshot = -> { Dir["#{@apptmp}/sample_project/**/*", components].to_h { |path| [path, File.file?(path) && File.read(path)] } }
+      before = snapshot.call
+      Thor::LineEditor.stubs(:readline).returns('no').then.raises(RuntimeError, 'asked to switch the mock')
+      out, = capture_io { assert_equal 1, assert_raises(SystemExit) { generate(:component, '--test=minitest', '--mock=rr', "-r=#{@apptmp}/sample_project") }.status }
+      assert_match(/The shoulda test component was removed from Padrino; use minitest or testunit instead\./, out)
       assert_equal before, snapshot.call
     end
 

@@ -47,16 +47,17 @@ module Padrino
           chosen.each { |comp| @_components[comp] = resolve_valid_choice(comp) }
           # A mock is set up for the project's test component.
           exit_unless_test_component_available! if chosen.include?(:mock) && !chosen.include?(:test) && @_components[:mock].to_s != 'none'
+          resolve_valid_adapter if chosen.include?(:orm) && SQL_ADAPTER_ORMS.include?(@_components[:orm])
           chosen.select! do |comp|
             choice = @_components[comp]
             existing = fetch_component_choice(comp)
             ask = existing != 'none' && existing != choice
             accepted = !ask || yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
             @_components[comp] = '' unless accepted
+            # Check again as soon as the test switch is declined, before asking to switch the mock.
+            exit_unless_test_component_available! if comp == :test && !accepted && chosen.include?(:mock) && @_components[:mock].to_s != 'none'
             accepted
           end
-          # Again when the test switch was declined, since the project keeps its stored test component.
-          exit_unless_test_component_available! if chosen.include?(:mock) && !chosen.include?(:test) && @_components[:mock].to_s != 'none'
 
           @project_name = fetch_component_choice(:namespace)
           if chosen.include?(:test) && !already_exists?(@app_name, @project_name)
@@ -64,7 +65,6 @@ module Padrino
             say 'Please, change app name.'
             exit 1
           end
-          resolve_valid_adapter if chosen.include?(:orm) && SQL_ADAPTER_ORMS.include?(@_components[:orm])
 
           chosen.each do |comp|
             choice = @_components[comp]
