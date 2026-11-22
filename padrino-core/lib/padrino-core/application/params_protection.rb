@@ -12,6 +12,19 @@ module Padrino
         base.send(:include, InstanceMethods)
         base.extend(ClassMethods)
       end
+
+      # Tells whether a Hash under a plural-equal key is an indexed collection of
+      # records (e.g. persons[0][name]=...) rather than a single record with a
+      # nested Hash field (e.g. news[child][name]=...), independent of key order.
+      #
+      # @api private
+      def plural_collection?(key, value, allowed_params)
+        key == Inflections.pluralize(key) &&
+          value.values.any?(Hash) &&
+          value.none? do |entry_key, entry_value|
+            entry_value.is_a?(Hash) && allowed_params[entry_key].is_a?(Hash) && !allowed_params[entry_key].empty?
+          end
+      end
     end
 
     module ClassMethods
@@ -84,8 +97,9 @@ module Padrino
       #   A hash of allowed keys and value classes or processing procs. Supported
       #   scalar classes are: Integer (empty string is cast to nil) and String.
       #   A value of another shape than its key allows (a hash or an array for
-      #   Integer or String, a string for a nested list) is dropped. A proc is
-      #   called with the value as sent, an array or a hash included.
+      #   Integer or String, a hash or scalar for an empty nested list, a scalar
+      #   for a nested list) is dropped. A proc is called with the value as sent,
+      #   an array or a hash included.
       #
       # @example
       #   filter_params!( { 'a' => '1', 'b' => 'abc', 'd' => 'drop' },
@@ -110,8 +124,8 @@ module Padrino
       def filter_params!(params, allowed_params)
         params.each do |key, value|
           type = allowed_params[key]
-          if type.is_a?(Hash) && value.is_a?(Hash)
-            if key == Inflections.pluralize(key) && value.values.first.is_a?(Hash)
+          if type.is_a?(Hash) && !type.empty? && value.is_a?(Hash)
+            if ParamsProtection.plural_collection?(key, value, type)
               value.keep_if { |_, array_value| array_value.is_a?(Hash) }
               value.each do |array_index, array_value|
                 value[array_index] = filter_params!(array_value, type)

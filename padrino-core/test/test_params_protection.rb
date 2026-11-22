@@ -273,6 +273,57 @@ describe 'Padrino::ParamsProtection' do
     end
     post '/family?persons[1][name]=Jack&persons[1][position]=agent&persons[2]=Kim'
     assert_equal({ 'persons' => { '1' => { 'name' => 'Jack' } } }, result)
+    post '/family?persons[2]=Kim&persons[1][name]=Jack&persons[1][position]=agent'
+    assert_equal({ 'persons' => { '1' => { 'name' => 'Jack' } } }, result)
+    input = StringIO.new(''.b)
+    post '/family', {}, 'rack.input' => input, 'rack.request.form_input' => input,
+                        'rack.request.form_hash' => JSON.parse('{"persons":{"bad":"x","0":{"name":"Jack","admin":true}}}')
+    assert_equal({ 'persons' => { '0' => { 'name' => 'Jack' } } }, result)
+  end
+
+  it 'should drop a hash given for an empty nested list' do
+    result = nil
+    mock_app do
+      post :family, params: [{ tags: [] }, { keep: [] }] do
+        result = params
+        ''
+      end
+      post :nested, params: [{ items: [{ tags: [] }] }] do
+        result = params
+        ''
+      end
+    end
+    post '/family?tags[a]=1'
+    assert_empty(result)
+    post '/family?tags[0][a]=1&tags[1][b]=2'
+    assert_empty(result)
+    post '/family?tags=plain'
+    assert_empty(result)
+    input = StringIO.new(''.b)
+    post '/family', {}, 'rack.input' => input, 'rack.request.form_input' => input,
+                        'rack.request.form_hash' => JSON.parse('{"tags":{"a":1},"keep":["x",1]}')
+    assert_equal({ 'keep' => ['x', 1] }, result)
+    post '/family', {}, 'rack.input' => input, 'rack.request.form_input' => input,
+                        'rack.request.form_hash' => JSON.parse('{"tags":{}}')
+    assert_empty(result)
+    post '/nested?items[0][tags][0][a]=1'
+    assert_equal({ 'items' => { '0' => {} } }, result)
+  end
+
+  it 'should filter a nested hash under a plural-equal key regardless of key order' do
+    result = nil
+    mock_app do
+      post :item, params: [{ news: [:name, { child: [:name] }] }] do
+        result = params
+        ''
+      end
+    end
+    post '/item?news[name]=Jack&news[child][name]=Kim&news[child][x]=1'
+    assert_equal({ 'news' => { 'name' => 'Jack', 'child' => { 'name' => 'Kim' } } }, result)
+    post '/item?news[child][name]=Kim&news[child][x]=1&news[name]=Jack'
+    assert_equal({ 'news' => { 'child' => { 'name' => 'Kim' }, 'name' => 'Jack' } }, result)
+    post '/item?news[bad]=x&news[0][name]=Jack&news[0][child][name]=Kim&news[0][child][x]=1'
+    assert_equal({ 'news' => { '0' => { 'name' => 'Jack', 'child' => { 'name' => 'Kim' } } } }, result)
   end
 
   it 'should call a proc with an array value' do
