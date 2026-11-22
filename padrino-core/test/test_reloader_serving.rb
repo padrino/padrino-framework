@@ -806,6 +806,48 @@ describe 'Reloader while serving' do
     assert_equal [200, 'served'], request('/')
   end
 
+  it 'compiles routes once when concurrent requests arrive after a reload' do
+    change_apps!
+    Padrino.reload!
+
+    route_compiles = Queue.new
+    router_compiles = Queue.new
+    first_route = ServingDemo.deferred_routes.flatten(1).first.first
+    original_to = first_route.method(:to)
+    first_route.define_singleton_method(:to) do |&block|
+      route_compiles << true
+      sleep 0.05
+      original_to.call(&block)
+    end
+
+    original_compiler_new = Padrino::PathRouter::Compiler.method(:new)
+    compiler_spy = lambda do |*args|
+      router_compiles << true
+      sleep 0.05
+      original_compiler_new.call(*args)
+    end
+
+    results = Padrino::PathRouter::Compiler.stub(:new, compiler_spy) do
+      ready = Queue.new
+      go = Queue.new
+      threads = Array.new(4) do
+        Thread.new do
+          ready << true
+          go.pop
+          request('/')
+        end
+      end
+      4.times { ready.pop }
+      4.times { go << true }
+      values_of(*threads)
+    end
+
+    assert_equal [[200, 'served']] * 4, results
+    assert_equal 1, route_compiles.size, 'deferred routes were compiled more than once'
+    assert_equal 1, router_compiles.size, 'router engine was compiled more than once'
+    assert ServingDemo.router.engine.compiled?
+  end
+
   describe 'in a forked process' do
     before do
       skip 'needs fork' unless Process.respond_to?(:fork) && RUBY_ENGINE == 'ruby'

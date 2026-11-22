@@ -22,6 +22,7 @@ module Padrino
       # Constructs an instance of PathRouter::Router.
       #
       def initialize
+        @prepare_lock = Mutex.new
         reset!
       end
 
@@ -40,16 +41,14 @@ module Padrino
       # Returns all routes which are matched with the condition
       #
       def call(request, &block)
-        prepare! unless prepared?
-        @engine.call_by_request(request, &block)
+        prepared_engine.call_by_request(request, &block)
       end
 
       ##
       # Returns all routes which are matched with the condition without block
       #
       def recognize(request_or_env)
-        prepare! unless prepared?
-        @engine.find_by(request_or_env)
+        prepared_engine.find_by(request_or_env)
       end
 
       ##
@@ -82,8 +81,7 @@ module Padrino
       # Recognizes route and expanded params from a path, or returns nil when no route matches it.
       #
       def recognize_path(path_info)
-        prepare! unless prepared?
-        route, params = @engine.recognize_path(path_info)
+        route, params = prepared_engine.recognize_path(path_info)
         [route.name, params] if route
       end
 
@@ -91,10 +89,13 @@ module Padrino
       # Resets all routes, current order and preparation.
       #
       def reset!
-        @named_routes = nil
-        @routes = []
-        @current_order = 0
-        @prepared = nil
+        @prepare_lock.synchronize do
+          @named_routes = nil
+          @routes = []
+          @current_order = 0
+          @engine = nil
+          @prepared = nil
+        end
       end
 
       ##
@@ -109,11 +110,7 @@ module Padrino
       # and sorts all routes by using the order.
       #
       def prepare!
-        @engine = Compiler.new(@routes)
-        @prepared = true
-        return if @current_order.zero?
-        @routes.sort_by!(&:order)
-        @named_routes = nil
+        @prepare_lock.synchronize { prepare_unlocked! }
       end
 
       ##
@@ -144,6 +141,29 @@ module Padrino
         by_name = @routes.group_by(&:name).freeze
         @named_routes = [size, by_name].freeze
         by_name
+      end
+
+      ##
+      # Returns the compiled engine, preparing and compiling once under @prepare_lock.
+      #
+      def prepared_engine
+        return @engine if @prepared
+
+        @prepare_lock.synchronize do
+          prepare_unlocked! unless @prepared
+          @engine
+        end
+      end
+
+      def prepare_unlocked!
+        unless @current_order.zero?
+          @routes.sort_by!(&:order)
+          @named_routes = nil
+        end
+        engine = Compiler.new(@routes)
+        engine.compile!
+        @engine = engine
+        @prepared = true
       end
 
       ##
