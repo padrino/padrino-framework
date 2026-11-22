@@ -429,11 +429,13 @@ describe 'Reloader while serving' do
     end
   end
 
-  it 'refuses a max_wait that is not a number of seconds' do
-    ['3', :forever, Complex(1, 1), Float::NAN].each do |max_wait|
+  it 'refuses a max_wait that is not a non-negative number of seconds' do
+    ['3', :forever, Complex(1, 1), Float::NAN, -1, -0.1, -Float::INFINITY].each do |max_wait|
       assert_raises(ArgumentError) { Padrino::Reloader.max_wait = max_wait }
     end
     assert_equal @max_wait, Padrino::Reloader.max_wait
+    Padrino::Reloader.max_wait = 0
+    assert_equal 0, Padrino::Reloader.max_wait
   end
 
   it 'serves a request that calls its own server while the code changes' do

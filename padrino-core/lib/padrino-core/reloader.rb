@@ -83,8 +83,8 @@ module Padrino
     attr_reader :max_wait
 
     def max_wait=(seconds)
-      unless seconds.nil? || (seconds.is_a?(Numeric) && seconds.real? && !seconds.to_f.nan?)
-        raise ArgumentError, "Padrino::Reloader.max_wait must be a number of seconds or nil, not #{seconds.inspect}"
+      unless seconds.nil? || (seconds.is_a?(Numeric) && seconds.real? && !seconds.to_f.nan? && seconds >= 0)
+        raise ArgumentError, "Padrino::Reloader.max_wait must be a non-negative number of seconds or nil, not #{seconds.inspect}"
       end
       @max_wait = seconds
     end
