@@ -863,5 +863,14 @@ describe 'Reloader while serving' do
       assert_equal [true], values_of(reloader)
       assert_equal [200, 'served'], request('/')
     end
+
+    it 'does not call Padrino.load! when the serving fixture loads' do
+      result = in_fork do
+        Padrino.clear!
+        load ServingDemo.app_file
+        Padrino.loaded?
+      end
+      assert_equal 'false', result
+    end
   end
 end

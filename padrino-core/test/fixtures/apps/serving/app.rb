@@ -22,5 +22,3 @@ class ServingThirdDemo < Padrino::Application
   set :reload, true
   get('/hold') { ServingDemo.on_hold.call }
 end
-
-Padrino.load!
