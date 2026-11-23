@@ -349,6 +349,25 @@ module Padrino
         distance_of_time_in_words(from_time, Time.now, include_seconds)
       end
 
+      JS_ESCAPE_MAP = {
+        '\\' => '\\\\',
+        '</' => '<\/',
+        "\r\n" => '\n',
+        "\n" => '\n',
+        "\r" => '\n',
+        '"' => '\\"',
+        "'" => "\\'",
+        '`' => '\\`',
+        '$' => '\\$'
+      }.freeze
+      JS_ESCAPE_REGEXP = %r{(\\|</|\r\n|[\n\r"'`$])}.freeze
+
+      JS_UTF8_ESCAPE_MAP = {
+        "\u2028" => '\u2028',
+        "\u2029" => '\u2029'
+      }.freeze
+      JS_UTF8_ESCAPE_REGEXP = /[\u2028\u2029]/.freeze
+
       ##
       # Used in xxxx.js.erb files to escape html so that it can be passed to javascript from Padrino.
       #
@@ -362,8 +381,9 @@ module Padrino
       #
       def js_escape_html(html_content)
         return '' unless html_content
-        javascript_mapping = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
-        escaped_content = html_content.gsub(%r{(\\|</|\r\n|[\n\r"'])}) { |m| javascript_mapping[m] }
+
+        escaped_content = html_content.gsub(JS_ESCAPE_REGEXP, JS_ESCAPE_MAP)
+        escaped_content = escaped_content.gsub(JS_UTF8_ESCAPE_REGEXP, JS_UTF8_ESCAPE_MAP) if escaped_content.encoding == Encoding::UTF_8
         escaped_content = escaped_content.html_safe if html_content.html_safe?
         escaped_content
       end

@@ -6,8 +6,9 @@ module Padrino
   #
   class SafeBuffer < String
     UNSAFE_STRING_METHODS = %w[
-      capitalize chomp chop delete downcase gsub lstrip next reverse rstrip
-      slice squeeze strip sub succ swapcase tr tr_s upcase
+      capitalize chomp chop delete delete_prefix delete_suffix downcase encode
+      gsub lstrip next reverse rstrip scrub slice squeeze strip sub succ
+      swapcase tr tr_s unicode_normalize upcase
     ]
 
     alias original_concat concat
@@ -59,6 +60,38 @@ module Padrino
       super(html_escape_interpolated_argument(value))
     end
 
+    def insert(index, value)
+      super(index, html_escape_interpolated_argument(value))
+    end
+
+    def []=(*args)
+      args[-1] = html_escape_interpolated_argument(args[-1]) unless args.empty?
+      super(*args)
+    end
+
+    def replace(value)
+      super(html_escape_interpolated_argument(value))
+    end
+
+    def setbyte(index, integer)
+      @html_safe = false
+      super
+    end
+
+    if String.method_defined?(:bytesplice)
+      def bytesplice(*args)
+        @html_safe = false
+        super
+      end
+    end
+
+    if String.method_defined?(:append_as_bytes)
+      def append_as_bytes(*args)
+        @html_safe = false
+        super
+      end
+    end
+
     def +(other)
       dup.concat(other)
     end
@@ -95,14 +128,14 @@ module Padrino
       next unless unsafe_method.respond_to?(unsafe_method)
 
       class_eval <<~RUBY, __FILE__, __LINE__ + 1
-        def #{unsafe_method}(*args, &block)       # def capitalize(*args, &block)
-          to_str.#{unsafe_method}(*args, &block)  #   to_str.capitalize(*args, &block)
-        end                                       # end
+        def #{unsafe_method}(...)        # def capitalize(...)
+          to_str.#{unsafe_method}(...)   #   to_str.capitalize(...)
+        end                              # end
 
-        def #{unsafe_method}!(*args)              # def capitalize!(*args)
-          @html_safe = false                      #   @html_safe = false
-          super                                   #   super
-        end                                       # end
+        def #{unsafe_method}!(...)       # def capitalize!(...)
+          @html_safe = false             #   @html_safe = false
+          super(...)                     #   super(...)
+        end                              # end
       RUBY
     end
 

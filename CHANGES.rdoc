@@ -2,6 +2,10 @@
 
 == Unreleased
 
+- FIX #2580 `link_to` and `form_tag` (including `button_to` and `mail_to`) read String-keyed and differently cased `href`, `action`, `method` and `multipart` options (including `Sinatra::IndifferentHash`) the same way as Symbol keys (@nesquena)
+- FIX #2580 `js_escape_html` (`escape_javascript`) also escapes backticks (`` ` ``) and dollar signs (`$`), and line and paragraph separators (`\u2028`, `\u2029`) in UTF-8 strings, while keeping non-UTF-8 strings working (@nesquena)
+- FIX #2580 `Padrino::SafeBuffer` escapes text given to `insert`, `[]=` and `replace`, clears `html_safe?` on `setbyte`, `bytesplice` and `append_as_bytes`, and treats `delete_prefix`, `delete_suffix`, `scrub`, `unicode_normalize` and `encode` (and their `!` variants) as non-`html_safe` string methods (@nesquena)
+- FIX #2580 Cached fragments (`cache`) keep the `html_safe?` state they were stored with; stores that do not keep the string's class re-escape cached HTML, so use a store that serializes with Marshal (the default stores do) (@nesquena)
 - FIX #2546 A route given `host:` (`get :index, host: 'admin.example.com'`, or `host: /\Aapi\./`) no longer raises NoMethodError when the app loads: it answers only requests whose host (without the port) equals the String, ignoring case, or matches the Regexp (or one of an Array of them, `host: ['example.com', /\Aapi\./]`), and other requests go on to the next route, or get a 404 (or a 405 when the path has a route for another method, whatever its host). `controller :admin, conditions: { host: 'admin.example.com' }` applies it to every route in the controller, whose filters then run only for that host. The host follows the `X-Forwarded-Host` header when a request sends one, so `host:` is for routing, not access control. A cached page (`cache: true`) of a route given `host:` is kept under its host and path, so each host gets its own copy. A route given `agent:` as a String (`agent: 'My Bot/1.0'`) no longer answers 500 for every request to its path: it matches a user agent equal to the String, and a Regexp still matches part of it (@nesquena)
 
 == 0.18.5 (2026-11-06)
