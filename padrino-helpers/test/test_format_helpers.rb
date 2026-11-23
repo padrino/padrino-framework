@@ -450,5 +450,30 @@ describe 'FormatHelpers' do
       refute js_escape_html('"hello"').html_safe?
       assert js_escape_html(Padrino::SafeBuffer.new('"hello"')).html_safe?
     end
+
+    it 'should escape backticks, dollar signs, and Unicode line separators' do
+      assert_equal '\`hello \${name}\`', js_escape_html('`hello ${name}`')
+      assert_equal 'a\u2028b\u2029c', js_escape_html("a\u2028b\u2029c")
+      escaped = js_escape_html(Padrino::SafeBuffer.new("`a\u2028$b`"))
+      assert_equal '\`a\u2028\$b\`', escaped
+      assert escaped.html_safe?
+    end
+
+    it 'should escape ASCII characters in non-UTF-8 strings without raising' do
+      bin = "caf\xC3\xA9 'x' `y` $z".b
+      escaped_bin = js_escape_html(bin)
+      assert_equal Encoding::ASCII_8BIT, escaped_bin.encoding
+      assert_equal "caf\xC3\xA9 \\'x\\' \\`y\\` \\$z".b, escaped_bin
+
+      latin1 = "caf\xE9 'x' `y` $z".dup.force_encoding(Encoding::ISO_8859_1)
+      escaped_latin1 = js_escape_html(latin1)
+      assert_equal Encoding::ISO_8859_1, escaped_latin1.encoding
+      assert_equal "caf\xE9 \\'x\\' \\`y\\` \\$z".dup.force_encoding(Encoding::ISO_8859_1), escaped_latin1
+
+      sjis = "\x82\xA0 'x' `y`".dup.force_encoding(Encoding::Shift_JIS)
+      escaped_sjis = js_escape_html(sjis)
+      assert_equal Encoding::Shift_JIS, escaped_sjis.encoding
+      assert_equal "\x82\xA0 \\'x\\' \\`y\\`".dup.force_encoding(Encoding::Shift_JIS), escaped_sjis
+    end
   end
 end

@@ -25,6 +25,65 @@ describe 'FormHelpers' do
       assert_html_has_tag(actual_html, :form, action: '#')
     end
 
+    it 'should normalize string and indifferent action option keys' do
+      [
+        { 'action' => 'javascript:alert(1)' },
+        { action: nil, 'action' => 'javascript:alert(1)' },
+        { 'ACTION' => 'javascript:alert(1)' },
+        Sinatra::IndifferentHash['action' => 'javascript:alert(1)']
+      ].each do |opts|
+        @dom = nil
+        actual_html = form_tag('/safe', opts) { 'Demo' }
+        assert_html_has_tag(actual_html, :form, action: '#')
+        refute_match(/javascript:/i, actual_html)
+        assert_equal 1, actual_html.scan(/\baction=/i).size
+      end
+
+      frozen_opts = { 'action' => '/custom' }.freeze
+      custom_html = form_tag('/safe', frozen_opts) { 'Demo' }
+      assert_includes custom_html, 'action="/custom"'
+      assert_equal 1, custom_html.scan(/\baction=/i).size
+
+      @dom = nil
+      button_html = button_to('Go', '/safe', 'action' => 'javascript:alert(1)')
+      assert_html_has_tag(button_html, :form, action: '#')
+      refute_match(/javascript:/i, button_html)
+      assert_equal 1, button_html.scan(/\baction=/i).size
+    end
+
+    it 'should normalize string and indifferent method option keys' do
+      [
+        { 'method' => 'get' },
+        { 'METHOD' => 'get' },
+        Sinatra::IndifferentHash['method' => 'get']
+      ].each do |opts|
+        @dom = nil
+        get_html = form_tag('/search', opts) { 'Demo' }
+        assert_html_has_tag(get_html, :form, method: 'get')
+        assert_equal 1, get_html.scan(/\bmethod=/i).size
+        assert_html_has_no_tag(get_html, :input, name: 'authenticity_token')
+      end
+
+      @dom = nil
+      put_html = form_tag('/update', 'method' => 'put') { 'Demo' }
+      assert_html_has_tag(put_html, :form, method: 'post')
+      assert_equal 1, put_html.scan(/\bmethod=/i).size
+      assert_html_has_tag(put_html, 'form input', type: 'hidden', name: '_method', value: 'put')
+    end
+
+    it 'should normalize string and indifferent multipart option keys' do
+      [
+        { 'multipart' => true },
+        { 'MULTIPART' => true },
+        Sinatra::IndifferentHash['multipart' => true]
+      ].each do |opts|
+        @dom = nil
+        mp_html = form_tag('/upload', opts) { 'Demo' }
+        assert_html_has_tag(mp_html, :form, enctype: 'multipart/form-data')
+        refute_match(/\bmultipart=/i, mp_html)
+      end
+    end
+
     it 'should allow relative actions with colons in the query' do
       actual_html = form_tag('search?q=a:b') { 'Demo' }
       assert_html_has_tag(actual_html, :form, action: 'search?q=a:b')
