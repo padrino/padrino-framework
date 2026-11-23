@@ -932,25 +932,25 @@ describe 'PadrinoCache' do
   end
 
   it 'should re-escape cached html_safe fragment in a store that does not preserve string class' do
-    dir = Dir.mktmpdir('padrino-cache-frag-yaml')
-    begin
-      mock_app do
-        register Padrino::Cache
-        register Padrino::Helpers
-        enable :caching
-        set :cache, Padrino::Cache.new(:YAML, file: File.join(dir, 'cache.yml'))
-        get '/safe' do
-          erb '<div><%= cache(:yaml_safe_frag) { "<b>ok</b>".html_safe } %></div>'
-        end
+    plain_store = Class.new(Hash) do
+      def store(key, value, _options = {})
+        super(key, value.is_a?(String) ? String.new(value) : value)
       end
-
-      get '/safe'
-      assert_equal '<div><b>ok</b></div>', body
-
-      get '/safe'
-      assert_equal '<div>&lt;b&gt;ok&lt;/b&gt;</div>', body
-    ensure
-      FileUtils.remove_entry(dir) if dir && Dir.exist?(dir)
+    end.new
+    mock_app do
+      register Padrino::Cache
+      register Padrino::Helpers
+      enable :caching
+      set :cache, plain_store
+      get '/safe' do
+        erb '<div><%= cache(:plain_safe_frag) { "<b>ok</b>".html_safe } %></div>'
+      end
     end
+
+    get '/safe'
+    assert_equal '<div><b>ok</b></div>', body
+
+    get '/safe'
+    assert_equal '<div>&lt;b&gt;ok&lt;/b&gt;</div>', body
   end
 end
