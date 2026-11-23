@@ -873,4 +873,84 @@ describe 'PadrinoCache' do
     get '/foo'
     assert_equal 'application/json;charset=utf-8', last_response.content_type
   end
+
+  it 'should keep cached fragment escaping with LRUHash store' do
+    mock_app do
+      register Padrino::Cache
+      register Padrino::Helpers
+      enable :caching
+      set :cache, Padrino::Cache.new(:LRUHash)
+      get '/plain' do
+        erb '<div><%= cache(:plain_frag) { "<b>escaped</b>" } %></div>'
+      end
+      get '/safe' do
+        erb '<div><%= cache(:safe_frag) { "<b>raw</b>".html_safe } %></div>'
+      end
+    end
+
+    2.times do
+      get '/plain'
+      assert_equal '<div>&lt;b&gt;escaped&lt;/b&gt;</div>', body
+    end
+
+    2.times do
+      get '/safe'
+      assert_equal '<div><b>raw</b></div>', body
+    end
+  end
+
+  it 'should keep cached fragment escaping with File store' do
+    dir = Dir.mktmpdir('padrino-cache-frag-file')
+    begin
+      mock_app do
+        register Padrino::Cache
+        register Padrino::Helpers
+        enable :caching
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        get '/plain' do
+          erb '<div><%= cache(:plain_frag) { "<b>escaped</b>" } %></div>'
+        end
+        get '/safe' do
+          erb '<div><%= cache(:safe_frag) { "<b>raw</b>".html_safe } %></div>'
+        end
+      end
+
+      2.times do
+        get '/plain'
+        assert_equal '<div>&lt;b&gt;escaped&lt;/b&gt;</div>', body
+      end
+
+      2.times do
+        get '/safe'
+        assert_equal '<div><b>raw</b></div>', body
+      end
+
+      refute_empty Dir.children(dir)
+    ensure
+      FileUtils.remove_entry(dir) if dir && Dir.exist?(dir)
+    end
+  end
+
+  it 'should re-escape cached html_safe fragment in a store that does not preserve string class' do
+    dir = Dir.mktmpdir('padrino-cache-frag-yaml')
+    begin
+      mock_app do
+        register Padrino::Cache
+        register Padrino::Helpers
+        enable :caching
+        set :cache, Padrino::Cache.new(:YAML, file: File.join(dir, 'cache.yml'))
+        get '/safe' do
+          erb '<div><%= cache(:yaml_safe_frag) { "<b>ok</b>".html_safe } %></div>'
+        end
+      end
+
+      get '/safe'
+      assert_equal '<div><b>ok</b></div>', body
+
+      get '/safe'
+      assert_equal '<div>&lt;b&gt;ok&lt;/b&gt;</div>', body
+    ensure
+      FileUtils.remove_entry(dir) if dir && Dir.exist?(dir)
+    end
+  end
 end
