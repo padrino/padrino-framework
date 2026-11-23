@@ -101,6 +101,21 @@ describe 'AssetTagHelpers' do
       assert_html_has_tag(actual_link, 'a', href: '#', content: 'click')
     end
 
+    it 'should normalize string and indifferent href option keys' do
+      [
+        { 'href' => 'javascript:alert(1)' },
+        { href: nil, 'href' => 'javascript:alert(1)' },
+        { 'HREF' => 'javascript:alert(1)' },
+        Sinatra::IndifferentHash['href' => 'javascript:alert(1)']
+      ].each do |opts|
+        actual_link = link_to('click', '/safe', opts)
+        assert_equal '<a href="#">click</a>', actual_link
+      end
+
+      frozen_opts = { 'href' => '/custom' }.freeze
+      assert_equal '<a href="/custom">click</a>', link_to('click', '/safe', frozen_opts)
+    end
+
     it 'should allow http and https URIs' do
       assert_match 'href="http://example.com"', link_to('click', 'http://example.com')
       assert_match 'href="https://example.com"', link_to('click', 'https://example.com')
