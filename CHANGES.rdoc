@@ -65,7 +65,7 @@
 
 == 0.18.6 (2026-11-24)
 
-- FIX #2580 `link_to` and `form_tag` (including `button_to` and `mail_to`) read String-keyed and differently cased `href`, `action`, `method` and `multipart` options (including `Sinatra::IndifferentHash`) the same way as Symbol keys (@nesquena)
+- FIX #2580 `link_to` (including `mail_to`) reads String-keyed and differently cased `href` options, and `form_tag` (including `button_to`) reads String-keyed and differently cased `action`, `method` and `multipart` options (including `Sinatra::IndifferentHash`), the same way as Symbol keys (@nesquena)
 - FIX #2580 `js_escape_html` (`escape_javascript`) also escapes backticks (`` ` ``) and dollar signs (`$`), and line and paragraph separators (`\u2028`, `\u2029`) in UTF-8 strings, while keeping non-UTF-8 strings working (@nesquena)
 - FIX #2580 `Padrino::SafeBuffer` escapes text given to `insert`, `[]=` and `replace`, clears `html_safe?` on `setbyte`, `bytesplice` and `append_as_bytes`, and treats `delete_prefix`, `delete_suffix`, `scrub`, `unicode_normalize` and `encode` (and their `!` variants) as non-`html_safe` string methods (@nesquena)
 - SEC #2580 Cached fragments (`cache`) keep the `html_safe?` state they were stored with; stores that do not keep the string's class re-escape cached HTML, so use a store that serializes with Marshal (the default stores do) (@nesquena)
