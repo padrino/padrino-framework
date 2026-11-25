@@ -108,7 +108,7 @@ module Padrino
           if formats && !formats.empty?
             return if formats.include?(:any)
 
-            formats.uniq.each do |fmt|
+            (formats.uniq + [nil]).each do |fmt|
               delete_default_page_key(target_route, path_info, script_name, router_host, req_host, fmt)
             end
           else

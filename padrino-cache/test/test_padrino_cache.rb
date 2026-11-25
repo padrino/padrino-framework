@@ -1330,6 +1330,23 @@ describe 'PadrinoCache' do
     assert_equal 'x 2', session.last_response.body
   end
 
+  it 'should expire a provides page stored without a negotiated format' do
+    version = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/r', cache: true, provides: [:html, :txt]) { "v#{version}" }
+      get('/bump') { version += 1; expire('/r'); 'ok' }
+    end
+
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    assert_equal 'v0', body
+    get '/bump'
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    assert_equal 'v1', body
+  end
+
   it 'should not leave a host mapping marker behind for the next app in a cascade' do
     calls = 0
     other = Class.new(Padrino::Application) { get('/elsewhere') { 'elsewhere' } }
