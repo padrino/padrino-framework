@@ -1335,7 +1335,7 @@ describe 'PadrinoCache' do
     mock_app do
       register Padrino::Cache
       enable :caching
-      get('/r', cache: true, provides: [:html, :txt]) { "v#{version}" }
+      get('/r', cache: true, provides: %i[html txt]) { "v#{version}" }
       get('/bump') { version += 1; expire('/r'); 'ok' }
     end
 
