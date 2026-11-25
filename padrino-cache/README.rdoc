@@ -15,9 +15,11 @@ with minimal configuration.
 
 By default, the component caches pages in a file store at <tt>tmp/<app_name>/cache</tt>
 within your project root (for a Sinatra class, its underscored class name; a class without a name
-caches in memory). Entries in this store correspond directly
-to the request issued to your server. In other words, responses are
-cached based on request URL, with one cache entry per URL.
+caches in memory). Each route keeps its cached pages under a namespaced key derived from the request path
+and the app and route identity (or under an explicit <tt>cache_key</tt> when one is set).
+Because the cache lookup runs before the route handler, write request checks as route
+conditions or <tt>before</tt> filters rather than calling <tt>pass</tt> or <tt>halt</tt>
+inside a cached handler.
 
 This behavior is referred to as "page-level caching." If this strategy meets
 your needs, you can enable it very easily:
@@ -339,9 +341,37 @@ but it will do so immediately if any tweets have been deleted.
 
 ==== Page-level expiration
 
-Page-level expiration works exactly like the example above--by using
-<tt>expire</tt> in your controller. The key is typically <tt>env['PATH_INFO']</tt>; for a route given <tt>host:</tt> it is the
-lowercased host followed by the path (<tt>admin.example.com/</tt>).
+Default page cache keys are namespaced (<tt>"@<digest>#{env['PATH_INFO']}"</tt>) by app, mount,
+route identity and conditions, host (for <tt>host:</tt> routes), negotiated format (for
+<tt>provides:</tt> routes), and optional <tt>cache_namespace</tt>. A cached value that is not a
+<tt>{ body: String }</tt> Hash is treated as a cache miss (for example, JSON-serialized stores
+re-render instead of serving blank pages).
+Calling <tt>expire('/foo')</tt>, <tt>expire(:foo, id)</tt> (or <tt>expire(:index, {})</tt> for a
+named route with no parameters), or <tt>expire('app.example.com/foo')</tt> in a controller
+clears matching routes in the current mount and host mapping (except <tt>provides: :any</tt>
+routes). Single-label <tt>host:</tt> strings (such as <tt>host: 'intranet'</tt>) can also be
+expired with <tt>expire('intranet/foo')</tt>. A single Symbol (<tt>expire(:index)</tt>) deletes
+only the explicit cache key <tt>:index</tt>, and a plain path (<tt>expire('/foo')</tt>) does not
+clear <tt>host:</tt> routes (pass <tt>'host/foo'</tt> instead). To expire a page directly through
+<tt>App.cache.delete</tt>, across mounted apps, or on a <tt>provides: :any</tt> route, set an
+explicit <tt>cache_key</tt> (including any varying inputs) and expire that key. On cached routes
+with content negotiation, prefer an explicit list (<tt>provides: %i[html json]</tt>) over
+<tt>provides: :any</tt>, which caches separately for every negotiated MIME type.
+
+==== Deploys, upgrades, and duplicate-route warnings
+
+Whenever the cache store outlives a deploy (including the default <tt>tmp/</tt> File store,
+Redis, and Memcached), rolling deploys that change cached routes or their conditions or filters
+need a new <tt>cache_namespace</tt>--clearing the cache alone is not enough because old processes
+keep writing entries until stopped. A page-cache clear is enough only for a stop-start deploy,
+done after the old processes stop and before the new ones serve. Set <tt>:cache_namespace</tt> to
+a String such as a release identifier (<tt>set :cache_namespace, ENV['RELEASE']</tt>;
+<tt>nil</tt> by default, non-nil values are converted with <tt>to_s</tt>, and it applies to
+default page keys only, not explicit <tt>cache_key</tt> values). Pages cached by an earlier
+release are not read under the new keys; clear the page cache after upgrading to free the space. When
+multiple <tt>cache: true</tt> routes share a verb and path with indistinguishable matchers or
+condition blocks, a compile-time warning is printed once per process; give each route a unique
+route name so reordering routes does not change their cache keys.
 
 == Copyright
 

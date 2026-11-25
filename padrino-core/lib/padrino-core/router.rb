@@ -70,6 +70,7 @@ module Padrino
       path_info = env['PATH_INFO'].to_s
       script_name = env['SCRIPT_NAME']
       http_host = env['HTTP_HOST']
+      outer_host = env['padrino.router.host']
       last_result = nil
 
       @mapping.each do |host, path, match, app|
@@ -81,6 +82,8 @@ module Padrino
 
         env['SCRIPT_NAME'] = script_name + path
         env['PATH_INFO'] = rest
+        marker = host ? [outer_host, host.source].compact.join("\0") : outer_host
+        marker ? env['padrino.router.host'] = marker : env.delete('padrino.router.host')
         last_result = app.call(env)
 
         cascade_setting = app.respond_to?(:cascade) ? app.cascade : true
@@ -93,6 +96,8 @@ module Padrino
         Padrino::Logger::Rack.new(nil, '/').send(:log, env, 404, {}, began_at) if logger.debug?
         [404, { 'content-type' => 'text/plain', 'x-cascade' => 'pass' }, ["Not Found: #{path_info}"]]
       end
+    ensure
+      outer_host ? env['padrino.router.host'] = outer_host : env.delete('padrino.router.host')
     end
   end
 end
