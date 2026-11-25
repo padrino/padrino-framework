@@ -694,6 +694,7 @@ module Padrino
 
         path[0, 0] = '/' if path == '(.:format)?'
         route = router.add(verb, path, route_options)
+        route.source_location = unbound_method.source_location
         route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal

@@ -349,8 +349,8 @@ re-render instead of serving blank pages).
 Calling <tt>expire('/foo')</tt>, <tt>expire(:foo, id)</tt> (or <tt>expire(:index, {})</tt> for a
 named route with no parameters), or <tt>expire('app.example.com/foo')</tt> in a controller
 clears matching routes in the current mount and host mapping (except <tt>provides: :any</tt>
-routes). Single-label <tt>host:</tt> strings (such as <tt>host: 'intranet'</tt>) can also be
-expired with <tt>expire('intranet/foo')</tt>. A single Symbol (<tt>expire(:index)</tt>) deletes
+routes). Any host a <tt>host:</tt> route serves works there, ignoring case
+(<tt>expire('intranet/foo')</tt>). A single Symbol (<tt>expire(:index)</tt>) deletes
 only the explicit cache key <tt>:index</tt>, and a plain path (<tt>expire('/foo')</tt>) does not
 clear <tt>host:</tt> routes (pass <tt>'host/foo'</tt> instead). To expire a page directly through
 <tt>App.cache.delete</tt>, across mounted apps, or on a <tt>provides: :any</tt> route, set an

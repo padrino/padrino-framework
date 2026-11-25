@@ -2,10 +2,6 @@ module Padrino
   module Cache
     module Helpers
       module CacheStore
-        HOST_LABEL = '[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?'.freeze
-        SINGLE_HOST_LABEL = /\A#{HOST_LABEL}\z/i
-        HOST_PREFIX = /\A(?:localhost|#{HOST_LABEL}(?:\.#{HOST_LABEL})+|\[[0-9a-f:]+\])\z/i
-
         def expire(*key)
           if (key.size == 1) && (key.first.is_a?(String) || key.first.is_a?(Symbol))
             raw = key.first
@@ -41,27 +37,10 @@ module Padrino
             expire_routes_for(path_info, script_name, router_host, nil)
           elsif target.include?('/')
             host_part, rest = target.split('/', 2)
-            return unless host_part.ascii_only?
+            return if host_part.empty? || !host_part.ascii_only?
 
-            downcased = host_part.downcase
-            return unless HOST_PREFIX.match?(downcased) || single_label_cached_host?(downcased)
-
-            expire_routes_for("/#{rest}", script_name, router_host, downcased)
+            expire_routes_for("/#{rest}", script_name, router_host, host_part)
           end
-        end
-
-        def single_label_cached_host?(host)
-          return false unless SINGLE_HOST_LABEL.match?(host)
-
-          cls = settings
-          while cls.respond_to?(:router)
-            cls.compiled_router.routes.each do |route|
-              next unless route.cache && route.get_route.nil? && route.host
-              return true if Array(route.host).any? { |h| h.is_a?(String) && h.casecmp?(host) }
-            end
-            cls = cls.superclass
-          end
-          false
         end
 
         def mount_prefix
@@ -93,11 +72,22 @@ module Padrino
           end
         end
 
+        # Host names are case-insensitive, so a Regexp host: matches the expire argument ignoring case.
+        def expire_host_matches?(hosts, host)
+          Array(hosts).any? do |pattern|
+            if pattern.is_a?(Regexp)
+              Regexp.new(pattern.source, pattern.options | Regexp::IGNORECASE).match?(host)
+            else
+              host_matches?(pattern, host) || host_matches?(pattern, host.downcase)
+            end
+          end
+        end
+
         def expire_route_keys(target_route, path_info, script_name, router_host, explicit_host)
           if target_route.host
-            return unless explicit_host && host_matches?(target_route.host, explicit_host)
+            return unless explicit_host && expire_host_matches?(target_route.host, explicit_host)
 
-            req_host = explicit_host
+            req_host = explicit_host.downcase
           else
             return if explicit_host
 

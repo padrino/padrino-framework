@@ -1,5 +1,4 @@
 require 'digest'
-require 'securerandom'
 
 module Padrino
   module Cache
@@ -257,7 +256,8 @@ module Padrino
             tokens = {}.compare_by_identity
             app_before_count = total_app_before_filters
             app_id = respond_to?(:app_name) ? app_name.to_s : nil
-            class_id = name || (@_page_cache_anon_id ||= SecureRandom.hex(16))
+            app_id = nil if name.nil? && app_id == to_s.downcase
+            class_id = name || anonymous_page_cache_id
             ns = page_cache_namespace_key
             source_cache = {}
             depth = 0
@@ -302,6 +302,13 @@ module Padrino
               cls = cls.superclass
             end
             total
+          end
+
+          # An anonymous class has no name that is the same in every process, so it is told apart by
+          # where its cached routes are defined.
+          def anonymous_page_cache_id
+            locations = router.routes.filter_map { |route| route.source_location if route.cache }
+            Digest::SHA256.hexdigest(locations.map { |file, line| "#{file}:#{line}" }.sort.join("\n"))
           end
 
           def compute_route_base_token(route, class_id, app_id, app_before_count, depth, namespace, source_cache)

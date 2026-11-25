@@ -1170,6 +1170,37 @@ describe 'PadrinoCache' do
     end
   end
 
+  it 'should give one anonymous app definition the same page keys in every process' do
+    Dir.mktmpdir do |dir|
+      store_dir = File.join(dir, 'store')
+      script = File.join(dir, 'worker.rb')
+      File.write(script, <<~RUBY)
+        require 'padrino-core'
+        require 'padrino-cache'
+        require 'rack/test'
+
+        store_dir = ARGV.first
+        app = Class.new(Padrino::Application) do
+          register Padrino::Cache
+          enable :caching
+          set :cache, Padrino::Cache.new(:File, dir: store_dir)
+          get('/doc', cache: true) { 'doc' }
+        end
+        Rack::Test::Session.new(Rack::MockSession.new(app)).get('/doc')
+      RUBY
+
+      load_flags = [
+        File.expand_path('../lib', __dir__),
+        File.expand_path('../../padrino-core/lib', __dir__),
+        File.expand_path('../../padrino-helpers/lib', __dir__),
+        File.expand_path('../../padrino-support/lib', __dir__)
+      ].flat_map { |p| ['-I', p] }
+
+      2.times { assert system(RbConfig.ruby, *load_flags, script, store_dir, out: File::NULL, err: File::NULL) }
+      assert_equal 1, Dir.children(store_dir).size
+    end
+  end
+
   it 'should isolate cached pages when app_name changes for a named class on a persistent File store' do
     Dir.mktmpdir do |dir|
       Object.const_set(:RenamedAppIdApp, Class.new(Padrino::Application) do
@@ -1855,63 +1886,47 @@ describe 'PadrinoCache' do
     assert_equal 'plain 2', body
   end
 
-  it 'should expire single-label String host routes without invoking Proc host matchers on unrelated prefixes' do
+  it 'should expire host: route pages for every host the route serves' do
     calls = 0
-    seen_hosts = []
     mock_app do
       register Padrino::Cache
       enable :caching
       get('/dash', host: 'intranet', cache: true) { "intra #{calls += 1}" }
-      get('/:m/:d', host: ->(h) { seen_hosts << h; false }, cache: true) { 'proc' }
-      get('/exp-intra') { expire('INTRANET/dash'); 'ok' }
-      get('/exp-unrelated') { expire('posts/11/24'); 'ok' }
+      get('/re', host: /\A(web|my_box\.corp\.example|www\.example\.com\.)\z/, cache: true) { "re #{calls += 1}" }
+      get('/up', host: /\AAdmin\./, cache: true) { "up #{calls += 1}" }
+      get('/exp') { expire(params[:t]); 'ok' }
     end
 
-    get '/dash', {}, 'HTTP_HOST' => 'intranet'
-    assert_equal 'intra 1', body
-    get '/exp-intra'
-    get '/dash', {}, 'HTTP_HOST' => 'intranet'
-    assert_equal 'intra 2', body
-    get '/exp-unrelated'
-    assert_empty seen_hosts
+    [['intranet', '/dash', 'INTRANET/dash'],
+     ['web', '/re', 'web/re'],
+     ['my_box.corp.example', '/re', 'my_box.corp.example/re'],
+     ['www.example.com.', '/re', 'www.example.com./re'],
+     ['Admin.example.com', '/up', 'admin.example.com/up']].each do |host, path, target|
+      get path, {}, 'HTTP_HOST' => host
+      get path, {}, 'HTTP_HOST' => host
+      before = body
+      get '/exp', { t: target }
+      get path, {}, 'HTTP_HOST' => host
+      refute_equal before, body, "expire(#{target.inspect}) should clear the page for #{host}"
+    end
   end
 
-  it 'should not treat non-host strings or invalid byte sequences as host/path in expire' do
-    seen_hosts = []
+  it 'should ignore invalid byte sequences and other encodings in expire' do
     mock_app do
       register Padrino::Cache
       enable :caching
       set :cache, Padrino::Cache.new(:Memory)
-      get('/:m/:d', cache: true, host: ->(h) { seen_hosts << h; h == 'app.example.com' }) { 'host A' }
-      get('/expire-phrase') { expire('feed since 2026/11/24'); 'ok' }
-      get('/expire-word') { expire('posts/11/24'); 'ok' }
-      get('/expire-long') { expire("#{'a' * 64}.example.com/11/24"); 'ok' }
+      get('/:m/:d', cache: true, host: 'app.example.com') { 'host A' }
       get('/expire-invalid-utf8') { expire("\xFF\xFE/11/24".dup.force_encoding(Encoding::UTF_8)); 'ok' }
       get('/expire-binary') { expire("\xFF\xFE/11/24".b); 'ok' }
       get('/expire-binary-path') { expire("/\xFF\xFE".b); 'ok' }
       get('/expire-utf16') { expire('/11/24'.encode(Encoding::UTF_16LE)); 'ok' }
-      get('/expire-host') { expire('app.example.com/11/24'); 'ok' }
-      get('/expire-localhost') { expire('localhost/11/24'); 'ok' }
-      get('/expire-ipv6') { expire('[::1]/11/24'); 'ok' }
     end
 
-    get '/expire-phrase'
-    get '/expire-word'
-    get '/expire-long'
-    get '/expire-invalid-utf8'
-    assert_equal 200, status
-    get '/expire-binary'
-    assert_equal 200, status
-    get '/expire-binary-path'
-    assert_equal 200, status
-    get '/expire-utf16'
-    assert_equal 200, status
-    assert_empty seen_hosts
-
-    get '/expire-host'
-    get '/expire-localhost'
-    get '/expire-ipv6'
-    assert_equal ['app.example.com', 'localhost', '[::1]'], seen_hosts
+    %w[/expire-invalid-utf8 /expire-binary /expire-binary-path /expire-utf16].each do |path|
+      get path
+      assert_equal 200, status
+    end
   end
 
   it 'should allow expire outside a request with nil env and still delete the raw key' do
