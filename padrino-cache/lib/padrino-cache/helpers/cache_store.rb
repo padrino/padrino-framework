@@ -73,10 +73,13 @@ module Padrino
         end
 
         # Host names are case-insensitive, so a Regexp host: matches the expire argument ignoring case.
+        # A Proc host: is left alone: it only ever sees request hosts.
         def expire_host_matches?(hosts, host)
           Array(hosts).any? do |pattern|
             if pattern.is_a?(Regexp)
               Regexp.new(pattern.source, pattern.options | Regexp::IGNORECASE).match?(host)
+            elsif pattern.is_a?(Proc)
+              false
             else
               host_matches?(pattern, host) || host_matches?(pattern, host.downcase)
             end

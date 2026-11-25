@@ -345,7 +345,8 @@ Default page cache keys are namespaced (<tt>"@<digest>#{env['PATH_INFO']}"</tt>)
 route identity and conditions, host (for <tt>host:</tt> routes), negotiated format (for
 <tt>provides:</tt> routes), and optional <tt>cache_namespace</tt>. A cached value that is not a
 <tt>{ body: String }</tt> Hash is treated as a cache miss (for example, JSON-serialized stores
-re-render instead of serving blank pages).
+re-render instead of serving blank pages). Anonymous apps built from the same code and sharing one
+store share page keys too: give each one its own <tt>set :app_name</tt>.
 Calling <tt>expire('/foo')</tt>, <tt>expire(:foo, id)</tt> (or <tt>expire(:index, {})</tt> for a
 named route with no parameters), or <tt>expire('app.example.com/foo')</tt> in a controller
 clears matching routes in the current mount and host mapping (except <tt>provides: :any</tt>

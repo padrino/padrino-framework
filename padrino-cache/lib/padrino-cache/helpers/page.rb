@@ -256,7 +256,7 @@ module Padrino
             tokens = {}.compare_by_identity
             app_before_count = total_app_before_filters
             app_id = respond_to?(:app_name) ? app_name.to_s : nil
-            app_id = nil if name.nil? && app_id == to_s.downcase
+            app_id = nil if app_id&.start_with?('#<')
             class_id = name || anonymous_page_cache_id
             ns = page_cache_namespace_key
             source_cache = {}

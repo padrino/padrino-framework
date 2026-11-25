@@ -1201,6 +1201,51 @@ describe 'PadrinoCache' do
     end
   end
 
+  it 'should give an app named after it is built the same page keys in every process' do
+    Dir.mktmpdir do |dir|
+      store_dir = File.join(dir, 'store')
+      script = File.join(dir, 'worker.rb')
+      File.write(script, <<~RUBY)
+        require 'padrino-core'
+        require 'padrino-cache'
+        require 'rack/test'
+
+        store_dir = ARGV.first
+        NamedLaterApp = Class.new(Padrino::Application) do
+          register Padrino::Cache
+          enable :caching
+          set :cache, Padrino::Cache.new(:File, dir: store_dir)
+          get('/doc', cache: true) { 'doc' }
+        end
+        Rack::Test::Session.new(Rack::MockSession.new(NamedLaterApp)).get('/doc')
+      RUBY
+
+      load_flags = [
+        File.expand_path('../lib', __dir__),
+        File.expand_path('../../padrino-core/lib', __dir__),
+        File.expand_path('../../padrino-helpers/lib', __dir__),
+        File.expand_path('../../padrino-support/lib', __dir__)
+      ].flat_map { |p| ['-I', p] }
+
+      2.times { assert system(RbConfig.ruby, *load_flags, script, store_dir, out: File::NULL, err: File::NULL) }
+      assert_equal 1, Dir.children(store_dir).size
+    end
+  end
+
+  it 'should not call Proc host matchers from expire' do
+    seen_hosts = []
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/:m/:d', cache: true, host: ->(h) { seen_hosts << h; true }) { 'page' }
+      get('/exp') { expire('my key/11/24'); 'ok' }
+    end
+
+    get '/exp'
+    assert_equal 200, status
+    assert_empty seen_hosts
+  end
+
   it 'should isolate cached pages when app_name changes for a named class on a persistent File store' do
     Dir.mktmpdir do |dir|
       Object.const_set(:RenamedAppIdApp, Class.new(Padrino::Application) do
