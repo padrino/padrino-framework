@@ -1347,6 +1347,24 @@ describe 'PadrinoCache' do
     assert_equal 'v1', body
   end
 
+  it 'should expire a provides page when a filter set another content type first' do
+    version = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      before { content_type :json }
+      get('/r', cache: true, provides: %i[html txt]) { "v#{version}" }
+      get('/bump') { version += 1; expire('/r'); 'ok' }
+    end
+
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    assert_equal 'v0', body
+    get '/bump'
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    assert_equal 'v1', body
+  end
+
   it 'should not leave a host mapping marker behind for the next app in a cascade' do
     calls = 0
     other = Class.new(Padrino::Application) { get('/elsewhere') { 'elsewhere' } }

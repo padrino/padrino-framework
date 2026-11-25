@@ -178,7 +178,11 @@ module Padrino
         end
 
         def negotiated_cache_format
-          content_type if page_cache_route.provided_formats&.any?
+          formats = page_cache_route.provided_formats&.flatten
+          return unless formats && !formats.empty?
+
+          format = content_type
+          format if formats.include?(:any) || formats.include?(format)
         end
 
         # The key a page is kept under: an explicit cache_key as given, or the request path
