@@ -350,7 +350,7 @@ store share page keys too: give each one its own <tt>set :app_name</tt>.
 Calling <tt>expire('/foo')</tt>, <tt>expire(:foo, id)</tt> (or <tt>expire(:index, {})</tt> for a
 named route with no parameters), or <tt>expire('app.example.com/foo')</tt> in a controller
 clears matching routes in the current mount and host mapping (except <tt>provides: :any</tt>
-routes). Any host a <tt>host:</tt> route serves works there, ignoring case
+routes). Any host a String, Regexp or Array <tt>host:</tt> serves works there, ignoring case
 (<tt>expire('intranet/foo')</tt>). A single Symbol (<tt>expire(:index)</tt>) deletes
 only the explicit cache key <tt>:index</tt>, and a plain path (<tt>expire('/foo')</tt>) does not
 clear <tt>host:</tt> routes (pass <tt>'host/foo'</tt> instead). To expire a page directly through
