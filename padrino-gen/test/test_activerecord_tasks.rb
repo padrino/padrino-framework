@@ -292,6 +292,36 @@ describe 'ActiveRecord tasks' do
     ENV['PATH'] = saved_path if saved_path
   end
 
+  it "should not carry one database's TLS settings into the next database's structure dump" do
+    File.write(File.join(@root, 'config', 'boot.rb'), <<~RUBY)
+      require 'padrino-core'
+      require 'active_record'
+      ActiveRecord::Base.configurations = { development: {
+        primary: { adapter: 'postgresql', database: 'one', sslmode: 'require', sslcrl: '/crl.pem' },
+        animals: { adapter: 'postgresql', database: 'two' }
+      } }
+      fake = Object.new
+      fake.define_singleton_method(:dump_schema_information) { '' }
+      ActiveRecord::Base.define_singleton_method(:establish_connection) { |*| }
+      ActiveRecord::Base.define_singleton_method(:connection) { fake }
+    RUBY
+    bin = File.join(@root, 'bin')
+    FileUtils.mkdir_p(bin)
+    File.write(File.join(bin, 'pg_dump'), <<~SH)
+      #!/bin/sh
+      for last; do :; done
+      echo "$last:$PGSSLMODE:$PGSSLCRL" >> "#{File.join(@root, 'calls.log')}"
+      while [ $# -gt 0 ]; do [ "$1" = -f ] && : > "$2"; shift; done
+    SH
+    File.chmod(0o755, File.join(bin, 'pg_dump'))
+    saved_path = ENV['PATH']
+    ENV['PATH'] = "#{bin}#{File::PATH_SEPARATOR}#{saved_path}"
+    rake 'ar:structure:dump'
+    assert_equal "one:require:/crl.pem\ntwo::\n", File.read(File.join(@root, 'calls.log'))
+  ensure
+    ENV['PATH'] = saved_path if saved_path
+  end
+
   describe 'with two databases in one environment' do
     def setup
       super

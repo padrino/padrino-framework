@@ -96,16 +96,15 @@ describe 'SqlHelpers.dump_db' do
         { 'PGSSLMODE' => 'verify-full', 'PGSSLCRL' => '/crl.pem', 'PGSSLCRLDIR' => '/crls', 'PGSSLCERTMODE' => 'require',
           'PGSSLSNI' => '1', 'PGSSLMINPROTOCOLVERSION' => 'TLSv1.3', 'PGSSLMAXPROTOCOLVERSION' => 'TLSv1.3',
           'PGSSLNEGOTIATION' => 'direct', 'PGREQUIREPEER' => 'postgres', 'PGREQUIREAUTH' => 'scram-sha-256',
-          'PGCHANNELBINDING' => 'require', 'PGGSSENCMODE' => 'disable', 'PGSERVICE' => 'prod' },
+          'PGCHANNELBINDING' => 'require', 'PGGSSENCMODE' => 'disable' },
         'pg_dump', "--file=#{partial}", 'app db', {}
       ).returns(42)
       dump('postgres', sslmode: 'verify-full', sslcrl: '/crl.pem', sslcrldir: '/crls', sslcertmode: 'require', sslsni: 1,
                        ssl_min_protocol_version: 'TLSv1.3', ssl_max_protocol_version: 'TLSv1.3', sslnegotiation: 'direct',
-                       requirepeer: 'postgres', require_auth: 'scram-sha-256', channel_binding: 'require', gssencmode: 'disable',
-                       service: 'prod')
+                       requirepeer: 'postgres', require_auth: 'scram-sha-256', channel_binding: 'require', gssencmode: 'disable')
     end
 
-    it 'leaves a blank setting to libpq, as the app connection does' do
+    it 'leaves out a blank setting, which libpq can refuse as an environment variable' do
       succeed
       Process.expects(:spawn).with({ 'PGSSLROOTCERT' => '/ca.pem' }, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
       dump('postgres', sslmode: '', sslrootcert: '/ca.pem', driver_options: { sslcrl: '' })

@@ -182,7 +182,7 @@ module Padrino
         sslcrl: 'PGSSLCRL', sslcrldir: 'PGSSLCRLDIR', sslcertmode: 'PGSSLCERTMODE', sslsni: 'PGSSLSNI',
         ssl_min_protocol_version: 'PGSSLMINPROTOCOLVERSION', ssl_max_protocol_version: 'PGSSLMAXPROTOCOLVERSION',
         sslnegotiation: 'PGSSLNEGOTIATION', requirepeer: 'PGREQUIREPEER', require_auth: 'PGREQUIREAUTH',
-        channel_binding: 'PGCHANNELBINDING', gssencmode: 'PGGSSENCMODE', service: 'PGSERVICE'
+        channel_binding: 'PGCHANNELBINDING', gssencmode: 'PGGSSENCMODE'
       }.freeze
       MYSQL_TLS_ARGUMENTS = {
         sslca: '--ssl-ca', sslcert: '--ssl-cert', sslcapath: '--ssl-capath', sslcipher: '--ssl-cipher',
@@ -195,20 +195,19 @@ module Padrino
       TRILOGY_SSL_MODES = { 0 => 'DISABLED', 1 => 'VERIFY_IDENTITY', 2 => 'VERIFY_CA', 3 => 'REQUIRED', 4 => 'PREFERRED' }.freeze
       private_constant :POSTGRES_CONNECTION_ENVIRONMENT, :MYSQL_TLS_ARGUMENTS, :TRILOGY_TLS_ARGUMENTS, :TRILOGY_SSL_MODES
 
-      # Stops and reaps a dump that was given up on, as when an interrupt or a signal reached only
-      # this process, so it doesn't keep running, or write the temp file after it was removed.
-      # The app's TLS and authentication settings for libpq's tools, as environment variables, so they are
-      # held to the same rules. Sequel hands libpq everything but sslmode and sslrootcert through
-      # :driver_options, which take precedence.
+      # The app's TLS and authentication settings for libpq's tools, as environment variables. Sequel hands
+      # libpq everything but sslmode and sslrootcert through :driver_options, which take precedence.
       def self.postgres_environment(config)
         driver_options = config[:driver_options] || {}
         POSTGRES_CONNECTION_ENVIRONMENT.each_with_object({}) do |(key, name), environment|
           value = driver_options.fetch(key) { driver_options.fetch(key.to_s) { config[key] } }
-          # libpq ignores a blank setting but refuses a blank environment variable.
+          # A blank setting is left out: libpq refuses some blank environment variables.
           environment[name] = value.to_s if value && !value.to_s.empty?
         end
       end
 
+      # Stops and reaps a dump that was given up on, as when an interrupt or a signal reached only
+      # this process, so it doesn't keep running, or write the temp file after it was removed.
       def self.stop_child(pid)
         Process.kill('TERM', pid)
         Process.wait(pid)
