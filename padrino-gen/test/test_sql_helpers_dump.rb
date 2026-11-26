@@ -21,9 +21,9 @@ describe 'SqlHelpers.dump_db' do
     File.expects(:rename).with(partial, @file)
   end
 
-  def dump(adapter, password: nil, host: nil, port: nil, socket: nil, user: nil, database: 'app db', **tls)
+  def dump(adapter, password: nil, host: nil, port: nil, socket: nil, user: nil, database: 'app db', sequel: false, **tls)
     config = { adapter: adapter, user: user, password: password, host: host, port: port, socket: socket, database: database }
-    Padrino::Generators::SqlHelpers.dump_db(config.merge(tls), @file)
+    Padrino::Generators::SqlHelpers.dump_db(config.merge(tls), @file, sequel: sequel)
   end
 
   def sqlite_cli?
@@ -90,22 +90,40 @@ describe 'SqlHelpers.dump_db' do
       dump('postgres', sslmode: :'verify-full', sslcert: '/c.pem', sslkey: '/k.pem', sslrootcert: '/ca.pem')
     end
 
-    it 'passes a certificate revocation list through the libpq environment' do
+    it "passes Active Record's other libpq settings, as its connection does" do
       succeed
       Process.expects(:spawn).with(
-        { 'PGSSLMODE' => 'verify-full', 'PGSSLCRL' => '/crl.pem', 'PGSSLCRLDIR' => '/crls' },
+        { 'PGSSLMODE' => 'verify-full', 'PGSSLCRL' => '/crl.pem', 'PGSSLCRLDIR' => '/crls', 'PGSSLCERTMODE' => 'require',
+          'PGSSLSNI' => '1', 'PGSSLMINPROTOCOLVERSION' => 'TLSv1.3', 'PGSSLMAXPROTOCOLVERSION' => 'TLSv1.3',
+          'PGSSLNEGOTIATION' => 'direct', 'PGREQUIREPEER' => 'postgres', 'PGREQUIREAUTH' => 'scram-sha-256',
+          'PGCHANNELBINDING' => 'require', 'PGGSSENCMODE' => 'disable' },
         'pg_dump', "--file=#{partial}", 'app db', {}
       ).returns(42)
-      dump('postgres', sslmode: 'verify-full', sslcrl: '/crl.pem', sslcrldir: '/crls')
+      dump('postgres', sslmode: 'verify-full', sslcrl: '/crl.pem', sslcrldir: '/crls', sslcertmode: 'require', sslsni: 1,
+                       ssl_min_protocol_version: 'TLSv1.3', ssl_max_protocol_version: 'TLSv1.3', sslnegotiation: 'direct',
+                       requirepeer: 'postgres', require_auth: 'scram-sha-256', channel_binding: 'require', gssencmode: 'disable')
     end
 
-    it "takes the revocation list from Sequel's driver_options first, where Sequel's connection takes it" do
+    it 'ignores driver_options for Active Record, as its connection does' do
+      succeed
+      Process.expects(:spawn).with({ 'PGSSLMODE' => 'require' }, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
+      dump('postgres', sslmode: 'require', driver_options: { sslmode: 'disable', sslcrl: '/crl.pem' })
+    end
+
+    it "reads Sequel's settings where its connection does: sslmode and sslrootcert, then driver_options over them" do
       succeed
       Process.expects(:spawn).with(
-        { 'PGSSLMODE' => 'require', 'PGSSLCRL' => '/crl.pem', 'PGSSLCRLDIR' => '/crls' },
+        { 'PGSSLMODE' => 'verify-full', 'PGSSLROOTCERT' => '/ca.pem', 'PGSSLCRL' => '/crl.pem', 'PGCHANNELBINDING' => 'require' },
         'pg_dump', "--file=#{partial}", 'app db', {}
       ).returns(42)
-      dump('postgres', sslmode: 'require', sslcrl: '/stale.pem', driver_options: { sslcrl: '/crl.pem', 'sslcrldir' => '/crls' })
+      dump('postgres', sequel: true, sslmode: 'require', sslrootcert: '/ca.pem', sslcrl: '/other.pem', channel_binding: 'disable',
+                       driver_options: { sslmode: 'verify-full', 'sslcrl' => '/crl.pem', channel_binding: 'require' })
+    end
+
+    it 'leaves out a blank Sequel sslmode, as its connection does' do
+      succeed
+      Process.expects(:spawn).with({ 'PGSSLROOTCERT' => '/ca.pem' }, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
+      dump('postgres', sequel: true, sslmode: ' ', sslrootcert: '/ca.pem')
     end
   end
 

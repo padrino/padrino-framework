@@ -42,7 +42,7 @@ module Padrino
       end
 
       # Dumps the data of the database that +config+ (Sequel connection options) names into +file+.
-      def self.dump_db(config, file)
+      def self.dump_db(config, file, sequel: false)
         adapter = config[:adapter].to_s
         user, host, port, socket, database = config.values_at(:user, :host, :port, :socket, :database)
         password = config[:password].to_s
@@ -57,7 +57,7 @@ module Padrino
         when 'postgres', 'postgresql'
           binary = 'pg_dump'
           environment['PGPASSWORD'] = password unless password.empty?
-          environment.update(postgres_environment(config))
+          environment.update(postgres_environment(config, sequel: sequel))
 
           arguments = ["--file=#{partial}"]
           arguments << "--host=#{host}" if host
@@ -175,12 +175,15 @@ module Padrino
       end
       private_class_method :trilogy_tls_arguments
 
-      # The connection options (Sequel's and ActiveRecord's names) that set TLS, and how the
-      # Postgres and MySQL clients take them, as in Rails' database tasks, plus Postgres' revocation lists.
-      POSTGRES_TLS_ENVIRONMENT = {
-        sslmode: 'PGSSLMODE', sslcert: 'PGSSLCERT', sslkey: 'PGSSLKEY', sslrootcert: 'PGSSLROOTCERT'
+      # The connection options (Sequel's and ActiveRecord's names) that set TLS or authentication, and
+      # how the Postgres and MySQL clients take them. The Postgres keys are libpq's own.
+      POSTGRES_CONNECTION_ENVIRONMENT = {
+        sslmode: 'PGSSLMODE', sslcert: 'PGSSLCERT', sslkey: 'PGSSLKEY', sslrootcert: 'PGSSLROOTCERT',
+        sslcrl: 'PGSSLCRL', sslcrldir: 'PGSSLCRLDIR', sslcertmode: 'PGSSLCERTMODE', sslsni: 'PGSSLSNI',
+        ssl_min_protocol_version: 'PGSSLMINPROTOCOLVERSION', ssl_max_protocol_version: 'PGSSLMAXPROTOCOLVERSION',
+        sslnegotiation: 'PGSSLNEGOTIATION', requirepeer: 'PGREQUIREPEER', require_auth: 'PGREQUIREAUTH',
+        channel_binding: 'PGCHANNELBINDING', gssencmode: 'PGGSSENCMODE'
       }.freeze
-      POSTGRES_CRL_ENVIRONMENT = { sslcrl: 'PGSSLCRL', sslcrldir: 'PGSSLCRLDIR' }.freeze
       MYSQL_TLS_ARGUMENTS = {
         sslca: '--ssl-ca', sslcert: '--ssl-cert', sslcapath: '--ssl-capath', sslcipher: '--ssl-cipher',
         sslkey: '--ssl-key', ssl_mode: '--ssl-mode'
@@ -190,19 +193,20 @@ module Padrino
         ssl_crl: '--ssl-crl', ssl_crlpath: '--ssl-crlpath', ssl_key: '--ssl-key', ssl_mode: '--ssl-mode'
       }.freeze
       TRILOGY_SSL_MODES = { 0 => 'DISABLED', 1 => 'VERIFY_IDENTITY', 2 => 'VERIFY_CA', 3 => 'REQUIRED', 4 => 'PREFERRED' }.freeze
-      private_constant :POSTGRES_TLS_ENVIRONMENT, :POSTGRES_CRL_ENVIRONMENT, :MYSQL_TLS_ARGUMENTS, :TRILOGY_TLS_ARGUMENTS, :TRILOGY_SSL_MODES
+      private_constant :POSTGRES_CONNECTION_ENVIRONMENT, :MYSQL_TLS_ARGUMENTS, :TRILOGY_TLS_ARGUMENTS, :TRILOGY_SSL_MODES
 
-      # The app's TLS settings for libpq's tools, as environment variables, so a dump is held to the same
-      # rules. Sequel hands libpq a revocation list only through :driver_options, so it is read there too.
-      def self.postgres_environment(config)
-        driver_options = config[:driver_options] || {}
-        environment = {}
-        POSTGRES_TLS_ENVIRONMENT.each { |key, name| environment[name] = config[key].to_s if config[key] }
-        POSTGRES_CRL_ENVIRONMENT.each do |key, name|
-          value = driver_options.fetch(key) { driver_options.fetch(key.to_s) { config[key] } }
-          environment[name] = value.to_s if value
+      # The app's TLS and authentication settings for libpq's tools, as environment variables, read where the
+      # app's own connection reads them. Active Record passes libpq every setting at the top of the config.
+      # Sequel passes only a non-blank sslmode and sslrootcert from there, then its :driver_options over them.
+      def self.postgres_environment(config, sequel: false)
+        settings = config
+        if sequel
+          settings = config.slice(:sslmode, :sslrootcert).reject { |_, value| value.to_s.strip.empty? }
+          (config[:driver_options] || {}).each { |key, value| settings[key.to_sym] = value }
         end
-        environment
+        POSTGRES_CONNECTION_ENVIRONMENT.each_with_object({}) do |(key, name), environment|
+          environment[name] = settings[key].to_s if settings[key]
+        end
       end
 
       # Stops and reaps a dump that was given up on, as when an interrupt or a signal reached only

@@ -88,7 +88,7 @@ if PadrinoTasks.load?(:sequel, defined?(Sequel))
       file = ENV['FILE'] || Padrino.root('tmp', "#{Padrino.env}_dump.sql")
 
       puts "=> Dumping database '#{config[:database]}' to #{file}"
-      Padrino::Generators::SqlHelpers.dump_db(config, file)
+      Padrino::Generators::SqlHelpers.dump_db(config, file, sequel: true)
       puts '<= sq:dump executed'
     end
 

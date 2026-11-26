@@ -148,6 +148,26 @@ describe 'Sequel tasks' do
     refute_match(/already initialized constant/, @stderr)
   end
 
+  it "should pass the TLS settings to pg_dump where Sequel's connection reads them" do
+    File.write(File.join(@root, 'config', 'boot.rb'), <<~RUBY)
+      require 'padrino-core'
+      require 'sequel'
+      Sequel::Model.db = Sequel.connect('mock://postgres', database: 'app', sslmode: 'require', sslcrl: '/ignored.pem',
+                                                           driver_options: { sslrootcert: '/ca.pem' })
+      Sequel::Model.db.opts[:adapter] = 'postgres'
+    RUBY
+    bin = File.join(@root, 'bin')
+    FileUtils.mkdir_p(bin)
+    File.write(File.join(bin, 'pg_dump'), <<~SH)
+      #!/bin/sh
+      for arg; do case "$arg" in --file=*) file="${arg#--file=}";; esac; done
+      echo "$PGSSLMODE|$PGSSLROOTCERT|$PGSSLCRL" > "$file"
+    SH
+    File.chmod(0o755, File.join(bin, 'pg_dump'))
+    rake 'sq:dump', path: bin
+    assert_equal "require|/ca.pem|\n", File.read(File.join(@root, 'tmp', 'development_dump.sql'))
+  end
+
   it 'should dump the data to FILE when given' do
     seed_widget
     rake 'sq:dump', 'FILE=backups/latest.sql'
