@@ -273,6 +273,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             ENV['PGHOST']     = config[:host] if config[:host]
             ENV['PGPORT']     = config[:port].to_s if config[:port]
             ENV['PGPASSWORD'] = config[:password].to_s if config[:password]
+            ENV.update(Padrino::Generators::SqlHelpers.postgres_environment(config))
 
             search_path = config[:schema_search_path]
             search_path = search_path.split(',').map { |path| "--schema=#{path.strip}" }.join(' ') if search_path

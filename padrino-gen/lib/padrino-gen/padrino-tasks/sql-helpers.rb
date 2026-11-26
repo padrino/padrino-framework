@@ -57,13 +57,7 @@ module Padrino
         when 'postgres', 'postgresql'
           binary = 'pg_dump'
           environment['PGPASSWORD'] = password unless password.empty?
-          # The app's TLS and authentication settings, so the dump is held to the same rules. Sequel hands
-          # libpq everything but sslmode and sslrootcert through :driver_options, which take precedence.
-          driver_options = config[:driver_options] || {}
-          POSTGRES_CONNECTION_ENVIRONMENT.each do |key, name|
-            value = driver_options.fetch(key) { driver_options.fetch(key.to_s) { config[key] } }
-            environment[name] = value.to_s if value
-          end
+          environment.update(postgres_environment(config))
 
           arguments = ["--file=#{partial}"]
           arguments << "--host=#{host}" if host
@@ -188,7 +182,7 @@ module Padrino
         sslcrl: 'PGSSLCRL', sslcrldir: 'PGSSLCRLDIR', sslcertmode: 'PGSSLCERTMODE', sslsni: 'PGSSLSNI',
         ssl_min_protocol_version: 'PGSSLMINPROTOCOLVERSION', ssl_max_protocol_version: 'PGSSLMAXPROTOCOLVERSION',
         sslnegotiation: 'PGSSLNEGOTIATION', requirepeer: 'PGREQUIREPEER', require_auth: 'PGREQUIREAUTH',
-        channel_binding: 'PGCHANNELBINDING', gssencmode: 'PGGSSENCMODE'
+        channel_binding: 'PGCHANNELBINDING', gssencmode: 'PGGSSENCMODE', service: 'PGSERVICE'
       }.freeze
       MYSQL_TLS_ARGUMENTS = {
         sslca: '--ssl-ca', sslcert: '--ssl-cert', sslcapath: '--ssl-capath', sslcipher: '--ssl-cipher',
@@ -203,6 +197,18 @@ module Padrino
 
       # Stops and reaps a dump that was given up on, as when an interrupt or a signal reached only
       # this process, so it doesn't keep running, or write the temp file after it was removed.
+      # The app's TLS and authentication settings for libpq's tools, as environment variables, so they are
+      # held to the same rules. Sequel hands libpq everything but sslmode and sslrootcert through
+      # :driver_options, which take precedence.
+      def self.postgres_environment(config)
+        driver_options = config[:driver_options] || {}
+        POSTGRES_CONNECTION_ENVIRONMENT.each_with_object({}) do |(key, name), environment|
+          value = driver_options.fetch(key) { driver_options.fetch(key.to_s) { config[key] } }
+          # libpq ignores a blank setting but refuses a blank environment variable.
+          environment[name] = value.to_s if value && !value.to_s.empty?
+        end
+      end
+
       def self.stop_child(pid)
         Process.kill('TERM', pid)
         Process.wait(pid)
