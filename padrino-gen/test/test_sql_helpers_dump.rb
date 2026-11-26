@@ -89,6 +89,36 @@ describe 'SqlHelpers.dump_db' do
       ).returns(42)
       dump('postgres', sslmode: :'verify-full', sslcert: '/c.pem', sslkey: '/k.pem', sslrootcert: '/ca.pem')
     end
+
+    it 'passes the revocation, protocol and authentication settings through the libpq environment' do
+      succeed
+      Process.expects(:spawn).with(
+        { 'PGSSLMODE' => 'verify-full', 'PGSSLCRL' => '/crl.pem', 'PGSSLCRLDIR' => '/crls', 'PGSSLCERTMODE' => 'require',
+          'PGSSLSNI' => '1', 'PGSSLMINPROTOCOLVERSION' => 'TLSv1.3', 'PGSSLMAXPROTOCOLVERSION' => 'TLSv1.3',
+          'PGSSLNEGOTIATION' => 'direct', 'PGREQUIREPEER' => 'postgres', 'PGREQUIREAUTH' => 'scram-sha-256',
+          'PGCHANNELBINDING' => 'require', 'PGGSSENCMODE' => 'disable' },
+        'pg_dump', "--file=#{partial}", 'app db', {}
+      ).returns(42)
+      dump('postgres', sslmode: 'verify-full', sslcrl: '/crl.pem', sslcrldir: '/crls', sslcertmode: 'require', sslsni: 1,
+                       ssl_min_protocol_version: 'TLSv1.3', ssl_max_protocol_version: 'TLSv1.3', sslnegotiation: 'direct',
+                       requirepeer: 'postgres', require_auth: 'scram-sha-256', channel_binding: 'require', gssencmode: 'disable')
+    end
+
+    it 'leaves out a blank setting, which libpq can refuse as an environment variable' do
+      succeed
+      Process.expects(:spawn).with({ 'PGSSLROOTCERT' => '/ca.pem' }, 'pg_dump', "--file=#{partial}", 'app db', {}).returns(42)
+      dump('postgres', sslmode: '', sslrootcert: '/ca.pem', driver_options: { sslcrl: '' })
+    end
+
+    it "takes Sequel's driver_options, which win over the same top-level setting, as Sequel's connection does" do
+      succeed
+      Process.expects(:spawn).with(
+        { 'PGSSLMODE' => 'verify-full', 'PGSSLROOTCERT' => '/ca.pem', 'PGSSLCRL' => '/crl.pem', 'PGSSLCRLDIR' => '/crls' },
+        'pg_dump', "--file=#{partial}", 'app db', {}
+      ).returns(42)
+      dump('postgres', sslmode: 'require', sslrootcert: '/ca.pem',
+                       driver_options: { sslmode: 'verify-full', sslcrl: '/crl.pem', 'sslcrldir' => '/crls' })
+    end
   end
 
   describe 'mysql' do

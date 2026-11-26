@@ -57,8 +57,7 @@ module Padrino
         when 'postgres', 'postgresql'
           binary = 'pg_dump'
           environment['PGPASSWORD'] = password unless password.empty?
-          # The app's TLS settings, as Rails passes them, so the dump is held to the same rules.
-          POSTGRES_TLS_ENVIRONMENT.each { |key, name| environment[name] = config[key].to_s if config[key] }
+          environment.update(postgres_environment(config))
 
           arguments = ["--file=#{partial}"]
           arguments << "--host=#{host}" if host
@@ -176,10 +175,14 @@ module Padrino
       end
       private_class_method :trilogy_tls_arguments
 
-      # The connection options (Sequel's and ActiveRecord's names) that set TLS, and how the
-      # Postgres and MySQL clients take them, as in Rails' database tasks.
-      POSTGRES_TLS_ENVIRONMENT = {
-        sslmode: 'PGSSLMODE', sslcert: 'PGSSLCERT', sslkey: 'PGSSLKEY', sslrootcert: 'PGSSLROOTCERT'
+      # The connection options (Sequel's and ActiveRecord's names) that set TLS or authentication, and
+      # how the Postgres and MySQL clients take them. The Postgres keys are libpq's own.
+      POSTGRES_CONNECTION_ENVIRONMENT = {
+        sslmode: 'PGSSLMODE', sslcert: 'PGSSLCERT', sslkey: 'PGSSLKEY', sslrootcert: 'PGSSLROOTCERT',
+        sslcrl: 'PGSSLCRL', sslcrldir: 'PGSSLCRLDIR', sslcertmode: 'PGSSLCERTMODE', sslsni: 'PGSSLSNI',
+        ssl_min_protocol_version: 'PGSSLMINPROTOCOLVERSION', ssl_max_protocol_version: 'PGSSLMAXPROTOCOLVERSION',
+        sslnegotiation: 'PGSSLNEGOTIATION', requirepeer: 'PGREQUIREPEER', require_auth: 'PGREQUIREAUTH',
+        channel_binding: 'PGCHANNELBINDING', gssencmode: 'PGGSSENCMODE'
       }.freeze
       MYSQL_TLS_ARGUMENTS = {
         sslca: '--ssl-ca', sslcert: '--ssl-cert', sslcapath: '--ssl-capath', sslcipher: '--ssl-cipher',
@@ -190,7 +193,18 @@ module Padrino
         ssl_crl: '--ssl-crl', ssl_crlpath: '--ssl-crlpath', ssl_key: '--ssl-key', ssl_mode: '--ssl-mode'
       }.freeze
       TRILOGY_SSL_MODES = { 0 => 'DISABLED', 1 => 'VERIFY_IDENTITY', 2 => 'VERIFY_CA', 3 => 'REQUIRED', 4 => 'PREFERRED' }.freeze
-      private_constant :POSTGRES_TLS_ENVIRONMENT, :MYSQL_TLS_ARGUMENTS, :TRILOGY_TLS_ARGUMENTS, :TRILOGY_SSL_MODES
+      private_constant :POSTGRES_CONNECTION_ENVIRONMENT, :MYSQL_TLS_ARGUMENTS, :TRILOGY_TLS_ARGUMENTS, :TRILOGY_SSL_MODES
+
+      # The app's TLS and authentication settings for libpq's tools, as environment variables. Sequel hands
+      # libpq everything but sslmode and sslrootcert through :driver_options, which take precedence.
+      def self.postgres_environment(config)
+        driver_options = config[:driver_options] || {}
+        POSTGRES_CONNECTION_ENVIRONMENT.each_with_object({}) do |(key, name), environment|
+          value = driver_options.fetch(key) { driver_options.fetch(key.to_s) { config[key] } }
+          # A blank setting is left out: libpq refuses some blank environment variables.
+          environment[name] = value.to_s if value && !value.to_s.empty?
+        end
+      end
 
       # Stops and reaps a dump that was given up on, as when an interrupt or a signal reached only
       # this process, so it doesn't keep running, or write the temp file after it was removed.
