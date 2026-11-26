@@ -277,8 +277,7 @@ if PadrinoTasks.load?(:activerecord, defined?(ActiveRecord))
             search_path = config[:schema_search_path]
             search_path = search_path.split(',').map { |path| "--schema=#{path.strip}" }.join(' ') if search_path
 
-            system(Padrino::Generators::SqlHelpers.postgres_environment(config),
-                   "pg_dump -U \"#{config[:username]}\" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}")
+            `pg_dump -U "#{config[:username]}" -s -x -O -f db/#{Padrino.env}_structure.sql #{search_path} #{config[:database]}`
             raise 'Error dumping database' if $CHILD_STATUS.exitstatus == 1
           when 'sqlite', 'sqlite3'
             dbfile = config[:database] || config[:dbfile]
