@@ -275,19 +275,19 @@ describe 'ActiveRecord tasks' do
   end
 
   it 'should pass the TLS settings of the config to the structure dump' do
-    fake_server_boot('postgresql', missing: false, options: { sslmode: 'verify-full', sslcrl: '/crl.pem', channel_binding: 'require' })
+    fake_server_boot('postgresql', missing: false, options: { sslmode: 'verify-full', sslrootcert: '/ca.pem', sslcrl: '/crl.pem' })
     bin = File.join(@root, 'bin')
     FileUtils.mkdir_p(bin)
     File.write(File.join(bin, 'pg_dump'), <<~SH)
       #!/bin/sh
       while [ $# -gt 0 ]; do [ "$1" = -f ] && file="$2"; shift; done
-      echo "$PGSSLMODE $PGSSLCRL $PGCHANNELBINDING" > "$file"
+      echo "$PGSSLMODE $PGSSLROOTCERT $PGSSLCRL" > "$file"
     SH
     File.chmod(0o755, File.join(bin, 'pg_dump'))
     saved_path = ENV['PATH']
     ENV['PATH'] = "#{bin}#{File::PATH_SEPARATOR}#{saved_path}"
     rake 'ar:structure:dump'
-    assert_equal "verify-full /crl.pem require\n", File.read(File.join(@root, 'db', 'development_structure.sql'))
+    assert_equal "verify-full /ca.pem /crl.pem\n", File.read(File.join(@root, 'db', 'development_structure.sql'))
   ensure
     ENV['PATH'] = saved_path if saved_path
   end
