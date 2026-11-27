@@ -36,7 +36,9 @@ module Smoke
       (SHAPES - combos.map(&:shape)).each { |missing| gaps << "shape: #{missing}" }
       orms = combos.map(&:orm).uniq
       %w[renderer test].each do |type|
-        values = combos.map { |c| c.public_send(type) }.uniq
+        # An api row takes no renderer, so its none needs no pair.
+        paired = type == 'renderer' ? combos.reject(&:api?) : combos
+        values = paired.map { |c| c.public_send(type) }.uniq
         orms.product(values).each do |orm, value|
           next if combos.any? { |c| c.orm == orm && c.public_send(type) == value }
           gaps << "orm x #{type}: #{orm} x #{value}"

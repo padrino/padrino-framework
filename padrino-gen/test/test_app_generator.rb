@@ -95,8 +95,15 @@ describe 'AppGenerator' do
       assert_file_exists("#{@apptmp}/sample_project/demo/mailers.rb")
     end
 
+    # Removes the record of the api mode, as in api projects generated before .components kept one.
+    def unmark_api_project(project)
+      components = "#{project}/.components"
+      File.write(components, File.read(components).sub(":api: true\n", ''))
+    end
+
     it 'should keep the default app in a project without a Gemfile' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      unmark_api_project("#{@apptmp}/sample_project")
       File.delete("#{@apptmp}/sample_project/Gemfile")
       capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
       app_file = "#{@apptmp}/sample_project/demo/app.rb"
@@ -117,7 +124,44 @@ describe 'AppGenerator' do
 
     it 'should keep the default app in a project that lists every padrino gem by name' do
       capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      unmark_api_project("#{@apptmp}/sample_project")
       File.write("#{@apptmp}/sample_project/Gemfile", "gem 'padrino-helpers'\ngem 'padrino-mailer'\n", mode: 'a')
+      capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+      assert_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/demo/app.rb")
+    end
+
+    it 'should keep writing api apps in a project that .components marks as one, whatever its Gemfile lists' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/Gemfile", "gem 'padrino'\n", mode: 'a')
+      capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+      app_file = "#{@apptmp}/sample_project/demo/app.rb"
+      assert_match_in_file(/register Padrino::Helpers/, app_file)
+      assert_no_match_in_file(/set :sessions/, app_file)
+      assert_match_in_file(/^\s*set :protect_from_csrf, proc \{ sessions\? && Padrino\.env != :test \}$/, app_file)
+    end
+
+    it 'should write an api app in a project whose .components is marked :api: true' do
+      capture_io { generate(:project, 'sample_project', '--dev', "--root=#{@apptmp}") }
+      File.write("#{@apptmp}/sample_project/.components", ":api: true\n", mode: 'a')
+      capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+      assert_no_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/demo/app.rb")
+    end
+
+    # Only a YAML true or false is a record; anything else leaves the Gemfile to decide.
+    [':api:', ':api: ~', ":api: 'true'", 'api: true'].each do |line|
+      it "should detect an api project from its Gemfile when .components has #{line.inspect}" do
+        capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+        components = "#{@apptmp}/sample_project/.components"
+        File.write(components, File.read(components).sub(':api: true', line))
+        capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
+        assert_no_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/demo/app.rb")
+      end
+    end
+
+    it 'should write the default app in an api project whose .components is marked :api: false' do
+      capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+      components = "#{@apptmp}/sample_project/.components"
+      File.write(components, File.read(components).sub(':api: true', ':api: false'))
       capture_io { generate(:app, 'demo', "--root=#{@apptmp}/sample_project") }
       assert_match_in_file(/set :sessions/, "#{@apptmp}/sample_project/demo/app.rb")
     end
@@ -191,7 +235,8 @@ describe 'AppGenerator' do
       end
 
       { "gem 'padrino'" => %w[padrino], "gem 'padrino-helpers'\ngem 'padrino-mailer'" => %w[padrino-helpers padrino-mailer] }.each do |lines, gems|
-        it "should protect an app with sessions after adding #{gems.join(' and ')} to the Gemfile" do
+        it "should protect an app with sessions after adding #{gems.join(' and ')} to the Gemfile of an older project" do
+          unmark_api_project(@project)
           generate_app_with_route
           File.write("#{@project}/Gemfile", "#{lines}\n", mode: 'a')
           generate_app_with_route('web')
@@ -202,6 +247,7 @@ describe 'AppGenerator' do
       end
 
       it 'should accept a POST to a new app in an older project, which turns CSRF on for every app' do
+        unmark_api_project(@project)
         edit("#{@project}/config/apps.rb", /^.*set :protect_from_csrf.*$/, '  set :protect_from_csrf, Padrino.env != :test')
         generate_app_with_route
         assert_match(/status=200$/, boot_project(@project, path: '/demo/ping'))
@@ -213,6 +259,7 @@ describe 'AppGenerator' do
         super
         @project = "#{@apptmp}/sample_project"
         capture_io { generate(:project, 'sample_project', '--api', "--root=#{@apptmp}") }
+        unmark_api_project(@project)
       end
 
       def assert_api_app

@@ -44,7 +44,10 @@ module Padrino
 
           # Settle every choice, switch and check before applying any, so a failure leaves the project unchanged.
           chosen = self.class.component_types.reject { |comp| @_components[comp].empty? }
+          refuse_api_components(@_components, NOT_API_HINT, @_stored_components) if recorded_api_project?
           chosen.each { |comp| @_components[comp] = resolve_valid_choice(comp) }
+          # Check again, as a renderer typed at the prompt skips the check above.
+          refuse_api_components(@_components, NOT_API_HINT, @_stored_components) if recorded_api_project?
           chosen.select! do |comp|
             choice = @_components[comp]
             existing = fetch_component_choice(comp)

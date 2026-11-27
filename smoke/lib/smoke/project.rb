@@ -109,8 +109,8 @@ module Smoke
       return if combination.lean?
 
       padrino('scaffold', %w[g controller posts get:index])
-      write("app/views/posts/index.#{VIEW_EXTENSIONS.fetch(combination.renderer)}", view_source)
-      # An API project has neither padrino-helpers, which renders views, nor padrino-mailer.
+      # An API project has no renderer, padrino-helpers (which renders views) or padrino-mailer.
+      write("app/views/posts/index.#{VIEW_EXTENSIONS.fetch(combination.renderer)}", view_source) unless combination.api?
       body = combination.api? ? marker.inspect : "render('posts/index').strip"
       edit('app/controllers/posts.rb') { |source| source.sub(/get :index do\s*end/, "get :index do\n    #{body}\n  end") }
       fill_in_placeholders
