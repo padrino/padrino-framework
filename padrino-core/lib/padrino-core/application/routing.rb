@@ -19,6 +19,8 @@ module Padrino
     ROUTE_PRIORITY = { high: 0, normal: 1, low: 2 } unless defined?(ROUTE_PRIORITY)
     # What without_extra_slashes gives for a path that doesn't end in a slash.
     NO_EXTRA_SLASHES = [].freeze unless defined?(NO_EXTRA_SLASHES)
+    # Guards lazy creation of each application's per-app router Mutex.
+    ROUTER_LOCK_MUTEX = Mutex.new unless defined?(ROUTER_LOCK_MUTEX) # @private
 
     # Raised when a route was invalid or cannot be processed.
     class UnrecognizedException < RuntimeError; end
@@ -412,17 +414,21 @@ module Padrino
       alias urls router
 
       def compiled_router
-        if @deferred_routes
-          deferred_routes.each do |routes|
-            routes.each do |(route, dest)|
-              route.to(&dest)
-              route.before_filters.flatten!
-              route.after_filters.flatten!
+        return @router if defined?(@router) && @router && !(defined?(@deferred_routes) && @deferred_routes)
+
+        router_lock.synchronize do
+          if defined?(@deferred_routes) && (pending = @deferred_routes)
+            pending.each do |routes|
+              routes.each do |(route, dest)|
+                route.to(&dest)
+                route.before_filters.flatten!
+                route.after_filters.flatten!
+              end
             end
+            @deferred_routes = nil
           end
-          @deferred_routes = nil
+          router
         end
-        router
       end
 
       def deferred_routes
@@ -430,10 +436,12 @@ module Padrino
       end
 
       def reset_router!
-        @deferred_routes = nil
-        # Keep only the provides formats of conditions no route has taken yet (provides_format).
-        @_provided_formats&.keep_if { |cond, _| @conditions.any? { |pending| pending.equal?(cond) } }
-        router.reset!
+        router_lock.synchronize do
+          @deferred_routes = nil
+          # Keep only the provides formats of conditions no route has taken yet (provides_format).
+          @_provided_formats&.keep_if { |cond, _| @conditions.any? { |pending| pending.equal?(cond) } }
+          router.reset!
+        end
       end
 
       ##
@@ -552,6 +560,10 @@ module Padrino
       end
 
       private
+
+      def router_lock
+        (@_router_lock if defined?(@_router_lock)) || ROUTER_LOCK_MUTEX.synchronize { @_router_lock ||= Mutex.new }
+      end
 
       # temporary variables named @_parent, @_provides, @_use_format, @_cache, @_expires, @_map, @_conditions, @_accepts, @_params
       CONTROLLER_OPTIONS = %i[parent provides use_format cache expires map conditions accepts params].freeze
