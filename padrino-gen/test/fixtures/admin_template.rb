@@ -1,4 +1,4 @@
-project test: :shoulda, orm: :activerecord
+project test: :minitest, orm: :activerecord
 
 generate :model, 'post title:string body:text'
 rake 'ar:create'

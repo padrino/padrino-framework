@@ -30,7 +30,7 @@ setup performed for the default components.
 
 You can define specific components to be used:
 
-  $ padrino-gen project demo_project -t rspec -e haml -m rr -s jquery -d sequel
+  $ padrino-gen project demo_project -t rspec -e haml -m mocha -s jquery -d sequel
 
 You can also instruct the generator to skip a certain component to avoid using one at all (or to use your own):
 
@@ -38,10 +38,10 @@ You can also instruct the generator to skip a certain component to avoid using o
 
 The available components and their default options are listed below:
 
-test::       none  (default), bacon, shoulda, cucumber, rspec, minitest, testunit
+test::       none  (default), cucumber, rspec, minitest, testunit
 renderer::   none  (default), slim, erb, liquid, haml
 stylesheet:: none  (default), tailwind, sass, scss
-mock::       none  (default), mocha, rr
+mock::       none  (default), mocha, rr (deprecated)
 script::     none  (default), jquery, vite, htmx, ujs
 orm::        none  (default), mongoid, activerecord, sequel
 

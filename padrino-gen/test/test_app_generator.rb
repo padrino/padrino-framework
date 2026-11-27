@@ -282,7 +282,7 @@ describe 'AppGenerator' do
     end
 
     it 'should correctly create a new mailer inside a padrino application' do
-      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=bacon') }
+      capture_io { generate(:project, 'sample_project', "--root=#{@apptmp}", '--script=none', '-t=minitest') }
       capture_io { generate(:app, 'demo_app', "--root=#{@apptmp}/sample_project") }
       capture_io { generate(:mailer, 'demo', "-r=#{@apptmp}/sample_project", '-a=demo_app') }
     end

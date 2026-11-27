@@ -17,7 +17,7 @@ module Padrino
 
       class_option :app,     desc: 'The application name',                                             aliases: '-n', default: nil,         type: :string
       class_option :root,    desc: 'The root destination',                                             aliases: '-r', default: '.',         type: :string
-      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, mysql-gem, trilogy, postgres)', aliases: '-a', default: nil, type: :string
+      class_option :adapter, desc: 'SQL adapter for ORM (sqlite, mysql, mysql2, trilogy, postgres)', aliases: '-a', default: nil, type: :string
 
       defines_component_options default: false
 
@@ -45,12 +45,17 @@ module Padrino
           # Settle every choice, switch and check before applying any, so a failure leaves the project unchanged.
           chosen = self.class.component_types.reject { |comp| @_components[comp].empty? }
           chosen.each { |comp| @_components[comp] = resolve_valid_choice(comp) }
+          # A mock is set up for the project's test component.
+          exit_unless_test_component_available! if chosen.include?(:mock) && !chosen.include?(:test) && @_components[:mock].to_s != 'none'
+          resolve_valid_adapter if chosen.include?(:orm) && SQL_ADAPTER_ORMS.include?(@_components[:orm])
           chosen.select! do |comp|
             choice = @_components[comp]
             existing = fetch_component_choice(comp)
             ask = existing != 'none' && existing != choice
             accepted = !ask || yes?("Switch #{comp} to '#{choice}' from '#{existing}' ?[yes/no]:")
             @_components[comp] = '' unless accepted
+            # Check again as soon as the test switch is declined, before asking to switch the mock.
+            exit_unless_test_component_available! if comp == :test && !accepted && chosen.include?(:mock) && @_components[:mock].to_s != 'none'
             accepted
           end
 
@@ -60,7 +65,6 @@ module Padrino
             say 'Please, change app name.'
             exit 1
           end
-          resolve_valid_adapter if chosen.include?(:orm) && SQL_ADAPTER_ORMS.include?(@_components[:orm])
 
           chosen.each do |comp|
             choice = @_components[comp]

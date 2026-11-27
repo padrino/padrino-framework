@@ -14,11 +14,6 @@ def setup_orm
   require_dependencies 'sequel'
 
   case (resolve_valid_adapter unless adapter_unknown?)
-  when 'mysql-gem'
-    sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql://localhost/#{db}_development\"")
-    sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql://localhost/#{db}_production\"")
-    sequel.gsub!(/!DB_TEST!/, "\"mysql://localhost/#{db}_test\"")
-    require_dependencies 'mysql', version: '~> 2.8.1'
   when 'mysql', 'mysql2'
     sequel.gsub!(/!DB_DEVELOPMENT!/, "\"mysql2://localhost/#{db}_development\"")
     sequel.gsub!(/!DB_PRODUCTION!/, "\"mysql2://localhost/#{db}_production\"")
