@@ -496,10 +496,12 @@ module Padrino
 
       def get(path, *args, &block)
         conditions = @conditions.dup
-        route('GET', path, *args, &block)
+        get_route = route('GET', path, *args, &block)
 
         @conditions = conditions
-        route('HEAD', path, *args, &block)
+        head_route = route('HEAD', path, *args, &block)
+        head_route.get_route = get_route
+        head_route
       end
 
       def put(path, *args, &block)     route 'PUT',     path, *args, &block end
@@ -692,6 +694,7 @@ module Padrino
 
         path[0, 0] = '/' if path == '(.:format)?'
         route = router.add(verb, path, route_options)
+        route.source_location = unbound_method.source_location
         route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal
@@ -716,10 +719,17 @@ module Padrino
         end
 
         # Add Sinatra conditions.
+        condition_options = nil
         options.each do |option, args|
           option = :provides_format if option == :provides
-          route.respond_to?(option) ? route.send(option, *args) : send(option, *args)
+          if route.respond_to?(option)
+            route.send(option, *args)
+          else
+            (condition_options ||= []) << [option, args]
+            send(option, *args)
+          end
         end
+        route.condition_options = condition_options if condition_options
 
         conditions, @conditions = @conditions, []
         route.custom_conditions.concat(conditions)
@@ -1205,8 +1215,7 @@ module Padrino
       end
 
       # A route's +host:+ is a String (compared ignoring case), a Regexp or an Array of them.
-      def host_matches?(hosts)
-        host = @request.host.to_s
+      def host_matches?(hosts, host = @request.host.to_s)
         Array(hosts).any? { |pattern| pattern.is_a?(String) ? pattern.casecmp?(host) : pattern === host }
       end
 

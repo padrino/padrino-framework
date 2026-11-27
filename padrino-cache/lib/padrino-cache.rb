@@ -109,11 +109,14 @@ module Padrino
           app.set :cache, store
         end
         app.disable :caching unless app.respond_to?(:caching)
+        app.set :cache_namespace, nil unless app.respond_to?(:cache_namespace)
+        app.before { page_cache_mount }
         included(app)
       end
 
       def included(base)
         base.extend Padrino::Cache::Helpers::Page::ClassMethods
+        base.extend Padrino::Cache::Helpers::Page::RoutingClassMethods if base.respond_to?(:compiled_router)
       end
 
       def padrino_route_added(route, verb, path, args, options, block)

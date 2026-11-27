@@ -39,7 +39,7 @@ module Padrino
       #
       attr_accessor :action, :cache, :cache_key, :cache_expires, :cache_lookup,
                     :parent, :use_layout, :controller, :host, :user_agent, :path_for_generation, :default_values,
-                    :provided_formats
+                    :provided_formats, :get_route, :condition_options, :source_location
 
       ##
       # Constructs an instance of PathRouter::Route.

@@ -466,21 +466,23 @@ describe 'PadrinoCache' do
   end
 
   it 'should not apply a cache key to the next route after pass' do
-    mock_app do
-      register Padrino::Cache
-      enable :caching
-      get '/x/:id', cache: true do
-        cache_key :shared
-        pass if params[:id] == 'skip'
-        "A #{params[:id]}"
+    capture_io do
+      mock_app do
+        register Padrino::Cache
+        enable :caching
+        get '/x/:id', cache: true do
+          cache_key :shared
+          pass if params[:id] == 'skip'
+          "A #{params[:id]}"
+        end
+        get('/x/:id', cache: true) { "B #{params[:id]}" }
       end
-      get('/x/:id', cache: true) { "B #{params[:id]}" }
-    end
 
-    get '/x/skip'
-    assert_equal 'B skip', body
-    get '/x/1'
-    assert_equal 'A 1', body
+      get '/x/skip'
+      assert_equal 'B skip', body
+      get '/x/1'
+      assert_equal 'A 1', body
+    end
   end
 
   it 'should check route conditions on a cached response' do
@@ -503,18 +505,20 @@ describe 'PadrinoCache' do
   end
 
   it 'should keep a cache key from an app-level before filter for the route reached through pass' do
-    mock_app do
-      register Padrino::Cache
-      enable :caching
-      before { cache_key "u-#{params[:u]}" }
-      get('/z', cache: true) { pass }
-      get('/z', cache: true) { "B for #{params[:u]}" }
-    end
+    capture_io do
+      mock_app do
+        register Padrino::Cache
+        enable :caching
+        before { cache_key "u-#{params[:u]}" }
+        get('/z', cache: true) { pass }
+        get('/z', cache: true) { "B for #{params[:u]}" }
+      end
 
-    get '/z?u=alice'
-    assert_equal 'B for alice', body
-    get '/z?u=bob'
-    assert_equal 'B for bob', body
+      get '/z?u=alice'
+      assert_equal 'B for alice', body
+      get '/z?u=bob'
+      assert_equal 'B for bob', body
+    end
   end
 
   it 'should keep expires to the request that set it' do
@@ -534,7 +538,9 @@ describe 'PadrinoCache' do
 
     get '/foo?long=1'
     get '/foo'
-    assert_equal [['/foo', 100], ['/foo', nil]], stored
+    assert_equal [100, nil], stored.map(&:last)
+    assert(stored.all? { |key, _| key.match?(%r{\A@\h{16}/foo\z}) })
+    assert_equal 1, stored.map(&:first).uniq.size
   end
 
   it 'should let expires false in a handler override the route expiry' do
@@ -553,7 +559,8 @@ describe 'PadrinoCache' do
     end
 
     get '/ef'
-    assert_equal [['/ef', false]], stored
+    assert_equal [false], stored.map(&:last)
+    assert_match(%r{\A@\h{16}/ef\z}, stored.first.first)
   end
 
   it 'should resolve block cache keys' do
@@ -619,7 +626,7 @@ describe 'PadrinoCache' do
     assert_equal 'about page', body
     get '/about'
     assert_equal 'about page', body
-    assert_equal 2, calls
+    assert_equal 1, calls
   end
 
   it 'should not serve a page stored under the path to a route that sets a String cache key in its body' do
@@ -952,5 +959,1317 @@ describe 'PadrinoCache' do
 
     get '/safe'
     assert_equal '<div>&lt;b&gt;ok&lt;/b&gt;</div>', body
+  end
+  it 'should keep separate cached pages for same-path routes with different conditions' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set(:variant) { |v| condition { params[:v] == v.to_s } }
+      get('/p', cache: true, variant: :alpha) { 'page A' }
+      get('/p', cache: true) { 'page B' }
+    end
+
+    get '/p'
+    assert_equal 'page B', body
+    get '/p?v=alpha'
+    assert_equal 'page A', body
+    get '/p'
+    assert_equal 'page B', body
+  end
+
+  it 'should keep separate cached pages for routes with distinct condition options on the same path' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set(:tier) { |level| condition { params[:tier] == level.to_s } }
+      get('/p', cache: true, tier: :one) { 'view 1' }
+      get('/p', cache: true, tier: :two) { 'view 2' }
+      get('/p', cache: true, tier: :three) { 'view 3' }
+    end
+
+    get '/p?tier=one'
+    assert_equal 'view 1', body
+    get '/p?tier=two'
+    assert_equal 'view 2', body
+    get '/p?tier=three'
+    assert_equal 'view 3', body
+    get '/p?tier=one'
+    assert_equal 'view 1', body
+  end
+
+  it 'should isolate cached pages for routes defined inside a loop with different option values' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set(:tier) { |level| condition { params[:tier] == level.to_s } }
+      %i[alpha beta].each do |level|
+        get('/dash', cache: true, tier: level) { "dash #{level}" }
+      end
+    end
+
+    get '/dash?tier=alpha'
+    assert_equal 'dash alpha', body
+    get '/dash?tier=beta'
+    assert_equal 'dash beta', body
+    get '/dash?tier=alpha'
+    assert_equal 'dash alpha', body
+  end
+
+  it 'should keep separate cached pages for same-path routes with different host matchers' do
+    Dir.mktmpdir do |dir|
+      Object.const_set(:HostMatcherDeployApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :host_matcher_deploy
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        get('/h/:id', cache: true, host: 'a.example.com') { "host A #{params[:id]}" }
+      end)
+      s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::HostMatcherDeployApp))
+      s1.get '/h/1', {}, 'HTTP_HOST' => 'a.example.com'
+      assert_equal 'host A 1', s1.last_response.body
+
+      Object.send(:remove_const, :HostMatcherDeployApp)
+      Object.const_set(:HostMatcherDeployApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :host_matcher_deploy
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        get('/h/:id', cache: true, host: /\.example\.com\z/) { "host regex #{params[:id]}" }
+      end)
+      s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::HostMatcherDeployApp))
+      s2.get '/h/2', {}, 'HTTP_HOST' => 'a.example.com'
+      assert_equal 'host regex 2', s2.last_response.body
+      s2.get '/h/1', {}, 'HTTP_HOST' => 'a.example.com'
+      assert_equal 'host regex 1', s2.last_response.body
+    ensure
+      Object.send(:remove_const, :HostMatcherDeployApp) if Object.const_defined?(:HostMatcherDeployApp, false)
+    end
+  end
+
+  it 'should keep separate cached pages per request host for a regexp host matcher' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/rh', cache: true, host: /\.example\.com\z/) { "host #{request.host}" }
+    end
+
+    get '/rh', {}, 'HTTP_HOST' => 'one.example.com'
+    assert_equal 'host one.example.com', body
+    get '/rh', {}, 'HTTP_HOST' => 'two.example.com'
+    assert_equal 'host two.example.com', body
+    get '/rh', {}, 'HTTP_HOST' => 'one.example.com'
+    assert_equal 'host one.example.com', body
+  end
+
+  it 'should isolate cached pages across two named app classes sharing one cache store' do
+    shared_store = Padrino::Cache.new(:Memory)
+    Object.const_set(:SharedCacheAppAlpha, Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :app_name, :shared_site
+      set :cache, shared_store
+      get('/same/:id', cache: true) { "alpha #{params[:id]}" }
+    end)
+    Object.const_set(:SharedCacheAppBeta, Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :app_name, :shared_site
+      set :cache, shared_store
+      get('/same/:id', cache: true) { "beta #{params[:id]}" }
+    end)
+
+    sa = Rack::Test::Session.new(Rack::MockSession.new(Object::SharedCacheAppAlpha))
+    sb = Rack::Test::Session.new(Rack::MockSession.new(Object::SharedCacheAppBeta))
+    sa.get '/same/1'
+    assert_equal 'alpha 1', sa.last_response.body
+    sb.get '/same/2'
+    assert_equal 'beta 2', sb.last_response.body
+    sb.get '/same/1'
+    assert_equal 'beta 1', sb.last_response.body
+  ensure
+    Object.send(:remove_const, :SharedCacheAppAlpha) if Object.const_defined?(:SharedCacheAppAlpha, false)
+    Object.send(:remove_const, :SharedCacheAppBeta) if Object.const_defined?(:SharedCacheAppBeta, false)
+  end
+
+  it 'should isolate cached pages across two anonymous app classes with the same app_name on one store' do
+    shared_store = Padrino::Cache.new(:Memory)
+    app_a = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :app_name, :same_anon_app
+      set :cache, shared_store
+      get('/same/:id', cache: true) { "app A #{params[:id]}" }
+    end
+    app_b = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :app_name, :same_anon_app
+      set :cache, shared_store
+      get('/same/:id', cache: true) { "app B #{params[:id]}" }
+    end
+
+    sa = Rack::Test::Session.new(Rack::MockSession.new(Rack::Lint.new(app_a)))
+    sb = Rack::Test::Session.new(Rack::MockSession.new(Rack::Lint.new(app_b)))
+    sa.get '/same/1'
+    assert_equal 'app A 1', sa.last_response.body
+    sb.get '/same/2'
+    assert_equal 'app B 2', sb.last_response.body
+    sb.get '/same/1'
+    assert_equal 'app B 1', sb.last_response.body
+  end
+
+  it 'should isolate anonymous apps with the same app_name across separate processes on one File store' do
+    Dir.mktmpdir do |dir|
+      store_dir = File.join(dir, 'store')
+      script = File.join(dir, 'worker.rb')
+      File.write(script, <<~RUBY)
+        require 'padrino-core'
+        require 'padrino-cache'
+        require 'rack/test'
+
+        store_dir, mode, out_file = ARGV
+        store = Padrino::Cache.new(:File, dir: store_dir)
+        app_a = Class.new(Padrino::Application) do
+          register Padrino::Cache
+          enable :caching
+          set :app_name, :site
+          set :cache, store
+          get('/doc/:id', cache: true) { "page A \#{params[:id]}" }
+        end
+        app_b = Class.new(Padrino::Application) do
+          register Padrino::Cache
+          enable :caching
+          set :app_name, :site
+          set :cache, store
+          get('/doc/:id', cache: true) { "page B \#{params[:id]}" }
+        end
+        sa = Rack::Test::Session.new(Rack::MockSession.new(app_a))
+        sb = Rack::Test::Session.new(Rack::MockSession.new(app_b))
+        body = if mode == 'first'
+                 sa.get('/doc/1').body
+               else
+                 sb.get('/doc/2')
+                 sb.get('/doc/1').body
+               end
+        File.write(out_file, body)
+      RUBY
+
+      load_flags = [
+        File.expand_path('../lib', __dir__),
+        File.expand_path('../../padrino-core/lib', __dir__),
+        File.expand_path('../../padrino-helpers/lib', __dir__),
+        File.expand_path('../../padrino-support/lib', __dir__)
+      ].flat_map { |p| ['-I', p] }
+
+      out1 = File.join(dir, 'out1.txt')
+      out2 = File.join(dir, 'out2.txt')
+      assert system(RbConfig.ruby, *load_flags, script, store_dir, 'first', out1, out: File::NULL, err: File::NULL)
+      assert_equal 'page A 1', File.read(out1)
+      assert system(RbConfig.ruby, *load_flags, script, store_dir, 'second', out2, out: File::NULL, err: File::NULL)
+      assert_equal 'page B 1', File.read(out2)
+    end
+  end
+
+  it 'should give one anonymous app definition the same page keys in every process' do
+    Dir.mktmpdir do |dir|
+      store_dir = File.join(dir, 'store')
+      script = File.join(dir, 'worker.rb')
+      File.write(script, <<~RUBY)
+        require 'padrino-core'
+        require 'padrino-cache'
+        require 'rack/test'
+
+        store_dir = ARGV.first
+        app = Class.new(Padrino::Application) do
+          register Padrino::Cache
+          enable :caching
+          set :cache, Padrino::Cache.new(:File, dir: store_dir)
+          get('/doc', cache: true) { 'doc' }
+        end
+        Rack::Test::Session.new(Rack::MockSession.new(app)).get('/doc')
+      RUBY
+
+      load_flags = [
+        File.expand_path('../lib', __dir__),
+        File.expand_path('../../padrino-core/lib', __dir__),
+        File.expand_path('../../padrino-helpers/lib', __dir__),
+        File.expand_path('../../padrino-support/lib', __dir__)
+      ].flat_map { |p| ['-I', p] }
+
+      2.times { assert system(RbConfig.ruby, *load_flags, script, store_dir, out: File::NULL, err: File::NULL) }
+      assert_equal 1, Dir.children(store_dir).size
+    end
+  end
+
+  it 'should give an app named after it is built the same page keys in every process' do
+    Dir.mktmpdir do |dir|
+      store_dir = File.join(dir, 'store')
+      script = File.join(dir, 'worker.rb')
+      File.write(script, <<~RUBY)
+        require 'padrino-core'
+        require 'padrino-cache'
+        require 'rack/test'
+
+        store_dir = ARGV.first
+        NamedLaterApp = Class.new(Padrino::Application) do
+          register Padrino::Cache
+          enable :caching
+          set :cache, Padrino::Cache.new(:File, dir: store_dir)
+          get('/doc', cache: true) { 'doc' }
+        end
+        Rack::Test::Session.new(Rack::MockSession.new(NamedLaterApp)).get('/doc')
+      RUBY
+
+      load_flags = [
+        File.expand_path('../lib', __dir__),
+        File.expand_path('../../padrino-core/lib', __dir__),
+        File.expand_path('../../padrino-helpers/lib', __dir__),
+        File.expand_path('../../padrino-support/lib', __dir__)
+      ].flat_map { |p| ['-I', p] }
+
+      2.times { assert system(RbConfig.ruby, *load_flags, script, store_dir, out: File::NULL, err: File::NULL) }
+      assert_equal 1, Dir.children(store_dir).size
+    end
+  end
+
+  it 'should not call Proc host matchers from expire' do
+    seen_hosts = []
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/:m/:d', cache: true, host: ->(h) { seen_hosts << h; true }) { 'page' }
+      get('/exp') { expire('my key/11/24'); 'ok' }
+    end
+
+    get '/exp'
+    assert_equal 200, status
+    assert_empty seen_hosts
+  end
+
+  it 'should isolate cached pages when app_name changes for a named class on a persistent File store' do
+    Dir.mktmpdir do |dir|
+      Object.const_set(:RenamedAppIdApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :site_alpha
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        get('/doc/:id', cache: true) { "alpha #{params[:id]}" }
+      end)
+      s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::RenamedAppIdApp))
+      s1.get '/doc/1'
+      assert_equal 'alpha 1', s1.last_response.body
+
+      Object.send(:remove_const, :RenamedAppIdApp)
+      Object.const_set(:RenamedAppIdApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :site_beta
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        get('/doc/:id', cache: true) { "beta #{params[:id]}" }
+      end)
+      s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::RenamedAppIdApp))
+      s2.get '/doc/2'
+      assert_equal 'beta 2', s2.last_response.body
+      s2.get '/doc/1'
+      assert_equal 'beta 1', s2.last_response.body
+    ensure
+      Object.send(:remove_const, :RenamedAppIdApp) if Object.const_defined?(:RenamedAppIdApp, false)
+    end
+  end
+
+  it 'should isolate cached pages when the same app class is mounted at two SCRIPT_NAME prefixes' do
+    shared_store = Padrino::Cache.new(:Memory)
+    app_cls = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      get('/page', cache: true) { "mount=#{request.script_name}" }
+    end
+
+    router = Padrino::Router.new do
+      map(path: '/one', to: app_cls)
+      map(path: '/two', to: app_cls)
+    end
+    session = Rack::Test::Session.new(Rack::MockSession.new(router))
+    session.get '/one/page'
+    assert_equal 'mount=/one', session.last_response.body
+    session.get '/two/page'
+    assert_equal 'mount=/two', session.last_response.body
+    session.get '/one/page'
+    assert_equal 'mount=/one', session.last_response.body
+  end
+
+  it 'should keep host mappings apart when an inner router maps the same app class' do
+    shared_store = Padrino::Cache.new(:Memory)
+    app_cls = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      get('/', cache: true) { "host=#{request.host}" }
+    end
+    inner_one = Padrino::Router.new { map(path: '/', to: app_cls) }
+    inner_two = Padrino::Router.new { map(path: '/', to: app_cls) }
+    router = Padrino::Router.new do
+      map(path: '/', host: 'one.example.org', to: inner_one)
+      map(path: '/', host: 'two.example.org', to: inner_two)
+    end
+    session = Rack::Test::Session.new(Rack::MockSession.new(router))
+    2.times do
+      session.get '/', {}, 'HTTP_HOST' => 'one.example.org'
+      assert_equal 'host=one.example.org', session.last_response.body
+      session.get '/', {}, 'HTTP_HOST' => 'two.example.org'
+      assert_equal 'host=two.example.org', session.last_response.body
+    end
+  end
+
+  it 'should keep outer host mappings apart when inner routers map the same app class by host too' do
+    shared_store = Padrino::Cache.new(:Memory)
+    app_cls = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      get('/', cache: true) { "host=#{request.host}" }
+    end
+    inner_one = Padrino::Router.new { map(path: '/', host: /example\.org/, to: app_cls) }
+    inner_two = Padrino::Router.new { map(path: '/', host: /example\.org/, to: app_cls) }
+    router = Padrino::Router.new do
+      map(path: '/', host: 'one.example.org', to: inner_one)
+      map(path: '/', host: 'two.example.org', to: inner_two)
+    end
+    session = Rack::Test::Session.new(Rack::MockSession.new(router))
+    2.times do
+      session.get '/', {}, 'HTTP_HOST' => 'one.example.org'
+      assert_equal 'host=one.example.org', session.last_response.body
+      session.get '/', {}, 'HTTP_HOST' => 'two.example.org'
+      assert_equal 'host=two.example.org', session.last_response.body
+    end
+  end
+
+  it 'should give the next app in a cascade the host mapping marker it was reached with' do
+    shared_store = Padrino::Cache.new(:Memory)
+    other = Class.new(Padrino::Application) { get('/elsewhere') { 'elsewhere' } }
+    app_cls = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      get('/x', cache: true) { "host=#{request.host}" }
+    end
+    inner = Padrino::Router.new { map(path: '/', host: 'one.example.org', to: other) }
+    router = Padrino::Router.new do
+      map(path: '/', host: 'one.example.org', to: Rack::Cascade.new([inner, app_cls]))
+      map(path: '/', to: app_cls)
+    end
+    session = Rack::Test::Session.new(Rack::MockSession.new(router))
+    2.times do
+      session.get '/x', {}, 'HTTP_HOST' => 'one.example.org'
+      assert_equal 'host=one.example.org', session.last_response.body
+      session.get '/x', {}, 'HTTP_HOST' => 'two.example.org'
+      assert_equal 'host=two.example.org', session.last_response.body
+    end
+  end
+
+  it 'should expire pages from a stream block in an app behind a host mapping' do
+    calls = 0
+    app_cls = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      get('/x', cache: true) { "x #{calls += 1}" }
+      get('/sclear') { stream { |out| expire('/x'); out << 'cleared' } }
+    end
+    router = Padrino::Router.new { map(path: '/', host: 'one.example.org', to: app_cls) }
+    session = Rack::Test::Session.new(Rack::MockSession.new(router))
+    session.get '/x', {}, 'HTTP_HOST' => 'one.example.org'
+    session.get '/x', {}, 'HTTP_HOST' => 'one.example.org'
+    assert_equal 'x 1', session.last_response.body
+    session.get '/sclear', {}, 'HTTP_HOST' => 'one.example.org'
+    assert_equal 'cleared', session.last_response.body
+    session.get '/x', {}, 'HTTP_HOST' => 'one.example.org'
+    assert_equal 'x 2', session.last_response.body
+  end
+
+  it 'should expire pages from a stream block in an app mounted with Rack::Builder' do
+    calls = 0
+    app_cls = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      get('/x', cache: true) { "x #{calls += 1}" }
+      get('/sclear') { stream { |out| expire('/x'); out << 'cleared' } }
+    end
+    builder = Rack::Builder.new { map('/blog') { run app_cls } }
+    session = Rack::Test::Session.new(Rack::MockSession.new(builder))
+    session.get '/blog/x'
+    session.get '/blog/x'
+    assert_equal 'x 1', session.last_response.body
+    session.get '/blog/sclear'
+    assert_equal 'cleared', session.last_response.body
+    session.get '/blog/x'
+    assert_equal 'x 2', session.last_response.body
+  end
+
+  it 'should expire a provides page stored without a negotiated format' do
+    version = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/r', cache: true, provides: %i[html txt]) { "v#{version}" }
+      get('/bump') { version += 1; expire('/r'); 'ok' }
+    end
+
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    assert_equal 'v0', body
+    get '/bump'
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    assert_equal 'v1', body
+  end
+
+  it 'should expire a provides page when a filter set another content type first' do
+    version = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      before { content_type :json }
+      get('/r', cache: true, provides: %i[html txt]) { "v#{version}" }
+      get('/bump') { version += 1; expire('/r'); 'ok' }
+    end
+
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    assert_equal 'v0', body
+    get '/bump'
+    get '/r', {}, 'HTTP_ACCEPT' => 'text/plain, */*'
+    assert_equal 'v1', body
+  end
+
+  it 'should not leave a host mapping marker behind for the next app in a cascade' do
+    calls = 0
+    other = Class.new(Padrino::Application) { get('/elsewhere') { 'elsewhere' } }
+    cached = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      get('/x', cache: true) { "x #{calls += 1}" }
+      get('/clear') { expire('/x'); 'cleared' }
+    end
+    app = Rack::Cascade.new([Padrino::Router.new { map(path: '/', host: 'one.example.org', to: other) }, cached])
+    session = Rack::Test::Session.new(Rack::MockSession.new(app))
+    session.get '/x', {}, 'HTTP_HOST' => 'one.example.org'
+    session.get '/x', {}, 'HTTP_HOST' => 'one.example.org'
+    assert_equal 'x 1', session.last_response.body
+    session.get '/clear', {}, 'HTTP_HOST' => 'two.example.org'
+    session.get '/x', {}, 'HTTP_HOST' => 'one.example.org'
+    assert_equal 'x 2', session.last_response.body
+  end
+
+  it 'should keep the default page key of an anonymous app when its routes are rebuilt' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/anon', cache: true) { "anon #{calls += 1}" }
+    end
+
+    get '/anon'
+    get '/anon'
+    assert_equal 'anon 1', body
+    @app.set :cache_namespace, 'other'
+    get '/anon'
+    @app.set :cache_namespace, nil
+    get '/anon'
+    assert_equal 'anon 1', body
+  end
+
+  it 'should keep default page keys apart from request paths' do
+    stored = []
+    store = Object.new
+    store.define_singleton_method(:[]) { |_key| nil }
+    store.define_singleton_method(:store) { |key, _value, _options = {}| stored << key }
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, store
+      get('/page', cache: true) { 'page' }
+    end
+
+    get '/page'
+    assert_equal 1, stored.size
+    refute stored.first.start_with?('/')
+  end
+
+  it 'should not share a cached GET page with a separately defined HEAD route' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set(:tier) { |v| condition { params[:tier] == v.to_s } }
+      route('GET', '/s/:id', tier: :plus, cache: true) do
+        content_type :json
+        "{\"view\":\"plus #{params[:id]}\"}"
+      end
+      route('HEAD', '/s/:id', cache: true) { '' }
+    end
+
+    get '/s/1?tier=plus'
+    assert_equal '{"view":"plus 1"}', body
+    head '/s/1'
+    assert_equal 200, status
+    assert_equal '', body
+    get '/s/1?tier=plus'
+    assert_equal '{"view":"plus 1"}', body
+  end
+
+  it 'should isolate cached pages across inheritance router depth levels on one store' do
+    shared_store = Padrino::Cache.new(:Memory)
+    parent = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      condition { params[:v] == 'parent' }
+      get('/d', cache: true) { 'parent page' }
+    end
+    child = Class.new(parent) do
+      condition { params[:v] == 'child' }
+      get('/d', cache: true) { 'child page' }
+    end
+
+    sc = Rack::Test::Session.new(Rack::MockSession.new(child))
+    sc.get '/d?v=child'
+    assert_equal 'child page', sc.last_response.body
+    sc.get '/d?v=parent'
+    assert_equal 'parent page', sc.last_response.body
+    sc.get '/d?v=child'
+    assert_equal 'child page', sc.last_response.body
+  end
+
+  it 'should not serve a stale cached page from a persistent File store after removing a conditional route' do
+    Dir.mktmpdir do |dir|
+      Object.const_set(:DeployRouteChangeApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :deploy_route_change
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        set(:tier) { |v| condition { params[:tier] == v.to_s } }
+        get('/doc/:id', cache: true, tier: :plus) { "plus #{params[:id]}" }
+      end)
+
+      s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::DeployRouteChangeApp))
+      s1.get '/doc/1?tier=plus'
+      assert_equal 'plus 1', s1.last_response.body
+
+      Object.send(:remove_const, :DeployRouteChangeApp)
+      Object.const_set(:DeployRouteChangeApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :deploy_route_change
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        get('/doc/:id', cache: true) { "basic #{params[:id]}" }
+      end)
+
+      s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::DeployRouteChangeApp))
+      s2.get '/doc/2'
+      assert_equal 'basic 2', s2.last_response.body
+      s2.get '/doc/1'
+      assert_equal 'basic 1', s2.last_response.body
+    ensure
+      Object.send(:remove_const, :DeployRouteChangeApp) if Object.const_defined?(:DeployRouteChangeApp, false)
+    end
+  end
+
+  it 'should not serve a stale cached page from a persistent File store after adding an inherited app-level before filter' do
+    Dir.mktmpdir do |dir|
+      base_v1 = Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+      end
+      Object.const_set(:DeployBeforeFilterApp, Class.new(base_v1) do
+        set :app_name, :deploy_before_filter
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        get('/doc/:id', cache: true) { "unfiltered #{params[:id]}" }
+      end)
+
+      s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::DeployBeforeFilterApp))
+      s1.get '/doc/1'
+      assert_equal 'unfiltered 1', s1.last_response.body
+
+      Object.send(:remove_const, :DeployBeforeFilterApp)
+      base_v2 = Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        before { halt 403 unless params[:ok] == '1' }
+      end
+      Object.const_set(:DeployBeforeFilterApp, Class.new(base_v2) do
+        set :app_name, :deploy_before_filter
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        get('/doc/:id', cache: true) { "filtered #{params[:id]}" }
+      end)
+
+      s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::DeployBeforeFilterApp))
+      s2.get '/doc/2?ok=1'
+      assert_equal 'filtered 2', s2.last_response.body
+      s2.get '/doc/1?ok=1'
+      assert_equal 'filtered 1', s2.last_response.body
+    ensure
+      Object.send(:remove_const, :DeployBeforeFilterApp) if Object.const_defined?(:DeployBeforeFilterApp, false)
+    end
+  end
+
+  it 'should not serve a stale cached page from a persistent File store after adding a controller before filter' do
+    Dir.mktmpdir do |dir|
+      Object.const_set(:DeployRouteBeforeApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :deploy_route_before
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        controller '/c' do
+          get('/doc/:id', cache: true) { "v1 #{params[:id]}" }
+        end
+      end)
+
+      s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::DeployRouteBeforeApp))
+      s1.get '/c/doc/1'
+      assert_equal 'v1 1', s1.last_response.body
+
+      Object.send(:remove_const, :DeployRouteBeforeApp)
+      Object.const_set(:DeployRouteBeforeApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :deploy_route_before
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        controller '/c' do
+          before { @tag = 'checked' }
+          get('/doc/:id', cache: true) { "v2 #{params[:id]}" }
+        end
+      end)
+
+      s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::DeployRouteBeforeApp))
+      s2.get '/c/doc/2'
+      assert_equal 'v2 2', s2.last_response.body
+      s2.get '/c/doc/1'
+      assert_equal 'v2 1', s2.last_response.body
+    ensure
+      Object.send(:remove_const, :DeployRouteBeforeApp) if Object.const_defined?(:DeployRouteBeforeApp, false)
+    end
+  end
+
+  it 'should keep cache keys stable across route reordering when each route has a unique name' do
+    Dir.mktmpdir do |dir|
+      calls = Hash.new(0)
+      Object.const_set(:NamedReorderApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :named_reorder
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        condition { params[:v] == 'a' }
+        get(:view_a, map: '/item/:id', cache: true) { "A #{params[:id]} ##{calls[:a] += 1}" }
+        condition { params[:v] == 'b' }
+        get(:view_b, map: '/item/:id', cache: true) { "B #{params[:id]} ##{calls[:b] += 1}" }
+      end)
+
+      s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::NamedReorderApp))
+      s1.get '/item/1?v=a'
+      assert_equal 'A 1 #1', s1.last_response.body
+      s1.get '/item/1?v=b'
+      assert_equal 'B 1 #1', s1.last_response.body
+
+      Object.send(:remove_const, :NamedReorderApp)
+      Object.const_set(:NamedReorderApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :named_reorder
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        condition { params[:v] == 'b' }
+        get(:view_b, map: '/item/:id', cache: true) { "B #{params[:id]} ##{calls[:b] += 1}" }
+        condition { params[:v] == 'a' }
+        get(:view_a, map: '/item/:id', cache: true) { "A #{params[:id]} ##{calls[:a] += 1}" }
+      end)
+
+      s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::NamedReorderApp))
+      s2.get '/item/2?v=b'
+      assert_equal 'B 2 #2', s2.last_response.body
+      s2.get '/item/1?v=b'
+      assert_equal 'B 1 #1', s2.last_response.body
+      s2.get '/item/2?v=a'
+      assert_equal 'A 2 #2', s2.last_response.body
+      s2.get '/item/1?v=a'
+      assert_equal 'A 1 #1', s2.last_response.body
+    ensure
+      Object.send(:remove_const, :NamedReorderApp) if Object.const_defined?(:NamedReorderApp, false)
+    end
+  end
+
+  it 'should not serve a stale cached page after reset_routes! and redefining routes' do
+    shared_store = Padrino::Cache.new(:Memory)
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      set(:tier) { |v| condition { params[:tier] == v.to_s } }
+      get('/doc/:id', cache: true, tier: :plus) { "plus #{params[:id]}" }
+      get('/doc/:id', cache: true) { "basic #{params[:id]}" }
+    end
+
+    get '/doc/1?tier=plus'
+    assert_equal 'plus 1', body
+
+    @app.reset_routes!
+    @app.get('/doc/:id', cache: true) { "rebuilt #{params[:id]}" }
+
+    get '/doc/2'
+    assert_equal 'rebuilt 2', body
+    get '/doc/1'
+    assert_equal 'rebuilt 1', body
+  end
+
+  it 'should not cache when a route is no longer registered on the current router' do
+    writes = []
+    spy_store = Class.new do
+      def initialize(writes)
+        @writes = writes
+        @data = {}
+      end
+
+      def [](key)
+        @data[key]
+      end
+
+      def store(key, val, _opts = {})
+        @writes << key
+        @data[key] = val
+      end
+
+      def delete(key)
+        @data.delete(key)
+      end
+    end.new(writes)
+
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, spy_store
+      before { settings.reset_router! if params[:reset] == '1' }
+      get('/detached', cache: true) { 'fresh response' }
+    end
+
+    get '/detached?reset=1'
+    assert_equal 200, status
+    assert_equal 'fresh response', body
+    assert_empty writes
+  end
+
+  it 'should keep separate cached pages per negotiated format for provides: routes' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/items', provides: %i[html json], cache: true) do
+        content_type == :json ? '{"items":[]}' : '<p>items</p>'
+      end
+    end
+
+    get '/items', {}, 'HTTP_ACCEPT' => 'text/html'
+    assert_equal '<p>items</p>', body
+    get '/items', {}, 'HTTP_ACCEPT' => 'application/json'
+    assert_equal '{"items":[]}', body
+    get '/items', {}, 'HTTP_ACCEPT' => 'text/html'
+    assert_equal '<p>items</p>', body
+  end
+
+  it 'should capture negotiated format at lookup time rather than after handler mutates content_type' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/mut', provides: %i[html json], cache: true) do
+        content_type :xml
+        "call #{calls += 1}"
+      end
+    end
+
+    get '/mut', {}, 'HTTP_ACCEPT' => 'text/html'
+    assert_equal 'call 1', body
+    get '/mut', {}, 'HTTP_ACCEPT' => 'text/html'
+    assert_equal 'call 1', body
+  end
+
+  it 'should ignore rotating Host or X-Forwarded-Host headers on routes without host:' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/stable', cache: true) { "hit #{calls += 1}" }
+    end
+
+    get '/stable', {}, 'HTTP_HOST' => 'one.example.com', 'HTTP_X_FORWARDED_HOST' => 'x1.example.com'
+    assert_equal 'hit 1', body
+    get '/stable', {}, 'HTTP_HOST' => 'two.example.com', 'HTTP_X_FORWARDED_HOST' => 'x2.example.com'
+    assert_equal 'hit 1', body
+  end
+
+  it 'should warn once per process when indistinguishable cached routes share a verb and path, and stay quiet when named or distinct' do
+    _, err_dup = capture_io do
+      app = Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        condition { params[:a] == '1' }
+        get('/dup', cache: true) { 'page A' }
+        condition { params[:b] == '1' }
+        get('/dup', cache: true) { 'page B' }
+      end
+      app.compiled_router
+      app.compiled_router
+    end
+    assert_equal 1, err_dup.lines.size
+    assert_includes err_dup, 'give each a unique route name so reordering routes does not change their cache keys.'
+
+    _, err_clean = capture_io do
+      app = Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set(:tier) { |v| condition { params[:tier] == v.to_s } }
+        get('/distinct', cache: true, tier: :alpha) { 'page A' }
+        get('/distinct', cache: true, tier: :beta) { 'page B' }
+        condition { params[:a] == '1' }
+        get(:named_a, map: '/named', cache: true) { 'page A' }
+        condition { params[:b] == '1' }
+        get(:named_b, map: '/named', cache: true) { 'page B' }
+      end
+      app.compiled_router
+    end
+    assert_equal '', err_clean
+  end
+
+  it 'should emit at most one duplicate-route warning across a parent class and multiple subclasses' do
+    _, err_cached_parent = capture_io do
+      parent = Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        condition { params[:a] == '1' }
+        get('/parent-dup', cache: true) { 'A' }
+        condition { params[:b] == '1' }
+        get('/parent-dup', cache: true) { 'B' }
+      end
+      child_one = Class.new(parent) { get('/child-one', cache: true) { 'C1' } }
+      child_two = Class.new(parent) { get('/child-two', cache: true) { 'C2' } }
+      child_one.compiled_router
+      child_two.compiled_router
+    end
+    assert_equal 1, err_cached_parent.lines.size
+    assert_includes err_cached_parent, '/parent-dup'
+
+    _, err_uncached_parent = capture_io do
+      parent = Class.new(Padrino::Application) do
+        condition { params[:a] == '1' }
+        get('/plain-parent-dup', cache: true) { 'A' }
+        condition { params[:b] == '1' }
+        get('/plain-parent-dup', cache: true) { 'B' }
+      end
+      child = Class.new(parent) do
+        register Padrino::Cache
+        enable :caching
+        get('/child-only', cache: true) { 'C' }
+      end
+      child.compiled_router
+    end
+    assert_equal 1, err_uncached_parent.lines.size
+    assert_includes err_uncached_parent, '/plain-parent-dup'
+  end
+
+  it 'should expire host: route pages via expire("app.example.com/")' do
+    calls = 0
+    store = Padrino::Cache.new(:Memory)
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, store
+      get(:index, host: 'app.example.com', cache: true) { "host #{calls += 1}" }
+      get('/expire-host') { expire('app.example.com/') }
+    end
+
+    get '/', {}, 'HTTP_HOST' => 'app.example.com'
+    assert_equal 'host 1', body
+    get '/expire-host'
+    get '/', {}, 'HTTP_HOST' => 'app.example.com'
+    assert_equal 'host 2', body
+  end
+
+  it 'should render again when a store returns cached pages with String keys' do
+    calls = 0
+    entries = {}
+    store = Object.new
+    store.define_singleton_method(:[]) { |key| entries[key] }
+    store.define_singleton_method(:store) do |key, value, _options = {}|
+      entries[key] = value.is_a?(Hash) ? value.transform_keys(&:to_s) : value
+    end
+    store.define_singleton_method(:delete) { |key| entries.delete(key) }
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, store
+      get('/string-keys', cache: true) { "fresh #{calls += 1}" }
+    end
+
+    get '/string-keys'
+    assert_equal 'fresh 1', body
+    get '/string-keys'
+    assert_equal 'fresh 2', body
+  end
+
+  it 'should not expire a plain route when expire is called with an explicit host/path' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/plain-item', cache: true) { "plain #{calls += 1}" }
+      get('/exp-with-host') { expire('app.example.com/plain-item'); 'ok' }
+      get('/exp-plain') { expire('/plain-item'); 'ok' }
+    end
+
+    get '/plain-item'
+    assert_equal 'plain 1', body
+    get '/exp-with-host'
+    get '/plain-item'
+    assert_equal 'plain 1', body
+    get '/exp-plain'
+    get '/plain-item'
+    assert_equal 'plain 2', body
+  end
+
+  it 'should expire host: route pages for every host the route serves' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/dash', host: 'intranet', cache: true) { "intra #{calls += 1}" }
+      get('/re', host: /\A(web|my_box\.corp\.example|www\.example\.com\.)\z/, cache: true) { "re #{calls += 1}" }
+      get('/up', host: /\AAdmin\./, cache: true) { "up #{calls += 1}" }
+      get('/exp') { expire(params[:t]); 'ok' }
+    end
+
+    [['intranet', '/dash', 'INTRANET/dash'],
+     ['web', '/re', 'web/re'],
+     ['my_box.corp.example', '/re', 'my_box.corp.example/re'],
+     ['www.example.com.', '/re', 'www.example.com./re'],
+     ['Admin.example.com', '/up', 'admin.example.com/up']].each do |host, path, target|
+      get path, {}, 'HTTP_HOST' => host
+      get path, {}, 'HTTP_HOST' => host
+      before = body
+      get '/exp', { t: target }
+      get path, {}, 'HTTP_HOST' => host
+      refute_equal before, body, "expire(#{target.inspect}) should clear the page for #{host}"
+    end
+  end
+
+  it 'should ignore invalid byte sequences and other encodings in expire' do
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, Padrino::Cache.new(:Memory)
+      get('/:m/:d', cache: true, host: 'app.example.com') { 'host A' }
+      get('/expire-invalid-utf8') { expire("\xFF\xFE/11/24".dup.force_encoding(Encoding::UTF_8)); 'ok' }
+      get('/expire-binary') { expire("\xFF\xFE/11/24".b); 'ok' }
+      get('/expire-binary-path') { expire("/\xFF\xFE".b); 'ok' }
+      get('/expire-utf16') { expire('/11/24'.encode(Encoding::UTF_16LE)); 'ok' }
+    end
+
+    %w[/expire-invalid-utf8 /expire-binary /expire-binary-path /expire-utf16].each do |path|
+      get path
+      assert_equal 200, status
+    end
+  end
+
+  it 'should allow expire outside a request with nil env and still delete the raw key' do
+    store = Padrino::Cache.new(:Memory)
+    app_cls = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, store
+      get(:show, map: '/items/:id', cache: true) { "item #{params[:id]}" }
+    end
+
+    store['/foo'] = 'raw-val'
+    store['/items/1'] = 'raw-item'
+    assert_nil app_cls.new!.expire('/foo')
+    assert_nil store['/foo']
+    assert_nil app_cls.new!.expire(:show, id: 1)
+    assert_nil store['/items/1']
+  end
+
+  it 'should match Set host patterns in expire the same way routing does' do
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      get('/set-host', host: Set['app.example.com'], cache: true) { "set #{calls += 1}" }
+      get('/expire-set-host') { expire('app.example.com/set-host') }
+    end
+
+    get '/set-host', {}, 'HTTP_HOST' => 'app.example.com'
+    assert_equal 'set 1', body
+    get '/expire-set-host'
+    get '/set-host', {}, 'HTTP_HOST' => 'app.example.com'
+    assert_equal 'set 2', body
+  end
+
+  it 'should isolate deploys via cache_namespace including non-String values like Time' do
+    shared_store = Padrino::Cache.new(:Memory)
+    calls = 0
+    mock_app do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      set :cache_namespace, 'release-1'
+      get('/rel', cache: true) { "rel #{calls += 1}" }
+    end
+
+    get '/rel'
+    assert_equal 'rel 1', body
+    get '/rel'
+    assert_equal 'rel 1', body
+
+    @app.set :cache_namespace, 'release-2'
+    get '/rel'
+    assert_equal 'rel 2', body
+
+    @app.set :cache_namespace, Time.utc(2026, 1, 1, 0, 0, 1)
+    get '/rel'
+    assert_equal 'rel 3', body
+    get '/rel'
+    assert_equal 'rel 3', body
+
+    @app.set :cache_namespace, Time.utc(2026, 1, 1, 0, 0, 2)
+    get '/rel'
+    assert_equal 'rel 4', body
+  end
+
+  it 'should digest Hash condition options deterministically regardless of mixed key insertion order' do
+    Dir.mktmpdir do |dir|
+      calls = 0
+      Object.const_set(:MixedHashKeyApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :mixed_hash_keys
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        set(:meta) { |_h| condition { true } }
+        get('/m/:id', cache: true, meta: [{ 'a' => 1, :a => 2 }]) { "v #{params[:id]} ##{calls += 1}" }
+      end)
+      s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::MixedHashKeyApp))
+      s1.get '/m/1'
+      assert_equal 'v 1 #1', s1.last_response.body
+
+      Object.send(:remove_const, :MixedHashKeyApp)
+      Object.const_set(:MixedHashKeyApp, Class.new(Padrino::Application) do
+        register Padrino::Cache
+        enable :caching
+        set :app_name, :mixed_hash_keys
+        set :cache, Padrino::Cache.new(:File, dir: dir)
+        set(:meta) { |_h| condition { true } }
+        get('/m/:id', cache: true, meta: [{ :a => 2, 'a' => 1 }]) { "v #{params[:id]} ##{calls += 1}" }
+      end)
+      s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::MixedHashKeyApp))
+      s2.get '/m/2'
+      assert_equal 'v 2 #2', s2.last_response.body
+      s2.get '/m/1'
+      assert_equal 'v 1 #1', s2.last_response.body
+    ensure
+      Object.send(:remove_const, :MixedHashKeyApp) if Object.const_defined?(:MixedHashKeyApp, false)
+    end
+  end
+
+  it 'should digest Proc condition options by source file and source line text across deploys' do
+    Dir.mktmpdir do |dir|
+      store_dir = File.join(dir, 'store')
+      app_file = File.join(dir, 'proc_app.rb')
+
+      File.write(app_file, <<~RUBY)
+        class ProcSourceLineApp < Padrino::Application
+          register Padrino::Cache
+          enable :caching
+          set :app_name, :proc_source_line
+          set :cache, Padrino::Cache.new(:File, dir: #{store_dir.inspect})
+          set(:check) { |fn| condition { instance_exec(&fn) } }
+          get('/doc/:id', cache: true, check: -> { env['HTTP_X_MODE'] == 'alpha' }) do
+            "mode A \#{params[:id]}"
+          end
+        end
+      RUBY
+      load app_file
+      s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::ProcSourceLineApp))
+      s1.get '/doc/1', {}, 'HTTP_X_MODE' => 'alpha'
+      assert_equal 'mode A 1', s1.last_response.body
+      Object.send(:remove_const, :ProcSourceLineApp)
+
+      File.write(app_file, <<~RUBY)
+        class ProcSourceLineApp < Padrino::Application
+          register Padrino::Cache
+          enable :caching
+          set :app_name, :proc_source_line
+          set :cache, Padrino::Cache.new(:File, dir: #{store_dir.inspect})
+          set(:check) { |fn| condition { instance_exec(&fn) } }
+          get('/doc/:id', cache: true, check: -> { true }) do
+            "mode B \#{params[:id]}"
+          end
+        end
+      RUBY
+      load app_file
+      s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::ProcSourceLineApp))
+      s2.get '/doc/2'
+      assert_equal 'mode B 2', s2.last_response.body
+      s2.get '/doc/1'
+      assert_equal 'mode B 1', s2.last_response.body
+    ensure
+      Object.send(:remove_const, :ProcSourceLineApp) if Object.const_defined?(:ProcSourceLineApp, false)
+    end
+  end
+
+  it 'should isolate raw condition blocks on the same path using route ordinal' do
+    capture_io do
+      mock_app do
+        register Padrino::Cache
+        enable :caching
+        condition { params[:v] == '1' }
+        get('/raw', cache: true) { 'raw A' }
+        condition { params[:v] == '2' }
+        get('/raw', cache: true) { 'raw B' }
+      end
+
+      get '/raw?v=1'
+      assert_equal 'raw A', body
+      get '/raw?v=2'
+      assert_equal 'raw B', body
+      get '/raw?v=1'
+      assert_equal 'raw A', body
+    end
+  end
+
+  it 'should isolate reordered conditional routes when option values differ' do
+    shared_store = Padrino::Cache.new(:Memory)
+    Object.const_set(:OptionReorderApp, Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :app_name, :option_reorder
+      set :cache, shared_store
+      set(:tier) { |v| condition { params[:tier] == v.to_s } }
+      get('/opt/:id', cache: true, tier: :alpha) { "alpha #{params[:id]}" }
+      get('/opt/:id', cache: true, tier: :beta) { "beta #{params[:id]}" }
+    end)
+
+    s1 = Rack::Test::Session.new(Rack::MockSession.new(Object::OptionReorderApp))
+    s1.get '/opt/1?tier=alpha'
+    assert_equal 'alpha 1', s1.last_response.body
+
+    Object.send(:remove_const, :OptionReorderApp)
+    Object.const_set(:OptionReorderApp, Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :app_name, :option_reorder
+      set :cache, shared_store
+      set(:tier) { |v| condition { params[:tier] == v.to_s } }
+      get('/opt/:id', cache: true, tier: :beta) { "beta #{params[:id]}" }
+      get('/opt/:id', cache: true, tier: :alpha) { "alpha #{params[:id]}" }
+    end)
+
+    s2 = Rack::Test::Session.new(Rack::MockSession.new(Object::OptionReorderApp))
+    s2.get '/opt/2?tier=beta'
+    assert_equal 'beta 2', s2.last_response.body
+    s2.get '/opt/1?tier=beta'
+    assert_equal 'beta 1', s2.last_response.body
+  ensure
+    Object.send(:remove_const, :OptionReorderApp) if Object.const_defined?(:OptionReorderApp, false)
+  end
+
+  it 'should scope router-host marker expiration, skip provides :any, and require explicit host/path for host: routes' do
+    shared_store = Padrino::Cache.new(:Memory)
+    calls = Hash.new(0)
+
+    app_a = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      get('/scoped', cache: true) { "appA #{calls[:a] += 1}" }
+      get('/exp-scoped') { expire('/scoped'); 'ok' }
+      get('/any', provides: :any, cache: true) { "any #{calls[:any] += 1}" }
+      get('/exp-any') { expire('/any'); 'ok' }
+      get('/host-only', host: 'app.example.com', cache: true) { "host #{calls[:host] += 1}" }
+      get('/exp-host-plain') { expire('/host-only'); 'ok' }
+      get('/exp-host-explicit') { expire('app.example.com/host-only'); 'ok' }
+      get(:idx, map: '/idx', cache: true) { "idx #{calls[:idx] += 1}" }
+      get('/exp-idx-sym') { expire(:idx); 'ok' }
+      get('/exp-idx-route') { expire(:idx, {}); 'ok' }
+    end
+
+    app_b = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, shared_store
+      get('/scoped', cache: true) { "appB #{calls[:b] += 1}" }
+    end
+
+    router = Padrino::Router.new do
+      map(path: '/', host: 'one.example.com', to: app_a)
+      map(path: '/', host: 'two.example.com', to: app_b)
+    end
+
+    s = Rack::Test::Session.new(Rack::MockSession.new(router))
+    s.get '/scoped', {}, 'HTTP_HOST' => 'one.example.com'
+    assert_equal 'appA 1', s.last_response.body
+    s.get '/scoped', {}, 'HTTP_HOST' => 'two.example.com'
+    assert_equal 'appB 1', s.last_response.body
+    s.get '/exp-scoped', {}, 'HTTP_HOST' => 'one.example.com'
+    s.get '/scoped', {}, 'HTTP_HOST' => 'one.example.com'
+    assert_equal 'appA 2', s.last_response.body
+    s.get '/scoped', {}, 'HTTP_HOST' => 'two.example.com'
+    assert_equal 'appB 1', s.last_response.body
+
+    deleted_any = []
+    spy_any = Class.new do
+      def initialize(deleted)
+        @deleted = deleted
+        @data = {}
+      end
+
+      def [](key)
+        @data[key]
+      end
+
+      def store(key, val, _opts = {})
+        @data[key] = val
+      end
+
+      def delete(key)
+        @deleted << key
+        @data.delete(key)
+      end
+    end.new(deleted_any)
+    app_any = Class.new(Padrino::Application) do
+      register Padrino::Cache
+      enable :caching
+      set :cache, spy_any
+      get('/any', provides: :any, cache: true) { "any #{calls[:any] += 1}" }
+      get('/exp-any') { expire('/any'); 'ok' }
+    end
+    any_s = Rack::Test::Session.new(Rack::MockSession.new(app_any))
+    any_s.get '/any', {}, 'HTTP_ACCEPT' => 'text/html'
+    assert_equal 'any 1', any_s.last_response.body
+    any_s.get '/exp-any'
+    assert_equal ['/any'], deleted_any
+    any_s.get '/any', {}, 'HTTP_ACCEPT' => 'text/html'
+    assert_equal 'any 1', any_s.last_response.body
+
+    direct = Rack::Test::Session.new(Rack::MockSession.new(app_a))
+
+    direct.get '/host-only', {}, 'HTTP_HOST' => 'app.example.com'
+    assert_equal 'host 1', direct.last_response.body
+    direct.get '/exp-host-plain'
+    direct.get '/host-only', {}, 'HTTP_HOST' => 'app.example.com'
+    assert_equal 'host 1', direct.last_response.body
+    direct.get '/exp-host-explicit'
+    direct.get '/host-only', {}, 'HTTP_HOST' => 'app.example.com'
+    assert_equal 'host 2', direct.last_response.body
+
+    direct.get '/idx'
+    assert_equal 'idx 1', direct.last_response.body
+    direct.get '/exp-idx-sym'
+    direct.get '/idx'
+    assert_equal 'idx 1', direct.last_response.body
+    direct.get '/exp-idx-route'
+    direct.get '/idx'
+    assert_equal 'idx 2', direct.last_response.body
   end
 end
