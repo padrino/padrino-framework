@@ -1,4 +1,6 @@
 require 'English'
+require_relative '../padrino-performance/os'
+
 module Padrino
   class << self
     def before_load(&block)
@@ -22,13 +24,18 @@ module Padrino
         "tasklist /FI \"PID eq #{$PROCESS_ID}\""
       end
     end
+
+    def perf_memusage
+      command = perf_memusage_command
+      command ? `#{command}`.strip : 'unknown on this system'
+    end
   end
 
   before_load do
-    puts "Memory before the application is loaded: #{perf_memusage_command}"
+    puts "Memory before the application is loaded: #{perf_memusage}"
   end
 
   after_load do
-    puts "Memory usage after loading the application: #{perf_memusage_command}"
+    puts "Memory usage after loading the application: #{perf_memusage}"
   end
 end
